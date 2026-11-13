@@ -1,6 +1,10 @@
 # Blender Plugins
 
-## Better Item 1.0.0
+**Instalar Better Item:** [baixe Better-Item.zip](https://github.com/Borbofruto/Blender-Plugins/raw/refs/heads/main/Better-Item.zip) e escolha esse arquivo em **Preferences > Add-ons > Install from Disk**. O ZIP instalável está na raiz; o ZIP do botão Code > Download ZIP contém o repositório inteiro e não é o pacote de instalação.
+
+## Better Item 1.0.1
+
+Correção: vínculos de rotação interpretam 0° como 360° no cálculo proporcional, permitindo chegar e sair de zero. O valor digitado é mantido no campo.
 
 Transformações com vínculos proporcionais por eixo, alinhamento e distribuição por origens. Painel **N > Better Item**, no Modo Objeto.
 
@@ -9,7 +13,7 @@ Transformações com vínculos proporcionais por eixo, alinhamento e distribuiç
 - Distribuição entre extremos ou com passo assinado a partir do objeto-chave, que permanece fixo.
 - Eixos globais independentes; prioridade ao lado contrário ao passo e ordenação pela distância à chave.
 
-[Baixar ZIP 1.0.0](https://github.com/Borbofruto/Blender-Plugins/raw/refs/heads/main/dist/better_item-1.0.0.zip) · [Manual e limitações](addons/better_item/README.md) · [Código](addons/better_item)
+[Baixar ZIP 1.0.1](https://github.com/Borbofruto/Blender-Plugins/raw/refs/heads/main/dist/better_item-1.0.1.zip) · [Manual e limitações](addons/better_item/README.md) · [Código](addons/better_item)
 
 Instale pelo **Edit > Preferences > Add-ons > Install from Disk** e ative **Better Item**. Blender 5.0 ou superior; testado no Blender 5.2.3 LTS. Quaternion e eixo-ângulo possuem edição nativa, sem vínculos proporcionais.
 

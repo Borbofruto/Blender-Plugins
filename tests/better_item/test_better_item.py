@@ -70,6 +70,35 @@ cube.better_item.link_rotation=(True,True,True)
 cube.better_item.rotation_x=.3
 near(cube.rotation_euler,(.3,.6,1.8))
 
+# A zero Euler angle uses a full turn in proportional calculations only.
+def degrees(values):return tuple(math.radians(v) for v in values)
+cube.rotation_euler=(0,0,0)
+cube.better_item.rotation_x=math.radians(90)
+near(cube.rotation_euler,degrees((90,90,90)))
+cube.better_item.rotation_x=0
+near(cube.rotation_euler,degrees((0,360,360)))
+cube.better_item.rotation_x=math.radians(-90)
+near(cube.rotation_euler,degrees((-90,-90,-90)))
+cube.better_item.rotation_x=0
+near(cube.rotation_euler,degrees((0,360,360)))
+cube.better_item.rotation_x=math.radians(90)
+near(cube.rotation_euler,degrees((90,90,90)))
+cube.rotation_euler=degrees((0,180,720))
+cube.better_item.rotation_x=math.radians(90)
+near(cube.rotation_euler,degrees((90,45,180)))
+cube.rotation_euler=degrees((0,180,720))
+cube.better_item.link_rotation=(True,True,False)
+cube.better_item.rotation_x=math.radians(90)
+near(cube.rotation_euler,degrees((90,45,720)))
+cube.rotation_euler=(0,0,0)
+cube.lock_rotation[1]=True
+cube.better_item.rotation_x=math.radians(90)
+near(cube.rotation_euler,(0,0,0))
+assert cube.as_pointer() in addon._field_errors
+cube.lock_rotation[1]=False
+cube.better_item.rotation_x=math.radians(90)
+assert cube.as_pointer() not in addon._field_errors
+
 # Atomic rejection if a linked peer is locked.
 cube.lock_location[1]=True
 old=cube.location.copy()

@@ -38,7 +38,7 @@ def edit_component(obj,group,axis,value):
     if group=='DIMENSIONS' and (value<0 or (before[axis]==0 and value!=0)):
         raise BetterItemError('Uma dimensao nula nao pode ser ampliada por escala. Edite a geometria primeiro.')
     links=getattr(obj.better_item,GROUP_LINK[group])
-    desired=linked_values(before,axis,value,links)
+    desired=linked_values(before,axis,value,links,zero_angle_as_turn=group=='ROTATION')
     for i,locked in enumerate(getattr(obj,GROUP_LOCK[group])):
         if locked and different(before[i],desired[i]):
             raise BetterItemError('O eixo %s esta bloqueado em "%s". A alteracao vinculada foi cancelada.' % ('XYZ'[i],obj.name))

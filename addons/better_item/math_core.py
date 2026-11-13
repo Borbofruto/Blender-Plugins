@@ -17,7 +17,7 @@ def different(a,b):
     return not math.isclose(a,b,rel_tol=1e-9,abs_tol=1e-12)
 
 
-def linked_values(before,axis,value,links):
+def linked_values(before,axis,value,links,zero_angle_as_turn=False):
     before=vector3(before)
     value=float(value)
     if axis not in (0,1,2) or len(links)!=3 or not math.isfinite(value):
@@ -27,12 +27,16 @@ def linked_values(before,axis,value,links):
     if not different(value,before[axis]):
         return tuple(result)
     if links[axis] and sum(bool(v) for v in links)>1:
-        if before[axis]==0:
+        if before[axis]==0 and not zero_angle_as_turn:
             raise BetterItemError('Nao existe proporcao a partir de %s = 0. Desvincule esse eixo antes de altera-lo.' % 'XYZ'[axis])
-        factor=value/before[axis]
+        # Only Euler linkage substitutes one turn for exact zero. Preserve
+        # the edited native value and explicit multi-turn angles.
+        def reference(angle):
+            return math.tau if zero_angle_as_turn and angle==0 else angle
+        factor=reference(value)/reference(before[axis])
         for i,linked in enumerate(links):
             if linked:
-                result[i]=value if i==axis else before[i]*factor
+                result[i]=value if i==axis else reference(before[i])*factor
     return vector3(result)
 
 

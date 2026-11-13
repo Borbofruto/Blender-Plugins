@@ -1,10 +1,10 @@
-# Better Item 1.0.0
+# Better Item 1.0.1
 
 Painel de transformações proporcionais, alinhamento e distribuição por origens para Blender. Autor: Gabriel Webber do Nascimento. Licença GPL-3.0-or-later.
 
 ## Instalação
 
-Em Edit > Preferences > Add-ons > Install from Disk, escolha `better_item-1.0.0.zip` e ative Better Item. No viewport, pressione N e abra a aba Better Item. Funciona no Modo Objeto. Compatibilidade declarada: Blender 5.0 ou superior; testes executados no Blender 5.2.3 LTS.
+Em Edit > Preferences > Add-ons > Install from Disk, escolha `better_item-1.0.1.zip` e ative Better Item. No viewport, pressione N e abra a aba Better Item. Funciona no Modo Objeto. Compatibilidade declarada: Blender 5.0 ou superior; testes executados no Blender 5.2.3 LTS.
 
 ## Transformações
 
@@ -12,7 +12,9 @@ O painel acompanha os valores nativos do objeto ativo: posição local, rotaçã
 
 Com XYZ vinculados, dimensões de (100, 200, 600) mm passam para (300, 600, 1800) mm quando X muda para 300 mm. A mesma regra de multiplicação vale para posição, escala e ângulos Euler. Um eixo desvinculado muda sozinho. Alterar dimensões altera a escala nativa; são duas representações da mesma transformação.
 
-Um valor de origem zero não define uma proporção para um novo valor diferente de zero: desvincule o eixo para alterá-lo independentemente. Uma dimensão geometricamente nula exige editar a geometria. Se um eixo vinculado estiver bloqueado, a alteração inteira é cancelada e uma mensagem aparece no painel. Campos controlados por drivers precisam ser liberados antes da edição.
+Para posição, escala e dimensões, um valor de origem zero não define uma proporção para um novo valor diferente de zero: desvincule o eixo para alterá-lo independentemente. Uma dimensão geometricamente nula exige editar a geometria. Se um eixo vinculado estiver bloqueado, a alteração inteira é cancelada e uma mensagem aparece no painel. Campos controlados por drivers precisam ser liberados antes da edição.
+
+Na proporção de rotação, 0° é interpretado como 360°, tanto no valor anterior quanto no novo valor e nos demais eixos vinculados. O campo editado mantém o valor digitado. Por exemplo, (0°, 0°, 0°) com XYZ vinculados passa a (90°, 90°, 90°) ao editar X para 90°. Voltas explícitas, como 720°, e ângulos negativos são preservados. Essa convenção remove a divisão por zero; não torna a razão contínua perto de 0°, portanto valores próximos de zero ainda podem produzir fatores grandes.
 
 Vínculos de rotação funcionam nos seis modos Euler, multiplicando os ângulos armazenados. Quaternion e eixo-ângulo continuam disponíveis como campos nativos, sem vínculo proporcional. Multiplicar ângulos Euler não representa uma interpolação da orientação espacial.
 

@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2026 Gabriel Webber do Nascimento
 # SPDX-License-Identifier: GPL-3.0-or-later
 bl_info={
-    'name':'Better Item','author':'Gabriel Webber do Nascimento','version':(1,0,0),
+    'name':'Better Item','author':'Gabriel Webber do Nascimento','version':(1,0,1),
     'blender':(5,0,0),'location':'View3D > Sidebar > Better Item',
     'description':'Linked transforms and origin-based alignment and distribution',
     'category':'Object',
