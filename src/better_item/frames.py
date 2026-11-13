@@ -1,6 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 """Scene-owned reference frames; object pointers are sources, never constraints."""
-import math
 import uuid
 import bpy
 from mathutils import Matrix, Vector, Euler
@@ -11,14 +10,20 @@ _enum_cache = {}
 
 def frame_items(self, context):
     scene = context.scene if context else None
+    fallback=[('NONE', 'Choose a Frame', '', 0)]
     if scene is None or not hasattr(scene, 'better_item'):
-        return [('NONE', 'Choose a Frame', '', 0)]
-    signature = (scene.as_pointer(), tuple((f.uid, f.name, f.number) for f in scene.better_item.frames))
-    if signature not in _enum_cache:
-        _enum_cache[signature] = [('NONE', 'Choose a Frame', '', 0)] + [
-            (f.uid, f.name, 'Saved reference frame', f.number) for f in scene.better_item.frames]
-    # Keep callback strings alive for Blender RNA.
-    return _enum_cache[signature]
+        return fallback
+    live_scenes={item.as_pointer() for item in bpy.data.scenes}
+    for pointer in list(_enum_cache):
+        if pointer not in live_scenes:del _enum_cache[pointer]
+    pointer=scene.as_pointer()
+    signature=tuple((frame.uid,frame.name,frame.number) for frame in scene.better_item.frames)
+    cached=_enum_cache.get(pointer)
+    if cached is None or cached[0]!=signature:
+        items=fallback+[(frame.uid,frame.name,'Saved reference frame',frame.number) for frame in scene.better_item.frames]
+        _enum_cache[pointer]=(signature,items)
+    # Keep the current callback strings alive, with one generation per scene.
+    return _enum_cache[pointer][1]
 
 
 def find(scene, uid):
@@ -88,7 +93,6 @@ def viewport_origin(context,obj):
 
 
 def object_origin(context, obj):
-    from . import orientation
     settings = obj.better_item
     if settings.pivot_mode == 'GLOBAL':
         return Vector((0, 0, 0))
@@ -120,32 +124,11 @@ def relative_values(context, obj, kind):
     return tuple(0. if abs(v)<1e-7 else v for v in rotation.to_euler(order))
 
 
-def apply_relative(context, obj, kind, values):
-    from . import engine, orientation
+def set_position(context, obj, values):
+    from . import engine
     context.view_layer.update()
-    axes = object_axes(context, obj)
-    origin = object_origin(context, obj)
-    if kind == 'POSITION':
-        target = origin + axes @ Vector(values)
-        return engine.apply_world_positions([obj], {obj.name: tuple(target)})
-    current = obj.matrix_world.to_quaternion().normalized().to_matrix()
-    desired = axes @ Euler(values, 'XYZ').to_matrix()
-    delta = (desired @ current.transposed()).to_quaternion().normalized()
-    angle = delta.angle
-    if angle > math.pi:
-        angle -= math.tau
-    if abs(angle) < 1e-7:
-        return 0
-    # Native rotation around the selected pivot, with a world-space axis.
-    rotation_axes = Vector((0,0,1)).rotation_difference(delta.axis).to_matrix()
-    def validate():
-        actual = obj.matrix_world.to_quaternion().normalized()
-        error = actual.rotation_difference(desired.to_quaternion()).angle
-        if min(abs(error), abs(math.tau-error)) > 2e-4:
-            raise BetterItemError('Parenting or scale prevented the requested reference-space rotation.')
-    center = origin if obj.better_item.use_reference_pivot else orientation.pivot(context,obj)
-    return orientation.apply(context, obj, 'ROTATE', (0,0,angle), 'GLOBAL',
-        axes_override=rotation_axes, pivot_override=center, validate=validate)
+    target=object_origin(context,obj)+object_axes(context,obj) @ Vector(values)
+    return engine.apply_world_positions([obj],{obj.name:tuple(target)})
 
 
 def create(context, name, origin, axes, source=None):

@@ -2,40 +2,92 @@
 """One live transform view: reference changes readings, setters change the object."""
 import math
 import bpy
+import numpy as np
+from collections import OrderedDict
 from mathutils import Matrix, Vector, Euler
-from . import engine, frames, orientation
+from . import engine, frames
 from .math_core import BetterItemError, linked_values
 from bpy.app.handlers import persistent
 
-_dimension_cache={}
+_dimension_cache=OrderedDict()
+_geometry_cache=OrderedDict()
+_GEOMETRY_CACHE_ENTRIES=8
+_GEOMETRY_CACHE_BYTES=64*1024*1024
+_DIMENSION_CACHE_ENTRIES=32
 
 
 @persistent
 def clear_cache(_scene=None,_depsgraph=None):
     _dimension_cache.clear()
+    _geometry_cache.clear()
 
 
-def dimensions(obj, axes):
-    key=(obj.as_pointer(),tuple(v for row in axes for v in row),tuple(v for row in obj.matrix_world.to_3x3() for v in row))
-    if key in _dimension_cache:return _dimension_cache[key]
-    evaluated = obj.evaluated_get(bpy.context.evaluated_depsgraph_get())
-    mesh = evaluated.to_mesh()
+@persistent
+def invalidate_geometry(_scene,depsgraph):
+    """Only evaluated geometry updates invalidate local vertex coordinates.
+
+    Transform-only updates are handled by the projection key. Translation is
+    intentionally absent from that key because it cannot change extents.
+    """
+    updated_objects=set()
+    updated_data=set()
+    for update in depsgraph.updates:
+        if not update.is_updated_geometry:continue
+        original=update.id.original
+        if isinstance(original,bpy.types.Object):updated_objects.add(original.as_pointer())
+        else:updated_data.add(original.as_pointer())
+    def changed(key):return key[1] in updated_objects or key[2] in updated_data
+    for key in list(_geometry_cache):
+        if changed(key):del _geometry_cache[key]
+    for key in list(_dimension_cache):
+        if changed(key):del _dimension_cache[key]
+
+
+def _geometry_key(obj,depsgraph):
+    return (depsgraph.as_pointer(),obj.as_pointer(),obj.data.as_pointer() if obj.data else 0)
+
+
+def _coordinates(obj,depsgraph,key):
+    if key in _geometry_cache:
+        _geometry_cache.move_to_end(key)
+        return _geometry_cache[key]
+    evaluated=obj.evaluated_get(depsgraph)
+    mesh=evaluated.to_mesh()
     try:
         if mesh is None or not mesh.vertices:
             raise BetterItemError('This object has no evaluated vertices to measure.')
-        transform = axes.transposed() @ evaluated.matrix_world.to_3x3()
-        low = [math.inf]*3
-        high = [-math.inf]*3
-        for vertex in mesh.vertices:
-            point = transform @ vertex.co
-            for i in range(3):
-                low[i] = min(low[i], point[i])
-                high[i] = max(high[i], point[i])
-        result=tuple(high[i]-low[i] for i in range(3))
-        _dimension_cache[key]=result
-        return result
+        coordinates=np.empty(len(mesh.vertices)*3,dtype=np.float32)
+        mesh.vertices.foreach_get('co',coordinates)
+        coordinates=coordinates.reshape((-1,3))
     finally:
         evaluated.to_mesh_clear()
+    if coordinates.nbytes<=_GEOMETRY_CACHE_BYTES:
+        while _geometry_cache and (len(_geometry_cache)>=_GEOMETRY_CACHE_ENTRIES
+                or sum(array.nbytes for array in _geometry_cache.values())+coordinates.nbytes>_GEOMETRY_CACHE_BYTES):
+            _geometry_cache.popitem(last=False)
+        _geometry_cache[key]=coordinates
+    return coordinates
+
+
+def dimensions(obj, axes):
+    depsgraph=bpy.context.evaluated_depsgraph_get()
+    key=_geometry_key(obj,depsgraph)
+    transform=axes.transposed() @ obj.matrix_world.to_3x3()
+    projection=tuple(v for row in transform for v in row)
+    if key in _dimension_cache and _dimension_cache[key][0]==projection:
+        _dimension_cache.move_to_end(key)
+        return _dimension_cache[key][1]
+    coordinates=_coordinates(obj,depsgraph,key)
+    matrix=np.asarray(transform,dtype=np.float32)
+    extents=[]
+    for row in matrix:
+        projected=np.einsum('ij,j->i',coordinates,row,optimize=False)
+        extents.append(float(projected.max())-float(projected.min()))
+    result=tuple(extents)
+    _dimension_cache[key]=(projection,result)
+    _dimension_cache.move_to_end(key)
+    while len(_dimension_cache)>_DIMENSION_CACHE_ENTRIES:_dimension_cache.popitem(last=False)
+    return result
 
 
 def scale_editable(obj):
@@ -196,12 +248,12 @@ def edit_component(context,obj,group,axis,value):
     context.view_layer.update()
     if group=='SCALE':
         if not scale_editable(obj):raise BetterItemError('Scale shows native values and is read-only in reference modes.')
-        return engine.edit_component(obj,group,axis,value)
+        return engine.edit_scale_component(obj,axis,value)
     before=values(context,obj,group)
     links=getattr(obj.better_item,engine.GROUP_LINK[group])
     desired=linked_values(before,axis,value,links,zero_angle_as_turn=group=='ROTATION')
     if not any(engine.different(a,b) for a,b in zip(before,desired)):return
     if group=='LOCATION':
-        return frames.apply_relative(context,obj,'POSITION',desired)
+        return frames.set_position(context,obj,desired)
     if group=='ROTATION':return set_rotation(context,obj,desired)
     return set_dimensions(context,obj,desired)

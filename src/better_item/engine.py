@@ -4,10 +4,7 @@ import bpy
 from mathutils import Vector
 from .math_core import BetterItemError,linked_values,different
 
-GROUP_ATTR={'LOCATION':'location','ROTATION':'rotation_euler','SCALE':'scale','DIMENSIONS':'dimensions'}
 GROUP_LINK={'LOCATION':'link_location','ROTATION':'link_rotation','SCALE':'link_scale','DIMENSIONS':'link_dimensions'}
-GROUP_LOCK={'LOCATION':'lock_location','ROTATION':'lock_rotation','SCALE':'lock_scale','DIMENSIONS':'lock_scale'}
-EULER_MODES={'XYZ','XZY','YXZ','YZX','ZXY','ZYX'}
 
 
 def editable(obj):
@@ -21,41 +18,28 @@ def _driver_guard(obj,paths):
         raise BetterItemError('Object "%s" has a driver on these fields. Edit or disable the driver.' % obj.name)
 
 
-def values(obj,group):
-    return tuple(getattr(obj,GROUP_ATTR[group]))
-
-
 def _matches(actual,expected):
     return all(math.isclose(a,b,rel_tol=3e-7,abs_tol=1e-8) for a,b in zip(actual,expected))
 
 
-def edit_component(obj,group,axis,value):
+def edit_scale_component(obj,axis,value):
     editable(obj)
-    if group=='ROTATION' and obj.rotation_mode not in EULER_MODES:
-        raise BetterItemError('Proportional rotation links require Euler mode.')
     bpy.context.view_layer.update()
-    before=values(obj,group)
-    if group=='DIMENSIONS' and (value<0 or (before[axis]==0 and value!=0)):
-        raise BetterItemError('A zero dimension cannot be enlarged by scaling. Edit the geometry first.')
-    links=getattr(obj.better_item,GROUP_LINK[group])
-    desired=linked_values(before,axis,value,links,zero_angle_as_turn=group=='ROTATION')
-    for i,locked in enumerate(getattr(obj,GROUP_LOCK[group])):
+    before=tuple(obj.scale)
+    desired=linked_values(before,axis,value,obj.better_item.link_scale)
+    for i,locked in enumerate(obj.lock_scale):
         if locked and different(before[i],desired[i]):
             raise BetterItemError('Axis %s is locked on "%s". The linked edit was cancelled.' % ('XYZ'[i],obj.name))
-    attribute=GROUP_ATTR[group]
-    _driver_guard(obj,{'scale'} if group=='DIMENSIONS' else {attribute})
-    restore_attribute='scale' if group=='DIMENSIONS' else attribute
-    previous=tuple(getattr(obj,restore_attribute))
+    _driver_guard(obj,{'scale'})
     try:
-        setattr(obj,attribute,desired)
+        obj.scale=desired
         bpy.context.view_layer.update()
-        if not _matches(values(obj,group),desired):
-            raise BetterItemError('Blender did not retain the requested value. Check drivers, constraints and geometry on "%s".' % obj.name)
+        if not _matches(obj.scale,desired):
+            raise BetterItemError('Blender did not retain the requested Scale. Check drivers and constraints on "%s".' % obj.name)
     except Exception as exc:
-        setattr(obj,restore_attribute,previous)
+        obj.scale=before
         bpy.context.view_layer.update()
-        if isinstance(exc,BetterItemError):
-            raise
+        if isinstance(exc,BetterItemError):raise
         raise BetterItemError(str(exc)) from exc
 
 

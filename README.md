@@ -2,9 +2,11 @@
 
 Installable extension ZIPs are in [`addons/`](addons). Source code is in [`src/`](src). Use the individual add-on ZIP with Blender's **Install from Disk**; the repository download is not an extension package.
 
-## Better Item 1.2.0
+## Better Item 1.2.1
 
-[Download Better Item 1.2.0 ZIP](https://github.com/Borbofruto/Blender-Plugins/raw/refs/heads/main/addons/better_item-1.2.0.zip) · [Manual](src/better_item/README.md) · [Source](src/better_item)
+Maintenance release: vectorized Dimensions with selective, bounded caches; bounded frame enums; removal of obsolete transform paths; manifest-only extension metadata. [Benchmark](tests/better_item/performance.md).
+
+[Download Better Item 1.2.1 ZIP](https://github.com/Borbofruto/Blender-Plugins/raw/refs/heads/main/addons/better_item-1.2.1.zip) · [Manual](src/better_item/README.md) · [Source](src/better_item)
 
 One compact, English **Transform** panel with live **Location, Rotation, Scale and Dimensions** fields. Drag or enter a value to edit immediately, with XYZ proportional links and native locks. No separate native/incremental transform panels and no Apply buttons for object transformations.
 

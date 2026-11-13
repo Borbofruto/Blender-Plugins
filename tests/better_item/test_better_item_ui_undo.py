@@ -78,23 +78,20 @@ addon.BETTERITEM_PT_transform.draw(SimpleNamespace(layout=Layout()),context)
 frames.BETTERITEM_PT_frames.draw(SimpleNamespace(layout=Layout()),context)
 assert 'orientation_frame' in calls and 'pivot_frame' in calls and 'position_x' in calls
 
-# No false claim of proportional Euler linkage for quaternion components.
+# The reference-space Euler view can edit a quaternion-backed object.
 cube.rotation_mode='QUATERNION'
-before=tuple(cube.rotation_quaternion)
-try:engine.edit_component(cube,'ROTATION',0,.2)
-except BetterItemError as exc:assert 'Euler' in str(exc)
-else:raise AssertionError('Quaternion component ratios are not Euler-angle ratios')
-assert tuple(cube.rotation_quaternion)==before
+cube.better_item.rotation_x=.2
+assert abs(cube.better_item.rotation_x-.2)<1e-5
 
 # Driven values are never silently replaced by panel edits.
 cube.rotation_mode='XYZ'
-curve=cube.driver_add('location',0)
+curve=cube.driver_add('scale',0)
 curve.driver.expression='2'
 bpy.context.view_layer.update()
-try:engine.edit_component(cube,'LOCATION',0,5)
+try:engine.edit_scale_component(cube,0,5)
 except BetterItemError as exc:assert 'driver' in str(exc)
 else:raise AssertionError('Must report a driven field')
-cube.driver_remove('location',0)
+cube.driver_remove('scale',0)
 assert not hasattr(bpy.types,'BETTERITEM_PT_native')
 assert not hasattr(bpy.types,'BETTERITEM_PT_incremental')
 print('UI/UNDO PASSED: native-owner proportional edits undo/redo; panel references/icons, Euler/quaternion/axis-angle layouts, driven fields protected.')

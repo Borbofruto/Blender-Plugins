@@ -1,16 +1,9 @@
 # SPDX-FileCopyrightText: 2026 Gabriel Webber do Nascimento
 # SPDX-License-Identifier: GPL-3.0-or-later
-bl_info={
-    'name':'Better Item','author':'Gabriel Webber do Nascimento','version':(1,2,0),
-    'blender':(5,0,0),'location':'View3D > Sidebar > Better Item',
-    'description':'Linked transforms and origin-based alignment and distribution',
-    'category':'Object',
-}
-
 import textwrap
 import bpy
 from bpy.app.handlers import persistent
-from . import engine, orientation, frames, transform_view
+from . import engine, frames, transform_view
 from .math_core import BetterItemError,align_positions,distribute_positions
 
 _field_errors={}
@@ -52,9 +45,6 @@ def _component(group,axis):
 def _orientation_changed(self,context):
     # Switching reference changes the view, never the object's transform.
     _field_errors.pop(self.id_data.as_pointer(),None)
-    if 'oriented_DIMENSIONS' in self:del self['oriented_DIMENSIONS']
-    for kind in ('POSITION','ROTATION'):
-        if 'relative_'+kind in self:del self['relative_'+kind]
     if 'view_rotation_hint' in self:del self['view_rotation_hint']
 
 
@@ -107,8 +97,7 @@ class BetterItemSceneSettings(bpy.types.PropertyGroup):
     reference:bpy.props.EnumProperty(name='Align To',items=_references,default='SELECTION',options=set())
     axes:bpy.props.BoolVectorProperty(name='Global Axes',size=3,default=(True,False,False),options=set())
     spacing:bpy.props.FloatProperty(name='Spacing',unit='LENGTH',default=.1,precision=5,
-        description='Positivo distribui no sentido positivo; negativo, no negativo. A chave fica parada. '
-                    'Objetos no lado contrario ao passo tem prioridade; cada grupo e ordenado por distancia a chave',options=set())
+        description='Signed spacing from the fixed key object; opposite-side objects first, ordered by distance',options=set())
 
 
 class BETTERITEM_OT_link_group(bpy.types.Operator):
@@ -314,19 +303,21 @@ def register():
             bpy.types.Object.better_item=bpy.props.PointerProperty(type=BetterItemObjectSettings)
         if not hasattr(bpy.types.Scene,'better_item'):
             bpy.types.Scene.better_item=bpy.props.PointerProperty(type=BetterItemSceneSettings)
-        if _clear_runtime not in bpy.app.handlers.load_post:bpy.app.handlers.load_post.append(_clear_runtime)
-        if transform_view.clear_cache not in bpy.app.handlers.depsgraph_update_post:
-            bpy.app.handlers.depsgraph_update_post.append(transform_view.clear_cache)
+        for handlers in (bpy.app.handlers.load_post,bpy.app.handlers.undo_post,bpy.app.handlers.redo_post):
+            if _clear_runtime not in handlers:handlers.append(_clear_runtime)
+        if transform_view.invalidate_geometry not in bpy.app.handlers.depsgraph_update_post:
+            bpy.app.handlers.depsgraph_update_post.append(transform_view.invalidate_geometry)
     except Exception:
         unregister()
         raise
 
 
 def unregister():
-    if _clear_runtime in bpy.app.handlers.load_post:bpy.app.handlers.load_post.remove(_clear_runtime)
+    for handlers in (bpy.app.handlers.load_post,bpy.app.handlers.undo_post,bpy.app.handlers.redo_post):
+        if _clear_runtime in handlers:handlers.remove(_clear_runtime)
     _field_errors.clear()
-    if transform_view.clear_cache in bpy.app.handlers.depsgraph_update_post:
-        bpy.app.handlers.depsgraph_update_post.remove(transform_view.clear_cache)
+    if transform_view.invalidate_geometry in bpy.app.handlers.depsgraph_update_post:
+        bpy.app.handlers.depsgraph_update_post.remove(transform_view.invalidate_geometry)
     transform_view.clear_cache()
     for owner in (bpy.types.Scene,bpy.types.Object):
         if hasattr(owner,'better_item'):del owner.better_item
