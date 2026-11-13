@@ -1,24 +1,18 @@
 # Blender Plugins
 
-**Instalar Better Item:** [baixe better_item-1.1.0.zip](https://github.com/Borbofruto/Blender-Plugins/raw/refs/heads/main/addons/better_item-1.1.0.zip) e escolha esse arquivo em **Preferences > Add-ons > Install from Disk**. Os ZIPs instaláveis estão em `addons/`; os fontes estão em `src/`. o ZIP do botão Code > Download ZIP contém o repositório inteiro e não é o pacote de instalação.
+Installable extension ZIPs are in [`addons/`](addons). Source code is in [`src/`](src). Use the individual add-on ZIP with Blender's **Install from Disk**; the repository download is not an extension package.
 
-## Better Item 1.1.0
+## Better Item 1.2.0
 
-Orientação de transformações: **Global**, **Local do objeto** ou **Local de outro objeto**, com conta-gotas. Movimento, rotação incremental, escala e dimensões na orientação escolhida. A posição da referência não define o pivô.
+[Download Better Item 1.2.0 ZIP](https://github.com/Borbofruto/Blender-Plugins/raw/refs/heads/main/addons/better_item-1.2.0.zip) · [Manual](src/better_item/README.md) · [Source](src/better_item)
 
-Correção: vínculos de rotação interpretam 0° como 360° no cálculo proporcional, permitindo chegar e sair de zero. O valor digitado é mantido no campo.
+One compact, English **Transform** panel with live **Location, Rotation, Scale and Dimensions** fields. Drag or enter a value to edit immediately, with XYZ proportional links and native locks. No separate native/incremental transform panels and no Apply buttons for object transformations.
 
-Transformações com vínculos proporcionais por eixo, alinhamento e distribuição por origens. Painel **N > Better Item**, no Modo Objeto.
+Switch axes and origin to inspect and edit the same fields in world, object, viewport or saved reference frames. Switching reference never moves the object. Dimensions measures actual evaluated vertex extrema along the chosen axes. Scale shows native values and becomes read-only in reference modes. Oblique mesh dimension edits use a non-destructive affine modifier when native Scale is insufficient.
 
-- Posição, rotação Euler, escala e dimensões com correntes independentes para XYZ e bloqueios nativos.
-- Alinhamento ao mínimo, centro e máximo das origens selecionadas ou à origem do objeto ativo.
-- Distribuição entre extremos ou com passo assinado a partir do objeto-chave, que permanece fixo.
-- Eixos globais independentes; prioridade ao lado contrário ao passo e ordenação pela distância à chave.
+Named reference frames can be static, manually edited, or independently linked to an object's Location and Orientation. **Apply Reference** stores the current values and ends those links. Multiple RGB frame indicators can be shown in the viewport. Frame links never create parenting or constraints on the target object.
 
-[Baixar ZIP 1.1.0](https://github.com/Borbofruto/Blender-Plugins/raw/refs/heads/main/addons/better_item-1.1.0.zip) · [Manual e limitações](src/better_item/README.md) · [Código](src/better_item)
-
-Instale pelo **Edit > Preferences > Add-ons > Install from Disk** e ative **Better Item**. Blender 5.0 ou superior; testado no Blender 5.2.3 LTS. Quaternion e eixo-ângulo possuem edição nativa, sem vínculos proporcionais.
-
+Includes origin-based alignment and signed distribution with a fixed key object. Tested in Blender 5.2.3 LTS; extension minimum Blender 5.0. Restart Blender after updating, then open **N > Better Item**.
 
 ## Export Paper Model - Medidas 1.5.1
 

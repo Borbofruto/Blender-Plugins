@@ -42,7 +42,7 @@ assert [even[n][0] for n in ('a','b','c','d')]==[-8,-3,2,7]
 near(align_positions(origins,(1,0,0),'SELECTION','MIN')['key'],(-800,0,0))
 near(align_positions(origins,(1,0,0),'SELECTION','CENTER')['key'],(-650,0,0))
 near(align_positions(origins,(1,0,0),'SELECTION','MAX')['key'],(-500,0,0))
-fails(lambda:distribute_positions(origins,(0,0,0),'KEY',30,'key'),'Marque')
+fails(lambda:distribute_positions(origins,(0,0,0),'KEY',30,'key'),'Select')
 
 bpy.ops.object.select_all(action='SELECT')
 bpy.ops.object.delete(use_global=False)
@@ -104,7 +104,7 @@ cube.lock_location[1]=True
 old=cube.location.copy()
 cube.better_item.location_x=6
 near(cube.location,old)
-assert 'bloqueado' in addon._field_errors[cube.as_pointer()]
+assert 'locked' in addon._field_errors[cube.as_pointer()]
 cube.lock_location[1]=False
 cube.location.x=0
 cube.better_item.location_x=1
@@ -173,6 +173,7 @@ child.lock_location[1]=False
 
 # Native dimension edits must keep mirror signs and reflect external changes.
 selected([cube],cube)
+cube.rotation_euler=(0,0,0)
 cube.scale=(-.1,.2,.6)
 bpy.context.view_layer.update()
 cube.better_item.link_dimensions=(True,True,True)
@@ -180,6 +181,7 @@ cube.better_item.dimensions_x=.3
 near(cube.dimensions,(.3,.6,1.8))
 assert cube.scale.x<0
 cube.location=(4,5,6)
+bpy.context.view_layer.update()
 near((cube.better_item.location_x,cube.better_item.location_y,cube.better_item.location_z),(4,5,6))
 
 # Registration is reversible and leaves no handlers/classes behind.
@@ -190,7 +192,7 @@ for i in range(2):
     assert addon._clear_runtime not in bpy.app.handlers.load_post
     addon.register()
     addon.register()
-    assert all(cls.is_registered for cls in addon.classes)
+    assert all(getattr(cls,'is_registered','bl_rna' in cls.__dict__) for cls in addon.classes)
     assert bpy.app.handlers.load_post.count(addon._clear_runtime)==1
 
 # Scene and per-object settings survive a .blend round-trip.
@@ -207,3 +209,4 @@ assert bpy.context.scene.better_item.reference=='KEY'
 assert abs(bpy.context.scene.better_item.spacing+.03)<1e-6
 assert tuple(bpy.context.scene.better_item.axes)==(True,False,True)
 print('BETTER ITEM PASSED: proportional transforms, partial links, zeros, locks, world alignment, signed key ordering, independent axes, parents, rollback, mirror scale, registration and persistence.')
+

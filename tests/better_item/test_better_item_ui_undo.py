@@ -38,6 +38,9 @@ class Layout:
     def box(self):return self
     def row(self,**kwargs):return self
     def column(self,**kwargs):return self
+    def template_list(self,listtype,listid,data,propname,active_data,active_propname,**kwargs):
+        assert propname in data.bl_rna.properties
+        assert active_propname in active_data.bl_rna.properties
     def prop(self,owner,name,**kwargs):
         assert name in owner.bl_rna.properties,(type(owner),name)
         if 'index' in kwargs:assert 0<=kwargs['index']<len(getattr(owner,name))
@@ -62,7 +65,18 @@ for mode in ('XYZ','ZYX','QUATERNION','AXIS_ANGLE'):
 for reference in ('SELECTION','KEY'):
     context.scene.better_item.reference=reference
     addon.BETTERITEM_PT_alignment.draw(SimpleNamespace(layout=Layout()),context)
-assert 'dimensions_x' in calls and 'rotation_mode' in calls and 'spacing' in calls
+assert 'dimensions_x' in calls and 'view_rotation_order' in calls and 'spacing' in calls
+
+from better_item import frames
+from mathutils import Matrix,Vector
+reference=frames.create(bpy.context,'UI frame',Vector((1,2,3)),Matrix.Identity(3))
+cube.better_item.orientation='SAVED'
+cube.better_item.orientation_frame=reference.uid
+cube.better_item.pivot_mode='FRAME'
+cube.better_item.pivot_frame=reference.uid
+addon.BETTERITEM_PT_transform.draw(SimpleNamespace(layout=Layout()),context)
+frames.BETTERITEM_PT_frames.draw(SimpleNamespace(layout=Layout()),context)
+assert 'orientation_frame' in calls and 'pivot_frame' in calls and 'position_x' in calls
 
 # No false claim of proportional Euler linkage for quaternion components.
 cube.rotation_mode='QUATERNION'
@@ -81,4 +95,18 @@ try:engine.edit_component(cube,'LOCATION',0,5)
 except BetterItemError as exc:assert 'driver' in str(exc)
 else:raise AssertionError('Must report a driven field')
 cube.driver_remove('location',0)
+assert not hasattr(bpy.types,'BETTERITEM_PT_native')
+assert not hasattr(bpy.types,'BETTERITEM_PT_incremental')
 print('UI/UNDO PASSED: native-owner proportional edits undo/redo; panel references/icons, Euler/quaternion/axis-angle layouts, driven fields protected.')
+# Reference creation and its enum identity participate in undo/redo.
+bpy.context.preferences.edit.use_global_undo=True
+count_before=len(bpy.context.scene.better_item.frames)
+bpy.ops.ed.undo_push(message='Before saved reference')
+undo_frame=frames.create(bpy.context,'Undo reference',Vector((4,5,6)),Matrix.Identity(3))
+undo_uid=undo_frame.uid
+bpy.ops.ed.undo_push(message='After saved reference')
+bpy.ops.ed.undo()
+assert len(bpy.context.scene.better_item.frames)==count_before
+bpy.ops.ed.redo()
+assert frames.find(bpy.context.scene,undo_uid).name=='Undo reference'
+print('REFERENCE UNDO/REDO PASSED')

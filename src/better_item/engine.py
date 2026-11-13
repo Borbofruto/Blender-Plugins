@@ -12,13 +12,13 @@ EULER_MODES={'XYZ','XZY','YXZ','YZX','ZXY','ZYX'}
 
 def editable(obj):
     if not obj.is_editable:
-        raise BetterItemError('O objeto "%s" nao permite edicao local.' % obj.name)
+        raise BetterItemError('Object "%s" is not locally editable.' % obj.name)
 
 
 def _driver_guard(obj,paths):
     animation=obj.animation_data
     if animation and any(not curve.mute and curve.data_path in paths for curve in animation.drivers):
-        raise BetterItemError('O objeto "%s" possui um driver nesses campos. Edite ou desative o driver.' % obj.name)
+        raise BetterItemError('Object "%s" has a driver on these fields. Edit or disable the driver.' % obj.name)
 
 
 def values(obj,group):
@@ -32,16 +32,16 @@ def _matches(actual,expected):
 def edit_component(obj,group,axis,value):
     editable(obj)
     if group=='ROTATION' and obj.rotation_mode not in EULER_MODES:
-        raise BetterItemError('O vinculo proporcional de rotacao exige um modo Euler.')
+        raise BetterItemError('Proportional rotation links require Euler mode.')
     bpy.context.view_layer.update()
     before=values(obj,group)
     if group=='DIMENSIONS' and (value<0 or (before[axis]==0 and value!=0)):
-        raise BetterItemError('Uma dimensao nula nao pode ser ampliada por escala. Edite a geometria primeiro.')
+        raise BetterItemError('A zero dimension cannot be enlarged by scaling. Edit the geometry first.')
     links=getattr(obj.better_item,GROUP_LINK[group])
     desired=linked_values(before,axis,value,links,zero_angle_as_turn=group=='ROTATION')
     for i,locked in enumerate(getattr(obj,GROUP_LOCK[group])):
         if locked and different(before[i],desired[i]):
-            raise BetterItemError('O eixo %s esta bloqueado em "%s". A alteracao vinculada foi cancelada.' % ('XYZ'[i],obj.name))
+            raise BetterItemError('Axis %s is locked on "%s". The linked edit was cancelled.' % ('XYZ'[i],obj.name))
     attribute=GROUP_ATTR[group]
     _driver_guard(obj,{'scale'} if group=='DIMENSIONS' else {attribute})
     restore_attribute='scale' if group=='DIMENSIONS' else attribute
@@ -50,7 +50,7 @@ def edit_component(obj,group,axis,value):
         setattr(obj,attribute,desired)
         bpy.context.view_layer.update()
         if not _matches(values(obj,group),desired):
-            raise BetterItemError('O Blender nao manteve o valor solicitado. Verifique drivers, restricoes e a geometria de "%s".' % obj.name)
+            raise BetterItemError('Blender did not retain the requested value. Check drivers, constraints and geometry on "%s".' % obj.name)
     except Exception as exc:
         setattr(obj,restore_attribute,previous)
         bpy.context.view_layer.update()
@@ -83,7 +83,7 @@ def _local_delta(obj,world_delta):
             parent=obj.matrix_world @ obj.matrix_basis.inverted()
         return parent.to_3x3().inverted() @ world_delta
     except ValueError as exc:
-        raise BetterItemError('O parentesco de "%s" possui uma transformacao singular; nao e possivel resolver a posicao.' % obj.name) from exc
+        raise BetterItemError('The parent transform of "%s" is singular; its position cannot be resolved.' % obj.name) from exc
 
 
 def apply_world_positions(objects,targets):
@@ -98,21 +98,21 @@ def apply_world_positions(objects,targets):
                 continue
             editable(obj)
             if any(not constraint.mute and constraint.influence!=0 for constraint in obj.constraints):
-                raise BetterItemError('O objeto "%s" tem constraints ativas. Desative-as antes de alinhar ou distribuir.' % obj.name)
+                raise BetterItemError('Object "%s" has active constraints. Disable them before aligning or distributing.' % obj.name)
             _driver_guard(obj,{'location','delta_location'})
             local_delta=_local_delta(obj,delta)
             for axis,locked in enumerate(obj.lock_location):
                 if locked and different(local_delta[axis],0):
-                    raise BetterItemError('O eixo local %s esta bloqueado em "%s". Nenhum objeto foi reposicionado.' % ('XYZ'[axis],obj.name))
+                    raise BetterItemError('Local axis %s is locked on "%s". No objects were repositioned.' % ('XYZ'[axis],obj.name))
             desired=obj.location+local_delta
             if not all(math.isfinite(component) for component in desired):
-                raise BetterItemError('A transformacao de "%s" excedeu o intervalo numerico.' % obj.name)
+                raise BetterItemError('The transform of "%s" exceeded the numeric range.' % obj.name)
             changed.append(obj)
             obj.location=desired
         bpy.context.view_layer.update()
         for obj in objects:
             if not _matches(obj.matrix_world.translation,targets[obj.name]):
-                raise BetterItemError('Nao foi possivel posicionar "%s" na coordenada planejada. Verifique parentesco e drivers.' % obj.name)
+                raise BetterItemError('Could not position "%s" at the planned coordinate. Check parenting and drivers.' % obj.name)
     except Exception as exc:
         for obj in changed:
             obj.location=previous[obj]

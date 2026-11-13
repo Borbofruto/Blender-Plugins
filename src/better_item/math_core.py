@@ -9,7 +9,7 @@ class BetterItemError(ValueError):
 def vector3(values):
     result=tuple(float(v) for v in values)
     if len(result)!=3 or not all(math.isfinite(v) for v in result):
-        raise BetterItemError('Informe tres valores finitos para X, Y e Z.')
+        raise BetterItemError('Enter three finite X, Y and Z values.')
     return result
 
 
@@ -21,14 +21,14 @@ def linked_values(before,axis,value,links,zero_angle_as_turn=False):
     before=vector3(before)
     value=float(value)
     if axis not in (0,1,2) or len(links)!=3 or not math.isfinite(value):
-        raise BetterItemError('Eixo ou valor de transformacao invalido.')
+        raise BetterItemError('Invalid transform axis or value.')
     result=list(before)
     result[axis]=value
     if not different(value,before[axis]):
         return tuple(result)
     if links[axis] and sum(bool(v) for v in links)>1:
         if before[axis]==0 and not zero_angle_as_turn:
-            raise BetterItemError('Nao existe proporcao a partir de %s = 0. Desvincule esse eixo antes de altera-lo.' % 'XYZ'[axis])
+            raise BetterItemError('Cannot define a ratio from %s = 0. Unlink that axis first.' % 'XYZ'[axis])
         # Only Euler linkage substitutes one turn for exact zero. Preserve
         # the edited native value and explicit multi-turn angles.
         def reference(angle):
@@ -42,20 +42,20 @@ def linked_values(before,axis,value,links,zero_angle_as_turn=False):
 
 def _inputs(origins,axes,reference,key):
     if len(axes)!=3 or not any(axes):
-        raise BetterItemError('Marque pelo menos um eixo: X, Y ou Z.')
+        raise BetterItemError('Select at least one axis: X, Y or Z.')
     if reference not in {'SELECTION','KEY'}:
-        raise BetterItemError('Referencia de alinhamento invalida.')
+        raise BetterItemError('Invalid alignment reference.')
     if reference=='KEY' and key not in origins:
-        raise BetterItemError('O objeto-chave deve ser o objeto ativo e estar selecionado.')
+        raise BetterItemError('The key object must be active and selected.')
     return {name:list(vector3(position)) for name,position in origins.items()}
 
 
 def align_positions(origins,axes,reference,mode='MIN',key=None):
     result=_inputs(origins,axes,reference,key)
     if len(result)<2:
-        raise BetterItemError('Selecione pelo menos dois objetos.')
+        raise BetterItemError('Select at least two objects.')
     if mode not in {'MIN','CENTER','MAX'}:
-        raise BetterItemError('Modo de alinhamento invalido.')
+        raise BetterItemError('Invalid alignment mode.')
     for axis,enabled in enumerate(axes):
         if not enabled:
             continue
@@ -70,9 +70,9 @@ def align_positions(origins,axes,reference,mode='MIN',key=None):
 def distribute_positions(origins,axes,reference,spacing=0,key=None):
     result=_inputs(origins,axes,reference,key)
     if len(result)<(3 if reference=='SELECTION' else 2):
-        raise BetterItemError('Selecione pelo menos %s objetos.' % (3 if reference=='SELECTION' else 2))
+        raise BetterItemError('Select at least %s objects.' % (3 if reference=='SELECTION' else 2))
     if not math.isfinite(spacing):
-        raise BetterItemError('Informe um espacamento finito.')
+        raise BetterItemError('Enter a finite spacing.')
     for axis,enabled in enumerate(axes):
         if not enabled:
             continue

@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2026 Gabriel Webber do Nascimento
 # SPDX-License-Identifier: GPL-3.0-or-later
 bl_info={
-    'name':'Better Item','author':'Gabriel Webber do Nascimento','version':(1,1,0),
+    'name':'Better Item','author':'Gabriel Webber do Nascimento','version':(1,2,0),
     'blender':(5,0,0),'location':'View3D > Sidebar > Better Item',
     'description':'Linked transforms and origin-based alignment and distribution',
     'category':'Object',
@@ -10,16 +10,16 @@ bl_info={
 import textwrap
 import bpy
 from bpy.app.handlers import persistent
-from . import engine, orientation
+from . import engine, orientation, frames, transform_view
 from .math_core import BetterItemError,align_positions,distribute_positions
 
 _field_errors={}
-_groups=[('LOCATION','Posicao','Posicao local do objeto'),
-         ('ROTATION','Rotacao','Angulos Euler do objeto'),
-         ('SCALE','Escala','Escala local do objeto'),
-         ('DIMENSIONS','Dimensoes','Dimensoes nativas do objeto')]
-_references=[('SELECTION','Limites da selecao (origens)','Minimos e maximos das origens selecionadas, em coordenadas globais'),
-             ('KEY','Objeto-chave (ativo)','Usar a origem do objeto ativo selecionado como referencia fixa')]
+_groups=[('LOCATION','Location','Object Location'),
+         ('ROTATION','Rotation','Object Euler angles'),
+         ('SCALE','Scale','Native object Scale'),
+         ('DIMENSIONS','Dimensions','Dimensions in the selected orientation')]
+_references=[('SELECTION','Selection Bounds (Origins)','Minimum and maximum selected object origins in world space'),
+             ('KEY','Key Object (Active)','Keep the selected active object fixed')]
 
 
 def _active(context):
@@ -28,17 +28,18 @@ def _active(context):
 
 def _component(group,axis):
     def read_value(self):
-        return engine.values(self.id_data,group)[axis]
+        try:return transform_view.values(bpy.context,self.id_data,group)[axis]
+        except BetterItemError:return 0.
     def write_value(self,value):
         obj=self.id_data
         try:
-            engine.edit_component(obj,group,axis,value)
+            transform_view.edit_component(bpy.context,obj,group,axis,value)
             _field_errors.pop(obj.as_pointer(),None)
-        except BetterItemError as exc:
+        except (BetterItemError,ValueError,RuntimeError) as exc:
             _field_errors[obj.as_pointer()]=str(exc)
         if bpy.context.area:
             bpy.context.area.tag_redraw()
-    args=dict(name='XYZ'[axis],get=read_value,set=write_value,precision=5,options=set())
+    args=dict(name='XYZ'[axis],get=read_value,set=write_value,precision=3,options=set())
     if group in {'LOCATION','DIMENSIONS'}:
         args['unit']='LENGTH'
     elif group=='ROTATION':
@@ -48,56 +49,42 @@ def _component(group,axis):
     return bpy.props.FloatProperty(**args)
 
 
-def _oriented_input(kind,axis):
-    default=(1.,1.,1.) if kind=='SCALE' else (0.,0.,0.)
-    group={'MOVE':'LOCATION','ROTATE':'ROTATION','SCALE':'SCALE','DIMENSIONS':'DIMENSIONS'}[kind]
-    key='oriented_'+kind
-    def read_value(self):
-        return self.get(key,default)[axis]
-    def write_value(self,value):
-        obj=self.id_data
-        try:
-            links=getattr(self,engine.GROUP_LINK[group])
-            self[key]=engine.linked_values(
-                self.get(key,default),axis,value,links,zero_angle_as_turn=kind=='ROTATE')
-            _field_errors.pop(obj.as_pointer(),None)
-        except BetterItemError as exc:
-            _field_errors[obj.as_pointer()]=str(exc)
-    args=dict(name='XYZ'[axis],get=read_value,set=write_value,options=set(),precision=5)
-    if kind in {'MOVE','DIMENSIONS'}:args['unit']='LENGTH'
-    if kind=='ROTATE':args.update(unit='ROTATION',subtype='ANGLE')
-    if kind=='DIMENSIONS':args['min']=0
-    return bpy.props.FloatProperty(**args)
-
-
 def _orientation_changed(self,context):
-    # A captured size belongs to one frame; never silently reuse it in another.
+    # Switching reference changes the view, never the object's transform.
+    _field_errors.pop(self.id_data.as_pointer(),None)
     if 'oriented_DIMENSIONS' in self:del self['oriented_DIMENSIONS']
+    for kind in ('POSITION','ROTATION'):
+        if 'relative_'+kind in self:del self['relative_'+kind]
+    if 'view_rotation_hint' in self:del self['view_rotation_hint']
+
+
+def _origin_changed(self,context):
+    _field_errors.pop(self.id_data.as_pointer(),None)
 
 
 class BetterItemObjectSettings(bpy.types.PropertyGroup):
-    orientation:bpy.props.EnumProperty(name='Orientacao dos eixos',items=[
-        ('GLOBAL','Global','Eixos do mundo'),
-        ('LOCAL','Local do objeto','Eixos locais do proprio objeto'),
-        ('REFERENCE','Local de outro objeto','Somente a orientacao do objeto escolhido; posicao e escala ignoradas')],
+    orientation:bpy.props.EnumProperty(name='Orientation',items=[
+        ('GLOBAL','Global','World axes'),
+        ('LOCAL','Local','Object local axes'),
+        ('REFERENCE','Object','Use another object orientation only; ignore its position and scale'),
+        ('VIEWPORT','Viewport','Current viewport transform orientation'),
+        ('SAVED','Saved Frame','Use a saved reference frame orientation')],
         default='GLOBAL',options=set(),update=_orientation_changed)
-    orientation_object:bpy.props.PointerProperty(name='Objeto dos eixos',type=bpy.types.Object,update=_orientation_changed)
-    move_x:_oriented_input('MOVE',0)
-    move_y:_oriented_input('MOVE',1)
-    move_z:_oriented_input('MOVE',2)
-    turn_x:_oriented_input('ROTATE',0)
-    turn_y:_oriented_input('ROTATE',1)
-    turn_z:_oriented_input('ROTATE',2)
-    factor_x:_oriented_input('SCALE',0)
-    factor_y:_oriented_input('SCALE',1)
-    factor_z:_oriented_input('SCALE',2)
-    size_x:_oriented_input('DIMENSIONS',0)
-    size_y:_oriented_input('DIMENSIONS',1)
-    size_z:_oriented_input('DIMENSIONS',2)
-    link_location:bpy.props.BoolVectorProperty(name='Vinculos da posicao',size=3,default=(False,False,False),options=set())
-    link_rotation:bpy.props.BoolVectorProperty(name='Vinculos da rotacao',size=3,default=(False,False,False),options=set())
-    link_scale:bpy.props.BoolVectorProperty(name='Vinculos da escala',size=3,default=(False,False,False),options=set())
-    link_dimensions:bpy.props.BoolVectorProperty(name='Vinculos das dimensoes',size=3,default=(False,False,False),options=set())
+    orientation_object:bpy.props.PointerProperty(name='Orientation Object',type=bpy.types.Object,update=_orientation_changed)
+    orientation_frame:bpy.props.EnumProperty(name='Orientation Frame',items=frames.frame_items,options=set(),update=_orientation_changed)
+    pivot_mode:bpy.props.EnumProperty(name='Origin',items=[
+        ('GLOBAL','Global','World origin'),('VIEWPORT','Viewport Pivot','Current viewport pivot'),
+        ('FRAME','Saved Frame','Saved reference frame origin'),('OBJECT','Object','Another object origin'),('CURSOR','3D Cursor','3D Cursor position')],default='GLOBAL',options=set(),update=_origin_changed)
+    pivot_frame:bpy.props.EnumProperty(name='Origin Frame',items=frames.frame_items,options=set(),update=_origin_changed)
+    use_reference_pivot:bpy.props.BoolProperty(name='Use Reference Pivot',
+        description='Rotate around the selected origin instead of the object origin',options=set())
+    origin_object:bpy.props.PointerProperty(name='Origin Object',type=bpy.types.Object,update=_origin_changed)
+    view_rotation_order:bpy.props.EnumProperty(name='Rotation Mode',items=[
+        (order,order+' Euler','Euler order for reference-space Rotation') for order in ('XYZ','XZY','YXZ','YZX','ZXY','ZYX')],default='XYZ',options=set())
+    link_location:bpy.props.BoolVectorProperty(name='Link Location',size=3,default=(False,False,False),options=set())
+    link_rotation:bpy.props.BoolVectorProperty(name='Link Rotation',size=3,default=(False,False,False),options=set())
+    link_scale:bpy.props.BoolVectorProperty(name='Link Scale',size=3,default=(False,False,False),options=set())
+    link_dimensions:bpy.props.BoolVectorProperty(name='Link Dimensions',size=3,default=(False,False,False),options=set())
     location_x:_component('LOCATION',0)
     location_y:_component('LOCATION',1)
     location_z:_component('LOCATION',2)
@@ -113,17 +100,21 @@ class BetterItemObjectSettings(bpy.types.PropertyGroup):
 
 
 class BetterItemSceneSettings(bpy.types.PropertyGroup):
-    reference:bpy.props.EnumProperty(name='Referencia',items=_references,default='SELECTION',options=set())
-    axes:bpy.props.BoolVectorProperty(name='Eixos globais',size=3,default=(True,False,False),options=set())
-    spacing:bpy.props.FloatProperty(name='Passo entre origens',unit='LENGTH',default=.1,precision=5,
+    frames:bpy.props.CollectionProperty(type=frames.BetterItemFrame)
+    frame_serial:bpy.props.IntProperty(default=0)
+    active_frame:bpy.props.IntProperty(default=-1,min=-1)
+    show_frames:bpy.props.BoolProperty(name='Show Reference Frames',default=True,options=set())
+    reference:bpy.props.EnumProperty(name='Align To',items=_references,default='SELECTION',options=set())
+    axes:bpy.props.BoolVectorProperty(name='Global Axes',size=3,default=(True,False,False),options=set())
+    spacing:bpy.props.FloatProperty(name='Spacing',unit='LENGTH',default=.1,precision=5,
         description='Positivo distribui no sentido positivo; negativo, no negativo. A chave fica parada. '
                     'Objetos no lado contrario ao passo tem prioridade; cada grupo e ordenado por distancia a chave',options=set())
 
 
 class BETTERITEM_OT_link_group(bpy.types.Operator):
     bl_idname='better_item.link_group'
-    bl_label='Vincular ou desvincular XYZ'
-    bl_description='Vincular os tres eixos deste grupo ou desfazer seus vinculos'
+    bl_label='Link XYZ'
+    bl_description='Link all XYZ components or unlink them'
     bl_options={'REGISTER','UNDO'}
     group:bpy.props.EnumProperty(items=_groups)
     @classmethod
@@ -138,55 +129,22 @@ class BETTERITEM_OT_link_group(bpy.types.Operator):
 
 class BETTERITEM_OT_clear_error(bpy.types.Operator):
     bl_idname='better_item.clear_error'
-    bl_label='Fechar mensagem'
+    bl_label='Dismiss Message'
     def execute(self,context):
         if context.active_object:
             _field_errors.pop(context.active_object.as_pointer(),None)
         return {'FINISHED'}
 
 
-class BETTERITEM_OT_oriented(bpy.types.Operator):
-    bl_idname='better_item.oriented'
-    bl_label='Aplicar nos eixos escolhidos'
-    bl_description='Transformar somente o objeto ativo nos eixos escolhidos; rotacao e escala respeitam o pivo do viewport'
-    bl_options={'REGISTER','UNDO'}
-    kind:bpy.props.EnumProperty(items=[('MOVE','Deslocar',''),('ROTATE','Rotacionar',''),
-        ('SCALE','Escalar',''),('DIMENSIONS','Definir dimensoes',''),('MEASURE','Ler dimensoes','')])
-    @classmethod
-    def poll(cls,context):return _active(context) is not None and context.active_object.is_editable
-    def execute(self,context):
-        obj=context.active_object
-        settings=obj.better_item
-        try:
-            if self.kind=='MEASURE':
-                context.view_layer.update()
-                settings['oriented_DIMENSIONS']=orientation.dimensions(obj,
-                    orientation.basis(obj,settings.orientation,settings.orientation_object))
-            else:
-                default=(1.,1.,1.) if self.kind=='SCALE' else (0.,0.,0.)
-                values=tuple(settings.get('oriented_'+self.kind,default))
-                if self.kind=='DIMENSIONS' and 'oriented_DIMENSIONS' not in settings:
-                    raise BetterItemError('Clique em Ler dimensoes antes de definir o tamanho desejado.')
-                orientation.apply(context,obj,self.kind,values,settings.orientation,settings.orientation_object)
-                # Delta inputs return to neutral after a successful operation.
-                if self.kind!='DIMENSIONS':settings['oriented_'+self.kind]=default
-            _field_errors.pop(obj.as_pointer(),None)
-        except BetterItemError as exc:
-            _field_errors[obj.as_pointer()]=str(exc)
-            self.report({'ERROR'},str(exc))
-            return {'CANCELLED'}
-        return {'FINISHED'}
-
-
 class BETTERITEM_OT_align(bpy.types.Operator):
     bl_idname='better_item.align'
-    bl_label='Alinhar origens'
-    bl_description='Alinhar as origens dos objetos nos eixos globais escolhidos'
+    bl_label='Align Origins'
+    bl_description='Align object origins along selected global axes'
     bl_options={'REGISTER','UNDO'}
-    axes:bpy.props.BoolVectorProperty(name='Eixos globais',size=3,default=(True,False,False))
-    reference:bpy.props.EnumProperty(name='Referencia',items=_references,default='SELECTION')
-    mode:bpy.props.EnumProperty(name='Alinhamento',items=[('MIN','Minimo','Menor coordenada'),
-        ('CENTER','Centro','Centro entre as coordenadas extremas'),('MAX','Maximo','Maior coordenada')])
+    axes:bpy.props.BoolVectorProperty(name='Global Axes',size=3,default=(True,False,False))
+    reference:bpy.props.EnumProperty(name='Align To',items=_references,default='SELECTION')
+    mode:bpy.props.EnumProperty(name='Alignment',items=[('MIN','Min','Lowest coordinate'),
+        ('CENTER','Center','Center between extreme coordinates'),('MAX','Max','Highest coordinate')])
     @classmethod
     def poll(cls,context):return context.mode=='OBJECT' and len(context.selected_objects)>=2
     def invoke(self,context,event):
@@ -202,18 +160,18 @@ class BETTERITEM_OT_align(bpy.types.Operator):
         except BetterItemError as exc:
             self.report({'ERROR'},str(exc))
             return {'CANCELLED'}
-        self.report({'INFO'},'%s objeto(s) alinhado(s).' % count)
+        self.report({'INFO'},'%s object(s) aligned.' % count)
         return {'FINISHED'}
 
 
 class BETTERITEM_OT_distribute(bpy.types.Operator):
     bl_idname='better_item.distribute'
-    bl_label='Distribuir origens'
-    bl_description='Distribuir pelas origens, por limites da selecao ou por passo assinado a partir da chave'
+    bl_label='Distribute Origins'
+    bl_description='Distribute origins between bounds or at signed intervals from the key object'
     bl_options={'REGISTER','UNDO'}
-    axes:bpy.props.BoolVectorProperty(name='Eixos globais',size=3,default=(True,False,False))
-    reference:bpy.props.EnumProperty(name='Referencia',items=_references,default='SELECTION')
-    spacing:bpy.props.FloatProperty(name='Passo entre origens',unit='LENGTH',default=.1)
+    axes:bpy.props.BoolVectorProperty(name='Global Axes',size=3,default=(True,False,False))
+    reference:bpy.props.EnumProperty(name='Align To',items=_references,default='SELECTION')
+    spacing:bpy.props.FloatProperty(name='Spacing',unit='LENGTH',default=.1)
     @classmethod
     def poll(cls,context):return context.mode=='OBJECT' and len(context.selected_objects)>=2
     def invoke(self,context,event):
@@ -231,152 +189,134 @@ class BETTERITEM_OT_distribute(bpy.types.Operator):
         except BetterItemError as exc:
             self.report({'ERROR'},str(exc))
             return {'CANCELLED'}
-        self.report({'INFO'},'%s objeto(s) distribuido(s).' % count)
+        self.report({'INFO'},'%s object(s) distributed.' % count)
         return {'FINISHED'}
 
 
 def _linked_rows(layout,obj,group,label,prefix,lock_name=None):
-    box=layout.box()
     settings=obj.better_item
-    link_name=engine.GROUP_LINK[group]
-    links=getattr(settings,link_name)
-    row=box.row(align=True)
-    row.label(text=label)
-    row.operator('better_item.link_group',text='',icon='LINKED' if all(links) else 'UNLINKED').group=group
-    column=box.column(align=True)
-    column.use_property_decorate=False
+    links=getattr(settings,engine.GROUP_LINK[group])
+    row=layout.row(align=True)
+    row.label(text=label+':')
+    readonly=group=='SCALE' and not transform_view.scale_editable(obj)
+    if not readonly:
+        row.operator('better_item.link_group',text='',icon='LINKED' if all(links) else 'UNLINKED').group=group
+    column=layout.column(align=True)
+    if readonly:
+        row=column.row(align=True)
+        values=row.column(align=True)
+        values.enabled=False
+        values.prop(obj,'scale',text='')
+        locks=row.column(align=True)
+        for i in range(3):
+            locks.prop(obj,'lock_scale',index=i,text='',emboss=False,icon='LOCKED' if obj.lock_scale[i] else 'UNLOCKED')
+        return
     for i,axis in enumerate('xyz'):
         row=column.row(align=True)
-        field=row.row(align=True)
-        native_locks=getattr(obj,lock_name) if lock_name else obj.lock_scale
-        field.enabled=not native_locks[i] and obj.is_editable
-        field.prop(settings,prefix+'_'+axis,text=axis.upper())
-        row.prop(settings,link_name,index=i,text='',toggle=True,icon='LINKED' if links[i] else 'UNLINKED')
+        row.enabled=obj.is_editable
+        row.prop(settings,prefix+'_'+axis,text=axis.upper())
+        row.prop(settings,engine.GROUP_LINK[group],index=i,text='',toggle=True,icon='LINKED' if links[i] else 'UNLINKED')
         if lock_name:
-            row.prop(obj,lock_name,index=i,text='',emboss=False,icon='LOCKED' if native_locks[i] else 'UNLOCKED')
-        if group!='DIMENSIONS':
-            row.prop_decorator(obj,engine.GROUP_ATTR[group],index=i)
-    return box
+            locked=getattr(obj,lock_name)[i]
+            row.prop(obj,lock_name,index=i,text='',emboss=False,icon='LOCKED' if locked else 'UNLOCKED')
 
 
 class BETTERITEM_PT_transform(bpy.types.Panel):
     bl_space_type='VIEW_3D'
     bl_region_type='UI'
     bl_category='Better Item'
-    bl_label='Transformacoes'
+    bl_label='Transform'
     def draw(self,context):
         layout=self.layout
+        layout.use_property_decorate=False
         obj=_active(context)
         if obj is None:
-            layout.label(text='Selecione um objeto no Modo Objeto.')
+            layout.label(text='Select an object in Object Mode.')
             return
-        layout.label(text=obj.name,icon='OBJECT_DATA')
-        error=_field_errors.get(obj.as_pointer())
-        if error:
-            box=layout.box()
-            box.alert=True
-            row=box.row()
-            row.label(text='Alteracao cancelada',icon='ERROR')
-            row.operator('better_item.clear_error',text='',icon='X')
-            width=max(24,int((context.region.width-50)/7))
-            for line in textwrap.wrap(error,width):box.label(text=line)
-        box=layout.box()
         settings=obj.better_item
-        box.label(text='Transformar por orientacao')
-        box.prop(settings,'orientation')
-        if settings.orientation=='REFERENCE':box.prop(settings,'orientation_object')
-        box.label(text='Orientacao independente do pivo.')
-        for kind,prefix,label,group in (('MOVE','move','Deslocamento','LOCATION'),
-                ('ROTATE','turn','Rotacao incremental','ROTATION'),
-                ('SCALE','factor','Fatores de escala','SCALE'),
-                ('DIMENSIONS','size','Dimensoes nos eixos','DIMENSIONS')):
-            section=box.box()
-            section.label(text=label)
-            if kind=='DIMENSIONS':
-                section.operator('better_item.oriented',text='Ler dimensoes atuais').kind='MEASURE'
-            links=getattr(settings,engine.GROUP_LINK[group])
-            for i,axis in enumerate('xyz'):
-                row=section.row(align=True)
-                row.prop(settings,prefix+'_'+axis,text=axis.upper())
-                row.prop(settings,engine.GROUP_LINK[group],index=i,text='',toggle=True,
-                    icon='LINKED' if links[i] else 'UNLINKED')
-            section.operator('better_item.oriented',text='Aplicar '+label.lower()).kind=kind
-        layout.label(text='Valores nativos do objeto')
-        _linked_rows(layout,obj,'LOCATION','Posicao (local)','location','lock_location')
-        layout.prop(obj,'rotation_mode',text='Modo de rotacao')
-        if obj.rotation_mode in engine.EULER_MODES:
-            _linked_rows(layout,obj,'ROTATION','Rotacao','rotation','lock_rotation')
-        else:
-            box=layout.box()
-            box.label(text='Rotacao')
-            box.prop(obj,'lock_rotations_4d',text='Cadeados 4D')
-            attribute='rotation_quaternion' if obj.rotation_mode=='QUATERNION' else 'rotation_axis_angle'
-            for i,axis in enumerate(('W','X','Y','Z') if attribute=='rotation_quaternion' else ('Angulo','X','Y','Z')):
-                row=box.row(align=True)
-                locked=obj.lock_rotation_w if i==0 else obj.lock_rotation[i-1]
-                field=row.row(align=True)
-                field.enabled=not locked
-                field.prop(obj,attribute,index=i,text=axis)
-                row.prop(obj,'lock_rotation_w' if i==0 else 'lock_rotation',
-                         **({} if i==0 else {'index':i-1}),text='',icon='LOCKED' if locked else 'UNLOCKED',emboss=False)
-            box.label(text='Vinculo proporcional: use Euler.',icon='INFO')
-        _linked_rows(layout,obj,'SCALE','Escala','scale','lock_scale')
-        _linked_rows(layout,obj,'DIMENSIONS','Dimensoes','dimensions')
+        layout.prop(settings,'orientation',text='Axes')
+        if settings.orientation=='REFERENCE':layout.prop(settings,'orientation_object',text='Object')
+        if settings.orientation=='SAVED':layout.prop(settings,'orientation_frame',text='Frame')
+        layout.prop(settings,'pivot_mode')
+        if settings.pivot_mode=='FRAME':layout.prop(settings,'pivot_frame',text='Frame')
+        if settings.pivot_mode=='OBJECT':layout.prop(settings,'origin_object',text='Object')
+        layout.prop(settings,'use_reference_pivot')
+        error=_field_errors.get(obj.as_pointer())
+        try:
+            frames.object_axes(context,obj)
+            frames.object_origin(context,obj)
+        except BetterItemError as exc:error=str(exc)
+        if error:
+            row=layout.row(align=True)
+            row.alert=True
+            row.label(text='Transform unavailable',icon='ERROR')
+            row.operator('better_item.clear_error',text='',icon='X')
+            width=max(22,int((context.region.width-40)/7))
+            for line in textwrap.wrap(error,width):layout.label(text=line)
+        _linked_rows(layout,obj,'LOCATION','Location','location','lock_location')
+        _linked_rows(layout,obj,'ROTATION','Rotation','rotation','lock_rotation')
+        layout.prop(settings,'view_rotation_order',text='')
+        _linked_rows(layout,obj,'SCALE','Scale','scale','lock_scale')
+        _linked_rows(layout,obj,'DIMENSIONS','Dimensions','dimensions')
 
 
 class BETTERITEM_PT_alignment(bpy.types.Panel):
     bl_space_type='VIEW_3D'
     bl_region_type='UI'
     bl_category='Better Item'
-    bl_label='Alinhar e distribuir'
+    bl_label='Align and Distribute'
+    bl_order=4
     def draw(self,context):
         layout=self.layout
         settings=context.scene.better_item
-        layout.label(text='Referencia pelas origens dos objetos.')
+        layout.label(text='Use object origins.')
         layout.prop(settings,'reference')
         if settings.reference=='KEY':
             key=context.active_object
-            layout.label(text='Chave: '+(key.name if key and key.select_get() else 'selecione o objeto ativo'),icon='OBJECT_DATA')
+            layout.label(text='Key: '+(key.name if key and key.select_get() else 'Select an active object'),icon='OBJECT_DATA')
         row=layout.row(align=True)
-        row.label(text='Eixos globais')
+        row.label(text='Global Axes')
         for i,axis in enumerate('XYZ'):row.prop(settings,'axes',index=i,text=axis,toggle=True)
         box=layout.box()
-        box.label(text='Alinhamento')
+        box.label(text='Alignment')
         row=box.row(align=True)
         if settings.reference=='KEY':
-            row.operator('better_item.align',text='Alinhar a origem da chave').mode='CENTER'
+            row.operator('better_item.align',text='Align to Key').mode='CENTER'
         else:
-            for mode,label in (('MIN','Minimo'),('CENTER','Centro'),('MAX','Maximo')):
+            for mode,label in (('MIN','Min'),('CENTER','Center'),('MAX','Max')):
                 row.operator('better_item.align',text=label).mode=mode
         box=layout.box()
-        box.label(text='Distribuicao')
+        box.label(text='Distribution')
         if settings.reference=='KEY':
             box.prop(settings,'spacing')
-            box.label(text='Sinal do passo define o sentido.')
+            box.label(text='Spacing sign sets the direction.')
         else:
-            box.label(text='Extremos fixos; passos iguais.')
-        box.operator('better_item.distribute',text='Distribuir')
+            box.label(text='Fixed extremes; equal intervals.')
+        box.operator('better_item.distribute',text='Distribute')
 
 
 @persistent
 def _clear_runtime(_unused):
     _field_errors.clear()
+    transform_view.clear_cache()
 
 
-classes=(BetterItemObjectSettings,BetterItemSceneSettings,BETTERITEM_OT_link_group,
-         BETTERITEM_OT_clear_error,BETTERITEM_OT_oriented,BETTERITEM_OT_align,BETTERITEM_OT_distribute,
-         BETTERITEM_PT_transform,BETTERITEM_PT_alignment)
+classes=(frames.BetterItemFrame,BetterItemObjectSettings,BetterItemSceneSettings,BETTERITEM_OT_link_group,
+         BETTERITEM_OT_clear_error,BETTERITEM_OT_align,BETTERITEM_OT_distribute,
+         BETTERITEM_PT_transform,BETTERITEM_PT_alignment)+frames.classes
 
 
 def register():
     try:
         for cls in classes:
-            if not cls.is_registered:bpy.utils.register_class(cls)
+            if not getattr(cls,'is_registered','bl_rna' in cls.__dict__):bpy.utils.register_class(cls)
         if not hasattr(bpy.types.Object,'better_item'):
             bpy.types.Object.better_item=bpy.props.PointerProperty(type=BetterItemObjectSettings)
         if not hasattr(bpy.types.Scene,'better_item'):
             bpy.types.Scene.better_item=bpy.props.PointerProperty(type=BetterItemSceneSettings)
         if _clear_runtime not in bpy.app.handlers.load_post:bpy.app.handlers.load_post.append(_clear_runtime)
+        if transform_view.clear_cache not in bpy.app.handlers.depsgraph_update_post:
+            bpy.app.handlers.depsgraph_update_post.append(transform_view.clear_cache)
     except Exception:
         unregister()
         raise
@@ -385,7 +325,11 @@ def register():
 def unregister():
     if _clear_runtime in bpy.app.handlers.load_post:bpy.app.handlers.load_post.remove(_clear_runtime)
     _field_errors.clear()
+    if transform_view.clear_cache in bpy.app.handlers.depsgraph_update_post:
+        bpy.app.handlers.depsgraph_update_post.remove(transform_view.clear_cache)
+    transform_view.clear_cache()
     for owner in (bpy.types.Scene,bpy.types.Object):
         if hasattr(owner,'better_item'):del owner.better_item
     for cls in reversed(classes):
-        if cls.is_registered:bpy.utils.unregister_class(cls)
+        if getattr(cls,'is_registered','bl_rna' in cls.__dict__):bpy.utils.unregister_class(cls)
+    frames._enum_cache.clear()

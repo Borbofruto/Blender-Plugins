@@ -1,66 +1,74 @@
-# Better Item 1.1.0
+# Better Item 1.2.0
 
-Painel de transformações proporcionais, alinhamento e distribuição por origens para Blender. Autor: Gabriel Webber do Nascimento. Licença GPL-3.0-or-later.
+A live Transform panel for Blender 5.0+, tested in Blender 5.2.3 LTS. GPL-3.0-or-later. Author: Gabriel Webber do Nascimento.
 
-## Instalação
+## Installation
 
-Em Edit > Preferences > Add-ons > Install from Disk, escolha `better_item-1.1.0.zip` e ative Better Item. No viewport, pressione N e abra a aba Better Item. Funciona no Modo Objeto. Compatibilidade declarada: Blender 5.0 ou superior; testes executados no Blender 5.2.3 LTS.
+Download `addons/better_item-1.2.0.zip` from the repository. In Blender use **Edit > Preferences > Add-ons > Install from Disk**, choose that ZIP, enable Better Item, and restart Blender after an update. Open **N > Better Item** in Object Mode. The repository ZIP is not the extension package.
 
-## Transformações
+## One live Transform panel
 
-O painel acompanha os valores nativos do objeto ativo: posição local, rotação com seletor de modo, escala e dimensões. Os cadeados são os bloqueios nativos do Blender; as correntes definem quais componentes participam de uma alteração proporcional. O botão no título vincula ou desvincula XYZ; as correntes de cada linha permitem vincular apenas dois eixos.
+The panel keeps Blender's familiar **Location**, **Rotation**, **Scale** and **Dimensions** names and compact stacked XYZ fields. There are no separate native/incremental panels and no Apply buttons for object transformations. Drag a number or enter a value: the active object updates immediately.
 
-Com XYZ vinculados, dimensões de (100, 200, 600) mm passam para (300, 600, 1800) mm quando X muda para 300 mm. A mesma regra de multiplicação vale para posição, escala e ângulos Euler. Um eixo desvinculado muda sozinho. Alterar dimensões altera a escala nativa; são duas representações da mesma transformação.
+- **Axes** chooses Global, Local, another Object, the current Viewport orientation, or a Saved Frame.
+- **Origin** chooses the world origin, the Viewport Pivot, a Saved Frame origin, another Object origin, or the 3D Cursor.
+- **Location** is the object's world origin expressed in the chosen axes, relative to the chosen origin.
+- **Rotation** is the object's orientation relative to the chosen axes. The display supports the six Euler orders, independently of the object's underlying rotation storage mode.
+- **Dimensions** is the distance between extreme evaluated vertices along each chosen axis. It is not the projection of the object's local bounding box. Modifiers are included in the measurement.
+- **Scale** always shows the object's native Scale. It is read-only when external/reference axes or a non-global origin are selected. In Global/Local axes with Global origin, it remains editable.
 
-Para posição, escala e dimensões, um valor de origem zero não define uma proporção para um novo valor diferente de zero: desvincule o eixo para alterá-lo independentemente. Uma dimensão geometricamente nula exige editar a geometria. Se um eixo vinculado estiver bloqueado, a alteração inteira é cancelada e uma mensagem aparece no painel. Campos controlados por drivers precisam ser liberados antes da edição.
+Changing axes or origin only changes the readings. It never moves, rotates or resizes the object. Changing only the origin changes Location, without changing Rotation or Dimensions.
 
-Na proporção de rotação, 0° é interpretado como 360°, tanto no valor anterior quanto no novo valor e nos demais eixos vinculados. O campo editado mantém o valor digitado. Por exemplo, (0°, 0°, 0°) com XYZ vinculados passa a (90°, 90°, 90°) ao editar X para 90°. Voltas explícitas, como 720°, e ângulos negativos são preservados. Essa convenção remove a divisão por zero; não torna a razão contínua perto de 0°, portanto valores próximos de zero ainda podem produzir fatores grandes.
+Rotation edits preserve the object origin by default. Enable **Use Reference Pivot** to rotate around the selected reference origin instead. A reference that follows the object or selection is intentionally live: its readings may stay at zero while the object moves. No reference is silently frozen.
 
-Vínculos de rotação funcionam nos seis modos Euler, multiplicando os ângulos armazenados. Quaternion e eixo-ângulo continuam disponíveis como campos nativos, sem vínculo proporcional. Multiplicar ângulos Euler não representa uma interpolação da orientação espacial.
+### Linked components and locks
 
-Os vínculos pertencem a cada objeto e ficam salvos no arquivo .blend. As unidades seguem a cena; entradas como `300 mm` também são aceitas. Edições no painel nativo aparecem no Better Item, mas somente edições feitas no Better Item aplicam suas correntes.
+Each group has independent XYZ chain toggles and a group toggle. Linked edits multiply participating components by the same ratio: (100, 200, 600) becomes (300, 600, 1800) when X is changed to 300. An unlinked axis changes alone. Native locks and drivers are checked; a rejected edit leaves the object unchanged and reports the reason in the panel.
 
-## Transformar por orientação
+For proportional Rotation, exact 0 degrees is treated as 360 degrees. The edited angle is retained, including explicit turns. Near-zero angles may still produce large ratios. A zero Location, Scale or Dimension does not define a proportional ratio: unlink that axis first. A geometrically zero dimension cannot be enlarged by scaling.
 
-Escolha **Global**, **Local do objeto** ou **Local de outro objeto**. Nesta última opção, escolha a referência pelo campo com conta-gotas. Somente sua orientação global fornece XYZ; sua posição, escala e parentesco não são copiados. O referencial é capturado no começo de cada aplicação.
+### Non-destructive Dimensions
 
-As operações nesta seção afetam somente o objeto ativo, mesmo se houver outros selecionados. O pivô de rotação e escala continua sendo o pivô do viewport, incluindo o cursor 3D. Escolher outro objeto para os eixos não muda esse pivô. As opções especiais de transformar somente origens/posições são suspensas durante a aplicação e restauradas depois.
+When a requested dimension change is representable by native local Scale, Better Item uses it, and the Scale readout updates accordingly. An oblique, nonuniform dimension edit may require a shear that native Scale cannot represent. For Mesh objects the add-on then creates or updates a **Better Item Dimensions** Geometry Nodes modifier containing a constant affine transform.
 
-- **Deslocamento:** informe quanto mover em cada eixo escolhido e clique em Aplicar. Por exemplo, X=30 mm segue o X local da referência mesmo que ela esteja em outro lugar.
-- **Rotação incremental:** informe os ângulos e clique em Aplicar. São rotações sucessivas X, Y e Z em torno dos eixos capturados antes da operação, inclusive quando o objeto usa quaternion ou eixo-ângulo.
-- **Fatores de escala:** 1 mantém o tamanho; 2 duplica; 0,5 reduz pela metade. Usa a transformação nativa de escala do Blender na orientação escolhida.
-- **Dimensões nos eixos:** clique em **Ler dimensões atuais**, edite as medidas e aplique. São extensões da caixa delimitadora avaliada projetada na orientação escolhida. Trocar orientação ou referência invalida a captura anterior.
+The modifier preserves the base mesh, shared mesh users and shape keys. It does not read the source object or frame, so moving the reference later does not modify the already-edited geometry. Repeated edits update the same final modifier. A copied modifier group is made single-user before editing. In this case native Scale can remain unchanged, which is what the Scale readout correctly shows.
 
-As correntes usam os mesmos vínculos XYZ dos campos nativos. Deslocamento e rotação incremental voltam a zero após aplicar; fatores voltam a 1. A equivalência 0°=360° continua valendo nas proporções de rotação. Para um deslocamento vinculado a partir de zero, desvincule os eixos e defina primeiro valores não nulos, pois uma razão de comprimentos a partir de zero não existe.
+Oblique dimension editing currently requires a Mesh object. A disabled Better Item Dimensions modifier must be enabled before further edits. Parent transforms that cannot represent a requested Rotation are rejected and rolled back. Dimensions are scaled about the object's origin.
 
-Os campos da seção **Valores nativos do objeto** continuam mostrando os valores nativos; a orientação escolhida atua nas operações da seção acima. Alinhamento e distribuição continuam nos eixos globais.
+## Reference Frames
 
-Escala não uniforme em eixos externos tem o comportamento da operação nativa do Blender, que não representa todo cisalhamento em campos de escala. Se não for possível atingir as dimensões pedidas por essa operação, o add-on cancela e restaura a transformação, sem alterar a malha. Use os eixos da peça ou escala uniforme nesses casos. Operações de rotação/escala exigem liberar os respectivos cadeados e desativar Auto Key e drivers/constraints que interferem.
+Each scene stores named frames with independent world Location and Orientation. Frame identity survives renaming, saving and undo/redo.
 
-## Alinhamento
+- **Create from Viewport** captures the current transform orientation and pivot. Median and bounds pivots use the full selection; Individual Origins captures the active object's origin.
+- **Create from Object (Applied)** copies the active object's world position and orientation without a persistent link.
+- **Create Linked to Object** uses its transform as a live source. Location and Orientation links are independent.
+- **Create Manual** starts a frame at the world origin with zero rotation.
 
-Escolha X, Y e/ou Z globais. Todas as referências são as **origens**, sem usar as bordas das malhas.
+Edit **Source Object** to select a source. Selecting a source without enabling links does not copy it. **Apply Location**, **Apply Orientation**, or **Apply Reference** stores the current component values and ends the respective links. Unlinking also preserves the current values. Applied components can be edited manually. After both components are applied, the source pointer is released and the original object can be deleted safely.
 
-- Limites da seleção: alinhar à menor coordenada, ao centro entre os extremos ou à maior coordenada das origens selecionadas.
-- Objeto-chave: o objeto ativo selecionado é a chave; sua origem permanece fixa e as demais são alinhadas a ela.
+**Use for Active Object** selects the frame's axes and origin for the target and enables its reference pivot. Axes and origin can subsequently be selected independently.
 
-## Distribuição
+The only live link is between a source and a frame. There is no parenting, Child Of, constraint or continuing transform link on the target. Moving the source changes the readout, but never moves the target again. A missing source is reported rather than silently substituted.
 
-Cada eixo marcado é calculado independentemente usando as posições anteriores à operação.
+Multiple RGB frame indicators can be displayed in the viewport. The active frame is larger. Visibility is controlled per frame and globally. These arrows are indicators; manual frame editing uses the panel fields.
 
-- Limites da seleção: mantém as duas origens extremas e distribui as intermediárias em intervalos iguais. Exige pelo menos três objetos.
-- Objeto-chave: mantém a chave parada e posiciona os demais em `chave + ordem × passo`. O sinal do passo determina a direção de todos os objetos.
+Viewport capture supports Global, Local, Normal in Object Mode, Parent, Cursor, View and custom orthogonal orientations. View requires a 3D viewport. Gimbal is rejected because its axes may be nonorthogonal.
 
-Na distribuição por chave, os objetos que estão do lado contrário ao sinal do passo têm prioridade. Dentro desse grupo, a ordem vai do mais próximo ao mais distante da chave. Depois vêm os objetos do mesmo lado, também do mais próximo ao mais distante. Empates são resolvidos pelo nome do objeto.
+## Align and Distribute
 
-Exemplo: chave X=-600 mm; outros objetos em -800, -650 e -590 mm; passo +30 mm. A ordem é -650, -800, -590, resultando respectivamente em -570, -540 e -510 mm. Passo negativo inverte a direção e a prioridade de lado. Passo zero coloca todas as origens sobre a chave nos eixos escolhidos.
+All alignment and distribution is based on object origins along global XYZ axes.
 
-Alinhamento e distribuição preservam rotação e escala e resolvem a posição global mesmo com parentesco. Cadeados locais são respeitados. Constraints ativas e drivers de posição em objetos que precisam mover são recusados; se uma operação falhar, os deslocamentos anteriores são revertidos. Filhos não selecionados acompanham seus pais normalmente.
+- **Selection Bounds (Origins):** align to Min, Center or Max; distribute at equal intervals between fixed extremes (at least three objects).
+- **Key Object (Active):** align to its fixed origin, or distribute with signed Spacing from it. At least two objects are required.
 
-## Validação
+Key distribution prioritizes objects on the side opposite the spacing direction, nearest to farthest, followed by objects on the same side, nearest to farthest. Name breaks ties. Each selected axis is sorted independently.
 
-Testes automatizados no Blender cobrem proporções, vínculos parciais, zeros, bloqueios, persistência em .blend, ordenação com passos positivos e negativos, múltiplos eixos, parentesco rotacionado e com escala não uniforme, rollback, drivers, registro e desfazer/refazer com snapshots. A estrutura dos painéis e referências RNA foi verificada por um simulador de layout; não foi feita uma sessão manual de arraste dos campos na interface gráfica.
+Example: key X=-600 mm, other objects at -800, -650 and -590 mm, spacing +30 mm. Order: -650, -800, -590; final positions: -570, -540, -510 mm. Negative spacing reverses direction and side priority. Zero spacing places all origins on the key along the selected axes.
 
-Os testes de orientação cobrem referência distante com escala não uniforme, movimento global/local/externo, rotação, escala, medidas projetadas, pivô no cursor, seleção preservada, bloqueios, recuperação após falha, parentesco e persistência.
+Parenting is resolved in world coordinates. Failed operations roll back preceding moves. Unselected children follow their parents normally.
 
-Código: `orientation.py` aplica operações nos eixos escolhidos; `math_core.py` contém os cálculos sem dependência do Blender; `engine.py` aplica transformações e valida o resultado; `__init__.py` registra propriedades, operadores e painéis.
+## Validation and source
+
+Automated Blender tests cover live field updates, reference switching without object movement, true vertex extrema, non-destructive oblique Dimensions, shared data isolation, Euler orders, angle turns, proportional links, locks, drivers, alignment/distribution, parenting, saved/live frames, source deletion, renaming, persistence, undo/redo and registration. The actual viewport and panel were also opened and visually inspected.
+
+`__init__.py` defines the UI and properties; `transform_view.py` implements live readings and edits; `frames.py` owns saved frames and viewport indicators; `engine.py` implements native field edits and transactional world positioning; `math_core.py` holds Blender-independent rules; `orientation.py` provides orientation utilities.
