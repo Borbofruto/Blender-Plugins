@@ -6,7 +6,7 @@ import bpy
 import addon_utils
 from mathutils import Matrix,Vector
 
-root=Path(__file__).resolve().parents[2]/"addons"
+root=Path(__file__).resolve().parents[2]/"src"
 sys.path.insert(0,str(root))
 addon_utils.enable('better_item',default_set=True)
 import better_item as addon

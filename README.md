@@ -1,8 +1,10 @@
 # Blender Plugins
 
-**Instalar Better Item:** [baixe Better-Item.zip](https://github.com/Borbofruto/Blender-Plugins/raw/refs/heads/main/Better-Item.zip) e escolha esse arquivo em **Preferences > Add-ons > Install from Disk**. O ZIP instalável está na raiz; o ZIP do botão Code > Download ZIP contém o repositório inteiro e não é o pacote de instalação.
+**Instalar Better Item:** [baixe better_item-1.1.0.zip](https://github.com/Borbofruto/Blender-Plugins/raw/refs/heads/main/addons/better_item-1.1.0.zip) e escolha esse arquivo em **Preferences > Add-ons > Install from Disk**. Os ZIPs instaláveis estão em `addons/`; os fontes estão em `src/`. o ZIP do botão Code > Download ZIP contém o repositório inteiro e não é o pacote de instalação.
 
-## Better Item 1.0.1
+## Better Item 1.1.0
+
+Orientação de transformações: **Global**, **Local do objeto** ou **Local de outro objeto**, com conta-gotas. Movimento, rotação incremental, escala e dimensões na orientação escolhida. A posição da referência não define o pivô.
 
 Correção: vínculos de rotação interpretam 0° como 360° no cálculo proporcional, permitindo chegar e sair de zero. O valor digitado é mantido no campo.
 
@@ -13,7 +15,7 @@ Transformações com vínculos proporcionais por eixo, alinhamento e distribuiç
 - Distribuição entre extremos ou com passo assinado a partir do objeto-chave, que permanece fixo.
 - Eixos globais independentes; prioridade ao lado contrário ao passo e ordenação pela distância à chave.
 
-[Baixar ZIP 1.0.1](https://github.com/Borbofruto/Blender-Plugins/raw/refs/heads/main/dist/better_item-1.0.1.zip) · [Manual e limitações](addons/better_item/README.md) · [Código](addons/better_item)
+[Baixar ZIP 1.1.0](https://github.com/Borbofruto/Blender-Plugins/raw/refs/heads/main/addons/better_item-1.1.0.zip) · [Manual e limitações](src/better_item/README.md) · [Código](src/better_item)
 
 Instale pelo **Edit > Preferences > Add-ons > Install from Disk** e ative **Better Item**. Blender 5.0 ou superior; testado no Blender 5.2.3 LTS. Quaternion e eixo-ângulo possuem edição nativa, sem vínculos proporcionais.
 
@@ -26,7 +28,7 @@ Derivado do **Export Paper Model 1.4.2**, de Adam Dominec. Esta versão é uma m
 
 ### Instalação
 
-1. [Baixe o ZIP da versão 1.5.1](https://github.com/Borbofruto/Blender-Plugins/raw/refs/heads/main/dist/export_paper_model_medidas-1.5.1.zip).
+1. [Baixe o ZIP da versão 1.5.1](https://github.com/Borbofruto/Blender-Plugins/raw/refs/heads/main/addons/export_paper_model_medidas-1.5.1.zip).
 2. No Blender, abra **Edit > Preferences > Add-ons > Install from Disk** e selecione o ZIP.
 3. Ative **Export Paper Model - Medidas**. Mantenha somente uma cópia do add-on ativa.
 4. Reinicie o Blender se estiver atualizando uma instalação existente.
@@ -58,18 +60,18 @@ O controle **N > Paper > Unfold > Tolerância da geometria > Limite (ppm)** ajus
 - Uma ilha grande não é automaticamente dividida em folhas menores. Ajuste a página ou a escala.
 - Confira cotas e escala no editor gráfico e remova as anotações antes de preparar o corte.
 
-Veja as [instruções completas](addons/export_paper_model/LEIA-ME.md).
+Veja as [instruções completas](src/export_paper_model/LEIA-ME.md).
 
 ### Código e pacote
 
-- [Código-fonte do add-on](addons/export_paper_model)
-- [ZIP instalável](dist/export_paper_model_medidas-1.5.1.zip)
+- [Código-fonte do add-on](src/export_paper_model)
+- [ZIP instalável](addons/export_paper_model_medidas-1.5.1.zip)
 - [SHA-256 do pacote](dist/SHA256SUMS)
 
 Para reconstruir o pacote na raiz do repositório:
 
 ```powershell
-blender --background --factory-startup --command extension build --source-dir addons/export_paper_model --output-dir dist
+blender --background --factory-startup --command extension build --source-dir src/export_paper_model --output-dir addons
 ```
 
 ### Créditos e licença
