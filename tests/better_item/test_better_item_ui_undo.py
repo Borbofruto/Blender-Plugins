@@ -117,7 +117,7 @@ bpy.ops.ed.redo()
 assert frames.find(bpy.context.scene,undo_uid).name=='Undo reference'
 print('REFERENCE UNDO/REDO PASSED')
 
-# The arrangement Location selector must not suggest an unused origin.
+# 1.4.2: both panels expose the same coordinate system in every operation.
 settings=bpy.context.scene.better_item
 context=SimpleNamespace(mode='OBJECT',active_object=bpy.context.active_object,scene=bpy.context.scene,region=SimpleNamespace(width=320))
 settings.arrange_reference_mode='INDIVIDUAL'
@@ -125,5 +125,5 @@ for mode in ('SELECTION','KEY','REFERENCE'):
     settings.reference=mode
     calls.clear()
     addon.BETTERITEM_PT_alignment.draw(SimpleNamespace(layout=Layout()),context)
-    assert ('arrange_origin' in calls)==(mode=='REFERENCE'),(mode,calls)
-print('ARRANGEMENT ORIGIN UI VISIBILITY PASSED')
+    assert 'reference_location' in calls and 'reference_orientation' in calls,(mode,calls)
+print('SHARED REFERENCE UI VISIBILITY PASSED')

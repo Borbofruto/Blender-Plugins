@@ -7,7 +7,9 @@ operator in a real View3D context. No helper objects or target transforms.
 """
 from contextlib import contextmanager
 import math
+import uuid
 import bpy
+from bpy.app.handlers import persistent
 from mathutils import Matrix, Vector, Euler, Quaternion
 from .math_core import BetterItemError
 
@@ -21,6 +23,8 @@ _syncing=False
 _custom_cache={}
 _normal_cache={}
 _needs_migration=True
+_normal_signatures={}
+_normal_revisions={}
 
 
 def clear_cache():
@@ -28,11 +32,20 @@ def clear_cache():
     _needs_migration=True
     _custom_cache.clear()
     _normal_cache.clear()
+    _normal_signatures.clear()
+    _normal_revisions.clear()
+
+
+@persistent
+def invalidate_normal(scene,depsgraph):
+    if any(update.is_updated_geometry for update in depsgraph.updates):
+        key=scene.as_pointer()
+        _normal_revisions[key]=_normal_revisions.get(key,0)+1
 
 
 @contextmanager
 def view_context(context):
-    if context.area and context.area.type=='VIEW_3D':
+    if context.area and context.area.type=='VIEW_3D' and context.window and context.area in context.window.screen.areas[:]:
         yield context
         return
     for window in context.window_manager.windows:
@@ -40,7 +53,7 @@ def view_context(context):
         for area in window.screen.areas:
             if area.type=='VIEW_3D':
                 region=next(r for r in area.regions if r.type=='WINDOW')
-                with context.temp_override(window=window,area=area,region=region):yield bpy.context
+                with context.temp_override(window=window,screen=window.screen,area=area,region=region):yield bpy.context
                 return
     raise BetterItemError('[BI-F004] Open a 3D Viewport for this reference operation.')
 
@@ -191,6 +204,58 @@ def publish(context,frame,select=False):
         if slot.type!=desired:slot.type=desired
 
 
+def _source_names(scene):
+    names={frame.native_source for frame in scene.better_item.frames if frame.rotation_mode=='NATIVE'}
+    settings=[(scene.better_item,'arrange_orientation')]
+    settings.extend((obj.better_item,'orientation') for obj in scene.objects)
+    for owner,field in settings:
+        mode=getattr(owner,field)
+        if mode=='NATIVE':names.add(owner.reference_native)
+        elif mode in BUILTINS:names.add(mode)
+        elif mode=='VIEWPORT':names.add(scene.transform_orientation_slots[0].type)
+    return names
+
+
+def _normal_signature(context):
+    selected=[]
+    for obj in context.objects_in_mode_unique_data:
+        state=()
+        if obj.type=='MESH':
+            import bmesh
+            mesh=bmesh.from_edit_mesh(obj.data)
+            for elements in (mesh.verts,mesh.edges,mesh.faces):elements.index_update()
+            state=tuple(tuple(item.index for item in elements if item.select) for elements in (mesh.verts,mesh.edges,mesh.faces))
+            state+=(tuple((type(item).__name__,item.index) for item in mesh.select_history),
+                mesh.faces.active.index if mesh.faces.active else -1)
+        elif obj.type in {'CURVE','SURFACE'}:
+            state=tuple(tuple((p.select_control_point,p.select_left_handle,p.select_right_handle) for p in spline.bezier_points)
+                +tuple(p.select for p in spline.points) for spline in obj.data.splines)
+        selected.append((obj.as_pointer(),tuple(v for row in obj.matrix_world for v in row),state))
+    return (context.mode,context.active_object.as_pointer() if context.active_object else 0,
+        tuple(sorted(selected)),_normal_revisions.get(context.scene.as_pointer(),0),tuple(context.tool_settings.mesh_select_mode))
+
+
+def _refresh_normal(context):
+    key=context.scene.as_pointer()
+    signature=_normal_signature(context)
+    if _normal_signatures.get(key)==signature:return
+    _normal_signatures[key]=signature
+    _normal_cache.pop(key,None)
+    slot=context.scene.transform_orientation_slots[0]
+    previous=slot.type
+    try:
+        # One exact native sample per changed selection, never per frame/tick.
+        result=bpy.ops.transform.create_orientation(name='BI Normal '+uuid.uuid4().hex,use=True)
+        if 'FINISHED' in result and slot.custom_orientation:
+            _normal_cache[key]=slot.custom_orientation.matrix.copy()
+            bpy.ops.transform.delete_orientation()
+    except RuntimeError:pass
+    finally:
+        try:slot.type=previous
+        except TypeError:slot.type='GLOBAL'
+        _normal_signatures[key]=_normal_signature(context)
+
+
 def sync():
     global _syncing,_needs_migration
     if _syncing or not hasattr(bpy.types.Scene,'better_item'):return .2
@@ -202,45 +267,45 @@ def sync():
             frames.migrate()
             _needs_migration=False
         live_scenes={scene.as_pointer() for scene in bpy.data.scenes}
-        for key in list(_custom_cache):
-            if key[0] not in live_scenes:del _custom_cache[key]
-        live_names={(scene.as_pointer(),frame.native_source) for scene in bpy.data.scenes
-            for frame in scene.better_item.frames if frame.rotation_mode=='NATIVE'}
+        live_names={(scene.as_pointer(),name) for scene in bpy.data.scenes for name in _source_names(scene)}
         for key in list(_custom_cache):
             if key not in live_names:del _custom_cache[key]
-        for key in list(_normal_cache):
-            if key not in live_scenes:del _normal_cache[key]
-        for window in context.window_manager.windows:
-            with context.temp_override(window=window):
-                scene=window.scene
+        for cache in (_normal_cache,_normal_signatures,_normal_revisions):
+            for key in list(cache):
+                if key not in live_scenes:del cache[key]
+        windows=list(context.window_manager.windows)
+        if context.window in windows:windows.remove(context.window);windows.insert(0,context.window)
+        visited=set()
+        for window in windows:
+            scene=window.scene
+            if scene.as_pointer() in visited:continue
+            area=next((a for a in window.screen.areas if a.type=='VIEW_3D'),None)
+            if area is None:continue
+            region=next((r for r in area.regions if r.type=='WINDOW'),None)
+            if region is None:continue
+            visited.add(scene.as_pointer())
+            with context.temp_override(window=window,screen=window.screen,area=area,region=region):
+                ctx=bpy.context
+                # Absence while valid is an external deletion, not a request
+                # to recreate. Suspended entries were removed by us instead.
                 for frame in scene.better_item.frames:
-                    if frame.rotation_mode!='NATIVE':continue
-                    name=frame.native_source
+                    if frame.native_enabled and not frame.native_suspended and frame.native_name and named(scene,frame.native_name) is None:
+                        _custom_cache.pop((scene.as_pointer(),frame.native_name),None)
+                        frame.native_enabled=False
+                        frame.native_name=''
+                names=_source_names(scene)
+                for name in names:
                     if name not in BUILTINS:
                         custom=named(scene,name)
                         key=(scene.as_pointer(),name)
                         if custom is not None:_custom_cache[key]=custom.matrix.copy()
                         else:_custom_cache.pop(key,None)
-                    elif name=='NORMAL' and context.mode!='OBJECT':
-                        _normal_cache.pop(scene.as_pointer(),None)
-                        try:
-                            with view_context(context):
-                                slot=scene.transform_orientation_slots[0]
-                                previous=slot.type
-                                try:
-                                    result=bpy.ops.transform.create_orientation(name='Better Item Normal Probe',use=True)
-                                    if 'FINISHED' in result and slot.custom_orientation:
-                                        _normal_cache[scene.as_pointer()]=slot.custom_orientation.matrix.copy()
-                                        bpy.ops.transform.delete_orientation()
-                                finally:
-                                    try:slot.type=previous
-                                    except TypeError:slot.type='GLOBAL'
-                        except (BetterItemError,RuntimeError):pass
-                for frame in window.scene.better_item.frames:
+                if 'NORMAL' in names and ctx.mode!='OBJECT':_refresh_normal(ctx)
+                for frame in scene.better_item.frames:
                     if not frame.native_enabled:continue
-                    try:publish(context,frame)
+                    try:publish(ctx,frame)
                     except (BetterItemError,RuntimeError,TypeError):
-                        try:remove_native(context,frame)
+                        try:remove_native(ctx,frame)
                         except (BetterItemError,RuntimeError):pass
                         if not frame.native_suspended:frame.native_suspended=True
     finally:_syncing=False

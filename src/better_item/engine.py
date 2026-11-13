@@ -84,16 +84,17 @@ def _target_location(obj,target):
     return Vector(local-np.asarray(obj.delta_location,dtype=np.float64))
 
 
-def _position_matches(obj,target):
+def _position_matches(obj,target,accepted_world_roundoff=None):
     actual=tuple(obj.matrix_world.translation)
     if _matches(actual,target):return True
-    if not obj.parent and not any(obj.delta_location):return False
+    if not obj.parent and not any(obj.delta_location) and accepted_world_roundoff is None:return False
     # Bound native float32 addition/multiplication error when parenting or
     # delta transforms cause cancellation. Drivers/constraints are still
     # rejected independently; this is not an arbitrary geometric tolerance.
     parent=np.asarray(_parent_matrix(obj),dtype=np.float64)
     terms=np.abs(parent[:3,:3]) @ (np.abs(np.asarray(obj.location))+np.abs(np.asarray(obj.delta_location)))+np.abs(parent[:3,3])
     budget=4*np.finfo(np.float32).eps*terms
+    if accepted_world_roundoff is not None:budget+=accepted_world_roundoff
     return all(abs(a-t)<=max(1e-8,3e-7*abs(t),float(budget[i])) for i,(a,t) in enumerate(zip(actual,target)))
 
 
@@ -103,7 +104,9 @@ def _local_roundoff(obj,target):
     if not obj.parent:
         return 4*eps*(np.abs(np.asarray(target))+np.abs(np.asarray(obj.delta_location)))
     parent=np.asarray(_parent_matrix(obj),dtype=np.float64)
-    inverse=np.linalg.inv(parent[:3,:3])
+    try:inverse=np.linalg.inv(parent[:3,:3])
+    except np.linalg.LinAlgError as exc:
+        raise BetterItemError('[BI-T005] Parent transform of "%s" is singular; restore nonzero parent Scale.'%obj.name) from exc
     terms=np.abs(parent[:3,:3]) @ np.abs(np.asarray(obj.location)+np.asarray(obj.delta_location))+np.abs(parent[:3,3])
     return 4*eps*(np.abs(inverse) @ (terms+np.abs(np.asarray(target))+np.abs(parent[:3,3])))
 
@@ -112,6 +115,7 @@ def apply_world_positions(objects,targets,*,verify=None):
     """Preserve native rotation/scale; either all planned origins move or none."""
     previous={obj:obj.location.copy() for obj in objects}
     changed=[]
+    accepted_roundoff={}
     try:
         for obj in sorted(objects,key=lambda item:(_depth(item),item.name)):
             bpy.context.view_layer.update()
@@ -126,18 +130,22 @@ def apply_world_positions(objects,targets,*,verify=None):
             _driver_guard(obj,{'location','delta_location'})
             desired=_target_location(obj,targets[obj.name])
             roundoff=_local_roundoff(obj,targets[obj.name])
+            locked_roundoff=np.zeros(3,dtype=np.float64)
             for axis,locked in enumerate(obj.lock_location):
                 if locked:
                     if abs(desired[axis]-obj.location[axis])>max(1e-12,float(roundoff[axis])):
                         raise BetterItemError('[BI-T003] Local %s is locked on "%s". Unlock it before moving; no objects were repositioned.' % ('XYZ'[axis],obj.name))
+                    if desired[axis]!=obj.location[axis]:locked_roundoff[axis]=max(1e-12,float(roundoff[axis]))
                     desired[axis]=obj.location[axis]
+            if np.any(locked_roundoff):
+                accepted_roundoff[obj]=np.abs(np.asarray(_parent_matrix(obj),dtype=np.float64)[:3,:3]) @ locked_roundoff
             if not all(math.isfinite(component) for component in desired):
                 raise BetterItemError('[BI-T007] Position of "%s" exceeds the numeric range. Reduce coordinate magnitudes.' % obj.name)
             changed.append(obj)
             obj.location=desired
         bpy.context.view_layer.update()
         for obj in objects:
-            if not _position_matches(obj,targets[obj.name]):
+            if not _position_matches(obj,targets[obj.name],accepted_roundoff.get(obj)):
                 error=max(abs(a-t) for a,t in zip(obj.matrix_world.translation,targets[obj.name]))
                 raise BetterItemError('[BI-T006] Position verification failed for "%s" (residual %.9g Blender units). '
                     'The evaluated transform did not retain its target; inspect animation, constraints and coordinate precision. No objects were repositioned.' % (obj.name,error))

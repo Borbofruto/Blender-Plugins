@@ -2,29 +2,33 @@
 
 Installable extension ZIPs are in [`addons/`](addons); sources are in [`src/`](src). Install an individual add-on ZIP with Blender's **Install from Disk**, not the repository ZIP.
 
-## Better Item 1.4.1
+## Better Item 1.4.2
 
-[Download ZIP](https://github.com/Borbofruto/Blender-Plugins/raw/refs/heads/main/addons/better_item-1.4.1.zip) · [Manual](src/better_item/README.md) · [Source](src/better_item) · [Dimensions benchmark](tests/better_item/performance.md)
+[Download ZIP](https://github.com/Borbofruto/Blender-Plugins/raw/refs/heads/main/addons/better_item-1.4.2.zip) | [Manual](src/better_item/README.md) | [Source](src/better_item) | [Tests](tests/better_item) | [Feedback review](tests/better_item/feedback_review_1.4.2.md)
 
-Version 1.4.1 fixes linked zero-angle rotations, signed-scale preservation, Delta Location, false locked-axis errors under rotated parents, Dimensions tracebacks for objects without surface geometry, and stale deleted-frame choices. The Individual Location selector in Align and Distribute is shown only when used by Reference Origin.
+Panel order: **Reference Frames > Transform > Align and Distribute**. Transform keeps Blender's compact English Location, Rotation, Scale and Dimensions fields, with live edits and proportional XYZ links.
 
-For linked Rotation, the edited axis alone uses 360 degrees as a denominator if it starts at zero. Other zero axes remain zero; entering zero uses a zero ratio. Rotation edits preserve native signed Scale and Delta transforms. Frame Object sources and Object orientation references share the same scale-independent rotation extraction.
+### One reference system for both panels
 
-Development [tests](tests/better_item) are in the repository and are not bundled into the runtime ZIP. Added coverage includes 128 signed-scale rotation cases, Delta transforms, Keep Transform parent inverses, locked-parent roundoff, unsupported geometry, removed enums and UI visibility. `test_better_item_sync_gui.py` runs with a real Blender window to verify the live timer, invalid-source suspension/recovery and rename.
+Transform and Align and Distribute now share the same reference choices, resolver and UI. **Individual** selects Orientation and Location independently. **Frame** selects both components once from a saved frame.
 
-Panel order: **Reference Frames → Transform → Align and Distribute**. Transform keeps Blender's compact English Location, Rotation, Scale and Dimensions fields, with live edits and proportional XYZ links.
+Orientation supports Global, Local, another Object, Viewport, Saved Frame, Normal, Gimbal, View, Cursor, Parent and a named Native Orientation. Location supports Global/world origin, Viewport Pivot, Saved Frame, another Object, 3D Cursor and every native Pivot type, including Bounding Box Center. Frame Location also supports a dedicated World source.
 
-Both consuming panels have a **Reference: Individual / Frame** switch. Frame selects both Location and Orientation once. Individual keeps the two choices independent, including components from different frames.
+In Selection Bounds and Key Object operations, translating the coordinate origin cancels from the final arrangement. Reference Origin uses the chosen Location as the actual alignment/spacing anchor. Both fields remain available in every mode; no separate limited reference UI is used.
 
-**New Frame** asks only for a name. Edit Location and Orientation separately afterward: manual values, two independent object pickers, another frame, native pivots for Location, or native transform orientations for Orientation. Existing one-source frames migrate to separate pointers. Apply Location or Apply Orientation captures just that component and ends its link.
+### Native orientations and frames
 
-**Use Orientation in Viewport** exports a synchronized native custom orientation for **G/R** and axis shortcuts. Frames may source other native custom orientations, including exported frame orientations. Native sources include Global, Local, Normal, Gimbal, View, Cursor and Parent; pivots include all five native types. A single frame represents one origin, so Individual Origins uses the active object's origin. Circular links and missing sources produce diagnostics; invalid exported orientations are suspended until repaired. Native synchronization refreshes every 0.2 seconds.
+**New Frame** asks only for a name. Edit Location and Orientation independently using manual values, two separate object pickers, pivots, native orientations or other frames. Frames and consumer selections persist in the .blend, including migrations from older versions.
 
-Frames, separate source pointers, component chains and reference choices are saved in the .blend. Reference changes alter readings and future operations; moving a source never moves an already-transformed target.
+**Use Orientation in Viewport** creates a synchronized native custom orientation for native G/R. Removing it through the add-on or Blender's native menu ends that export; the timer does not recreate a user-deleted entry. The scene frame remains available. Invalid-source suspension is separate and can recover after its source is repaired. Normal sampling occurs only when relevant input changes, and synchronization uses full viewport context overrides across windows/scenes.
 
-Alignment/distribution uses origins in the selected reference axes, with Selection Bounds, fixed Key Object, or Reference Origin. Signed spacing, reference-axis placement, minimum-distance diagnostics and transactional rollback are preserved. Dimensions measures evaluated vertices and preserves the mesh through an affine modifier for oblique edits when needed.
+### Corrections and validation
 
-Tested in Blender 5.2.3 LTS: 630 arrangement combinations, native G/R, 48 Gimbal direction comparisons against native transforms, edit-mode Normal, cyclic and missing sources, undo/redo, migration, projected dimensions and new-process save/reopen. The actual panel layout was visually checked. Minimum Blender 5.0; restart Blender after updating, then open **N > Better Item**.
+The locked-axis inverse-solve roundoff already accepted by the position solver is now propagated into final world verification, fixing false BI-T006 failures. Real locked-axis movement and unexpected target errors still reject and roll back. Signed native Scale and Delta transforms, linked zero-angle fixes, oblique Dimensions and shared geometry remain covered by regression tests.
+
+Tests pass in Blender 5.2.3 LTS: 1,500 rotated/scaled-parent locked-position cases, 66 reference parity combinations, 630 arrangement combinations, 128 signed-scale rotation cases, 48 native Gimbal comparisons, persistence, migration, native deletion, enum identity and conditional Normal sampling. A real two-main-window test verifies scene-specific exports, live timer updates, native-menu deletion and matching reference controls. The English runtime manual is checked for damaged encoding.
+
+Development tests are in the repository, outside the runtime ZIP. Minimum Blender 5.0. Restart Blender after updating, then open **N > Better Item**.
 
 ## Export Paper Model - Medidas 1.5.1
 

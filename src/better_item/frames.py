@@ -10,7 +10,8 @@ _enum_cache = {}
 
 
 def frame_items(self, context):
-    scene = context.scene if context else None
+    owner=getattr(self,'id_data',None)
+    scene=owner if isinstance(owner,bpy.types.Scene) else getattr(context,'scene',None)
     fallback=[('NONE', 'Choose a Frame', '', 0)]
     if scene is None or not hasattr(scene, 'better_item'):
         return fallback
@@ -46,12 +47,15 @@ def frame_origin(frame,context=None,stack=()):
     context=context or bpy.context
     stack=_enter(frame,'Location',stack)
     mode=frame.position_mode
+    if mode=='GLOBAL':return Vector()
     if mode=='OBJECT':
         source=frame.position_source
         if source is None:raise BetterItemError('[BI-F002] Frame "%s": choose a Location Object.'%frame.name)
         return source.matrix_world.translation.copy()
-    if mode=='PIVOT':return native_refs.pivot(context,frame.position_pivot)
-    if mode=='FRAME':return frame_origin(find(context.scene,frame.position_frame),context,stack)
+    if mode=='PIVOT':
+        if getattr(context,'scene',None)!=frame.id_data:raise BetterItemError('[BI-F004] Activate the frame scene to read its viewport pivot.')
+        return native_refs.pivot(context,frame.position_pivot)
+    if mode=='FRAME':return frame_origin(find(frame.id_data,frame.position_frame),context,stack)
     return Vector(frame.position)
 
 
@@ -65,8 +69,10 @@ def frame_axes(frame,context=None,stack=()):
         if source is None:raise BetterItemError('[BI-F002] Frame "%s": choose an Orientation Object.'%frame.name)
         from .orientation import rotation
         return rotation(source)
-    if mode=='NATIVE':return native_refs.orientation(context,frame.native_source,stack=stack)
-    if mode=='FRAME':return frame_axes(find(context.scene,frame.rotation_frame),context,stack)
+    if mode=='NATIVE':
+        if getattr(context,'scene',None)!=frame.id_data:raise BetterItemError('[BI-F004] Activate the frame scene to read its native orientation.')
+        return native_refs.orientation(context,frame.native_source,stack=stack)
+    if mode=='FRAME':return frame_axes(find(frame.id_data,frame.rotation_frame),context,stack)
     result=Euler(frame.rotation,'XYZ').to_matrix()
     if frame.has_manual_basis:
         result=result@Matrix(tuple(tuple(frame.manual_basis[i*3+j] for j in range(3)) for i in range(3)))
@@ -89,15 +95,9 @@ def viewport_axes(context,obj):
     return native_refs.orientation(context,context.scene.transform_orientation_slots[0].type,obj)
 
 
-def object_axes(context, obj):
-    from . import orientation
-    settings = obj.better_item
-    if settings.reference_mode=='FRAME':return frame_axes(find(context.scene,settings.reference_frame),context)
-    if settings.orientation == 'SAVED':
-        return frame_axes(find(context.scene, settings.orientation_frame))
-    if settings.orientation == 'VIEWPORT':
-        return viewport_axes(context, obj)
-    return orientation.basis(obj, settings.orientation, settings.orientation_object)
+def object_axes(context,obj):
+    from . import references
+    return references.axes(context,obj.better_item,obj)
 
 
 def viewport_origin(context,obj):
@@ -105,18 +105,9 @@ def viewport_origin(context,obj):
     return native_refs.pivot(context,context.scene.tool_settings.transform_pivot_point,obj)
 
 
-def object_origin(context, obj):
-    settings = obj.better_item
-    if settings.reference_mode=='FRAME':return frame_origin(find(context.scene,settings.reference_frame),context)
-    if settings.pivot_mode == 'GLOBAL':
-        return Vector((0, 0, 0))
-    if settings.pivot_mode == 'FRAME':
-        return frame_origin(find(context.scene, settings.pivot_frame))
-    if settings.pivot_mode == 'OBJECT':
-        if settings.origin_object is None:raise BetterItemError('Choose an Origin Object.')
-        return settings.origin_object.matrix_world.translation.copy()
-    if settings.pivot_mode == 'CURSOR':return context.scene.cursor.location.copy()
-    return viewport_origin(context, obj)
+def object_origin(context,obj):
+    from . import references
+    return references.origin(context,obj.better_item,obj)[0]
 
 
 def relative_values(context, obj, kind):
@@ -210,6 +201,8 @@ def migrate():
             frame.source=None
             frame['source_schema']=2
         clear_missing_choices(scene)
+        from .references import migrate as migrate_references
+        migrate_references(scene)
 
 
 def clear_missing_choices(scene,removed=None):
@@ -229,11 +222,11 @@ def _frame_component(kind, axis):
     def get(self):
         try:
             return frame_origin(self)[axis] if kind=='POSITION' else (self.rotation[axis] if self.rotation_mode=='MANUAL' else frame_axes(self).to_euler('XYZ')[axis])
-        except BetterItemError:
+        except (BetterItemError,AttributeError,RuntimeError):
             return getattr(self, attribute)[axis]
     def set_value(self, value):
-        linked = self.link_position if kind == 'POSITION' else self.link_rotation
-        if not linked:
+        manual=getattr(self,'position_mode' if kind=='POSITION' else 'rotation_mode')=='MANUAL'
+        if manual:
             result = list(getattr(self, attribute))
             result[axis] = value
             setattr(self, attribute, result)
@@ -262,7 +255,7 @@ class BetterItemFrame(bpy.types.PropertyGroup):
     rotation: bpy.props.FloatVectorProperty(size=3, subtype='EULER', unit='ROTATION', options=set())
     # Keep the old pointer solely to migrate existing .blend files.
     source: bpy.props.PointerProperty(type=bpy.types.Object)
-    position_mode:bpy.props.EnumProperty(name='Source',items=[('MANUAL','Manual',''),('OBJECT','Object',''),('PIVOT','Pivot',''),('FRAME','Frame','')],options=set())
+    position_mode:bpy.props.EnumProperty(name='Source',items=[('MANUAL','Manual',''),('OBJECT','Object',''),('PIVOT','Pivot',''),('FRAME','Frame',''),('GLOBAL','World','')],options=set())
     rotation_mode:bpy.props.EnumProperty(name='Source',items=[('MANUAL','Manual',''),('OBJECT','Object',''),('NATIVE','Native',''),('FRAME','Frame','')],options=set())
     position_source:bpy.props.PointerProperty(name='Location Object',type=bpy.types.Object)
     rotation_source:bpy.props.PointerProperty(name='Orientation Object',type=bpy.types.Object)
@@ -298,6 +291,7 @@ class BETTERITEM_OT_new_frame(bpy.types.Operator):
     frame_name:bpy.props.StringProperty(name='Name',default='Frame')
     def invoke(self,context,event):
         self.target_name=context.active_object.name if context.active_object else ''
+        if not self.properties.is_property_set('frame_name'):self.frame_name='Frame'
         return context.window_manager.invoke_props_dialog(self,width=300)
     def draw(self,context):self.layout.prop(self,'frame_name')
     def execute(self,context):

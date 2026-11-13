@@ -3,7 +3,7 @@
 import textwrap
 import bpy
 from bpy.app.handlers import persistent
-from . import engine, frames, transform_view, arrange, native_refs
+from . import engine, frames, transform_view, arrange, native_refs, references
 from .math_core import BetterItemError
 
 _field_errors={}
@@ -64,18 +64,22 @@ _reference_modes=[('INDIVIDUAL','Individual','Choose Location and Orientation in
 class BetterItemObjectSettings(bpy.types.PropertyGroup):
     reference_mode:bpy.props.EnumProperty(name='Reference',items=_reference_modes,options=set(),update=_orientation_changed)
     reference_frame:bpy.props.EnumProperty(name='Frame',items=frames.frame_items,options=set(),update=_orientation_changed)
+    reference_orientation:references.choice_property('axes',False)
+    reference_location:references.choice_property('origin',False)
+    reference_pivot:bpy.props.EnumProperty(name='Pivot',items=native_refs.PIVOTS,options=set(),update=_origin_changed)
+    reference_native:bpy.props.StringProperty(name='Native Orientation',default='GLOBAL',update=_orientation_changed)
     orientation:bpy.props.EnumProperty(name='Orientation',items=[
         ('GLOBAL','Global','World axes'),
         ('LOCAL','Local','Object local axes'),
         ('REFERENCE','Object','Use another object orientation only; ignore its position and scale'),
         ('VIEWPORT','Viewport','Current viewport transform orientation'),
-        ('SAVED','Saved Frame','Use a saved reference frame orientation')],
+        ('SAVED','Saved Frame','Use a saved reference frame orientation')]+references.ORIENTATIONS[5:],
         default='GLOBAL',options=set(),update=_orientation_changed)
     orientation_object:bpy.props.PointerProperty(name='Orientation Object',type=bpy.types.Object,update=_orientation_changed)
     orientation_frame:bpy.props.EnumProperty(name='Orientation Frame',items=frames.frame_items,options=set(),update=_orientation_changed)
     pivot_mode:bpy.props.EnumProperty(name='Origin',items=[
         ('GLOBAL','Global','World origin'),('VIEWPORT','Viewport Pivot','Current viewport pivot'),
-        ('FRAME','Saved Frame','Saved reference frame origin'),('OBJECT','Object','Another object origin'),('CURSOR','3D Cursor','3D Cursor position')],default='GLOBAL',options=set(),update=_origin_changed)
+        ('FRAME','Saved Frame','Saved reference frame origin'),('OBJECT','Object','Another object origin'),('CURSOR','3D Cursor','3D Cursor position'),('PIVOT','Pivot','Choose a native pivot')],default='GLOBAL',options=set(),update=_origin_changed)
     pivot_frame:bpy.props.EnumProperty(name='Origin Frame',items=frames.frame_items,options=set(),update=_origin_changed)
     use_reference_pivot:bpy.props.BoolProperty(name='Use Reference Pivot',
         description='Rotate around the selected origin instead of the object origin',options=set())
@@ -108,17 +112,21 @@ class BetterItemSceneSettings(bpy.types.PropertyGroup):
     active_frame:bpy.props.IntProperty(default=-1,min=-1)
     show_frames:bpy.props.BoolProperty(name='Show Reference Frames',default=True,options=set())
     reference:bpy.props.EnumProperty(name='Align To',items=_references,default='SELECTION',options=set(),update=_arrange_changed)
+    reference_orientation:references.choice_property('axes',True)
+    reference_location:references.choice_property('origin',True)
+    reference_pivot:bpy.props.EnumProperty(name='Pivot',items=native_refs.PIVOTS,options=set(),update=_arrange_changed)
+    reference_native:bpy.props.StringProperty(name='Native Orientation',default='GLOBAL',update=_arrange_changed)
     arrange_orientation:bpy.props.EnumProperty(name='Axes',items=[
         ('GLOBAL','Global','World axes'),('LOCAL','Active Local','Active object local axes'),
         ('REFERENCE','Object','Use a chosen object orientation'),('SAVED','Saved Frame','Use a saved frame orientation'),
-        ('VIEWPORT','Viewport','Use the viewport transform orientation')],default='GLOBAL',options=set(),update=_arrange_changed)
+        ('VIEWPORT','Viewport','Use the viewport transform orientation')]+references.ORIENTATIONS[5:],default='GLOBAL',options=set(),update=_arrange_changed)
     arrange_object:bpy.props.PointerProperty(name='Orientation Object',type=bpy.types.Object,update=_arrange_changed)
     arrange_frame:bpy.props.EnumProperty(name='Orientation Frame',items=frames.frame_items,options=set(),update=_arrange_changed)
     arrange_origin:bpy.props.EnumProperty(name='Origin',items=[
         ('MATCH','Match Axes','Use the origin of the orientation object/frame, or the world origin for Global'),
         ('GLOBAL','Global','World origin'),('CURSOR','3D Cursor','3D Cursor position'),
         ('OBJECT','Object','Choose an origin object'),('SAVED','Saved Frame','Choose a saved frame origin'),
-        ('VIEWPORT','Viewport Pivot','Current viewport pivot')],default='MATCH',options=set(),update=_arrange_changed)
+        ('VIEWPORT','Viewport Pivot','Current viewport pivot'),('PIVOT','Pivot','Choose a native pivot')],default='GLOBAL',options=set(),update=_arrange_changed)
     arrange_origin_object:bpy.props.PointerProperty(name='Origin Object',type=bpy.types.Object,update=_arrange_changed)
     arrange_origin_frame:bpy.props.EnumProperty(name='Origin Frame',items=frames.frame_items,options=set(),update=_arrange_changed)
     arrange_on_axis:bpy.props.BoolProperty(name='On Reference Axis',
@@ -257,31 +265,7 @@ def _linked_rows(layout,obj,group,label,prefix,lock_name=None):
 
 
 def _draw_reference(layout,settings,arrangement=False):
-    box=layout.box()
-    box.label(text='Reference')
-    mode='arrange_reference_mode' if arrangement else 'reference_mode'
-    frame='arrange_reference_frame' if arrangement else 'reference_frame'
-    box.row(align=True).prop(settings,mode,expand=True)
-    if getattr(settings,mode)=='FRAME':
-        row=box.row(align=True)
-        row.prop(settings,frame,text='')
-        row.operator('better_item.new_frame',text='',icon='ADD').target='ALIGN_BOTH' if arrangement else 'BOTH'
-        return
-    axes='arrange_orientation' if arrangement else 'orientation'
-    box.prop(settings,axes,text='Orientation')
-    if getattr(settings,axes)=='REFERENCE':box.prop(settings,'arrange_object' if arrangement else 'orientation_object',text='Object')
-    if getattr(settings,axes)=='SAVED':
-        row=box.row(align=True)
-        row.prop(settings,'arrange_frame' if arrangement else 'orientation_frame',text='Frame')
-        row.operator('better_item.new_frame',text='',icon='ADD').target='ALIGN_AXES' if arrangement else 'AXES'
-    if arrangement and settings.reference!='REFERENCE':return
-    origin='arrange_origin' if arrangement else 'pivot_mode'
-    box.prop(settings,origin,text='Location')
-    if getattr(settings,origin)=='OBJECT':box.prop(settings,'arrange_origin_object' if arrangement else 'origin_object',text='Object')
-    if getattr(settings,origin) in {'SAVED','FRAME'}:
-        row=box.row(align=True)
-        row.prop(settings,'arrange_origin_frame' if arrangement else 'pivot_frame',text='Frame')
-        row.operator('better_item.new_frame',text='',icon='ADD').target='ALIGN_ORIGIN' if arrangement else 'ORIGIN'
+    references.draw(layout,settings,arrangement)
 
 
 class BETTERITEM_PT_transform(bpy.types.Panel):
@@ -381,7 +365,7 @@ def _clear_runtime(_unused):
 
 classes=(frames.BetterItemFrame,BetterItemObjectSettings,BetterItemSceneSettings,BETTERITEM_OT_link_group,
          BETTERITEM_OT_clear_error,BETTERITEM_OT_clear_arrange_error,BETTERITEM_OT_align,BETTERITEM_OT_distribute,
-         BETTERITEM_PT_transform,BETTERITEM_PT_alignment)+frames.classes+(native_refs.BETTERITEM_OT_native_frame,)
+         BETTERITEM_PT_transform,BETTERITEM_PT_alignment)+frames.classes+(native_refs.BETTERITEM_OT_native_frame,references.BETTERITEM_OT_reference_native,)
 
 
 def register():
@@ -396,6 +380,8 @@ def register():
             if _clear_runtime not in handlers:handlers.append(_clear_runtime)
         if transform_view.invalidate_geometry not in bpy.app.handlers.depsgraph_update_post:
             bpy.app.handlers.depsgraph_update_post.append(transform_view.invalidate_geometry)
+        if native_refs.invalidate_normal not in bpy.app.handlers.depsgraph_update_post:
+            bpy.app.handlers.depsgraph_update_post.append(native_refs.invalidate_normal)
         frames.migrate()
         if not bpy.app.timers.is_registered(native_refs.sync):bpy.app.timers.register(native_refs.sync,first_interval=.2,persistent=True)
     except Exception:
@@ -413,6 +399,8 @@ def unregister():
     if transform_view.invalidate_geometry in bpy.app.handlers.depsgraph_update_post:
         bpy.app.handlers.depsgraph_update_post.remove(transform_view.invalidate_geometry)
     transform_view.clear_cache()
+    if native_refs.invalidate_normal in bpy.app.handlers.depsgraph_update_post:
+        bpy.app.handlers.depsgraph_update_post.remove(native_refs.invalidate_normal)
     for owner in (bpy.types.Scene,bpy.types.Object):
         if hasattr(owner,'better_item'):del owner.better_item
     for cls in reversed(classes):

@@ -29,42 +29,26 @@ def _frame_origin(scene,uid):
 
 
 def reference_frame(context,reference=None):
+    from . import references
     settings=context.scene.better_item
     active=context.active_object or next(iter(context.selected_objects),None)
-    mode=settings.arrange_orientation
+    anchor=(reference if reference is not None else settings.reference)=='REFERENCE'
     try:
-        if settings.arrange_reference_mode=='FRAME':
-            frame=frames.find(context.scene,settings.arrange_reference_frame)
-            axes=frames.frame_axes(frame,context)
-            if (reference if reference is not None else settings.reference)=='REFERENCE':
-                origin=frames.frame_origin(frame,context)
-                source=frames.position_reference_object(frame,context.scene)
-            else:origin,source=Vector(),None
-            return np.asarray(axes,dtype=np.float64),np.asarray(origin,dtype=np.float64),source
-        if mode=='SAVED':axes=frames.frame_axes(frames.find(context.scene,settings.arrange_frame))
-        elif mode=='VIEWPORT':axes=frames.viewport_axes(context,active)
-        else:axes=orientation.basis(active,mode,settings.arrange_object)
-        if (reference if reference is not None else settings.reference)!='REFERENCE':
-            return np.asarray(axes,dtype=np.float64),np.zeros(3,dtype=np.float64),None
-        origin_mode=settings.arrange_origin
-        if origin_mode=='MATCH':
-            if mode=='SAVED':origin,source=_frame_origin(context.scene,settings.arrange_frame)
-            elif mode in {'REFERENCE','LOCAL'}:
-                source=settings.arrange_object if mode=='REFERENCE' else active
-                origin=source.matrix_world.translation.copy()
-            elif mode=='VIEWPORT':origin,source=frames.viewport_origin(context,active),None
-            else:origin,source=Vector(),None
-        elif origin_mode=='SAVED':origin,source=_frame_origin(context.scene,settings.arrange_origin_frame)
-        elif origin_mode=='OBJECT':
-            source=settings.arrange_origin_object
-            if source is None:raise BetterItemError('Choose an Origin Object.')
-            origin=source.matrix_world.translation.copy()
-        elif origin_mode=='CURSOR':origin,source=context.scene.cursor.location.copy(),None
-        elif origin_mode=='VIEWPORT':origin,source=frames.viewport_origin(context,active),None
-        else:origin,source=Vector(),None
+        axes=references.axes(context,settings,active,True)
+        try:origin,source=references.origin(context,settings,active,True)
+        except BetterItemError:
+            if anchor:raise
+            # An unused origin must not block an orientation-only operation.
+            origin,source=Vector(),None
     except (BetterItemError,AttributeError) as exc:
-        raise BetterItemError('[BI-A002] Invalid arrangement reference: %s' % exc) from exc
-    return np.asarray(axes,dtype=np.float64),np.asarray(origin,dtype=np.float64),source
+        raise BetterItemError('[BI-A002] Invalid arrangement reference: %s'%exc) from exc
+    return np.asarray(axes,dtype=np.float64),np.asarray(origin,dtype=np.float64),source if anchor else None
+
+
+def _mm_per_unit(scene):
+    scale=scene.unit_settings.scale_length
+    if not math.isfinite(scale) or scale<=0:raise BetterItemError('[BI-D001] Scene Unit Scale must be finite and greater than zero.')
+    return 1000*scale
 
 
 def _small(distance,minimum):
@@ -112,7 +96,7 @@ def _coordinate_conflicts(coordinates,axes,minimum):
 def distribution_verifier(context,axes,reference,minimum_mm):
     # Capture axes/origin before movement, including moving viewport pivots.
     basis,origin,_=reference_frame(context,reference)
-    minimum=minimum_mm/(1000*context.scene.unit_settings.scale_length)
+    minimum=minimum_mm/_mm_per_unit(context.scene)
     def verify(objects):
         coordinates={obj.name:np.linalg.solve(basis,np.asarray(obj.matrix_world.translation)-origin) for obj in objects}
         conflicts=_coordinate_conflicts(coordinates,axes,minimum)
@@ -137,7 +121,7 @@ def plan(context,objects,origins,axes,reference,*,mode='CENTER',spacing=None,min
     active=context.active_object.name if context.active_object else None
     if reference=='KEY' and active not in origins:
         raise BetterItemError('[BI-A004] The key object must be active and selected.')
-    mm_per_unit=1000*context.scene.unit_settings.scale_length
+    mm_per_unit=_mm_per_unit(context.scene)
     if not math.isfinite(minimum_mm) or minimum_mm<=0:
         raise BetterItemError('[BI-D001] Minimum Distance must be greater than zero.')
     minimum=minimum_mm/mm_per_unit
