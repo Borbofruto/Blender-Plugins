@@ -20,9 +20,12 @@ PIVOTS=[('BOUNDING_BOX_CENTER','Bounding Box Center','Center of selected bounds'
 _syncing=False
 _custom_cache={}
 _normal_cache={}
+_needs_migration=True
 
 
 def clear_cache():
+    global _needs_migration
+    _needs_migration=True
     _custom_cache.clear()
     _normal_cache.clear()
 
@@ -189,13 +192,15 @@ def publish(context,frame,select=False):
 
 
 def sync():
-    global _syncing
+    global _syncing,_needs_migration
     if _syncing or not hasattr(bpy.types.Scene,'better_item'):return .2
     _syncing=True
     try:
         context=bpy.context
         from . import frames
-        frames.migrate()
+        if _needs_migration:
+            frames.migrate()
+            _needs_migration=False
         live_scenes={scene.as_pointer() for scene in bpy.data.scenes}
         for key in list(_custom_cache):
             if key[0] not in live_scenes:del _custom_cache[key]

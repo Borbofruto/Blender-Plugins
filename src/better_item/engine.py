@@ -97,6 +97,17 @@ def _position_matches(obj,target):
     return all(abs(a-t)<=max(1e-8,3e-7*abs(t),float(budget[i])) for i,(a,t) in enumerate(zip(actual,target)))
 
 
+def _local_roundoff(obj,target):
+    """Float32 world evaluation + inverse solve budget in local coordinates."""
+    eps=np.finfo(np.float32).eps
+    if not obj.parent:
+        return 4*eps*(np.abs(np.asarray(target))+np.abs(np.asarray(obj.delta_location)))
+    parent=np.asarray(_parent_matrix(obj),dtype=np.float64)
+    inverse=np.linalg.inv(parent[:3,:3])
+    terms=np.abs(parent[:3,:3]) @ np.abs(np.asarray(obj.location)+np.asarray(obj.delta_location))+np.abs(parent[:3,3])
+    return 4*eps*(np.abs(inverse) @ (terms+np.abs(np.asarray(target))+np.abs(parent[:3,3])))
+
+
 def apply_world_positions(objects,targets,*,verify=None):
     """Preserve native rotation/scale; either all planned origins move or none."""
     previous={obj:obj.location.copy() for obj in objects}
@@ -114,9 +125,12 @@ def apply_world_positions(objects,targets,*,verify=None):
                     'Disable them before aligning or distributing.' % (obj.name,', '.join(constraints)))
             _driver_guard(obj,{'location','delta_location'})
             desired=_target_location(obj,targets[obj.name])
+            roundoff=_local_roundoff(obj,targets[obj.name])
             for axis,locked in enumerate(obj.lock_location):
-                if locked and desired[axis]!=obj.location[axis]:
-                    raise BetterItemError('[BI-T003] Local %s is locked on "%s". Unlock it before moving; no objects were repositioned.' % ('XYZ'[axis],obj.name))
+                if locked:
+                    if abs(desired[axis]-obj.location[axis])>max(1e-12,float(roundoff[axis])):
+                        raise BetterItemError('[BI-T003] Local %s is locked on "%s". Unlock it before moving; no objects were repositioned.' % ('XYZ'[axis],obj.name))
+                    desired[axis]=obj.location[axis]
             if not all(math.isfinite(component) for component in desired):
                 raise BetterItemError('[BI-T007] Position of "%s" exceeds the numeric range. Reduce coordinate magnitudes.' % obj.name)
             changed.append(obj)

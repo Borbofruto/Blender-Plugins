@@ -2,9 +2,15 @@
 
 Installable extension ZIPs are in [`addons/`](addons); sources are in [`src/`](src). Install an individual add-on ZIP with Blender's **Install from Disk**, not the repository ZIP.
 
-## Better Item 1.4.0
+## Better Item 1.4.1
 
-[Download ZIP](https://github.com/Borbofruto/Blender-Plugins/raw/refs/heads/main/addons/better_item-1.4.0.zip) · [Manual](src/better_item/README.md) · [Source](src/better_item) · [Dimensions benchmark](tests/better_item/performance.md)
+[Download ZIP](https://github.com/Borbofruto/Blender-Plugins/raw/refs/heads/main/addons/better_item-1.4.1.zip) · [Manual](src/better_item/README.md) · [Source](src/better_item) · [Dimensions benchmark](tests/better_item/performance.md)
+
+Version 1.4.1 fixes linked zero-angle rotations, signed-scale preservation, Delta Location, false locked-axis errors under rotated parents, Dimensions tracebacks for objects without surface geometry, and stale deleted-frame choices. The Individual Location selector in Align and Distribute is shown only when used by Reference Origin.
+
+For linked Rotation, the edited axis alone uses 360 degrees as a denominator if it starts at zero. Other zero axes remain zero; entering zero uses a zero ratio. Rotation edits preserve native signed Scale and Delta transforms. Frame Object sources and Object orientation references share the same scale-independent rotation extraction.
+
+Development [tests](tests/better_item) are in the repository and are not bundled into the runtime ZIP. Added coverage includes 128 signed-scale rotation cases, Delta transforms, Keep Transform parent inverses, locked-parent roundoff, unsupported geometry, removed enums and UI visibility. `test_better_item_sync_gui.py` runs with a real Blender window to verify the live timer, invalid-source suspension/recovery and rename.
 
 Panel order: **Reference Frames → Transform → Align and Distribute**. Transform keeps Blender's compact English Location, Rotation, Scale and Dimensions fields, with live edits and proportional XYZ links.
 

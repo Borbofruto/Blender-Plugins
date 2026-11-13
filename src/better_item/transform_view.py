@@ -16,6 +16,10 @@ _GEOMETRY_CACHE_BYTES=64*1024*1024
 _DIMENSION_CACHE_ENTRIES=32
 
 
+def has_surface_geometry(obj):
+    return obj.type in {'MESH','CURVE','SURFACE','FONT','META'}
+
+
 @persistent
 def clear_cache(_scene=None,_depsgraph=None):
     _dimension_cache.clear()
@@ -48,11 +52,15 @@ def _geometry_key(obj,depsgraph):
 
 
 def _coordinates(obj,depsgraph,key):
+    if not has_surface_geometry(obj):
+        raise BetterItemError('Dimensions is unavailable for object type %s.'%obj.type)
     if key in _geometry_cache:
         _geometry_cache.move_to_end(key)
         return _geometry_cache[key]
     evaluated=obj.evaluated_get(depsgraph)
-    mesh=evaluated.to_mesh()
+    try:mesh=evaluated.to_mesh()
+    except RuntimeError as exc:
+        raise BetterItemError('Dimensions is unavailable: "%s" has no evaluated surface geometry.'%obj.name) from exc
     try:
         if mesh is None or not mesh.vertices:
             raise BetterItemError('This object has no evaluated vertices to measure.')
@@ -120,25 +128,41 @@ def set_rotation(context, obj, values):
     if any(obj.lock_rotation) or obj.lock_rotation_w:
         raise BetterItemError('Unlock Rotation before editing reference-space rotation.')
     from .native_refs import rotation_basis
+    from . import orientation
     axes = rotation_basis(frames.object_axes(context,obj))
     order = obj.better_item.view_rotation_order
     desired = axes @ Euler(values,order).to_matrix()
     native=(obj.parent is None and obj.rotation_mode==order and all(abs(v)<1e-12 for v in obj.delta_rotation_euler)
         and max(abs(axes[i][j]-(1 if i==j else 0)) for i in range(3) for j in range(3))<1e-8)
-    current = obj.rotation_euler.to_matrix() if native else obj.matrix_world.to_quaternion().normalized().to_matrix()
-    delta = desired @ current.transposed()
     center = frames.object_origin(context,obj) if obj.better_item.use_reference_pivot else obj.matrix_world.translation.copy()
     previous = _snapshot(obj)
     world = obj.matrix_world.copy()
-    target = delta.to_4x4() @ world
-    target.translation = center + delta @ (world.translation-center)
+    local_before=orientation.local_rotation(obj).to_matrix()
     try:
         if native:
-            obj.location=target.translation
             obj.rotation_euler=values
-        else:obj.matrix_world = target
+        else:
+            local=(orientation.inherited_rotation(obj).inverted() @ desired).to_quaternion()
+            delta=orientation.delta_rotation(obj)
+            requested=delta.inverted() @ local
+            if obj.rotation_mode=='QUATERNION':obj.rotation_quaternion=requested
+            elif obj.rotation_mode=='AXIS_ANGLE':
+                axis,angle=requested.to_axis_angle()
+                obj.rotation_axis_angle=(angle,*axis)
+            else:obj.rotation_euler=requested.to_euler(obj.rotation_mode,obj.rotation_euler)
         context.view_layer.update()
-        actual = obj.rotation_euler.to_quaternion() if native else obj.matrix_world.to_quaternion().normalized()
+        # Preserve Scale exactly. Reject native rotations that would deform the
+        # world-space object through a nonuniform parent rather than rotate it.
+        inherited=engine._parent_matrix(obj).to_3x3()
+        try:world_delta=inherited @ orientation.local_rotation(obj).to_matrix() @ local_before.transposed() @ inherited.inverted()
+        except ValueError as exc:raise BetterItemError('The parent transform is singular; restore nonzero parent Scale.') from exc
+        gram=world_delta.transposed() @ world_delta
+        if max(abs(gram[i][j]-(1 if i==j else 0)) for i in range(3) for j in range(3))>2e-5:
+            raise BetterItemError('The nonuniform parent transform prevents a rigid reference-space rotation.')
+        target=center+world_delta @ (world.translation-center)
+        obj.location=engine._target_location(obj,target)
+        context.view_layer.update()
+        actual = orientation.rotation(obj).to_quaternion()
         error = actual.rotation_difference(desired.to_quaternion()).angle
         if min(abs(error),abs(math.tau-error)) > 2e-4:
             raise BetterItemError('The parent transform prevents this reference-space rotation.')

@@ -74,15 +74,15 @@ near(cube.rotation_euler,(.3,.6,1.8))
 def degrees(values):return tuple(math.radians(v) for v in values)
 cube.rotation_euler=(0,0,0)
 cube.better_item.rotation_x=math.radians(90)
-near(cube.rotation_euler,degrees((90,90,90)))
+near(cube.rotation_euler,degrees((90,0,0)))
 cube.better_item.rotation_x=0
-near(cube.rotation_euler,degrees((0,360,360)))
+near(cube.rotation_euler,degrees((0,0,0)))
 cube.better_item.rotation_x=math.radians(-90)
-near(cube.rotation_euler,degrees((-90,-90,-90)))
+near(cube.rotation_euler,degrees((-90,0,0)))
 cube.better_item.rotation_x=0
-near(cube.rotation_euler,degrees((0,360,360)))
+near(cube.rotation_euler,degrees((0,0,0)))
 cube.better_item.rotation_x=math.radians(90)
-near(cube.rotation_euler,degrees((90,90,90)))
+near(cube.rotation_euler,degrees((90,0,0)))
 cube.rotation_euler=degrees((0,180,720))
 cube.better_item.rotation_x=math.radians(90)
 near(cube.rotation_euler,degrees((90,45,180)))
@@ -209,4 +209,5 @@ assert bpy.context.scene.better_item.reference=='KEY'
 assert abs(bpy.context.scene.better_item.spacing+.03)<1e-6
 assert tuple(bpy.context.scene.better_item.axes)==(True,False,True)
 print('BETTER ITEM PASSED: proportional transforms, partial links, zeros, locks, world alignment, signed key ordering, independent axes, parents, rollback, mirror scale, registration and persistence.')
+
 

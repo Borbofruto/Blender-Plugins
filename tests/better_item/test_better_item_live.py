@@ -126,14 +126,14 @@ for order in ('XYZ','XZY','YXZ','YZX','ZXY','ZYX'):
     s.rotation_x=.2
     check(obj)
     assert abs(s.rotation_x-.2)<1e-4
-# Zero angles keep the requested 360-degree ratio convention.
+# Only the edited zero axis uses a 360-degree denominator; other zeros stay zero.
 obj.rotation_euler=(0,0,0)
 context.view_layer.update()
 s.view_rotation_order='XYZ'
 s.link_rotation=(True,True,True)
 s.rotation_x=math.pi/2
 check(obj)
-near(fields(s,'rotation'),(math.pi/2,math.pi/2,math.pi/2),tol=2e-4)
+near(fields(s,'rotation'),(math.pi/2,0,0),tol=2e-4)
 print('LIVE TRANSFORM PASSED: immediate fields, reference switching, native Scale, true vertex extrema, non-destructive oblique Dimensions, shared data and all Euler orders')
 # Real undo snapshots restore both modifier creation and shape-key data.
 bpy.ops.mesh.primitive_cube_add(size=1)
@@ -163,3 +163,4 @@ assert len(undo_obj.modifiers)==1
 assert len(undo_obj.data.shape_keys.key_blocks)==2
 assert abs(undo_obj.better_item.dimensions_x-2)<1e-4
 print('LIVE DIMENSIONS UNDO/REDO AND SHAPE KEYS PASSED')
+

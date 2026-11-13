@@ -230,6 +230,9 @@ def _linked_rows(layout,obj,group,label,prefix,lock_name=None):
     links=getattr(settings,engine.GROUP_LINK[group])
     row=layout.row(align=True)
     row.label(text=label+':')
+    if group=='DIMENSIONS' and not transform_view.has_surface_geometry(obj):
+        row.label(text='Unavailable')
+        return
     readonly=group=='SCALE' and not transform_view.scale_editable(obj)
     if not readonly:
         row.operator('better_item.link_group',text='',icon='LINKED' if all(links) else 'UNLINKED').group=group
@@ -271,6 +274,7 @@ def _draw_reference(layout,settings,arrangement=False):
         row=box.row(align=True)
         row.prop(settings,'arrange_frame' if arrangement else 'orientation_frame',text='Frame')
         row.operator('better_item.new_frame',text='',icon='ADD').target='ALIGN_AXES' if arrangement else 'AXES'
+    if arrangement and settings.reference!='REFERENCE':return
     origin='arrange_origin' if arrangement else 'pivot_mode'
     box.prop(settings,origin,text='Location')
     if getattr(settings,origin)=='OBJECT':box.prop(settings,'arrange_origin_object' if arrangement else 'origin_object',text='Object')

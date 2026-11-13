@@ -29,14 +29,13 @@ def linked_values(before,axis,value,links,zero_angle_as_turn=False):
     if links[axis] and sum(bool(v) for v in links)>1:
         if before[axis]==0 and not zero_angle_as_turn:
             raise BetterItemError('Cannot define a ratio from %s = 0. Unlink that axis first.' % 'XYZ'[axis])
-        # Only Euler linkage substitutes one turn for exact zero. Preserve
-        # the edited native value and explicit multi-turn angles.
-        def reference(angle):
-            return math.tau if zero_angle_as_turn and angle==0 else angle
-        factor=reference(value)/reference(before[axis])
+        # Zero is only a denominator fallback for the axis being edited.
+        # Other zero angles remain zero, and crossing zero scales to zero.
+        denominator=math.tau if zero_angle_as_turn and before[axis]==0 else before[axis]
+        factor=value/denominator
         for i,linked in enumerate(links):
             if linked:
-                result[i]=value if i==axis else reference(before[i])*factor
+                result[i]=value if i==axis else before[i]*factor
     return vector3(result)
 
 

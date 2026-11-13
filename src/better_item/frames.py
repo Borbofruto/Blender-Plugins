@@ -63,7 +63,8 @@ def frame_axes(frame,context=None,stack=()):
     if mode=='OBJECT':
         source=frame.rotation_source
         if source is None:raise BetterItemError('[BI-F002] Frame "%s": choose an Orientation Object.'%frame.name)
-        return native_refs.checked(source.matrix_world.to_3x3().normalized())
+        from .orientation import rotation
+        return rotation(source)
     if mode=='NATIVE':return native_refs.orientation(context,frame.native_source,stack=stack)
     if mode=='FRAME':return frame_axes(find(context.scene,frame.rotation_frame),context,stack)
     result=Euler(frame.rotation,'XYZ').to_matrix()
@@ -123,7 +124,8 @@ def relative_values(context, obj, kind):
     if kind == 'POSITION':
         return tuple(axes.inverted() @ (obj.matrix_world.translation-object_origin(context, obj)))
     from .native_refs import rotation_basis
-    rotation = rotation_basis(axes).transposed() @ obj.matrix_world.to_quaternion().normalized().to_matrix()
+    from .orientation import rotation as object_rotation
+    rotation = rotation_basis(axes).transposed() @ object_rotation(obj)
     order=obj.better_item.view_rotation_order
     if obj.parent is None and obj.rotation_mode==order and all(abs(v)<1e-12 for v in obj.delta_rotation_euler):
         if max(abs(axes[i][j]-(1 if i==j else 0)) for i in range(3) for j in range(3))<1e-8:
@@ -207,6 +209,19 @@ def migrate():
                 frame.rotation_mode='OBJECT'
             frame.source=None
             frame['source_schema']=2
+        clear_missing_choices(scene)
+
+
+def clear_missing_choices(scene,removed=None):
+    """Reset RNA enum numbers without reading their invalid enum identifiers."""
+    valid={0}|{frame.number for frame in scene.better_item.frames if frame.number!=removed}
+    owners=[(scene.better_item,('arrange_reference_frame','arrange_frame','arrange_origin_frame'))]
+    owners.extend((obj.better_item,('reference_frame','orientation_frame','pivot_frame')) for obj in scene.objects)
+    owners.extend((frame,('position_frame','rotation_frame')) for frame in scene.better_item.frames)
+    for owner,fields in owners:
+        for field in fields:
+            number=owner.get(field,0)
+            if number not in valid:owner[field]=0
 
 
 def _frame_component(kind, axis):
@@ -337,7 +352,8 @@ class BETTERITEM_OT_frame(bpy.types.Operator):
                     origin, axes, name = viewport_origin(context,obj), viewport_axes(context,obj), 'Viewport Reference'
                 else:
                     origin = obj.matrix_world.translation.copy()
-                    axes = obj.matrix_world.to_quaternion().normalized().to_matrix()
+                    from .orientation import rotation
+                    axes = rotation(obj)
                     name = obj.name + (' Linked' if self.action == 'LINKED' else ' Applied')
                 create(context,name,origin,axes,obj if self.action == 'LINKED' else None)
                 return {'FINISHED'}
@@ -347,6 +363,7 @@ class BETTERITEM_OT_frame(bpy.types.Operator):
             if self.action == 'REMOVE':
                 from .native_refs import remove_native
                 remove_native(context,frame)
+                clear_missing_choices(context.scene,frame.number)
                 settings.frames.remove(settings.active_frame)
                 settings.active_frame = min(settings.active_frame,len(settings.frames)-1)
             elif self.action.startswith('APPLY'):
