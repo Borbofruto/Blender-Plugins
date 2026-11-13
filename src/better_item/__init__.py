@@ -91,6 +91,8 @@ class BetterItemObjectSettings(bpy.types.PropertyGroup):
 
 class BetterItemSceneSettings(bpy.types.PropertyGroup):
     frames:bpy.props.CollectionProperty(type=frames.BetterItemFrame)
+    frame_create_source:bpy.props.PointerProperty(name='Object',type=bpy.types.Object,
+        poll=lambda self,obj: obj.name in self.id_data.objects)
     frame_serial:bpy.props.IntProperty(default=0)
     active_frame:bpy.props.IntProperty(default=-1,min=-1)
     show_frames:bpy.props.BoolProperty(name='Show Reference Frames',default=True,options=set())
@@ -225,9 +227,15 @@ class BETTERITEM_PT_transform(bpy.types.Panel):
         settings=obj.better_item
         layout.prop(settings,'orientation',text='Axes')
         if settings.orientation=='REFERENCE':layout.prop(settings,'orientation_object',text='Object')
-        if settings.orientation=='SAVED':layout.prop(settings,'orientation_frame',text='Frame')
+        if settings.orientation=='SAVED':
+            row=layout.row(align=True)
+            row.prop(settings,'orientation_frame',text='Frame')
+            row.operator('better_item.new_frame',text='',icon='ADD').target='AXES'
         layout.prop(settings,'pivot_mode')
-        if settings.pivot_mode=='FRAME':layout.prop(settings,'pivot_frame',text='Frame')
+        if settings.pivot_mode=='FRAME':
+            row=layout.row(align=True)
+            row.prop(settings,'pivot_frame',text='Frame')
+            row.operator('better_item.new_frame',text='',icon='ADD').target='ORIGIN'
         if settings.pivot_mode=='OBJECT':layout.prop(settings,'origin_object',text='Object')
         layout.prop(settings,'use_reference_pivot')
         error=_field_errors.get(obj.as_pointer())

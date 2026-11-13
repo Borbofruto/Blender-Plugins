@@ -3,7 +3,7 @@
 import uuid
 import bpy
 from mathutils import Matrix, Vector, Euler
-from .math_core import BetterItemError
+from .math_core import BetterItemError,vector3
 
 _enum_cache = {}
 
@@ -214,6 +214,77 @@ class BetterItemFrame(bpy.types.PropertyGroup):
     rotation_z: _frame_component('ROTATION',2)
 
 
+class BETTERITEM_OT_new_frame(bpy.types.Operator):
+    bl_idname='better_item.new_frame'
+    bl_label='New Frame'
+    bl_description='Create a scene frame manually, copy an object, or follow an object'
+    bl_options={'REGISTER','UNDO'}
+    target:bpy.props.EnumProperty(items=[('NONE','Frame List',''),('AXES','Orientation',''),('ORIGIN','Origin','')],
+        default='NONE',options={'HIDDEN','SKIP_SAVE'})
+    target_name:bpy.props.StringProperty(options={'HIDDEN','SKIP_SAVE'})
+    frame_name:bpy.props.StringProperty(name='Name',default='Frame')
+    creation_mode:bpy.props.EnumProperty(name='Type',items=[
+        ('MANUAL','Manual','Enter world Location and Orientation'),
+        ('OBJECT_STATIC','Object (Independent)','Copy the object transform without keeping a link'),
+        ('OBJECT_LINKED','Object (Linked)','Follow the selected source object')],default='MANUAL')
+    position:bpy.props.FloatVectorProperty(name='Location',size=3,unit='LENGTH',subtype='TRANSLATION')
+    rotation:bpy.props.FloatVectorProperty(name='Rotation',size=3,unit='ROTATION',subtype='EULER')
+    link_position:bpy.props.BoolProperty(name='Link Location',default=True)
+    link_rotation:bpy.props.BoolProperty(name='Link Orientation',default=True)
+    def invoke(self,context,event):
+        self.target_name=context.active_object.name if context.active_object else ''
+        context.scene.better_item.frame_create_source=context.active_object
+        return context.window_manager.invoke_props_dialog(self,width=340)
+    def draw(self,context):
+        layout=self.layout
+        layout.prop(self,'frame_name')
+        layout.prop(self,'creation_mode')
+        if self.creation_mode=='MANUAL':
+            layout.column(align=True).prop(self,'position')
+            layout.column(align=True).prop(self,'rotation')
+        else:
+            layout.prop(context.scene.better_item,'frame_create_source',text='Object')
+            if self.creation_mode=='OBJECT_LINKED':
+                layout.prop(self,'link_position')
+                layout.prop(self,'link_rotation')
+    def cancel(self,context):
+        context.scene.better_item.frame_create_source=None
+    def execute(self,context):
+        settings=context.scene.better_item
+        try:
+            obj=context.scene.objects.get(self.target_name) if self.target_name else context.active_object
+            if self.target!='NONE' and (obj is None or not obj.is_editable):
+                raise BetterItemError('Select an editable target object before creating a frame.')
+            context.view_layer.update()
+            source=None
+            if self.creation_mode=='MANUAL':
+                origin=Vector(vector3(self.position))
+                axes=Euler(vector3(self.rotation),'XYZ').to_matrix()
+            else:
+                chosen=settings.frame_create_source
+                if chosen is None:
+                    raise BetterItemError('Choose an Object to create this frame.')
+                origin=chosen.matrix_world.translation.copy()
+                axes=chosen.matrix_world.to_quaternion().normalized().to_matrix()
+                if self.creation_mode=='OBJECT_LINKED' and (self.link_position or self.link_rotation):source=chosen
+            frame=create(context,self.frame_name.strip() or 'Frame',origin,axes,source)
+            if source is not None:
+                frame.link_position=self.link_position
+                frame.link_rotation=self.link_rotation
+            if self.target=='AXES':
+                obj.better_item.orientation='SAVED'
+                obj.better_item.orientation_frame=frame.uid
+            elif self.target=='ORIGIN':
+                obj.better_item.pivot_mode='FRAME'
+                obj.better_item.pivot_frame=frame.uid
+            settings.frame_create_source=None
+        except BetterItemError as exc:
+            settings.frame_create_source=None
+            self.report({'ERROR'},str(exc))
+            return {'CANCELLED'}
+        return {'FINISHED'}
+
+
 class BETTERITEM_OT_frame(bpy.types.Operator):
     bl_idname = 'better_item.frame'
     bl_label = 'Better Item Reference Frame'
@@ -225,7 +296,6 @@ class BETTERITEM_OT_frame(bpy.types.Operator):
         ('APPLY','Apply Reference'),('APPLY_POSITION','Apply Location'),
         ('APPLY_ROTATION','Apply Orientation'),('REMOVE','Remove'),('USE','Use Orientation and Origin'))])
     def execute(self, context):
-        from . import orientation
         settings = context.scene.better_item
         obj = context.active_object
         try:
@@ -281,9 +351,8 @@ class BETTERITEM_PT_frames(bpy.types.Panel):
         layout=self.layout
         settings=context.scene.better_item
         layout.prop(settings,'show_frames')
-        for action,label in (('VIEWPORT','Create from Viewport'),('OBJECT','Create from Object (Applied)'),
-                ('LINKED','Create Linked to Object'),('MANUAL','Create Manual')):
-            layout.operator('better_item.frame',text=label).action=action
+        layout.operator('better_item.new_frame',text='New Frame',icon='ADD')
+        layout.operator('better_item.frame',text='Create from Viewport').action='VIEWPORT'
         layout.template_list('BETTERITEM_UL_frames','',settings,'frames',settings,'active_frame',rows=3)
         if not 0 <= settings.active_frame < len(settings.frames): return
         frame=settings.frames[settings.active_frame]
@@ -349,4 +418,4 @@ class BETTERITEM_GGT_frames(bpy.types.GizmoGroup):
                 arrow.matrix_basis=matrix
 
 
-classes=(BETTERITEM_OT_frame,BETTERITEM_UL_frames,BETTERITEM_PT_frames,BETTERITEM_GGT_frames)
+classes=(BETTERITEM_OT_new_frame,BETTERITEM_OT_frame,BETTERITEM_UL_frames,BETTERITEM_PT_frames,BETTERITEM_GGT_frames)

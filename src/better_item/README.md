@@ -1,10 +1,10 @@
-# Better Item 1.2.1
+# Better Item 1.2.2
 
 A live Transform panel for Blender 5.0+, tested in Blender 5.2.3 LTS. GPL-3.0-or-later. Author: Gabriel Webber do Nascimento.
 
 ## Installation
 
-Download `addons/better_item-1.2.1.zip` from the repository. In Blender use **Edit > Preferences > Add-ons > Install from Disk**, choose that ZIP, enable Better Item, and restart Blender after an update. Open **N > Better Item** in Object Mode. The repository ZIP is not the extension package.
+Download `addons/better_item-1.2.2.zip` from the repository. In Blender use **Edit > Preferences > Add-ons > Install from Disk**, choose that ZIP, enable Better Item, and restart Blender after an update. Open **N > Better Item** in Object Mode. The repository ZIP is not the extension package.
 
 ## One live Transform panel
 
@@ -39,10 +39,16 @@ Oblique dimension editing currently requires a Mesh object. A disabled Better It
 
 Each scene stores named frames with independent world Location and Orientation. Frame identity survives renaming, saving and undo/redo.
 
+Click the **+** next to either **Saved Frame > Frame** selector in Transform. **New Frame** lets you set a name and choose **Manual**, **Object (Independent)**, or **Object (Linked)**. Manual exposes Location and Rotation. Object modes provide a searchable object picker; Linked also provides independent Location and Orientation link toggles. The new frame is immediately selected for the field whose + button you used, without changing the other field or the object's transform.
+
+**Reference Frames > New Frame** opens the same dialog without changing the active object's selected frame. The existing **Create from Viewport** shortcut captures the current gizmo and pivot.
+
+Frames are stored in the scene inside the .blend, not in a temporary Python menu. Save the .blend normally to retain names, manual values, live links and source objects. The selected orientation and origin frame IDs are stored with each target object. A new-process save/reopen test verifies that both frame dropdowns and their selections are reconstructed without an existing enum cache.
+
 - **Create from Viewport** captures the current transform orientation and pivot. Median and bounds pivots use the full selection; Individual Origins captures the active object's origin.
-- **Create from Object (Applied)** copies the active object's world position and orientation without a persistent link.
-- **Create Linked to Object** uses its transform as a live source. Location and Orientation links are independent.
-- **Create Manual** starts a frame at the world origin with zero rotation.
+- **Object (Independent)** copies the active object's world position and orientation without a persistent link.
+- **Object (Linked)** uses its transform as a live source. Location and Orientation links are independent.
+- **Manual** starts a frame at the world origin with zero rotation.
 
 Edit **Source Object** to select a source. Selecting a source without enabling links does not copy it. **Apply Location**, **Apply Orientation**, or **Apply Reference** stores the current component values and ends the respective links. Unlinking also preserves the current values. Applied components can be edited manually. After both components are applied, the source pointer is released and the original object can be deleted safely.
 
@@ -82,3 +88,4 @@ Version and extension description live only in `blender_manifest.toml`; this is 
 Automated Blender tests also cover vectorized precision, cache reuse, shared geometry and modifier invalidation, memory limits and 2,000 frame renames. They cover live field updates, reference switching without object movement, true vertex extrema, non-destructive oblique Dimensions, shared data isolation, Euler orders, angle turns, proportional links, locks, drivers, alignment/distribution, parenting, saved/live frames, source deletion, renaming, persistence, undo/redo and registration. The actual viewport and panel were also opened and visually inspected.
 
 `__init__.py` defines the UI and properties; `transform_view.py` implements live readings and edits; `frames.py` owns saved frames and viewport indicators; `engine.py` implements native Scale edits and transactional world positioning; `math_core.py` holds Blender-independent rules; `orientation.py` provides orientation utilities.
+
