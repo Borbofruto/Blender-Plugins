@@ -1,7 +1,8 @@
 """Blender integration: native transforms and transactional world positioning."""
 import math
 import bpy
-from mathutils import Vector
+import numpy as np
+from mathutils import Vector,Matrix
 from .math_core import BetterItemError,linked_values,different
 
 GROUP_LINK={'LOCATION':'link_location','ROTATION':'link_rotation','SCALE':'link_scale','DIMENSIONS':'link_dimensions'}
@@ -9,13 +10,16 @@ GROUP_LINK={'LOCATION':'link_location','ROTATION':'link_rotation','SCALE':'link_
 
 def editable(obj):
     if not obj.is_editable:
-        raise BetterItemError('Object "%s" is not locally editable.' % obj.name)
+        raise BetterItemError('[BI-T001] Object "%s" is not locally editable.' % obj.name)
 
 
 def _driver_guard(obj,paths):
     animation=obj.animation_data
-    if animation and any(not curve.mute and curve.data_path in paths for curve in animation.drivers):
-        raise BetterItemError('Object "%s" has a driver on these fields. Edit or disable the driver.' % obj.name)
+    drivers=[curve for curve in animation.drivers if not curve.mute and curve.data_path in paths] if animation else []
+    if drivers:
+        labels=['%s[%s]'%(curve.data_path,curve.array_index) for curve in drivers]
+        raise BetterItemError('[BI-T002] Object "%s" has an active driver on %s. '
+            'Edit or disable that driver before this operation.' % (obj.name,', '.join(labels)))
 
 
 def _matches(actual,expected):
@@ -57,20 +61,43 @@ def _depth(obj):
     return depth
 
 
-def _local_delta(obj,world_delta):
-    if not obj.parent:
-        return world_delta
+def _parent_matrix(obj):
+    if not obj.parent:return Matrix.Identity(4)
     try:
         if obj.parent_type=='OBJECT':
-            parent=obj.parent.matrix_world @ obj.matrix_parent_inverse
-        else:
-            parent=obj.matrix_world @ obj.matrix_basis.inverted()
-        return parent.to_3x3().inverted() @ world_delta
+            return obj.parent.matrix_world @ obj.matrix_parent_inverse
+        return obj.matrix_world @ obj.matrix_basis.inverted()
     except ValueError as exc:
-        raise BetterItemError('The parent transform of "%s" is singular; its position cannot be resolved.' % obj.name) from exc
+        raise BetterItemError('[BI-T005] Parent transform of "%s" is singular; restore nonzero parent Scale.' % obj.name) from exc
 
 
-def apply_world_positions(objects,targets):
+def _target_location(obj,target):
+    """Solve an absolute target, avoiding float32 L + (target - L) cancellation."""
+    if not obj.parent:
+        current=obj.matrix_world.translation
+        return Vector(tuple(float(obj.location[i]) if target[i]==current[i]
+            else float(target[i])-float(obj.delta_location[i]) for i in range(3)))
+    parent=np.asarray(_parent_matrix(obj),dtype=np.float64)
+    try:local=np.linalg.solve(parent[:3,:3],np.asarray(target,dtype=np.float64)-parent[:3,3])
+    except np.linalg.LinAlgError as exc:
+        raise BetterItemError('[BI-T005] Parent transform of "%s" is singular; restore nonzero parent Scale.' % obj.name) from exc
+    return Vector(local-np.asarray(obj.delta_location,dtype=np.float64))
+
+
+def _position_matches(obj,target):
+    actual=tuple(obj.matrix_world.translation)
+    if _matches(actual,target):return True
+    if not obj.parent and not any(obj.delta_location):return False
+    # Bound native float32 addition/multiplication error when parenting or
+    # delta transforms cause cancellation. Drivers/constraints are still
+    # rejected independently; this is not an arbitrary geometric tolerance.
+    parent=np.asarray(_parent_matrix(obj),dtype=np.float64)
+    terms=np.abs(parent[:3,:3]) @ (np.abs(np.asarray(obj.location))+np.abs(np.asarray(obj.delta_location)))+np.abs(parent[:3,3])
+    budget=4*np.finfo(np.float32).eps*terms
+    return all(abs(a-t)<=max(1e-8,3e-7*abs(t),float(budget[i])) for i,(a,t) in enumerate(zip(actual,target)))
+
+
+def apply_world_positions(objects,targets,*,verify=None):
     """Preserve native rotation/scale; either all planned origins move or none."""
     previous={obj:obj.location.copy() for obj in objects}
     changed=[]
@@ -81,22 +108,26 @@ def apply_world_positions(objects,targets):
             if all(not different(component,0) for component in delta):
                 continue
             editable(obj)
-            if any(not constraint.mute and constraint.influence!=0 for constraint in obj.constraints):
-                raise BetterItemError('Object "%s" has active constraints. Disable them before aligning or distributing.' % obj.name)
+            constraints=[constraint.name for constraint in obj.constraints if not constraint.mute and constraint.influence!=0]
+            if constraints:
+                raise BetterItemError('[BI-T004] Object "%s" has active constraints: %s. '
+                    'Disable them before aligning or distributing.' % (obj.name,', '.join(constraints)))
             _driver_guard(obj,{'location','delta_location'})
-            local_delta=_local_delta(obj,delta)
+            desired=_target_location(obj,targets[obj.name])
             for axis,locked in enumerate(obj.lock_location):
-                if locked and different(local_delta[axis],0):
-                    raise BetterItemError('Local axis %s is locked on "%s". No objects were repositioned.' % ('XYZ'[axis],obj.name))
-            desired=obj.location+local_delta
+                if locked and desired[axis]!=obj.location[axis]:
+                    raise BetterItemError('[BI-T003] Local %s is locked on "%s". Unlock it before moving; no objects were repositioned.' % ('XYZ'[axis],obj.name))
             if not all(math.isfinite(component) for component in desired):
-                raise BetterItemError('The transform of "%s" exceeded the numeric range.' % obj.name)
+                raise BetterItemError('[BI-T007] Position of "%s" exceeds the numeric range. Reduce coordinate magnitudes.' % obj.name)
             changed.append(obj)
             obj.location=desired
         bpy.context.view_layer.update()
         for obj in objects:
-            if not _matches(obj.matrix_world.translation,targets[obj.name]):
-                raise BetterItemError('Could not position "%s" at the planned coordinate. Check parenting and drivers.' % obj.name)
+            if not _position_matches(obj,targets[obj.name]):
+                error=max(abs(a-t) for a,t in zip(obj.matrix_world.translation,targets[obj.name]))
+                raise BetterItemError('[BI-T006] Position verification failed for "%s" (residual %.9g Blender units). '
+                    'The evaluated transform did not retain its target; inspect animation, constraints and coordinate precision. No objects were repositioned.' % (obj.name,error))
+        if verify is not None:verify(objects)
     except Exception as exc:
         for obj in changed:
             obj.location=previous[obj]

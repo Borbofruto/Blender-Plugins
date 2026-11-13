@@ -64,7 +64,7 @@ except RuntimeError:pass
 assert len(context.scene.better_item.frames)==count
 # Save and reopen in a NEW Blender process: no existing Python enum cache.
 context.preferences.filepaths.file_preview_type='NONE'
-root=Path(__file__).resolve().parent
+root=Path(__file__).resolve().parents[2]/"src"
 with tempfile.TemporaryDirectory(dir=root) as temp:
     filepath=Path(temp)/'saved_frames.blend'
     reader=Path(temp)/'read_frames.py'

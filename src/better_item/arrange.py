@@ -1,0 +1,156 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+"""Plan origin-based arrangements in an explicitly selected reference frame."""
+import math
+import numpy as np
+from mathutils import Vector
+from . import frames,orientation
+from .math_core import BetterItemError,align_positions,distribute_positions
+
+_last_error=(None,'')
+
+
+def set_error(scene,message):
+    global _last_error
+    _last_error=(scene.as_pointer(),message)
+
+
+def error(scene):
+    return _last_error[1] if _last_error[0]==scene.as_pointer() else ''
+
+
+def clear_error():
+    global _last_error
+    _last_error=(None,'')
+
+
+def _frame_origin(scene,uid):
+    frame=frames.find(scene,uid)
+    return frames.frame_origin(frame),frame.source if frame.link_position else None
+
+
+def reference_frame(context,reference=None):
+    settings=context.scene.better_item
+    active=context.active_object or next(iter(context.selected_objects),None)
+    mode=settings.arrange_orientation
+    try:
+        if mode=='SAVED':axes=frames.frame_axes(frames.find(context.scene,settings.arrange_frame))
+        elif mode=='VIEWPORT':axes=frames.viewport_axes(context,active)
+        else:axes=orientation.basis(active,mode,settings.arrange_object)
+        if (reference if reference is not None else settings.reference)!='REFERENCE':
+            return np.asarray(axes,dtype=np.float64),np.zeros(3,dtype=np.float64),None
+        origin_mode=settings.arrange_origin
+        if origin_mode=='MATCH':
+            if mode=='SAVED':origin,source=_frame_origin(context.scene,settings.arrange_frame)
+            elif mode in {'REFERENCE','LOCAL'}:
+                source=settings.arrange_object if mode=='REFERENCE' else active
+                origin=source.matrix_world.translation.copy()
+            elif mode=='VIEWPORT':origin,source=frames.viewport_origin(context,active),None
+            else:origin,source=Vector(),None
+        elif origin_mode=='SAVED':origin,source=_frame_origin(context.scene,settings.arrange_origin_frame)
+        elif origin_mode=='OBJECT':
+            source=settings.arrange_origin_object
+            if source is None:raise BetterItemError('Choose an Origin Object.')
+            origin=source.matrix_world.translation.copy()
+        elif origin_mode=='CURSOR':origin,source=context.scene.cursor.location.copy(),None
+        elif origin_mode=='VIEWPORT':origin,source=frames.viewport_origin(context,active),None
+        else:origin,source=Vector(),None
+    except (BetterItemError,AttributeError) as exc:
+        raise BetterItemError('[BI-A002] Invalid arrangement reference: %s' % exc) from exc
+    return np.asarray(axes,dtype=np.float64),np.asarray(origin,dtype=np.float64),source
+
+
+def _small(distance,minimum):
+    return distance<minimum and not math.isclose(distance,minimum,rel_tol=2e-7,abs_tol=0)
+
+
+def _mm(value):
+    if value==0:return '0'
+    if 1e-8<=abs(value)<1e7:return ('%.8f'%value).rstrip('0').rstrip('.')
+    return '%.6g'%value
+
+
+def _check_distribution(coordinates,axes,reference,spacing,minimum,mm_per_unit):
+    minimum_mm=minimum*mm_per_unit
+    if reference!='SELECTION' and _small(abs(spacing),minimum):
+        raise BetterItemError('[BI-D001] Spacing is %s mm. Enter a positive or negative spacing with magnitude '
+            'at least %s mm; zero spacing is not allowed.' % (_mm(spacing*mm_per_unit),_mm(minimum_mm)))
+    conflicts=_coordinate_conflicts(coordinates,axes,minimum)
+    if conflicts:
+        raise BetterItemError('[BI-D002] Distribution order is ambiguous: object coordinates overlap or are closer '
+            'than %s mm on the selected reference axes.\n%s\n'
+            'Separate the listed objects on those axes by at least %s mm, then retry. '
+            'Use a larger offset if Blender rounds it back to the same coordinate.' %
+            (_mm(minimum_mm),'\n'.join(conflicts),_mm(minimum_mm)))
+
+
+def _coordinate_conflicts(coordinates,axes,minimum):
+    conflicts=[]
+    for axis,enabled in enumerate(axes):
+        if not enabled:continue
+        ordered=sorted(coordinates,key=lambda name:(coordinates[name][axis],name))
+        cluster=[]
+        for left,right in zip(ordered,ordered[1:]):
+            gap=coordinates[right][axis]-coordinates[left][axis]
+            if _small(gap,minimum):
+                if not cluster:cluster=[left]
+                cluster.append(right)
+            elif cluster:
+                conflicts.append('%s: %s' % ('XYZ'[axis],', '.join('"%s"'%name for name in cluster)))
+                cluster=[]
+        if cluster:conflicts.append('%s: %s' % ('XYZ'[axis],', '.join('"%s"'%name for name in cluster)))
+    return conflicts
+
+
+def distribution_verifier(context,axes,reference,minimum_mm):
+    # Capture axes/origin before movement, including moving viewport pivots.
+    basis,origin,_=reference_frame(context,reference)
+    minimum=minimum_mm/(1000*context.scene.unit_settings.scale_length)
+    def verify(objects):
+        coordinates={obj.name:np.linalg.solve(basis,np.asarray(obj.matrix_world.translation)-origin) for obj in objects}
+        conflicts=_coordinate_conflicts(coordinates,axes,minimum)
+        if conflicts:
+            raise BetterItemError('[BI-D003] Blender coordinate precision would place these objects closer than '
+                '%s mm after distribution:\n%s\nIncrease Spacing or reduce large coordinate/parent offsets. '
+                'The operation was undone; no objects were repositioned.' % (_mm(minimum_mm),'\n'.join(conflicts)))
+    return verify
+
+
+def plan(context,objects,origins,axes,reference,*,mode='CENTER',spacing=None,minimum_mm=0.00001):
+    if not any(axes):raise BetterItemError('[BI-A001] Select at least one arrangement axis: X, Y or Z.')
+    distributing=spacing is not None
+    required=1 if reference=='REFERENCE' else (3 if distributing and reference=='SELECTION' else 2)
+    if len(objects)<required:
+        raise BetterItemError('[BI-A003] Select at least %s objects for this operation.' % required)
+    if reference not in {'SELECTION','KEY','REFERENCE'}:
+        raise BetterItemError('[BI-A004] Choose a valid Align To reference.')
+    basis,origin,source=reference_frame(context,reference)
+    try:coordinates={name:tuple(np.linalg.solve(basis,np.asarray(value,dtype=np.float64)-origin)) for name,value in origins.items()}
+    except np.linalg.LinAlgError as exc:raise BetterItemError('[BI-A002] Reference axes are singular.') from exc
+    active=context.active_object.name if context.active_object else None
+    if reference=='KEY' and active not in origins:
+        raise BetterItemError('[BI-A004] The key object must be active and selected.')
+    mm_per_unit=1000*context.scene.unit_settings.scale_length
+    if not math.isfinite(minimum_mm) or minimum_mm<=0:
+        raise BetterItemError('[BI-D001] Minimum Distance must be greater than zero.')
+    minimum=minimum_mm/mm_per_unit
+    if distributing:
+        if not math.isfinite(spacing):raise BetterItemError('[BI-D001] Enter a finite Spacing.')
+        _check_distribution(coordinates,axes,reference,spacing,minimum,mm_per_unit)
+    fixed=source.name if reference=='REFERENCE' and source is not None and source.name in origins else None
+    working={name:value for name,value in coordinates.items() if name!=fixed}
+    synthetic='\0Better Item Reference'
+    if reference=='REFERENCE':
+        if not working:raise BetterItemError('[BI-A003] Select at least one object other than the reference source.')
+        working[synthetic]=(0.,0.,0.)
+        planner_reference,key='KEY',synthetic
+    else:planner_reference,key=reference,active
+    if distributing:result=distribute_positions(working,axes,planner_reference,spacing,key)
+    else:result=align_positions(working,axes,planner_reference,mode,key)
+    result.pop(synthetic,None)
+    if reference=='REFERENCE' and distributing and context.scene.better_item.arrange_on_axis and sum(axes)==1:
+        for value in result.values():
+            for i,enabled in enumerate(axes):
+                if not enabled:value[i]=0.
+    if fixed is not None:result[fixed]=coordinates[fixed]
+    return {name:tuple(np.asarray(origins[name],dtype=np.float64)+basis @
+        (np.asarray(result[name])-np.asarray(coordinates[name]))) for name in origins}

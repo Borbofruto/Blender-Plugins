@@ -77,6 +77,15 @@ cube.better_item.pivot_frame=reference.uid
 addon.BETTERITEM_PT_transform.draw(SimpleNamespace(layout=Layout()),context)
 frames.BETTERITEM_PT_frames.draw(SimpleNamespace(layout=Layout()),context)
 assert 'orientation_frame' in calls and 'pivot_frame' in calls and 'position_x' in calls
+scene_settings=bpy.context.scene.better_item
+scene_settings.reference='REFERENCE'
+scene_settings.arrange_orientation='SAVED'
+scene_settings.arrange_frame=reference.uid
+scene_settings.arrange_origin='SAVED'
+scene_settings.arrange_origin_frame=reference.uid
+addon.BETTERITEM_PT_alignment.draw(SimpleNamespace(layout=Layout()),context)
+assert 'arrange_frame' in calls and 'arrange_origin_frame' in calls and 'minimum_distance_mm' in calls
+
 
 # The reference-space Euler view can edit a quaternion-backed object.
 cube.rotation_mode='QUATERNION'

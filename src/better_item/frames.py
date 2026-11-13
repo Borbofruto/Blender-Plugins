@@ -33,13 +33,22 @@ def find(scene, uid):
     raise BetterItemError('Choose a reference frame that exists in this scene.')
 
 
+def frame_origin(frame):
+    if frame.link_position:
+        if frame.source is None:raise BetterItemError('Frame "%s" has no Location source. Choose a source object.'%frame.name)
+        return frame.source.matrix_world.translation.copy()
+    return Vector(frame.position)
+
+
+def frame_axes(frame):
+    if frame.link_rotation:
+        if frame.source is None:raise BetterItemError('Frame "%s" has no Orientation source. Choose a source object.'%frame.name)
+        return frame.source.matrix_world.to_quaternion().normalized().to_matrix()
+    return Euler(frame.rotation,'XYZ').to_matrix()
+
+
 def resolve(frame):
-    if (frame.link_position or frame.link_rotation) and frame.source is None:
-        raise BetterItemError('Frame "%s" is linked but its source object is missing.' % frame.name)
-    world = frame.source.matrix_world if frame.source else None
-    origin = world.translation.copy() if frame.link_position else Vector(frame.position)
-    axes = world.to_quaternion().normalized().to_matrix() if frame.link_rotation else Euler(frame.rotation, 'XYZ').to_matrix()
-    return origin, axes
+    return frame_origin(frame),frame_axes(frame)
 
 
 def viewport_axes(context, obj):
@@ -69,7 +78,7 @@ def object_axes(context, obj):
     from . import orientation
     settings = obj.better_item
     if settings.orientation == 'SAVED':
-        return resolve(find(context.scene, settings.orientation_frame))[1]
+        return frame_axes(find(context.scene, settings.orientation_frame))
     if settings.orientation == 'VIEWPORT':
         return viewport_axes(context, obj)
     return orientation.basis(obj, settings.orientation, settings.orientation_object)
@@ -97,7 +106,7 @@ def object_origin(context, obj):
     if settings.pivot_mode == 'GLOBAL':
         return Vector((0, 0, 0))
     if settings.pivot_mode == 'FRAME':
-        return resolve(find(context.scene, settings.pivot_frame))[0]
+        return frame_origin(find(context.scene, settings.pivot_frame))
     if settings.pivot_mode == 'OBJECT':
         if settings.origin_object is None:raise BetterItemError('Choose an Origin Object.')
         return settings.origin_object.matrix_world.translation.copy()
@@ -131,7 +140,7 @@ def set_position(context, obj, values):
     return engine.apply_world_positions([obj],{obj.name:tuple(target)})
 
 
-def create(context, name, origin, axes, source=None):
+def create(context, name, origin, axes, source=None, *, follow_position=None,follow_rotation=None):
     settings = context.scene.better_item
     frame = settings.frames.add()
     frame.uid = uuid.uuid4().hex
@@ -146,15 +155,18 @@ def create(context, name, origin, axes, source=None):
     frame.name = candidate
     frame.position = origin
     frame.rotation = axes.to_euler('XYZ')
+    frame.link_position = source is not None if follow_position is None else follow_position
+    frame.link_rotation = source is not None if follow_rotation is None else follow_rotation
     frame.source = source
-    frame.link_position = source is not None
-    frame.link_rotation = source is not None
     settings.active_frame = len(settings.frames)-1
     return frame
 
 
 def apply_reference(frame, component='ALL'):
-    origin, axes = resolve(frame)
+    origin=axes=None
+    if component=='ALL':origin,axes=resolve(frame)
+    elif component=='POSITION':origin=frame_origin(frame)
+    else:axes=frame_axes(frame)
     if component in {'ALL','POSITION'}:
         frame.position = origin
         frame.link_position = False
@@ -169,8 +181,7 @@ def _frame_component(kind, axis):
     attribute = 'position' if kind == 'POSITION' else 'rotation'
     def get(self):
         try:
-            origin, axes = resolve(self)
-            return origin[axis] if kind == 'POSITION' else axes.to_euler('XYZ')[axis]
+            return frame_origin(self)[axis] if kind=='POSITION' else frame_axes(self).to_euler('XYZ')[axis]
         except BetterItemError:
             return getattr(self, attribute)[axis]
     def set_value(self, value):
@@ -219,7 +230,8 @@ class BETTERITEM_OT_new_frame(bpy.types.Operator):
     bl_label='New Frame'
     bl_description='Create a scene frame manually, copy an object, or follow an object'
     bl_options={'REGISTER','UNDO'}
-    target:bpy.props.EnumProperty(items=[('NONE','Frame List',''),('AXES','Orientation',''),('ORIGIN','Origin','')],
+    target:bpy.props.EnumProperty(items=[('NONE','Frame List',''),('AXES','Orientation',''),('ORIGIN','Origin',''),
+        ('ALIGN_AXES','Arrangement Orientation',''),('ALIGN_ORIGIN','Arrangement Origin','')],
         default='NONE',options={'HIDDEN','SKIP_SAVE'})
     target_name:bpy.props.StringProperty(options={'HIDDEN','SKIP_SAVE'})
     frame_name:bpy.props.StringProperty(name='Name',default='Frame')
@@ -247,13 +259,15 @@ class BETTERITEM_OT_new_frame(bpy.types.Operator):
             if self.creation_mode=='OBJECT_LINKED':
                 layout.prop(self,'link_position')
                 layout.prop(self,'link_rotation')
+                if not self.link_position:layout.column(align=True).prop(self,'position')
+                if not self.link_rotation:layout.column(align=True).prop(self,'rotation')
     def cancel(self,context):
         context.scene.better_item.frame_create_source=None
     def execute(self,context):
         settings=context.scene.better_item
         try:
             obj=context.scene.objects.get(self.target_name) if self.target_name else context.active_object
-            if self.target!='NONE' and (obj is None or not obj.is_editable):
+            if self.target in {'AXES','ORIGIN'} and (obj is None or not obj.is_editable):
                 raise BetterItemError('Select an editable target object before creating a frame.')
             context.view_layer.update()
             source=None
@@ -266,17 +280,25 @@ class BETTERITEM_OT_new_frame(bpy.types.Operator):
                     raise BetterItemError('Choose an Object to create this frame.')
                 origin=chosen.matrix_world.translation.copy()
                 axes=chosen.matrix_world.to_quaternion().normalized().to_matrix()
+                if self.creation_mode=='OBJECT_LINKED':
+                    if not self.link_position:origin=Vector(vector3(self.position))
+                    if not self.link_rotation:axes=Euler(vector3(self.rotation),'XYZ').to_matrix()
                 if self.creation_mode=='OBJECT_LINKED' and (self.link_position or self.link_rotation):source=chosen
-            frame=create(context,self.frame_name.strip() or 'Frame',origin,axes,source)
-            if source is not None:
-                frame.link_position=self.link_position
-                frame.link_rotation=self.link_rotation
+            frame=create(context,self.frame_name.strip() or 'Frame',origin,axes,source,
+                follow_position=self.link_position if source is not None else False,
+                follow_rotation=self.link_rotation if source is not None else False)
             if self.target=='AXES':
                 obj.better_item.orientation='SAVED'
                 obj.better_item.orientation_frame=frame.uid
             elif self.target=='ORIGIN':
                 obj.better_item.pivot_mode='FRAME'
                 obj.better_item.pivot_frame=frame.uid
+            elif self.target=='ALIGN_AXES':
+                settings.arrange_orientation='SAVED'
+                settings.arrange_frame=frame.uid
+            elif self.target=='ALIGN_ORIGIN':
+                settings.arrange_origin='SAVED'
+                settings.arrange_origin_frame=frame.uid
             settings.frame_create_source=None
         except BetterItemError as exc:
             settings.frame_create_source=None
@@ -346,7 +368,7 @@ class BETTERITEM_PT_frames(bpy.types.Panel):
     bl_region_type='UI'
     bl_category='Better Item'
     bl_label='Reference Frames'
-    bl_order=1
+    bl_order=2
     def draw(self, context):
         layout=self.layout
         settings=context.scene.better_item

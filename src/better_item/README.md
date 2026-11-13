@@ -1,10 +1,10 @@
-# Better Item 1.2.2
+# Better Item 1.3.0
 
 A live Transform panel for Blender 5.0+, tested in Blender 5.2.3 LTS. GPL-3.0-or-later. Author: Gabriel Webber do Nascimento.
 
 ## Installation
 
-Download `addons/better_item-1.2.2.zip` from the repository. In Blender use **Edit > Preferences > Add-ons > Install from Disk**, choose that ZIP, enable Better Item, and restart Blender after an update. Open **N > Better Item** in Object Mode. The repository ZIP is not the extension package.
+Download `addons/better_item-1.3.0.zip` from the repository. In Blender use **Edit > Preferences > Add-ons > Install from Disk**, choose that ZIP, enable Better Item, and restart Blender after an update. Open **N > Better Item** in Object Mode. The repository ZIP is not the extension package.
 
 ## One live Transform panel
 
@@ -39,7 +39,7 @@ Oblique dimension editing currently requires a Mesh object. A disabled Better It
 
 Each scene stores named frames with independent world Location and Orientation. Frame identity survives renaming, saving and undo/redo.
 
-Click the **+** next to either **Saved Frame > Frame** selector in Transform. **New Frame** lets you set a name and choose **Manual**, **Object (Independent)**, or **Object (Linked)**. Manual exposes Location and Rotation. Object modes provide a searchable object picker; Linked also provides independent Location and Orientation link toggles. The new frame is immediately selected for the field whose + button you used, without changing the other field or the object's transform.
+Click the **+** next to either **Saved Frame > Frame** selector in Transform. **New Frame** lets you set a name and choose **Manual**, **Object (Independent)**, or **Object (Linked)**. Manual exposes Location and Rotation. Object modes provide a searchable object picker; Linked also provides independent Location and Orientation link toggles. Turning off a link exposes the manual Location or Rotation fields for that component directly in the creation dialog. The new frame is immediately selected for the field whose + button you used, without changing the other field or the object's transform.
 
 **Reference Frames > New Frame** opens the same dialog without changing the active object's selected frame. The existing **Create from Viewport** shortcut captures the current gizmo and pivot.
 
@@ -62,16 +62,50 @@ Viewport capture supports Global, Local, Normal in Object Mode, Parent, Cursor, 
 
 ## Align and Distribute
 
-All alignment and distribution is based on object origins along global XYZ axes.
+The panel order is **Transform**, **Align and Distribute**, then **Reference Frames**. Alignment and distribution operate on object origins, in the axes you choose:
 
-- **Selection Bounds (Origins):** align to Min, Center or Max; distribute at equal intervals between fixed extremes (at least three objects).
-- **Key Object (Active):** align to its fixed origin, or distribute with signed Spacing from it. At least two objects are required.
+- **Global**, **Active Local**, a chosen **Object**, a **Saved Frame**, or the current **Viewport** orientation.
+- Saved Frame pickers include the same **+** creation shortcut as Transform.
+- **Selection Bounds (Origins):** align to Min, Center or Max; distribute between fixed extremes (at least three objects).
+- **Key Object (Active):** align to its fixed origin, or distribute at signed Spacing from it. At least two selected objects are required, including the active key.
+- **Reference Origin:** align to or distribute from the chosen reference origin. At least one target object is required. The origin can match the orientation object/frame or be selected independently: Global, 3D Cursor, another Object, another Saved Frame, or the Viewport Pivot.
 
-Key distribution prioritizes objects on the side opposite the spacing direction, nearest to farthest, followed by objects on the same side, nearest to farthest. Name breaks ties. Each selected axis is sorted independently.
+**Reference Origin + On Reference Axis**, with exactly one XYZ axis selected, places all target origins on that reference line, at the entered signed Spacing. For example, choose a rotated object as Axes, Origin = Match Axes, select X, and enable On Reference Axis. Targets are arranged along its rotated X axis. With multiple axes, each axis is distributed independently and the line option is disabled. Without the line option, unselected coordinates are preserved.
 
-Example: key X=-600 mm, other objects at -800, -650 and -590 mm, spacing +30 mm. Order: -650, -800, -590; final positions: -570, -540, -510 mm. Negative spacing reverses direction and side priority. Zero spacing places all origins on the key along the selected axes.
+This is a straight reference-axis arrangement, not a curved-path constraint. It creates no parenting, constraints or ongoing relationship. Moving the reference later does not move the targets. A selected object that supplies the reference origin stays fixed.
 
-Parenting is resolved in world coordinates. Failed operations roll back preceding moves. Unselected children follow their parents normally.
+Key/reference distribution prioritizes objects on the side opposite the spacing direction, nearest to farthest, followed by objects on the same side, nearest to farthest. Each selected axis is sorted independently. Objects with coincident or insufficiently separated starting coordinates are rejected rather than ordered arbitrarily by name.
+
+Example: key X=-600 mm, other objects at -800, -650 and -590 mm, spacing +30 mm. Order: -650, -800, -590; final positions: -570, -540, -510 mm. Negative spacing reverses direction and side priority.
+
+### Minimum distance and diagnostics
+
+**Minimum Distance (mm)** defaults to **0.00001 mm** and is converted using Scene Unit Scale. Zero spacing and smaller absolute spacing are rejected. Before moving anything, the add-on also checks starting coordinates on every selected reference axis. If two or more objects are coincident or closer than the minimum, the message names the objects and axes and asks for a sufficient offset. Same coordinates on an unselected axis are allowed. The resulting coordinates are checked too: if native float32 precision collapses the spacing, the operation is rolled back with BI-D003, naming the affected objects and axes.
+
+Errors remain visible in the panel with a code and actionable details. Changing settings, a successful operation, or Dismiss clears the message. Typical codes:
+
+| Code | Meaning |
+| --- | --- |
+| BI-A001 | No arrangement axis selected |
+| BI-A002 | Missing or invalid orientation/origin reference |
+| BI-A003 | Too few selected target objects |
+| BI-A004 | Invalid alignment reference or missing selected active key |
+| BI-D001 | Zero, too-small or invalid spacing/minimum |
+| BI-D002 | Ambiguous starting coordinates; objects and axes are listed |
+| BI-D003 | Native precision collapsed the resulting spacing; the operation is rolled back |
+| BI-T001 | Object is not editable |
+| BI-T002 | An active driver controls the field |
+| BI-T003 | A required local Location axis is locked |
+| BI-T004 | An active constraint controls the object |
+| BI-T005 | Singular parent transform |
+| BI-T006 | Evaluated position did not retain the target; residual is reported |
+| BI-T007 | Coordinate exceeds the numeric range |
+
+The position solver assigns absolute local targets, instead of adding a rounded world displacement to the previous position. This fixes cancellation errors that previously rejected ordinary unparented objects near small coordinates. Parenting uses a double-precision solve and float32-aware verification. Native transforms, unit precision and locks still apply; failed operations restore prior positions. Unselected children follow their parents normally.
+
+## Independent frame components
+
+A frame remains one named item in the list, containing two independent components: Location and Orientation. The same frame may be used only as an origin/pivot, only as axes, or for both. Different frames can supply axes and origin. Manual Location + linked Orientation and linked Location + manual Orientation are supported both during creation and in the frame editor. Only the component actually used is required and validated: a missing linked Location source does not block a manual Orientation used as axes, and a missing linked Orientation source does not block a manual Location used as a pivot. Arrangement reference choices and mixed frame data persist in the .blend.
 
 ## Performance and maintenance
 
@@ -85,7 +119,7 @@ Version and extension description live only in `blender_manifest.toml`; this is 
 
 ## Validation and source
 
-Automated Blender tests also cover vectorized precision, cache reuse, shared geometry and modifier invalidation, memory limits and 2,000 frame renames. They cover live field updates, reference switching without object movement, true vertex extrema, non-destructive oblique Dimensions, shared data isolation, Euler orders, angle turns, proportional links, locks, drivers, alignment/distribution, parenting, saved/live frames, source deletion, renaming, persistence, undo/redo and registration. The actual viewport and panel were also opened and visually inspected.
+Automated Blender tests also cover vectorized precision, cache reuse, shared geometry and modifier invalidation, memory limits and 2,000 frame renames. They cover live field updates, reference switching without object movement, true vertex extrema, non-destructive oblique Dimensions, shared data isolation, Euler orders, angle turns, proportional links, locks, drivers, alignment/distribution, parenting, saved/live frames, source deletion, renaming, persistence, undo/redo and registration. The actual viewport and panel were also opened and visually inspected. Arrangement regression tests exercise 630 combinations across axis masks, selected/key/reference origins, signed spacing, rotated reference axes, and rotated/scaled parents. They also cover coded validation, reference lines, independent frame components and persistence.
 
-`__init__.py` defines the UI and properties; `transform_view.py` implements live readings and edits; `frames.py` owns saved frames and viewport indicators; `engine.py` implements native Scale edits and transactional world positioning; `math_core.py` holds Blender-independent rules; `orientation.py` provides orientation utilities.
+`arrange.py` plans reference-space arrangements and validates spacing/order; `__init__.py` defines the UI and properties; `transform_view.py` implements live readings and edits; `frames.py` owns saved frames and viewport indicators; `engine.py` implements native Scale edits and transactional world positioning; `math_core.py` holds Blender-independent rules; `orientation.py` provides orientation utilities.
 

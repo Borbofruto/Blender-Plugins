@@ -1,22 +1,32 @@
 # Blender Plugins
 
-Installable extension ZIPs are in [`addons/`](addons). Source code is in [`src/`](src). Use the individual add-on ZIP with Blender's **Install from Disk**; the repository download is not an extension package.
+Installable extension ZIPs are in [`addons/`](addons); sources are in [`src/`](src). Install an individual add-on ZIP with Blender's **Install from Disk**, not the repository ZIP.
 
-## Better Item 1.2.2
+## Better Item 1.3.0
 
-Use the **+** beside either Saved Frame selector to create a named frame manually, copy an object independently, or link to an object. The new frame is selected in that field immediately. Frames, source links and both selector choices persist in the .blend, verified by reopening in a fresh Blender process.
+[Download ZIP](https://github.com/Borbofruto/Blender-Plugins/raw/refs/heads/main/addons/better_item-1.3.0.zip) · [Manual](src/better_item/README.md) · [Source](src/better_item) · [Dimensions benchmark](tests/better_item/performance.md)
 
-Maintenance release: vectorized Dimensions with selective, bounded caches; bounded frame enums; removal of obsolete transform paths; manifest-only extension metadata. [Benchmark](tests/better_item/performance.md).
+One compact, English **Transform** panel with live Location, Rotation, Scale and Dimensions. Drag or type to edit immediately. Choose axes and origin independently: Global, Local, another Object, Viewport or a Saved Frame. Dimensions uses evaluated vertex extrema; oblique mesh dimension edits preserve the base mesh with an affine modifier when necessary.
 
-[Download Better Item 1.2.2 ZIP](https://github.com/Borbofruto/Blender-Plugins/raw/refs/heads/main/addons/better_item-1.2.2.zip) · [Manual](src/better_item/README.md) · [Source](src/better_item)
+Panel order: **Transform > Align and Distribute > Reference Frames**.
 
-One compact, English **Transform** panel with live **Location, Rotation, Scale and Dimensions** fields. Drag or enter a value to edit immediately, with XYZ proportional links and native locks. No separate native/incremental transform panels and no Apply buttons for object transformations.
+### Alignment, distribution and diagnostics
 
-Switch axes and origin to inspect and edit the same fields in world, object, viewport or saved reference frames. Switching reference never moves the object. Dimensions measures actual evaluated vertex extrema along the chosen axes. Scale shows native values and becomes read-only in reference modes. Oblique mesh dimension edits use a non-destructive affine modifier when native Scale is insufficient.
+Version 1.3.0 fixes floating-point cancellation that falsely rejected ordinary align/distribute combinations. Position targets are solved directly, with parent-space precision checks and rollback.
 
-Named reference frames can be static, manually edited, or independently linked to an object's Location and Orientation. **Apply Reference** stores the current values and ends those links. Multiple RGB frame indicators can be shown in the viewport. Frame links never create parenting or constraints on the target object.
+Choose arrangement axes independently from Transform: Global, Active Local, Object, Saved Frame or Viewport. Align/distribute by Selection Bounds, fixed active Key Object, or Reference Origin. Reference Origin also permits an independent origin object/frame or cursor.
 
-Includes origin-based alignment and signed distribution with a fixed key object. Tested in Blender 5.2.3 LTS; extension minimum Blender 5.0. Restart Blender after updating, then open **N > Better Item**.
+To arrange targets along a rotated reference line: choose **Align To: Reference Origin**, **Axes: Object** or **Saved Frame**, select a single X/Y/Z axis, set signed Spacing, enable **On Reference Axis**, and click Distribute. This is a straight axis arrangement with no continuing relationship to the reference.
+
+Minimum Distance defaults to **0.00001 mm**. Invalid spacing and ambiguous starting coordinates are rejected before movement, with error codes, object names, affected axes and corrective guidance. Errors remain visible in the panel. Regression tests cover 630 arrangement combinations plus reference lines, parenting, drivers, constraints, mixed frames and persistence.
+
+### Reference Frames
+
+The **+** next to a frame selector creates a named Manual, Object (Independent) or Object (Linked) frame and selects it immediately. Location and Orientation are separate components of the same frame. Manual Location + linked Orientation and linked Location + manual Orientation can be entered directly during creation. Each component can be used without requiring the unused component to be valid.
+
+Frames and reference selections are saved in the .blend; a fresh-process save/reopen test verifies persistence. Apply Reference stores current source values and ends links. Frame links never create parenting or constraints on targets.
+
+Dimensions uses vectorized, bounded caches. Version and description are maintained only in the extension manifest. Tested in Blender 5.2.3 LTS; minimum Blender 5.0. Restart Blender after updating, then open **N > Better Item**.
 
 ## Export Paper Model - Medidas 1.5.1
 
