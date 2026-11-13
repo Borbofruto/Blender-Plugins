@@ -25,7 +25,7 @@ def clear_error():
 
 def _frame_origin(scene,uid):
     frame=frames.find(scene,uid)
-    return frames.frame_origin(frame),frame.source if frame.link_position else None
+    return frames.frame_origin(frame),frames.position_reference_object(frame,scene)
 
 
 def reference_frame(context,reference=None):
@@ -33,6 +33,14 @@ def reference_frame(context,reference=None):
     active=context.active_object or next(iter(context.selected_objects),None)
     mode=settings.arrange_orientation
     try:
+        if settings.arrange_reference_mode=='FRAME':
+            frame=frames.find(context.scene,settings.arrange_reference_frame)
+            axes=frames.frame_axes(frame,context)
+            if (reference if reference is not None else settings.reference)=='REFERENCE':
+                origin=frames.frame_origin(frame,context)
+                source=frames.position_reference_object(frame,context.scene)
+            else:origin,source=Vector(),None
+            return np.asarray(axes,dtype=np.float64),np.asarray(origin,dtype=np.float64),source
         if mode=='SAVED':axes=frames.frame_axes(frames.find(context.scene,settings.arrange_frame))
         elif mode=='VIEWPORT':axes=frames.viewport_axes(context,active)
         else:axes=orientation.basis(active,mode,settings.arrange_object)

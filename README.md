@@ -2,31 +2,23 @@
 
 Installable extension ZIPs are in [`addons/`](addons); sources are in [`src/`](src). Install an individual add-on ZIP with Blender's **Install from Disk**, not the repository ZIP.
 
-## Better Item 1.3.0
+## Better Item 1.4.0
 
-[Download ZIP](https://github.com/Borbofruto/Blender-Plugins/raw/refs/heads/main/addons/better_item-1.3.0.zip) · [Manual](src/better_item/README.md) · [Source](src/better_item) · [Dimensions benchmark](tests/better_item/performance.md)
+[Download ZIP](https://github.com/Borbofruto/Blender-Plugins/raw/refs/heads/main/addons/better_item-1.4.0.zip) · [Manual](src/better_item/README.md) · [Source](src/better_item) · [Dimensions benchmark](tests/better_item/performance.md)
 
-One compact, English **Transform** panel with live Location, Rotation, Scale and Dimensions. Drag or type to edit immediately. Choose axes and origin independently: Global, Local, another Object, Viewport or a Saved Frame. Dimensions uses evaluated vertex extrema; oblique mesh dimension edits preserve the base mesh with an affine modifier when necessary.
+Panel order: **Reference Frames → Transform → Align and Distribute**. Transform keeps Blender's compact English Location, Rotation, Scale and Dimensions fields, with live edits and proportional XYZ links.
 
-Panel order: **Transform > Align and Distribute > Reference Frames**.
+Both consuming panels have a **Reference: Individual / Frame** switch. Frame selects both Location and Orientation once. Individual keeps the two choices independent, including components from different frames.
 
-### Alignment, distribution and diagnostics
+**New Frame** asks only for a name. Edit Location and Orientation separately afterward: manual values, two independent object pickers, another frame, native pivots for Location, or native transform orientations for Orientation. Existing one-source frames migrate to separate pointers. Apply Location or Apply Orientation captures just that component and ends its link.
 
-Version 1.3.0 fixes floating-point cancellation that falsely rejected ordinary align/distribute combinations. Position targets are solved directly, with parent-space precision checks and rollback.
+**Use Orientation in Viewport** exports a synchronized native custom orientation for **G/R** and axis shortcuts. Frames may source other native custom orientations, including exported frame orientations. Native sources include Global, Local, Normal, Gimbal, View, Cursor and Parent; pivots include all five native types. A single frame represents one origin, so Individual Origins uses the active object's origin. Circular links and missing sources produce diagnostics; invalid exported orientations are suspended until repaired. Native synchronization refreshes every 0.2 seconds.
 
-Choose arrangement axes independently from Transform: Global, Active Local, Object, Saved Frame or Viewport. Align/distribute by Selection Bounds, fixed active Key Object, or Reference Origin. Reference Origin also permits an independent origin object/frame or cursor.
+Frames, separate source pointers, component chains and reference choices are saved in the .blend. Reference changes alter readings and future operations; moving a source never moves an already-transformed target.
 
-To arrange targets along a rotated reference line: choose **Align To: Reference Origin**, **Axes: Object** or **Saved Frame**, select a single X/Y/Z axis, set signed Spacing, enable **On Reference Axis**, and click Distribute. This is a straight axis arrangement with no continuing relationship to the reference.
+Alignment/distribution uses origins in the selected reference axes, with Selection Bounds, fixed Key Object, or Reference Origin. Signed spacing, reference-axis placement, minimum-distance diagnostics and transactional rollback are preserved. Dimensions measures evaluated vertices and preserves the mesh through an affine modifier for oblique edits when needed.
 
-Minimum Distance defaults to **0.00001 mm**. Invalid spacing and ambiguous starting coordinates are rejected before movement, with error codes, object names, affected axes and corrective guidance. Errors remain visible in the panel. Regression tests cover 630 arrangement combinations plus reference lines, parenting, drivers, constraints, mixed frames and persistence.
-
-### Reference Frames
-
-The **+** next to a frame selector creates a named Manual, Object (Independent) or Object (Linked) frame and selects it immediately. Location and Orientation are separate components of the same frame. Manual Location + linked Orientation and linked Location + manual Orientation can be entered directly during creation. Each component can be used without requiring the unused component to be valid.
-
-Frames and reference selections are saved in the .blend; a fresh-process save/reopen test verifies persistence. Apply Reference stores current source values and ends links. Frame links never create parenting or constraints on targets.
-
-Dimensions uses vectorized, bounded caches. Version and description are maintained only in the extension manifest. Tested in Blender 5.2.3 LTS; minimum Blender 5.0. Restart Blender after updating, then open **N > Better Item**.
+Tested in Blender 5.2.3 LTS: 630 arrangement combinations, native G/R, 48 Gimbal direction comparisons against native transforms, edit-mode Normal, cyclic and missing sources, undo/redo, migration, projected dimensions and new-process save/reopen. The actual panel layout was visually checked. Minimum Blender 5.0; restart Blender after updating, then open **N > Better Item**.
 
 ## Export Paper Model - Medidas 1.5.1
 

@@ -3,7 +3,7 @@
 import textwrap
 import bpy
 from bpy.app.handlers import persistent
-from . import engine, frames, transform_view, arrange
+from . import engine, frames, transform_view, arrange, native_refs
 from .math_core import BetterItemError
 
 _field_errors={}
@@ -57,7 +57,13 @@ def _arrange_changed(self,context):
     arrange.clear_error()
 
 
+_reference_modes=[('INDIVIDUAL','Individual','Choose Location and Orientation independently'),
+    ('FRAME','Frame','Use both components of one saved frame')]
+
+
 class BetterItemObjectSettings(bpy.types.PropertyGroup):
+    reference_mode:bpy.props.EnumProperty(name='Reference',items=_reference_modes,options=set(),update=_orientation_changed)
+    reference_frame:bpy.props.EnumProperty(name='Frame',items=frames.frame_items,options=set(),update=_orientation_changed)
     orientation:bpy.props.EnumProperty(name='Orientation',items=[
         ('GLOBAL','Global','World axes'),
         ('LOCAL','Local','Object local axes'),
@@ -96,8 +102,8 @@ class BetterItemObjectSettings(bpy.types.PropertyGroup):
 
 class BetterItemSceneSettings(bpy.types.PropertyGroup):
     frames:bpy.props.CollectionProperty(type=frames.BetterItemFrame)
-    frame_create_source:bpy.props.PointerProperty(name='Object',type=bpy.types.Object,
-        poll=lambda self,obj: obj.name in self.id_data.objects)
+    arrange_reference_mode:bpy.props.EnumProperty(name='Reference',items=_reference_modes,options=set(),update=_arrange_changed)
+    arrange_reference_frame:bpy.props.EnumProperty(name='Frame',items=frames.frame_items,options=set(),update=_arrange_changed)
     frame_serial:bpy.props.IntProperty(default=0)
     active_frame:bpy.props.IntProperty(default=-1,min=-1)
     show_frames:bpy.props.BoolProperty(name='Show Reference Frames',default=True,options=set())
@@ -247,12 +253,39 @@ def _linked_rows(layout,obj,group,label,prefix,lock_name=None):
             row.prop(obj,lock_name,index=i,text='',emboss=False,icon='LOCKED' if locked else 'UNLOCKED')
 
 
+def _draw_reference(layout,settings,arrangement=False):
+    box=layout.box()
+    box.label(text='Reference')
+    mode='arrange_reference_mode' if arrangement else 'reference_mode'
+    frame='arrange_reference_frame' if arrangement else 'reference_frame'
+    box.row(align=True).prop(settings,mode,expand=True)
+    if getattr(settings,mode)=='FRAME':
+        row=box.row(align=True)
+        row.prop(settings,frame,text='')
+        row.operator('better_item.new_frame',text='',icon='ADD').target='ALIGN_BOTH' if arrangement else 'BOTH'
+        return
+    axes='arrange_orientation' if arrangement else 'orientation'
+    box.prop(settings,axes,text='Orientation')
+    if getattr(settings,axes)=='REFERENCE':box.prop(settings,'arrange_object' if arrangement else 'orientation_object',text='Object')
+    if getattr(settings,axes)=='SAVED':
+        row=box.row(align=True)
+        row.prop(settings,'arrange_frame' if arrangement else 'orientation_frame',text='Frame')
+        row.operator('better_item.new_frame',text='',icon='ADD').target='ALIGN_AXES' if arrangement else 'AXES'
+    origin='arrange_origin' if arrangement else 'pivot_mode'
+    box.prop(settings,origin,text='Location')
+    if getattr(settings,origin)=='OBJECT':box.prop(settings,'arrange_origin_object' if arrangement else 'origin_object',text='Object')
+    if getattr(settings,origin) in {'SAVED','FRAME'}:
+        row=box.row(align=True)
+        row.prop(settings,'arrange_origin_frame' if arrangement else 'pivot_frame',text='Frame')
+        row.operator('better_item.new_frame',text='',icon='ADD').target='ALIGN_ORIGIN' if arrangement else 'ORIGIN'
+
+
 class BETTERITEM_PT_transform(bpy.types.Panel):
     bl_space_type='VIEW_3D'
     bl_region_type='UI'
     bl_category='Better Item'
     bl_label='Transform'
-    bl_order=0
+    bl_order=1
     def draw(self,context):
         layout=self.layout
         layout.use_property_decorate=False
@@ -261,18 +294,7 @@ class BETTERITEM_PT_transform(bpy.types.Panel):
             layout.label(text='Select an object in Object Mode.')
             return
         settings=obj.better_item
-        layout.prop(settings,'orientation',text='Axes')
-        if settings.orientation=='REFERENCE':layout.prop(settings,'orientation_object',text='Object')
-        if settings.orientation=='SAVED':
-            row=layout.row(align=True)
-            row.prop(settings,'orientation_frame',text='Frame')
-            row.operator('better_item.new_frame',text='',icon='ADD').target='AXES'
-        layout.prop(settings,'pivot_mode')
-        if settings.pivot_mode=='FRAME':
-            row=layout.row(align=True)
-            row.prop(settings,'pivot_frame',text='Frame')
-            row.operator('better_item.new_frame',text='',icon='ADD').target='ORIGIN'
-        if settings.pivot_mode=='OBJECT':layout.prop(settings,'origin_object',text='Object')
+        _draw_reference(layout,settings)
         layout.prop(settings,'use_reference_pivot')
         error=_field_errors.get(obj.as_pointer())
         try:
@@ -298,25 +320,13 @@ class BETTERITEM_PT_alignment(bpy.types.Panel):
     bl_region_type='UI'
     bl_category='Better Item'
     bl_label='Align and Distribute'
-    bl_order=1
+    bl_order=2
     def draw(self,context):
         layout=self.layout
         settings=context.scene.better_item
         layout.label(text='Use object origins.')
         layout.prop(settings,'reference')
-        layout.prop(settings,'arrange_orientation')
-        if settings.arrange_orientation=='REFERENCE':layout.prop(settings,'arrange_object',text='Object')
-        if settings.arrange_orientation=='SAVED':
-            row=layout.row(align=True)
-            row.prop(settings,'arrange_frame',text='Frame')
-            row.operator('better_item.new_frame',text='',icon='ADD').target='ALIGN_AXES'
-        if settings.reference=='REFERENCE':
-            layout.prop(settings,'arrange_origin')
-            if settings.arrange_origin=='OBJECT':layout.prop(settings,'arrange_origin_object',text='Object')
-            if settings.arrange_origin=='SAVED':
-                row=layout.row(align=True)
-                row.prop(settings,'arrange_origin_frame',text='Frame')
-                row.operator('better_item.new_frame',text='',icon='ADD').target='ALIGN_ORIGIN'
+        _draw_reference(layout,settings,arrangement=True)
         if settings.reference=='KEY':
             key=context.active_object
             layout.label(text='Key: '+(key.name if key and key.select_get() else 'Select an active object'),icon='OBJECT_DATA')
@@ -361,11 +371,13 @@ def _clear_runtime(_unused):
     _field_errors.clear()
     transform_view.clear_cache()
     arrange.clear_error()
+    native_refs.clear_cache()
+    frames.migrate()
 
 
 classes=(frames.BetterItemFrame,BetterItemObjectSettings,BetterItemSceneSettings,BETTERITEM_OT_link_group,
          BETTERITEM_OT_clear_error,BETTERITEM_OT_clear_arrange_error,BETTERITEM_OT_align,BETTERITEM_OT_distribute,
-         BETTERITEM_PT_transform,BETTERITEM_PT_alignment)+frames.classes
+         BETTERITEM_PT_transform,BETTERITEM_PT_alignment)+frames.classes+(native_refs.BETTERITEM_OT_native_frame,)
 
 
 def register():
@@ -380,15 +392,19 @@ def register():
             if _clear_runtime not in handlers:handlers.append(_clear_runtime)
         if transform_view.invalidate_geometry not in bpy.app.handlers.depsgraph_update_post:
             bpy.app.handlers.depsgraph_update_post.append(transform_view.invalidate_geometry)
+        frames.migrate()
+        if not bpy.app.timers.is_registered(native_refs.sync):bpy.app.timers.register(native_refs.sync,first_interval=.2,persistent=True)
     except Exception:
         unregister()
         raise
 
 
 def unregister():
+    if bpy.app.timers.is_registered(native_refs.sync):bpy.app.timers.unregister(native_refs.sync)
     for handlers in (bpy.app.handlers.load_post,bpy.app.handlers.undo_post,bpy.app.handlers.redo_post):
         if _clear_runtime in handlers:handlers.remove(_clear_runtime)
     _field_errors.clear()
+    native_refs.clear_cache()
     arrange.clear_error()
     if transform_view.invalidate_geometry in bpy.app.handlers.depsgraph_update_post:
         bpy.app.handlers.depsgraph_update_post.remove(transform_view.invalidate_geometry)

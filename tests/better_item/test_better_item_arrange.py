@@ -144,17 +144,19 @@ source.rotation_euler.z+=.1
 context.view_layer.update()
 for obj,position in zip(objects,positions):near(obj.matrix_world.translation,position.translation)
 # A frame still groups independent Location/Orientation components.
-settings.frame_create_source=source
-assert bpy.ops.better_item.new_frame(target='ALIGN_AXES',frame_name='Manual origin, linked axes',
-    creation_mode='OBJECT_LINKED',link_position=False,link_rotation=True,position=(9,8,7))=={'FINISHED'}
+assert bpy.ops.better_item.new_frame(target='ALIGN_AXES',frame_name='Manual origin, linked axes')=={'FINISHED'}
 mixed=context.scene.better_item.frames[-1]
+mixed.position=(9,8,7)
+mixed.rotation_mode='OBJECT'
+mixed.rotation_source=source
 near(frames.resolve(mixed)[0],(9,8,7))
-assert mixed.source==source and not mixed.link_position and mixed.link_rotation
+assert mixed.rotation_source==source and not mixed.link_position and mixed.link_rotation
 assert settings.arrange_frame==mixed.uid
-settings.frame_create_source=source
-assert bpy.ops.better_item.new_frame(target='ALIGN_ORIGIN',frame_name='Linked origin, manual axes',
-    creation_mode='OBJECT_LINKED',link_position=True,link_rotation=False,rotation=(.1,.2,.3))=={'FINISHED'}
+assert bpy.ops.better_item.new_frame(target='ALIGN_ORIGIN',frame_name='Linked origin, manual axes')=={'FINISHED'}
 other=context.scene.better_item.frames[-1]
+other.rotation=(.1,.2,.3)
+other.position_mode='OBJECT'
+other.position_source=source
 assert settings.arrange_origin_frame==other.uid and settings.arrange_frame==mixed.uid
 assert other.link_position and not other.link_rotation
 near(other.rotation,(.1,.2,.3))
@@ -177,7 +179,7 @@ settings.spacing=.25
 rejects('BI-T003')
 objects[1].lock_location[0]=False
 assert type(bpy.types.BETTERITEM_PT_transform.bl_order)==int
-assert bpy.types.BETTERITEM_PT_alignment.bl_order < bpy.types.BETTERITEM_PT_frames.bl_order
+assert bpy.types.BETTERITEM_PT_frames.bl_order < bpy.types.BETTERITEM_PT_transform.bl_order < bpy.types.BETTERITEM_PT_alignment.bl_order
 print('ARRANGEMENT PASSED: %d combinations, all axis masks, signed steps, key/selection/reference origins, rotated/scaled parents, precision, errors, reference lines and mixed frames'%count)
 # Arrangement references persist separately, including mixed frame components.
 import tempfile
@@ -258,14 +260,14 @@ source=bpy.data.objects['Reference']
 objects=[bpy.data.objects['Cube.%03d'%i] for i in range(6)]
 manual_axes=frames.create(bpy.context,'Axes only',Vector((1,2,3)),Euler((.1,.2,.3)).to_matrix(),source,
     follow_position=True,follow_rotation=False)
-manual_axes.source=None
+manual_axes.position_source=None
 near(frames.frame_axes(manual_axes)[0],Euler((.1,.2,.3)).to_matrix()[0])
 try:frames.frame_origin(manual_axes)
-except Exception as exc:assert 'Location source' in str(exc)
+except Exception as exc:assert 'Location Object' in str(exc)
 else:raise AssertionError('The missing linked Location must still fail when requested')
 manual_origin=frames.create(bpy.context,'Origin only',Vector((4,5,6)),Euler((.2,.3,.4)).to_matrix(),source,
     follow_position=False,follow_rotation=True)
-manual_origin.source=None
+manual_origin.rotation_source=None
 near(frames.frame_origin(manual_origin),(4,5,6))
 frames.apply_reference(manual_origin,'POSITION')
 select(objects,objects[0])
@@ -306,3 +308,4 @@ assert [tuple(obj.location) for obj in precision_objects]==original_positions
 assert bpy.ops.better_item.distribute(reference='KEY',axes=(True,False,False),spacing=1e-5)=={'FINISHED'}
 assert not arrange.error(bpy.context.scene)
 print('NATIVE PRECISION SPACING PASSED: collapsed spacing is rejected and atomically restored')
+

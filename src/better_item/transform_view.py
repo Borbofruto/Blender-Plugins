@@ -92,7 +92,7 @@ def dimensions(obj, axes):
 
 def scale_editable(obj):
     settings = obj.better_item
-    return settings.orientation in {'GLOBAL','LOCAL'} and settings.pivot_mode == 'GLOBAL'
+    return settings.reference_mode=='INDIVIDUAL' and settings.orientation in {'GLOBAL','LOCAL'} and settings.pivot_mode == 'GLOBAL'
 
 
 def values(context, obj, group):
@@ -119,7 +119,8 @@ def set_rotation(context, obj, values):
         'scale','delta_rotation_euler','delta_rotation_quaternion','delta_scale'})
     if any(obj.lock_rotation) or obj.lock_rotation_w:
         raise BetterItemError('Unlock Rotation before editing reference-space rotation.')
-    axes = frames.object_axes(context,obj)
+    from .native_refs import rotation_basis
+    axes = rotation_basis(frames.object_axes(context,obj))
     order = obj.better_item.view_rotation_order
     desired = axes @ Euler(values,order).to_matrix()
     native=(obj.parent is None and obj.rotation_mode==order and all(abs(v)<1e-12 for v in obj.delta_rotation_euler)
@@ -189,7 +190,7 @@ def set_dimensions(context,obj,desired):
         raise BetterItemError('A zero dimension requires editing the geometry first.')
     factors=tuple(value/size if size>1e-12 else 1 for size,value in zip(before,desired))
     world_linear=obj.matrix_world.to_3x3()
-    try: local=world_linear.inverted() @ axes @ Matrix.Diagonal(factors) @ axes.transposed() @ world_linear
+    try: local=world_linear.inverted() @ axes.transposed().inverted() @ Matrix.Diagonal(factors) @ axes.transposed() @ world_linear
     except ValueError as exc:raise BetterItemError('The object transform is singular; restore a nonzero Scale first.') from exc
     # Use native Scale whenever the requested affine transform is diagonal locally.
     if all(abs(local[i][j])<2e-6 for i in range(3) for j in range(3) if i!=j):
