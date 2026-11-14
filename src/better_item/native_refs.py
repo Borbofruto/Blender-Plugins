@@ -10,7 +10,7 @@ import math
 import uuid
 import bpy
 from bpy.app.handlers import persistent
-from mathutils import Matrix, Vector, Euler, Quaternion
+from mathutils import Matrix, Vector, Quaternion
 from .math_core import BetterItemError
 
 BUILTINS=('GLOBAL','LOCAL','NORMAL','GIMBAL','VIEW','CURSOR','PARENT')

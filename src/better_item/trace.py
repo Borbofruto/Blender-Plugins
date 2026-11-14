@@ -38,10 +38,16 @@ def _world_rotation(self):
     except BetterItemError:return (0,0,0)
 
 
+def _read_reference(context,obj,kind):
+    from . import frames
+    if obj.name not in context.scene.objects:
+        raise BetterItemError('The object is not in the active scene.')
+    return frames.object_origin(context,obj) if kind=='origin' else frames.relative_values(context,obj,'POSITION')
+
+
 def _reference_vector(kind):
     def get(self):
-        from . import frames
-        try:return tuple(frames.object_origin(bpy.context,self.id_data) if kind=='origin' else frames.relative_values(bpy.context,self.id_data,'POSITION'))
+        try:return tuple(_read_reference(bpy.context,self.id_data,kind))
         except (BetterItemError,AttributeError,RuntimeError):return (0,0,0)
     return bpy.props.FloatVectorProperty(size=3,unit='LENGTH',subtype='TRANSLATION',get=get,options=set(),precision=5)
 
@@ -116,6 +122,12 @@ def draw(layout,obj):
             ('parent_origin','Parent / Inverse Origin (World)'),('contribution','Local + Delta Contribution (World)'),
             ('residual','Evaluation Residual (World)')):
         box.label(text=label)
+        if key in {'reference_origin','relative_location'}:
+            try:_read_reference(bpy.context,obj,'origin' if key=='reference_origin' else 'location')
+            except (BetterItemError,AttributeError,RuntimeError) as exc:
+                box.label(text='Unavailable',icon='INFO')
+                for line in textwrap.wrap(str(exc),30):box.label(text=line)
+                continue
         column=box.column(align=True);column.enabled=False;column.prop(settings,key,text='')
     box.label(text='World = parent/inverse origin')
     box.label(text='+ transformed local + residual')

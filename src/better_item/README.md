@@ -1,10 +1,14 @@
-# Better Item 1.5.2
+# Better Item 1.5.3
 
 A live Transform panel for Blender 5.0+, tested in Blender 5.2.3 LTS. GPL-3.0-or-later. Author: Gabriel Webber do Nascimento.
 
+## Patch 1.5.3
+
+Default / Local's three-component Euler API now explicitly rejects Quaternion and Axis-Angle storage, with guidance to the correct native property. Their actual native UI fields remain editable. Dimensions calls on unsupported object types report unavailable geometry instead of a zero-dimension error. Transform Information displays Unavailable with the reason for failed reference readings, while valid zero vectors and independent readable components remain visible. Four unused imports were removed. Bounding Box Center, frame enum identities and removal rules are unchanged.
+
 ## Installation
 
-Download `addons/better_item-1.5.2.zip` from the repository. In Blender use **Edit > Preferences > Add-ons > Install from Disk**, choose that ZIP, enable Better Item, and restart Blender after an update. Open **N > Better Item** in Object Mode. The repository ZIP is not the extension package.
+Download `addons/better_item-1.5.3.zip` from the repository. In Blender use **Edit > Preferences > Add-ons > Install from Disk**, choose that ZIP, enable Better Item, and restart Blender after an update. Open **N > Better Item** in Object Mode. The repository ZIP is not the extension package.
 
 ## One live Transform panel
 
@@ -43,7 +47,7 @@ Files authored with relative animation in 1.5.0/1.5.1 retain their authoring act
 
 ## Default / Local and Reference
 
-**Default / Local** shows Blender's actual Item Location, Rotation, Scale and Dimensions channels. Parent and Parent Inverse are not stripped from a world measurement: the readout accesses the stored channels directly. Moving the parent leaves the child's stored Location/Rotation unchanged. Delta transforms remain separate. Euler rotation uses proportional XYZ links; Quaternion and Axis-Angle expose Blender's native component storage. Default Dimensions edits adjust native Scale and preserve its locks.
+**Default / Local** shows Blender's actual Item Location, Rotation, Scale and Dimensions channels. Parent and Parent Inverse are not stripped from a world measurement: the readout accesses the stored channels directly. Moving the parent leaves the child's stored Location/Rotation unchanged. Delta transforms remain separate. Euler rotation uses proportional XYZ links; Quaternion and Axis-Angle expose Blender's native component storage. Default Dimensions edits adjust native Scale and preserve its locks. Code calling `transform_view.values` or `edit_component` for Default Rotation must use an Euler storage mode; Quaternion/Axis-Angle consumers should access the corresponding Blender native property directly.
 
 **Reference** shows and edits the pose using the chosen reference Location and Orientation. Switching between the two changes the readout, not the object's pose. Existing files open in Reference unless the user selects Default / Local. Align/Distribute always uses its shared reference system; raw per-object channels are not a common alignment space.
 
@@ -51,6 +55,8 @@ The old Parent reference shortcut is no longer offered: Object covers explicit p
 
 ## Transform Information
 
+
+Failed reference readings are labeled **Unavailable**, with their reason, instead of displaying a fabricated zero vector. Location and Orientation-dependent readings are checked independently; unaffected world/default information remains available.
 
 The read-only section includes reference source paths (including source-object ancestors), World Location, reference origin, actual reference-space Location, Default / Local Location, Delta Location, the effective Parent/Inverse origin, local contribution transformed into world space, evaluation residual, World/default Rotation, parent Scale and optional full matrices.
 
@@ -172,6 +178,9 @@ A synthetic benchmark on 250,000 vertices measured the old Python loop at 258-27
 Version and extension description live only in `blender_manifest.toml`; this is a manifest-based Blender extension, without duplicate legacy `bl_info` metadata. Legacy transformation branches and obsolete staged-edit properties have been removed. Native Scale edits, reference-space Location and reference-space Rotation each have one active implementation.
 
 ## Validation and source
+
+The 1.5.3 tests cover read/write rejection without mutation for Quaternion/Axis-Angle, the functioning native storage fields, Euler edits, unsupported Dimensions types, the separate zero-Dimension diagnostic, missing-frame and missing-orientation readouts, valid zero vectors, wrong-scene detection and actual UI rendering. Existing precision, reference, arrangement and undo/redo tests also pass.
+
 
 Version 1.5.2 tests 1,200 Parent Inverse cancellation cases, 842 movements across -210..210 mm in two unit conventions, real-error rejection, Default / Local channels, native Dimensions, removal of animation runtime, and real timer-driven redraw following native-menu deletion. Legacy authoring data is retained when opening a 1.5.1 file. The existing precision, layout, frame and arrangement regressions remain covered.
 

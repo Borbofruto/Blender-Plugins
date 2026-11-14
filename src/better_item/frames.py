@@ -3,7 +3,7 @@
 import uuid
 import bpy
 from mathutils import Matrix, Vector, Euler
-from .math_core import BetterItemError,vector3
+from .math_core import BetterItemError
 from . import native_refs
 
 _enum_cache = {}

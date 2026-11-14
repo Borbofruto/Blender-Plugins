@@ -2,9 +2,13 @@
 
 Install individual extension ZIPs from [`addons/`](addons) using Blender's **Install from Disk**. Sources are in [`src/`](src), tests in [`tests/`](tests). The repository ZIP is not an addon installer.
 
-## Better Item 1.5.2
+## Better Item 1.5.3
 
-[Download ZIP](https://github.com/Borbofruto/Blender-Plugins/raw/refs/heads/main/addons/better_item-1.5.2.zip) | [Manual](src/better_item/README.md) | [Source](src/better_item) | [Tests](tests/better_item)
+[Download ZIP](https://github.com/Borbofruto/Blender-Plugins/raw/refs/heads/main/addons/better_item-1.5.3.zip) | [Manual](src/better_item/README.md) | [Source](src/better_item) | [Tests](tests/better_item)
+
+### Patch 1.5.3
+
+Reject unsupported Default Euler API calls on Quaternion/Axis-Angle without changing the object, report unsupported Dimensions types correctly, and show Unavailable for failed reference trace readings instead of zero vectors. Native Quaternion/Axis-Angle widgets, valid zero readouts, Bounding Box Center, frame enum identities and deletion behavior remain unchanged. Four unused imports were removed. Targeted guards/trace tests, a real UI check and existing precision/reference/arrangement regressions pass in Blender 5.2.3 LTS.
 
 A spatial-precision Transform, Reference Frames and Align/Distribute addon for Blender 5.0+, tested in Blender 5.2.3 LTS. English compact XYZ fields support proportional links, projected Dimensions, origin alignment and signed distribution.
 
@@ -17,7 +21,7 @@ A spatial-precision Transform, Reference Frames and Align/Distribute addon for B
 
 ### Current scope and archived animation prototype
 
-The active 1.5.2 ZIP has no Better Item keyframe operators, relative-animation properties, playback handlers, animation panel or bake controls. The full 1.5.1 prototype, its tests and its original ZIP are preserved separately in [`archive/better_item-animation-1.5.1`](archive/better_item-animation-1.5.1). Existing relative authoring data is retained but not evaluated by 1.5.2; use the archived version to bake an existing clip before switching. This is a deliberate scope boundary.
+The active 1.5.3 ZIP has no Better Item keyframe operators, relative-animation properties, playback handlers, animation panel or bake controls. The full 1.5.1 prototype, its tests and its original ZIP are preserved separately in [`archive/better_item-animation-1.5.1`](archive/better_item-animation-1.5.1). Existing relative authoring data is retained but not evaluated by 1.5.3; use the archived version to bake an existing clip before switching. This is a deliberate scope boundary.
 
 Restart Blender after updating, then open **N > Better Item**. The runtime ZIP contains source, manifest, license and manual; development tests and the archive are outside it.
 

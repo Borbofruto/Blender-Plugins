@@ -4,7 +4,7 @@ import math
 import bpy
 import numpy as np
 from collections import OrderedDict
-from mathutils import Matrix, Vector, Euler
+from mathutils import Matrix, Euler
 from . import engine, frames
 from .math_core import BetterItemError, linked_values
 from bpy.app.handlers import persistent
@@ -125,8 +125,17 @@ def scale_editable(obj):
     return settings.transform_space=='DEFAULT' or settings.reference_mode=='INDIVIDUAL' and settings.orientation in {'GLOBAL','LOCAL'} and settings.pivot_mode == 'GLOBAL'
 
 
+def _validate_default_group(obj,group):
+    if group=='ROTATION' and obj.rotation_mode in {'QUATERNION','AXIS_ANGLE'}:
+        field='rotation_quaternion' if obj.rotation_mode=='QUATERNION' else 'rotation_axis_angle'
+        raise BetterItemError('Default / Local Rotation uses %s storage. Edit %s directly or select an Euler rotation mode.'%(obj.rotation_mode,field))
+    if group=='DIMENSIONS' and not has_surface_geometry(obj):
+        raise BetterItemError('Dimensions is unavailable for object type %s.'%obj.type)
+
+
 def values(context, obj, group):
     if obj.better_item.transform_space=='DEFAULT':
+        _validate_default_group(obj,group)
         return tuple(getattr(obj,{'LOCATION':'location','ROTATION':'rotation_euler','SCALE':'scale','DIMENSIONS':'dimensions'}[group]))
     if group == 'LOCATION':return frames.relative_values(context,obj,'POSITION')
     if group == 'ROTATION':return frames.relative_values(context,obj,'ROTATION')
@@ -311,6 +320,7 @@ def edit_component(context,obj,group,axis,value):
 
 def _edit_default(obj,group,axis,value):
     """Edit Blender's actual Item channels; no parent/reference conversion."""
+    _validate_default_group(obj,group)
     if group=='SCALE':return engine.edit_scale_component(obj,axis,value)
     attribute={'LOCATION':'location','ROTATION':'rotation_euler','DIMENSIONS':'dimensions'}[group]
     before=tuple(getattr(obj,attribute))
