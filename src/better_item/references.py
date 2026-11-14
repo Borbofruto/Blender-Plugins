@@ -196,27 +196,38 @@ def orientation_source_object(context,settings,arrangement=False):
     return native(settings.reference_native if mode=='NATIVE' else mode)
 
 
+def _source_row(layout,label):
+    """One indented continuation of the reference choice immediately above it."""
+    row=layout.split(factor=.52,align=True)
+    branch=row.split(factor=.32,align=True)
+    branch.label(text='└')
+    branch.label(text=label+':')
+    return row.row(align=True)
+
+
 def draw_component(layout,settings,kind,arrangement=False,frame=False):
-    from . import frames
     f=_FIELDS[arrangement]
     prop=('reference_orientation' if kind=='axes' else 'reference_location')
-    layout.prop(settings,prop,text='Orientation' if kind=='axes' else 'Location')
+    row=layout.split(factor=.52,align=True)
+    row.label(text='Orientation:' if kind=='axes' else 'Location:',
+        icon='ORIENTATION_GLOBAL' if kind=='axes' else 'OBJECT_ORIGIN')
+    row.prop(settings,prop,text='')
     mode=_visible(settings,kind,arrangement,frame)
     if mode in {'OBJECT','REFERENCE','PARENT'}:
         if frame:
-            layout.prop(settings,'rotation_source' if kind=='axes' else 'position_source',text='Child Object' if mode=='PARENT' else 'Object')
-        elif mode!='PARENT':layout.prop(settings,f['axes_object' if kind=='axes' else 'origin_object'],text='Object')
+            _source_row(layout,'Child Object' if mode=='PARENT' else 'Object').prop(settings,'rotation_source' if kind=='axes' else 'position_source',text='')
+        elif mode!='PARENT':_source_row(layout,'Object').prop(settings,f['axes_object' if kind=='axes' else 'origin_object'],text='')
         if mode=='PARENT':
             from .trace import draw_parent_label
             source=getattr(settings,'rotation_source' if kind=='axes' else 'position_source') if frame else bpy.context.active_object
             draw_parent_label(layout,source)
     elif mode in {'SAVED','FRAME'}:
-        row=layout.row(align=True)
+        row=_source_row(layout,'Frame')
         name=('rotation_frame' if kind=='axes' else 'position_frame') if frame else f['axes_frame' if kind=='axes' else 'origin_frame']
-        row.prop(settings,name,text='Frame')
+        row.prop(settings,name,text='')
         if not frame:row.operator('better_item.new_frame',text='',icon='ADD').target=('ALIGN_' if arrangement else '')+('AXES' if kind=='axes' else 'ORIGIN')
     elif mode=='NATIVE':
-        layout.prop(settings,'native_source' if frame else 'reference_native',text='Name')
+        _source_row(layout,'Name').prop(settings,'native_source' if frame else 'reference_native',text='')
 
 
     if mode=='INDIVIDUAL_ORIGINS':layout.label(text='Single reference: active origin.')

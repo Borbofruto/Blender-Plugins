@@ -1,4 +1,4 @@
-# Better Item 1.6.1
+# Better Item 1.6.2
 
 A live Transform panel with declared Blender 5.0+ compatibility. Runtime validation for this release used Blender 5.2.3 LTS on Windows; Blender 5.0 and 5.2.4 were not executed. GPL-3.0-or-later. Author: Gabriel Webber do Nascimento.
 
@@ -18,6 +18,8 @@ The panel keeps Blender's familiar **Location**, **Rotation**, **Scale** and **D
 - **Scale** (labeled **Scale (Default)** in Reference mode) always shows the object's native Scale. It is read-only when external/reference axes or a non-global origin are selected. In Global axes with Global origin, it remains editable.
 
 Changing axes or origin only changes the readings. It never moves, rotates or resizes the object. Changing only the origin changes Location, without changing Rotation or Dimensions. Dimensions is shown as Unavailable on object types without convertible surface geometry, including Empty, Camera, Light, Armature, Lattice and Grease Pencil; their other transform fields remain usable.
+
+Orientation and Location have distinct icons beside their labels. A required Object, Frame or custom-orientation Name is shown one level below its parent choice, with an indented branch marker. Those child labels have no category icon; source icons remain inside their selector widgets. This hierarchy is shared by Transform, Align and Distribute and the Frame editor.
 
 Rotation edits preserve signed native Scale and Delta transforms, and preserve the object origin by default. Enable **Rotate Around Reference Location** to rotate around the selected reference origin instead. A reference that follows the object or selection is intentionally live. Numeric Location and Rotation edits must read back as requested within the operation budget. If the reference follows the edit and prevents that result, Better Item rolls back with BI-T009. Apply the relevant component to an independent Frame first; no source is silently frozen.
 

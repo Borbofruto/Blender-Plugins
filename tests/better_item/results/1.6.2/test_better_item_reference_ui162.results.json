@@ -1,0 +1,11 @@
+{
+  "component_states": 21,
+  "consumers": [
+    "Transform",
+    "Align and Distribute",
+    "Reference Frames"
+  ],
+  "category_icons_only": true,
+  "branch_for_secondary_object_frame_name": true,
+  "draw_does_not_mutate_sources": true
+}

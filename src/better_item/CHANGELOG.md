@@ -1,5 +1,12 @@
 # Better Item — changelog
 
+## 1.6.2
+
+### Changed
+- Add category icons to Orientation and Location labels, with an indented branch for their required Object, Frame or custom-orientation Name.
+- Use the same reference hierarchy in Transform, Align and Distribute and the Frame editor; keep child-label icons absent and selector icons native.
+- Preserve reference data, transform calculations and the stable installer filename.
+
 ## 1.6.1
 
 ### Fixed

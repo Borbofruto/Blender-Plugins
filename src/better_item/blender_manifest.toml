@@ -1,7 +1,7 @@
 schema_version = "1.0.0"
 id = "better_item"
 name = "Better Item"
-version = "1.6.1"
+version = "1.6.2"
 tagline = "Reference transforms and geometry-aware alignment tools"
 maintainer = "Gabriel Webber do Nascimento"
 website = "https://github.com/Borbofruto/Blender-Plugins"

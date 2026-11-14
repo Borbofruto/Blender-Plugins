@@ -1,0 +1,16 @@
+{
+  "passed": true,
+  "phases": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "checks": [
+    "mixed Object Orientation / Frame Location",
+    "Align and Distribute shared hierarchy",
+    "Frame editor Object / Frame hierarchy",
+    "custom Name and pending Object hierarchy"
+  ]
+}

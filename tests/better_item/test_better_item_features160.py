@@ -133,6 +133,7 @@ class Layout:
         object.__setattr__(self,key,value)
     def row(self,**kw):return Layout(self.events)
     def column(self,**kw):return Layout(self.events)
+    def split(self,**kw):return Layout(self.events)
     def box(self):return Layout(self.events)
     def label(self,**kw):self.events.append(('label',kw.get('text','')))
     def prop(self,owner,name,**kw):self.events.append(('prop',name))
