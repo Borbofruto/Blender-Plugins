@@ -1,46 +1,25 @@
 # Blender Plugins
 
-Installable extension ZIPs are in [`addons/`](addons); sources are in [`src/`](src). Install an individual add-on ZIP with Blender's **Install from Disk**, not the repository ZIP.
+Install individual extension ZIPs from [`addons/`](addons) using Blender's **Install from Disk**. Sources are in [`src/`](src), tests in [`tests/`](tests). The repository ZIP is not an addon installer.
 
-## Better Item 1.5.1
+## Better Item 1.5.2
 
-[Download ZIP](https://github.com/Borbofruto/Blender-Plugins/raw/refs/heads/main/addons/better_item-1.5.1.zip) | [Manual](src/better_item/README.md) | [Source](src/better_item) | [Tests](tests/better_item)
+[Download ZIP](https://github.com/Borbofruto/Blender-Plugins/raw/refs/heads/main/addons/better_item-1.5.2.zip) | [Manual](src/better_item/README.md) | [Source](src/better_item) | [Tests](tests/better_item)
 
-Panel order: **Reference Frames > Transform > Align and Distribute**. Compact English Location, Rotation, Scale and Dimensions fields support live edits and proportional XYZ links. Transform and Align and Distribute share the full **Reference: Individual / Frame** system.
+A spatial-precision Transform, Reference Frames and Align/Distribute addon for Blender 5.0+, tested in Blender 5.2.3 LTS. English compact XYZ fields support proportional links, projected Dimensions, origin alignment and signed distribution.
 
-### Reference UI revision in 1.5.1
+- **Default / Local** reads and edits the actual Item channels. **Reference** measures and edits using selected Location and Orientation references.
+- Reference selectors are shared by Transform, Align/Distribute and frame components. Dropdown groups are **Better Item** and **Default**, with familiar icons. Default pivots are directly selectable.
+- Object, Frame, Global, the standard pivots/axes and explicitly named custom orientations cover reference choices. Parent shortcuts are removed from the visible list; existing shortcuts migrate to explicit Object sources. There is no capture-from-viewport control.
+- **Rotate Around Reference Location** uses the chosen Location reference as the rotation center; otherwise Rotation preserves the object's own origin.
+- **Use Orientation in Viewport** still exports a frame as native custom axes for G/R. Native-menu deletion ends the export; the 0.2-second detector now explicitly redraws affected viewports without mouse interaction.
+- The BI-T006 rounding budget now retains separate parent and Parent Inverse terms before cancellation. Tests pass for 1,200 such cases and 842 moves across -210..210 mm with the reported manual frame settings, alongside 1,500 locked-parent cases and existing reference/arrangement regressions.
 
-Transform, Align and Distribute, and the frame editor use the same component selectors. Location directly lists Global, Frame, Object, Parent and all five native pivots, with familiar native icons. Orientation lists the supported native axes and addon sources directly. Local and Viewport shortcuts are excluded from these readouts; Custom Orientation... explicitly opens a named source field. Frames add only Manual storage, keeping Location and Orientation independent.
+### Current scope and archived animation prototype
 
-Align and Distribute has no extra Align To selector. Bounding Box Center exposes origin-bound Min/Center/Max and fixed-extreme distribution; other Location choices anchor alignment and signed Spacing to the chosen point. Active Element keeps the active selected source fixed. Frame pointers inherit their Location component's behavior.
+The active 1.5.2 ZIP has no Better Item keyframe operators, relative-animation properties, playback handlers, animation panel or bake controls. The full 1.5.1 prototype, its tests and its original ZIP are preserved separately in [`archive/better_item-animation-1.5.1`](archive/better_item-animation-1.5.1). Existing relative authoring data is retained but not evaluated by 1.5.2; use the archived version to bake an existing clip before switching. This is a deliberate scope boundary.
 
-Older Local/Viewport orientation choices migrate to a fixed saved orientation; Viewport Pivot becomes the concrete selected native pivot. Validation covers 81 reference combinations, all three rendered panels, matching component controls, source parity, point/bounds arrangements, old-file migration and save/reopen. Runtime animation behavior is unchanged by this revision.
-
-### Relative animation
-
-Expand **Animation**, choose Location and/or Rotation, then **Start Relative Animation**. The usual transform rows become real animatable relative channels: key a component with I, or use the group diamond. Moving the reference changes the animated trajectory. Ordinary transform operations retain their existing independent behavior until relative animation is explicitly enabled.
-
-Object, Parent, Cursor, named native custom orientations and context-independent saved-frame components can stay live. Viewport/selection-dependent sources are captured when animation starts. Missing sources apply the last valid cached component to the owned animation frame without modifying shared public frames. References and caches persist in the .blend.
-
-**Bake to Native Keyframes** samples the active actor into a separate native action, retains the authoring action, and pauses relative control. Bake actors needed by the hierarchy before removing the addon or exporting. Native parenting remains in place; unrelated native Scale/Delta curves are retained. Conflicting native pose animation, target constraints/drivers, NLA and cyclic references produce diagnostics.
-
-Outside relative mode, group diamonds insert native keys, including owned affine Geometry Nodes rows for oblique Dimensions. Alt-click deletes the group's keys at the current frame.
-
-### Parent and spatial trace
-
-**Parent** is now an independent Location/Orientation choice, also available as a saved frame component. Labels identify a missing parent, direct parent or nested hierarchy. The frame uses the parent's world origin and scale-free axes; it is not a substitute for the native Location channels when Parent Inverse, Scale or Delta transforms are involved.
-
-Expand **Transform Information** for read-only world, reference, native and Delta readings, source hierarchy, effective parent/inverse origin, transformed local contribution and evaluation residual. Optional matrices expose the affine calculation behind those readings.
-
-### Frames and native orientations
-
-New Frame asks only for a name. Edit Location and Orientation independently with manual values, separate object sources, saved frames, native pivots or native orientations. Frames and consumer choices are saved in the .blend. Use Orientation in Viewport publishes synchronized native custom axes for G/R. Removing that orientation through Blender's native menu ends the export without deleting its scene frame.
-
-### Validation
-
-Tested in Blender 5.2.3 LTS: real UI playback and same-frame reference changes; animated/deleted controllers; native orientation deletion; fresh-process save/reopen; signed Scale, Delta and parented rotation storage; native bake with the addon unregistered; native/affine Dimensions keying; and actual CPU render pixel movement with a hidden controller in an excluded collection. Earlier coverage includes 1,500 locked-parent roundoff cases, 81 reference combinations, 630 arrangements and 128 signed-scale rotation cases.
-
-The runtime ZIP contains source, manifest, license and manual; development tests stay in the repository. Minimum Blender 5.0. Restart Blender after updating, then open **N > Better Item**.
+Restart Blender after updating, then open **N > Better Item**. The runtime ZIP contains source, manifest, license and manual; development tests and the archive are outside it.
 
 ## Export Paper Model - Medidas 1.5.1
 

@@ -122,10 +122,12 @@ def dimensions(obj, axes):
 
 def scale_editable(obj):
     settings = obj.better_item
-    return settings.reference_mode=='INDIVIDUAL' and settings.orientation in {'GLOBAL','LOCAL'} and settings.pivot_mode == 'GLOBAL'
+    return settings.transform_space=='DEFAULT' or settings.reference_mode=='INDIVIDUAL' and settings.orientation in {'GLOBAL','LOCAL'} and settings.pivot_mode == 'GLOBAL'
 
 
 def values(context, obj, group):
+    if obj.better_item.transform_space=='DEFAULT':
+        return tuple(getattr(obj,{'LOCATION':'location','ROTATION':'rotation_euler','SCALE':'scale','DIMENSIONS':'dimensions'}[group]))
     if group == 'LOCATION':return frames.relative_values(context,obj,'POSITION')
     if group == 'ROTATION':return frames.relative_values(context,obj,'ROTATION')
     if group == 'SCALE':return tuple(obj.scale)
@@ -293,6 +295,7 @@ def set_dimensions(context,obj,desired):
 def edit_component(context,obj,group,axis,value):
     engine.editable(obj)
     context.view_layer.update()
+    if obj.better_item.transform_space=='DEFAULT':return _edit_default(obj,group,axis,value)
     if group=='SCALE':
         if not scale_editable(obj):raise BetterItemError('Scale shows native values and is read-only in reference modes.')
         return engine.edit_scale_component(obj,axis,value)
@@ -304,3 +307,30 @@ def edit_component(context,obj,group,axis,value):
         return frames.set_position(context,obj,desired)
     if group=='ROTATION':return set_rotation(context,obj,desired)
     return set_dimensions(context,obj,desired)
+
+
+def _edit_default(obj,group,axis,value):
+    """Edit Blender's actual Item channels; no parent/reference conversion."""
+    if group=='SCALE':return engine.edit_scale_component(obj,axis,value)
+    attribute={'LOCATION':'location','ROTATION':'rotation_euler','DIMENSIONS':'dimensions'}[group]
+    before=tuple(getattr(obj,attribute))
+    desired=linked_values(before,axis,value,getattr(obj.better_item,engine.GROUP_LINK[group]),zero_angle_as_turn=group=='ROTATION')
+    locks=obj.lock_location if group=='LOCATION' else obj.lock_rotation if group=='ROTATION' else obj.lock_scale
+    if group!='DIMENSIONS' and any(locked and engine.different(old,new) for locked,old,new in zip(locks,before,desired)):
+        raise BetterItemError('Unlock the affected default/local channel before editing it.')
+    engine._driver_guard(obj,{'scale' if group=='DIMENSIONS' else attribute})
+    previous=_snapshot(obj)
+    try:
+        if group=='DIMENSIONS':
+            if any(abs(old)<1e-12 and engine.different(old,new) for old,new in zip(before,desired)):
+                raise BetterItemError('A zero Dimension cannot be reopened through Scale. Restore a nonzero Scale first.')
+            obj.scale=tuple(scale*(new/old) if abs(old)>1e-12 else scale for scale,old,new in zip(obj.scale,before,desired))
+        else:setattr(obj,attribute,desired)
+        bpy.context.view_layer.update()
+        if group=='DIMENSIONS' and any(locked and engine.different(old,new) for locked,old,new in zip(locks,previous['scale'],obj.scale)):
+            raise BetterItemError('Dimensions would change a locked Scale channel.')
+        if not engine._matches(tuple(getattr(obj,attribute)),desired):
+            raise BetterItemError('Blender did not retain the requested default/local channel values.')
+    except Exception:
+        _restore(obj,previous)
+        raise

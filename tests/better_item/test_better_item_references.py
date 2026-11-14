@@ -136,7 +136,7 @@ with native_refs.view_context(ctx):
 custom=ctx.scene.transform_orientation_slots[0].custom_orientation
 custom.matrix=Euler((.1,.2,.3)).to_matrix()
 g.rotation_mode='NATIVE'
-assert bpy.ops.better_item.native_frame(action='SOURCE')=={'FINISHED'}
+g.native_source=custom.name  # Explicit named source; no viewport capture action.
 matrix_near(frames.frame_axes(g),custom.matrix)
 ctx.scene.transform_orientation_slots[0].type='GLOBAL'
 custom.matrix=Euler((.2,.4,.1)).to_matrix();native_refs.sync()

@@ -27,7 +27,7 @@ frame.position_frame=frame.rotation_frame=uid
 # All ordinary native/added choices have one selector in all three contexts.
 locs=[c[0] for c in references._LOCATION_CHOICES]
 rots=[c[0] for c in references._ORIENTATION_CHOICES if c[0]!='NATIVE']
-assert locs==['GLOBAL','FRAME','OBJECT','PARENT','BOUNDING_BOX_CENTER','CURSOR','INDIVIDUAL_ORIGINS','MEDIAN_POINT','ACTIVE_ELEMENT']
+assert locs==['GLOBAL','FRAME','OBJECT','BOUNDING_BOX_CENTER','CURSOR','INDIVIDUAL_ORIGINS','MEDIAN_POINT','ACTIVE_ELEMENT']
 assert not {'LOCAL','VIEWPORT','PIVOT'}&set(locs+rots)
 for kind,choices in [('origin',locs),('axes',rots)]:
  prop='reference_location' if kind=='origin' else 'reference_orientation'

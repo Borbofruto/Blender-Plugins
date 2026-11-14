@@ -104,22 +104,12 @@ def viewport_axes(context,obj):
 
 
 def object_axes(context,obj):
-    if obj.better_item.animation.enabled:
-        from .animation import basis
-        return basis(context,obj)[1]
     from . import references
     return references.axes(context,obj.better_item,obj)
 
 
-def viewport_origin(context,obj):
-    from . import native_refs
-    return native_refs.pivot(context,context.scene.tool_settings.transform_pivot_point,obj)
-
 
 def object_origin(context,obj):
-    if obj.better_item.animation.enabled:
-        from .animation import basis
-        return basis(context,obj)[0]
     from . import references
     return references.origin(context,obj.better_item,obj)[0]
 
@@ -351,7 +341,7 @@ class BETTERITEM_OT_frame(bpy.types.Operator):
     bl_description = 'Create, apply or select a reference without parenting the target object'
     bl_options = {'REGISTER','UNDO'}
     action: bpy.props.EnumProperty(items=[(v,l,'') for v,l in (
-        ('VIEWPORT','Create from Viewport'),('OBJECT','Create from Object (Applied)'),
+('OBJECT','Create from Object (Applied)'),
         ('LINKED','Create Linked to Object'),('MANUAL','Create Manual'),
         ('APPLY','Apply Reference'),('APPLY_POSITION','Apply Location'),
         ('APPLY_ROTATION','Apply Orientation'),('REMOVE','Remove'),('USE','Use Orientation and Origin'))])
@@ -360,13 +350,11 @@ class BETTERITEM_OT_frame(bpy.types.Operator):
         obj = context.active_object
         try:
             context.view_layer.update()
-            if self.action in {'VIEWPORT','OBJECT','LINKED','MANUAL'}:
+            if self.action in {'OBJECT','LINKED','MANUAL'}:
                 if self.action != 'MANUAL' and obj is None:
                     raise BetterItemError('Select an object to capture a reference.')
                 if self.action == 'MANUAL':
                     origin, axes, name = Vector(), Matrix.Identity(3), 'Reference'
-                elif self.action == 'VIEWPORT':
-                    origin, axes, name = viewport_origin(context,obj), viewport_axes(context,obj), 'Viewport Reference'
                 else:
                     origin = obj.matrix_world.translation.copy()
                     from .orientation import rotation
@@ -440,9 +428,9 @@ class BETTERITEM_PT_frames(bpy.types.Panel):
             if mode!='MANUAL':box.operator('better_item.frame',text='Apply '+label).action=action
         layout.operator('better_item.native_frame',text='Use Orientation in Viewport',icon='ORIENTATION_GLOBAL').action='PUBLISH'
         if frame.native_enabled:
-            layout.label(text='Native: '+frame.native_name)
+            layout.label(text='Exported: '+frame.native_name)
             if frame.native_suspended:layout.label(text='Invalid source: orientation suspended.',icon='ERROR')
-            layout.operator('better_item.native_frame',text='Remove Native Orientation').action='REMOVE'
+            layout.operator('better_item.native_frame',text='Remove Exported Orientation').action='REMOVE'
         layout.operator('better_item.frame',text='Use Frame for Active Object').action='USE'
         layout.operator('better_item.frame',text='Remove Frame',icon='X').action='REMOVE'
 

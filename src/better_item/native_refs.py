@@ -256,6 +256,13 @@ def _refresh_normal(context):
         _normal_signatures[key]=_normal_signature(context)
 
 
+def _redraw_scene(scene,windows):
+    for window in windows:
+        if window.scene==scene:
+            for area in window.screen.areas:
+                if area.type=='VIEW_3D':area.tag_redraw()
+
+
 def sync():
     global _syncing,_needs_migration
     if _syncing or not hasattr(bpy.types.Scene,'better_item'):return .2
@@ -265,6 +272,8 @@ def sync():
         from . import frames
         if _needs_migration:
             frames.migrate()
+            from . import _retire_animation_dependencies
+            _retire_animation_dependencies()
             _needs_migration=False
         live_scenes={scene.as_pointer() for scene in bpy.data.scenes}
         live_names={(scene.as_pointer(),name) for scene in bpy.data.scenes for name in _source_names(scene)}
@@ -286,6 +295,7 @@ def sync():
             visited.add(scene.as_pointer())
             with context.temp_override(window=window,screen=window.screen,area=area,region=region):
                 ctx=bpy.context
+                before=tuple((f.uid,f.native_enabled,f.native_suspended,f.native_name) for f in scene.better_item.frames)
                 # Absence while valid is an external deletion, not a request
                 # to recreate. Suspended entries were removed by us instead.
                 for frame in scene.better_item.frames:
@@ -308,6 +318,8 @@ def sync():
                         try:remove_native(ctx,frame)
                         except (BetterItemError,RuntimeError):pass
                         if not frame.native_suspended:frame.native_suspended=True
+                after=tuple((f.uid,f.native_enabled,f.native_suspended,f.native_name) for f in scene.better_item.frames)
+                if before!=after:_redraw_scene(scene,windows)
     finally:_syncing=False
     return .2
 
@@ -317,27 +329,13 @@ class BETTERITEM_OT_native_frame(bpy.types.Operator):
     bl_label='Frame Orientation'
     bl_options={'REGISTER','UNDO'}
     action:bpy.props.EnumProperty(items=[('PUBLISH','Use in Viewport','Create or update a native orientation'),
-        ('SOURCE','Use Viewport Choice','Link to the currently selected native orientation'),
         ('REMOVE','Remove Native Orientation','Stop synchronizing this native orientation')])
     def execute(self,context):
         settings=context.scene.better_item
         try:
             if not 0<=settings.active_frame<len(settings.frames):raise BetterItemError('Choose a frame.')
             frame=settings.frames[settings.active_frame]
-            if self.action=='SOURCE':
-                if context.scene.transform_orientation_slots[0].custom_orientation is None:
-                    raise BetterItemError('Select a custom orientation in the viewport first. Standard axes are listed directly in Orientation.')
-                previous=frame.native_source
-                frame.native_source=context.scene.transform_orientation_slots[0].type
-                custom=context.scene.transform_orientation_slots[0].custom_orientation
-                if custom:_custom_cache[(context.scene.as_pointer(),custom.name)]=custom.matrix.copy()
-                try:
-                    from . import frames
-                    frames.frame_axes(frame,context)
-                except BetterItemError:
-                    frame.native_source=previous
-                    raise
-            elif self.action=='REMOVE':
+            if self.action=='REMOVE':
                 remove_native(context,frame)
                 frame.native_enabled=False
                 frame.native_name=''

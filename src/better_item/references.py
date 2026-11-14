@@ -41,7 +41,6 @@ _LOCATION_CHOICES=[
     ('GLOBAL','Global','World origin','WORLD'),
     ('FRAME','Frame','Location component of a saved frame','EMPTY_AXIS'),
     ('OBJECT','Object','Chosen object origin','OBJECT_DATA'),
-    ('PARENT','Parent','Direct parent origin; World if no parent','ORIENTATION_PARENT'),
     ('BOUNDING_BOX_CENTER','Bounding Box Center','Center of selected geometry bounds','PIVOT_BOUNDBOX'),
     ('CURSOR','3D Cursor','3D Cursor position','PIVOT_CURSOR'),
     ('INDIVIDUAL_ORIGINS','Individual Origins','Active object origin for a single reference point','PIVOT_INDIVIDUAL'),
@@ -51,12 +50,12 @@ _ORIENTATION_CHOICES=[
     ('GLOBAL','Global','World axes','ORIENTATION_GLOBAL'),
     ('SAVED','Frame','Orientation component of a saved frame','EMPTY_AXIS'),
     ('REFERENCE','Object','Chosen object axes, ignoring scale','OBJECT_DATA'),
-    ('PARENT','Parent','Direct parent axes; Global if no parent','ORIENTATION_PARENT'),
     ('NORMAL','Normal','Native selection normal','ORIENTATION_NORMAL'),
     ('GIMBAL','Gimbal','Native Gimbal axes','ORIENTATION_GIMBAL'),
     ('VIEW','View','Current view axes','ORIENTATION_VIEW'),
     ('CURSOR','3D Cursor','3D Cursor axes','ORIENTATION_CURSOR'),
     ('NATIVE','Custom Orientation...','Choose a named custom transform orientation','EMPTY_AXIS')]
+
 
 def _choices(kind,frame=False):
     values=_ORIENTATION_CHOICES if kind=='axes' else _LOCATION_CHOICES
@@ -84,10 +83,11 @@ def _visible(settings,kind,arrangement=False,frame=False):
 def choice_property(kind,arrangement=False,frame=False):
     choices=_choices(kind,frame)
     names=[item[0] for item in choices]
-    items=[(*item,i) for i,item in enumerate(choices)]
-    # Native entries are visible in the same dropdown, with a labeled separator.
-    split=(5 if frame else 4)
-    items.insert(split,('', 'Blender', 'Native reference types'))
+    items=[]
+    custom={'MANUAL','FRAME','SAVED','OBJECT','REFERENCE','NATIVE'}
+    for title,is_custom in (('Better Item',True),('Default',False)):
+        items.append(('',title,''))
+        items.extend((*item,i) for i,item in enumerate(choices) if (item[0] in custom)==is_custom)
     def get(self):
         mode=_visible(self,kind,arrangement,frame)
         return names.index(mode) if mode in names else 0
@@ -110,7 +110,7 @@ def choice_property(kind,arrangement=False,frame=False):
         else:
             f=_FIELDS[arrangement]
             if kind=='origin' and mode in {item[0] for item in native_refs.PIVOTS}:
-                # Keep the dedicated legacy cursor ID, used by animation bindings.
+                # Keep the dedicated legacy cursor ID, retained for old file compatibility.
                 self.reference_pivot=mode
                 setattr(self,f['origin'],'CURSOR' if mode=='CURSOR' else 'PIVOT')
             else:
@@ -195,8 +195,8 @@ def draw_component(layout,settings,kind,arrangement=False,frame=False):
         if not frame:row.operator('better_item.new_frame',text='',icon='ADD').target=('ALIGN_' if arrangement else '')+('AXES' if kind=='axes' else 'ORIGIN')
     elif mode=='NATIVE':
         layout.prop(settings,'native_source' if frame else 'reference_native',text='Name')
-        if frame:layout.operator('better_item.native_frame',text='Use Viewport Custom Orientation').action='SOURCE'
-        else:layout.operator('better_item.reference_native',text='Use Viewport Custom Orientation').arrangement=arrangement
+
+
     if mode=='INDIVIDUAL_ORIGINS':layout.label(text='Single reference: active origin.')
 
 
@@ -241,6 +241,15 @@ def _migrate_visible(scene):
     from . import frames
     owners=[(scene.better_item,True,None)]+[(o.better_item,False,o) for o in scene.objects]
     for settings,arrangement,obj in owners:
+        if settings.get('parent_shortcut_schema',0)<1:
+            active=obj or bpy.context.active_object
+            parent=active.parent if active else None
+            f=_FIELDS[arrangement]
+            if getattr(settings,f['axes'])=='PARENT':
+                setattr(settings,f['axes_object'],parent);setattr(settings,f['axes'],'REFERENCE' if parent else 'GLOBAL')
+            if _location_mode(settings,arrangement)=='PARENT':
+                setattr(settings,f['origin_object'],parent);setattr(settings,f['origin'],'OBJECT' if parent else 'GLOBAL')
+            settings['parent_shortcut_schema']=1
         if settings.get('reference_ui_schema',0)>=1:continue
         f=_FIELDS[arrangement]
         with bpy.context.temp_override(scene=scene,view_layer=scene.view_layers[0]):
@@ -259,27 +268,16 @@ def _migrate_visible(scene):
                 setattr(settings,f['origin'],'PIVOT')
         settings['reference_ui_schema']=1
     for frame in scene.better_item.frames:
+        for kind in ('position','rotation'):
+            if getattr(frame,kind+'_mode')=='PARENT':
+                source=getattr(frame,kind+'_source')
+                if source is None:continue
+                parent=source.parent
+                setattr(frame,kind+'_source',parent)
+                setattr(frame,kind+'_mode','OBJECT' if parent else ('GLOBAL' if kind=='position' else 'NATIVE'))
+                if not parent and kind=='rotation':frame.native_source='GLOBAL'
         if frame.rotation_mode=='NATIVE' and frame.native_source=='LOCAL':
             with bpy.context.temp_override(scene=scene,view_layer=scene.view_layers[0]):
                 try:frames.apply_reference(frame,'ROTATION')
                 except BetterItemError:pass
 
-
-class BETTERITEM_OT_reference_native(bpy.types.Operator):
-    bl_idname='better_item.reference_native'
-    bl_label='Use Viewport Orientation'
-    bl_options={'REGISTER','UNDO'}
-    arrangement:bpy.props.BoolProperty(default=False,options={'SKIP_SAVE'})
-    def execute(self,context):
-        if not self.arrangement and context.active_object is None:return {'CANCELLED'}
-        settings=context.scene.better_item if self.arrangement else context.active_object.better_item
-        name=context.scene.transform_orientation_slots[0].type
-        try:native_refs.orientation(context,name)
-        except BetterItemError as exc:
-            self.report({'ERROR'},str(exc));return {'CANCELLED'}
-        custom=context.scene.transform_orientation_slots[0].custom_orientation
-        if custom is None:
-            self.report({'ERROR'},'Select a custom orientation in the viewport first. Standard axes are listed directly in Orientation.');return {'CANCELLED'}
-        if custom:native_refs._custom_cache[(context.scene.as_pointer(),name)]=custom.matrix.copy()
-        settings.reference_native=name
-        return {'FINISHED'}

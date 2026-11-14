@@ -97,14 +97,8 @@ rotation_near(frames.resolve(live)[1],axes)
 # Names can change without breaking a UID selection.
 live.name='Renamed'
 assert frames.find(context.scene,settings.orientation_frame).name=='Renamed'
-# Capture viewport orientation + pivot as a static reference.
-context.scene.transform_orientation_slots[0].type='LOCAL'
-context.scene.tool_settings.transform_pivot_point='CURSOR'
-context.scene.cursor.location=(7,8,9)
-assert bpy.ops.better_item.frame(action='VIEWPORT')=={'FINISHED'}
-captured=context.scene.better_item.frames[-1]
-near(frames.resolve(captured)[0],(7,8,9))
-rotation_near(frames.resolve(captured)[1],obj.matrix_world.to_quaternion().to_matrix())
+# Viewport capture was removed from the extension operator surface.
+assert 'VIEWPORT' not in {i.identifier for i in bpy.ops.better_item.frame.get_rna_type().properties['action'].enum_items}
 # Global defaults match actual world transforms, not parent-local fields.
 settings.orientation='GLOBAL'
 settings.pivot_mode='GLOBAL'
@@ -128,6 +122,7 @@ settings.orientation='SAVED'
 settings.orientation_frame=luid
 settings.pivot_mode='FRAME'
 settings.pivot_frame=uid
+count_before_save=len(context.scene.better_item.frames)
 context.preferences.filepaths.file_preview_type='NONE'
 with tempfile.TemporaryDirectory(dir=Path(__file__).resolve().parent) as tmp:
     path=str(Path(tmp)/'frames.blend')
@@ -136,10 +131,10 @@ with tempfile.TemporaryDirectory(dir=Path(__file__).resolve().parent) as tmp:
     restored=bpy.data.objects['Target'].better_item
     assert restored.orientation_frame==luid
     assert restored.pivot_frame==uid
-    assert len(context.scene.better_item.frames)==4
+    assert len(context.scene.better_item.frames)==count_before_save
     assert frames.find(context.scene,luid).name=='Renamed'
 print('FRAMES PASSED: independent links, apply, manual values, deletion, live relative readings, absolute edits, separate pivot, UID rename and persistence')
-# Multi-selection viewport pivot capture uses all selected origins.
+# The explicit Median Point source uses selected origins, without a viewport alias.
 obj=bpy.data.objects['Target']
 bpy.context.view_layer.objects.active=obj
 bpy.ops.object.select_all(action='DESELECT')
@@ -151,7 +146,8 @@ obj.select_set(True)
 bpy.context.view_layer.objects.active=obj
 bpy.context.scene.tool_settings.transform_pivot_point='MEDIAN_POINT'
 bpy.context.view_layer.update()
-near(frames.viewport_origin(bpy.context,obj),(5,0,0))
+from better_item import native_refs
+near(native_refs.pivot(bpy.context,'MEDIAN_POINT',obj),(5,0,0))
 # Missing live source fails visibly; unrelated static components survive.
 missing=frames.create(bpy.context,'Missing',Vector(),Matrix.Identity(3),other)
 bpy.data.objects.remove(other,do_unlink=True)

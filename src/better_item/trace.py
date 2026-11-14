@@ -69,10 +69,7 @@ def reference_paths(context,obj):
         return prefix+mode.title()
     s=obj.better_item;result=[]
     for kind in ('Location','Orientation'):
-        if s.animation.enabled:
-            frame=next((f for f in context.scene.better_item.frames if f.uid==s.animation.binding_uid),None)
-            text=frame_path(frame,'Location' if kind=='Location' else 'Orientation') if frame else 'Saved Animation Cache'
-        elif s.reference_mode=='FRAME':
+        if s.reference_mode=='FRAME':
             frame=next((f for f in context.scene.better_item.frames if f.uid==s.reference_frame),None)
             text=frame_path(frame,kind) if frame else 'Missing Frame'
         else:
@@ -115,7 +112,7 @@ def draw(layout,obj):
     try:values(obj)
     except BetterItemError as exc:
         box.label(text=str(exc),icon='ERROR');return
-    for key,label in (('world','World Location'),('reference_origin','Reference Origin (World)'),('relative_location','Actual Reference Location'),('local','Native Location'),('delta','Delta Location'),
+    for key,label in (('world','World Location'),('reference_origin','Reference Origin (World)'),('relative_location','Actual Reference Location'),('local','Default / Local Location'),('delta','Delta Location'),
             ('parent_origin','Parent / Inverse Origin (World)'),('contribution','Local + Delta Contribution (World)'),
             ('residual','Evaluation Residual (World)')):
         box.label(text=label)
@@ -127,7 +124,7 @@ def draw(layout,obj):
         orientation.rotation(obj)
         column=box.column(align=True);column.enabled=False;column.prop(settings,'world_rotation',text='')
     except BetterItemError:box.label(text='Unavailable for this parent basis.')
-    box.label(text='Native Rotation')
+    box.label(text='Default / Local Rotation')
     column=box.column(align=True);column.enabled=False
     column.prop(obj,{'QUATERNION':'rotation_quaternion','AXIS_ANGLE':'rotation_axis_angle'}.get(obj.rotation_mode,'rotation_euler'),text='')
     box.label(text='Parent Scale')

@@ -84,16 +84,29 @@ def _target_location(obj,target):
     return Vector(local-np.asarray(obj.delta_location,dtype=np.float64))
 
 
+def _world_roundoff(obj,target):
+    """Bound the original parent/inverse products before cancellation.
+
+    Bounding only (parent @ inverse) loses large cancelling intermediate terms.
+    Blender evaluates these float32 products separately from our float64 solve.
+    """
+    local=np.abs(np.asarray(obj.location))+np.abs(np.asarray(obj.delta_location))
+    if obj.parent and obj.parent_type=='OBJECT':
+        parent=np.asarray(obj.parent.matrix_world,dtype=np.float64)
+        inverse=np.asarray(obj.matrix_parent_inverse,dtype=np.float64)
+        intermediate=np.abs(inverse[:3,:3]) @ local+np.abs(inverse[:3,3])
+        terms=np.abs(parent[:3,:3]) @ intermediate+np.abs(parent[:3,3])
+        return 8*np.finfo(np.float32).eps*terms
+    parent=np.asarray(_parent_matrix(obj),dtype=np.float64)
+    terms=np.abs(parent[:3,:3]) @ local+np.abs(parent[:3,3])
+    return 4*np.finfo(np.float32).eps*terms
+
+
 def _position_matches(obj,target,accepted_world_roundoff=None):
     actual=tuple(obj.matrix_world.translation)
     if _matches(actual,target):return True
     if not obj.parent and not any(obj.delta_location) and accepted_world_roundoff is None:return False
-    # Bound native float32 addition/multiplication error when parenting or
-    # delta transforms cause cancellation. Drivers/constraints are still
-    # rejected independently; this is not an arbitrary geometric tolerance.
-    parent=np.asarray(_parent_matrix(obj),dtype=np.float64)
-    terms=np.abs(parent[:3,:3]) @ (np.abs(np.asarray(obj.location))+np.abs(np.asarray(obj.delta_location)))+np.abs(parent[:3,3])
-    budget=4*np.finfo(np.float32).eps*terms
+    budget=_world_roundoff(obj,target)
     if accepted_world_roundoff is not None:budget+=accepted_world_roundoff
     return all(abs(a-t)<=max(1e-8,3e-7*abs(t),float(budget[i])) for i,(a,t) in enumerate(zip(actual,target)))
 
@@ -108,7 +121,7 @@ def _local_roundoff(obj,target):
     except np.linalg.LinAlgError as exc:
         raise BetterItemError('[BI-T005] Parent transform of "%s" is singular; restore nonzero parent Scale.'%obj.name) from exc
     terms=np.abs(parent[:3,:3]) @ np.abs(np.asarray(obj.location)+np.asarray(obj.delta_location))+np.abs(parent[:3,3])
-    return 4*eps*(np.abs(inverse) @ (terms+np.abs(np.asarray(target))+np.abs(parent[:3,3])))
+    return np.abs(inverse) @ _world_roundoff(obj,target)+4*eps*(np.abs(inverse) @ (terms+np.abs(np.asarray(target))+np.abs(parent[:3,3])))
 
 
 def apply_world_positions(objects,targets,*,verify=None):
@@ -148,7 +161,7 @@ def apply_world_positions(objects,targets,*,verify=None):
             if not _position_matches(obj,targets[obj.name],accepted_roundoff.get(obj)):
                 error=max(abs(a-t) for a,t in zip(obj.matrix_world.translation,targets[obj.name]))
                 raise BetterItemError('[BI-T006] Position verification failed for "%s" (residual %.9g Blender units). '
-                    'The evaluated transform did not retain its target; inspect animation, constraints and coordinate precision. No objects were repositioned.' % (obj.name,error))
+                    'The evaluated position exceeds the float32 rounding budget for its parent/inverse transform. Check evaluated overrides and coordinate precision. No objects were repositioned.' % (obj.name,error))
         if verify is not None:verify(objects)
     except Exception as exc:
         for obj in changed:

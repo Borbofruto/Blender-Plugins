@@ -3,7 +3,7 @@
 import textwrap
 import bpy
 from bpy.app.handlers import persistent
-from . import engine, frames, transform_view, arrange, native_refs, references, trace, animation
+from . import engine, frames, transform_view, arrange, native_refs, references, trace
 from .math_core import BetterItemError
 
 frames.BetterItemFrame.__annotations__['reference_location']=references.choice_property('origin',frame=True)
@@ -66,7 +66,7 @@ _reference_modes=[('INDIVIDUAL','Individual','Choose Location and Orientation in
 
 class BetterItemObjectSettings(bpy.types.PropertyGroup):
     trace:bpy.props.PointerProperty(type=trace.BetterItemTrace)
-    animation:bpy.props.PointerProperty(type=animation.BetterItemAnimation)
+    transform_space:bpy.props.EnumProperty(name='Coordinates',items=[('DEFAULT','Default / Local','Blender Item channels, excluding inherited transforms'),('REFERENCE','Reference','Measure and edit in the chosen reference')],default='REFERENCE',options=set(),update=_orientation_changed)
     reference_mode:bpy.props.EnumProperty(name='Reference',items=_reference_modes,options=set(),update=_orientation_changed)
     reference_frame:bpy.props.EnumProperty(name='Frame',items=frames.frame_items,options=set(),update=_orientation_changed)
     reference_orientation:references.choice_property('axes',False)
@@ -86,8 +86,8 @@ class BetterItemObjectSettings(bpy.types.PropertyGroup):
         ('GLOBAL','Global','World origin'),('VIEWPORT','Viewport Pivot','Current viewport pivot'),
         ('FRAME','Saved Frame','Saved reference frame origin'),('OBJECT','Object','Another object origin'),('CURSOR','3D Cursor','3D Cursor position'),('PIVOT','Pivot','Choose a native pivot'),('PARENT','Parent','Direct parent origin, or World')],default='GLOBAL',options=set(),update=_origin_changed)
     pivot_frame:bpy.props.EnumProperty(name='Origin Frame',items=frames.frame_items,options=set(),update=_origin_changed)
-    use_reference_pivot:bpy.props.BoolProperty(name='Use Reference Pivot',
-        description='Rotate around the selected origin instead of the object origin',options=set())
+    use_reference_pivot:bpy.props.BoolProperty(name='Rotate Around Reference Location',
+        description='Rotate around the selected Location reference; otherwise rotate around the object origin',options=set())
     origin_object:bpy.props.PointerProperty(name='Origin Object',type=bpy.types.Object,update=_origin_changed)
     view_rotation_order:bpy.props.EnumProperty(name='Rotation Mode',items=[
         (order,order+' Euler','Euler order for reference-space Rotation') for order in ('XYZ','XZY','YXZ','YZX','ZXY','ZYX')],default='XYZ',options=set())
@@ -246,8 +246,6 @@ def _linked_rows(layout,obj,group,label,prefix,lock_name=None):
     if group=='DIMENSIONS' and not transform_view.has_surface_geometry(obj):
         row.label(text='Unavailable')
         return
-    if obj.is_editable:
-        row.operator('better_item.keyframe',text='',icon='KEYFRAME_HLT' if animation.has_key(obj,group,bpy.context.scene.frame_current+bpy.context.scene.frame_subframe) else 'KEYFRAME').group=group
     readonly=group=='SCALE' and not transform_view.scale_editable(obj)
     if not readonly:
         row.operator('better_item.link_group',text='',icon='LINKED' if all(links) else 'UNLINKED').group=group
@@ -264,9 +262,7 @@ def _linked_rows(layout,obj,group,label,prefix,lock_name=None):
     for i,axis in enumerate('xyz'):
         row=column.row(align=True)
         row.enabled=obj.is_editable
-        live=settings.animation.enabled and group in {'LOCATION','ROTATION'} and getattr(settings.animation,'drive_'+group.lower())
-        if live:row.prop(settings.animation,group.lower(),index=i,text=axis.upper())
-        else:row.prop(settings,prefix+'_'+axis,text=axis.upper())
+        row.prop(settings,prefix+'_'+axis,text=axis.upper())
         row.prop(settings,engine.GROUP_LINK[group],index=i,text='',toggle=True,icon='LINKED' if links[i] else 'UNLINKED')
         if lock_name:
             locked=getattr(obj,lock_name)[i]
@@ -291,16 +287,20 @@ class BETTERITEM_PT_transform(bpy.types.Panel):
             layout.label(text='Select an object in Object Mode.')
             return
         settings=obj.better_item
-        reference_layout=layout.column()
-        reference_layout.enabled=not settings.animation.enabled
-        _draw_reference(reference_layout,settings)
-        pivot_layout=layout.column()
-        pivot_layout.enabled=not settings.animation.enabled
-        pivot_layout.prop(settings,'use_reference_pivot')
+        retired=settings.get('animation')
+        if retired and retired.get('enabled',False):
+            box=layout.box();box.alert=True
+            for line in ('This file used Relative Animation.', 'Playback is not supported in 1.5.2.', 'Use archived 1.5.1 to bake first.'):
+                box.label(text=line)
+        layout.row(align=True).prop(settings,'transform_space',expand=True)
+        if settings.transform_space=='REFERENCE':
+            _draw_reference(layout,settings)
+            layout.prop(settings,'use_reference_pivot')
         error=_field_errors.get(obj.as_pointer())
         try:
-            frames.object_axes(context,obj)
-            frames.object_origin(context,obj)
+            if settings.transform_space=='REFERENCE':
+                frames.object_axes(context,obj)
+                frames.object_origin(context,obj)
         except BetterItemError as exc:error=str(exc)
         if error:
             row=layout.row(align=True)
@@ -310,13 +310,13 @@ class BETTERITEM_PT_transform(bpy.types.Panel):
             width=max(22,int((context.region.width-40)/7))
             for line in textwrap.wrap(error,width):layout.label(text=line)
         _linked_rows(layout,obj,'LOCATION','Location','location','lock_location')
-        _linked_rows(layout,obj,'ROTATION','Rotation','rotation','lock_rotation')
-        order_layout=layout.row()
-        order_layout.enabled=not settings.animation.enabled
-        order_layout.prop(settings,'view_rotation_order',text='')
+        if settings.transform_space=='DEFAULT' and obj.rotation_mode in {'QUATERNION','AXIS_ANGLE'}:
+            layout.label(text='Rotation:')
+            layout.prop(obj,'rotation_quaternion' if obj.rotation_mode=='QUATERNION' else 'rotation_axis_angle',text='')
+        else:_linked_rows(layout,obj,'ROTATION','Rotation','rotation','lock_rotation')
+        layout.prop(obj if settings.transform_space=='DEFAULT' else settings,'rotation_mode' if settings.transform_space=='DEFAULT' else 'view_rotation_order',text='')
         _linked_rows(layout,obj,'SCALE','Scale','scale','lock_scale')
         _linked_rows(layout,obj,'DIMENSIONS','Dimensions','dimensions')
-        animation.draw(layout,obj)
         trace.draw(layout,obj)
 
 
@@ -375,13 +375,22 @@ def _clear_runtime(_unused):
     transform_view.clear_cache()
     arrange.clear_error()
     native_refs.clear_cache()
-    animation.clear_runtime()
     frames.migrate()
+    _retire_animation_dependencies()
 
 
-classes=(frames.BetterItemFrame,trace.BetterItemTrace,animation.BetterItemAnimation,BetterItemObjectSettings,BetterItemSceneSettings,BETTERITEM_OT_link_group,
+def _retire_animation_dependencies():
+    if not hasattr(bpy.data,'objects'):return
+    for obj in bpy.data.objects:
+        retired=obj.better_item.get('animation')
+        if obj.is_editable and retired and retired.get('dependencies_owned',False):
+            obj.driver_remove('better_item.animation.dependency_stamp')
+            retired['dependencies_owned']=False
+
+
+classes=(frames.BetterItemFrame,trace.BetterItemTrace,BetterItemObjectSettings,BetterItemSceneSettings,BETTERITEM_OT_link_group,
          BETTERITEM_OT_clear_error,BETTERITEM_OT_clear_arrange_error,BETTERITEM_OT_align,BETTERITEM_OT_distribute,
-         BETTERITEM_PT_transform,BETTERITEM_PT_alignment)+frames.classes+(native_refs.BETTERITEM_OT_native_frame,references.BETTERITEM_OT_reference_native,animation.BETTERITEM_OT_animation,animation.BETTERITEM_OT_keyframe,)
+         BETTERITEM_PT_transform,BETTERITEM_PT_alignment)+frames.classes+(native_refs.BETTERITEM_OT_native_frame,)
 
 
 def register():
@@ -399,9 +408,7 @@ def register():
         if native_refs.invalidate_normal not in bpy.app.handlers.depsgraph_update_post:
             bpy.app.handlers.depsgraph_update_post.append(native_refs.invalidate_normal)
         frames.migrate()
-        if animation.frame_changed not in bpy.app.handlers.frame_change_post:bpy.app.handlers.frame_change_post.append(animation.frame_changed)
-        if animation.frame_prepare not in bpy.app.handlers.frame_change_pre:bpy.app.handlers.frame_change_pre.append(animation.frame_prepare)
-        if not bpy.app.timers.is_registered(animation.sync):bpy.app.timers.register(animation.sync,first_interval=.05,persistent=True)
+        _retire_animation_dependencies()
         if not bpy.app.timers.is_registered(native_refs.sync):bpy.app.timers.register(native_refs.sync,first_interval=.2,persistent=True)
     except Exception:
         unregister()
@@ -409,15 +416,6 @@ def register():
 
 
 def unregister():
-    if animation.frame_prepare in bpy.app.handlers.frame_change_pre:bpy.app.handlers.frame_change_pre.remove(animation.frame_prepare)
-    if bpy.app.timers.is_registered(animation.sync):bpy.app.timers.unregister(animation.sync)
-    if animation.frame_changed in bpy.app.handlers.frame_change_post:bpy.app.handlers.frame_change_post.remove(animation.frame_changed)
-    if hasattr(bpy.types.Object,'better_item') and hasattr(bpy.data,'objects'):
-        for obj in bpy.data.objects:
-            if obj.is_editable and obj.better_item.animation.dependencies_owned:
-                obj.driver_remove(animation._DEPENDENCY_PATH)
-                obj.better_item.animation.dependencies_owned=False
-    animation.clear_runtime()
     if bpy.app.timers.is_registered(native_refs.sync):bpy.app.timers.unregister(native_refs.sync)
     for handlers in (bpy.app.handlers.load_post,bpy.app.handlers.undo_post,bpy.app.handlers.redo_post):
         if _clear_runtime in handlers:handlers.remove(_clear_runtime)
