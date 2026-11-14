@@ -31,5 +31,6 @@ bpy.ops.wm.save_as_mainfile(filepath={str(blend)!r})
  _retire_animation_dependencies()
  assert o.animation_data.action,'Authoring action must not be deleted'
  assert not hasattr(o.better_item,'animation')
- assert not any(getattr(h,'__module__','').startswith('better_item') for h in bpy.app.handlers.frame_change_post)
+ from better_item import transform_view
+ assert [h for h in bpy.app.handlers.frame_change_post if getattr(h,'__module__','').startswith('better_item')]==[transform_view.clear_cache]
  print('152 ARCHIVE COMPATIBILITY PASSED: old authoring data retained, owned stamp removed, no relative playback or schema registered')

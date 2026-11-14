@@ -1,6 +1,14 @@
-# Better Item 1.5.3
+# Better Item 1.5.4
 
 A live Transform panel for Blender 5.0+, tested in Blender 5.2.3 LTS. GPL-3.0-or-later. Author: Gabriel Webber do Nascimento.
+
+## Patch 1.5.4
+
+Measurements are invalidated on frame/subframe changes, including geometry indirectly driven by external animated objects, drivers and nested Geometry Nodes. This callback clears measurement caches only; it never writes object transforms or adds animation controls. Same-frame geometry/extent cache reuse remains available.
+
+Reference Dimensions means physical width projected onto each **unit direction** of the chosen axes. Direction lengths are normalized for measurement and dimension editing; oblique angles and signs remain intact. The original full basis is unchanged for Location coordinates, frame storage and native orientation exports. Rotation still uses the basis's rotational component. These are different, deliberate mathematical operations, not interchangeable inverses/transposes.
+
+Transform groups whose readings fail now show **Unavailable** and omit their numeric/edit/link controls. Other groups remain available: a missing Location does not disable readable Rotation/Dimensions, and Scale retains its native readout when an Orientation source is missing. Repairing the source restores the fields. No object channels are changed by drawing these states.
 
 ## Patch 1.5.3
 
@@ -8,7 +16,7 @@ Default / Local's three-component Euler API now explicitly rejects Quaternion an
 
 ## Installation
 
-Download `addons/better_item-1.5.3.zip` from the repository. In Blender use **Edit > Preferences > Add-ons > Install from Disk**, choose that ZIP, enable Better Item, and restart Blender after an update. Open **N > Better Item** in Object Mode. The repository ZIP is not the extension package.
+Download `addons/better_item-1.5.4.zip` from the repository. In Blender use **Edit > Preferences > Add-ons > Install from Disk**, choose that ZIP, enable Better Item, and restart Blender after an update. Open **N > Better Item** in Object Mode. The repository ZIP is not the extension package.
 
 ## One live Transform panel
 
@@ -18,7 +26,7 @@ The panel keeps Blender's familiar **Location**, **Rotation**, **Scale** and **D
 - **Reference > Individual > Location** lists Global, Frame, Object, Bounding Box Center, 3D Cursor, Individual Origins, Median Point and Active Element. All pivot choices appear directly, with native icons; no nested Pivot selector or Viewport Pivot alias.
 - **Location** is the object's world origin expressed in the chosen axes, relative to the chosen origin.
 - **Rotation** is the object's orientation relative to the chosen axes. The display supports the six Euler orders, independently of the object's underlying rotation storage mode.
-- **Dimensions** is the distance between extreme evaluated vertices along each chosen axis. It is not the projection of the object's local bounding box. Modifiers are included in the measurement.
+- **Dimensions** is the physical distance between extreme evaluated vertices projected onto each chosen unit direction. It is not the projection of the object's local bounding box. Modifiers are included in the measurement.
 - **Scale** always shows the object's native Scale. It is read-only when external/reference axes or a non-global origin are selected. In Global axes with Global origin, it remains editable.
 
 Changing axes or origin only changes the readings. It never moves, rotates or resizes the object. Changing only the origin changes Location, without changing Rotation or Dimensions. Dimensions is shown as Unavailable on object types without convertible surface geometry, including Empty, Camera, Light, Armature, Lattice and Grease Pencil; their other transform fields remain usable.
@@ -108,7 +116,7 @@ Another frame can use that exported native orientation as its own source, or lin
 
 Exported custom orientations contain rotation/directions only. Exporting one does not change Blender's native pivot setting. Better Item's own reference origin and **Rotate Around Reference Location** remain separate controls.
 
-Gimbal axes can be nonorthogonal. Their full basis is retained for native transforms, reference coordinates and projected Dimensions. Euler Rotation fields display/edit the rotational component of that basis. Applying a nonorthogonal basis stores it without loss; manual Rotation then applies a world-space rotation offset to that stored basis (`offset @ stored_basis`). Singular bases, including Gimbal lock, are rejected with BI-F005.
+Gimbal axes can be nonorthogonal. Their full basis is retained for native transforms, reference coordinates and projected Dimensions. Euler Rotation fields display/edit the rotational component of that basis. Dimensions normalizes each direction before projection, so a scaled Gimbal direction cannot scale the reported length; Location continues to use coordinates in the original full basis. Applying a nonorthogonal basis stores it without loss; manual Rotation then applies a world-space rotation offset to that stored basis (`offset @ stored_basis`). Singular bases, including Gimbal lock, are rejected with BI-F005.
 
 Ordinary Transform and Align/Distribute operations have no continuing transform link on targets: moving a source changes readings and future operations, never an already-applied pose. Explicitly enabled Relative Animation is the exception: its keyed pose follows the reference until paused or baked. Neither mode adds parenting or Child Of constraints.
 
@@ -169,7 +177,9 @@ A frame remains one named item in the list, containing two independent component
 
 ## Performance and maintenance
 
-Dimensions reads evaluated vertex coordinates in bulk with Blender's `foreach_get` and projects them with NumPy. The evaluated local geometry and its projected extents have separate bounded caches. Geometry data is discarded only when the dependency graph reports a relevant geometry update. Translation alone reuses the previous extents; rotation and scale reuse local vertices and recompute the projection. Modifiers and shared mesh edits still invalidate affected geometry.
+Dimensions reads evaluated vertex coordinates in bulk with Blender's `foreach_get` and projects them with NumPy. The evaluated local geometry and its projected extents have separate bounded caches. Geometry data is discarded when the dependency graph reports a relevant geometry update and on every frame/subframe evaluation. This conservative frame invalidation also covers external animation dependencies that do not emit geometry-update flags. Translation alone reuses the previous extents; rotation and scale reuse local vertices and recompute the projection. Modifiers and shared mesh edits still invalidate affected geometry.
+
+Frame evaluation clears both caches, including past-frame entries, rather than reusing historical geometry after a key edit. This also invalidates static geometry on a frame change; same-frame translations still reuse it.
 
 The geometry cache is limited to eight entries and 64 MiB. Larger meshes are measured without retaining their coordinate array. Projected extents retain at most 32 entries, one current projection per object/context. Load, undo, redo and unregister clear both caches. Frame enum items retain one current list per existing scene, instead of retaining every rename history.
 
@@ -178,6 +188,9 @@ A synthetic benchmark on 250,000 vertices measured the old Python loop at 258-27
 Version and extension description live only in `blender_manifest.toml`; this is a manifest-based Blender extension, without duplicate legacy `bl_info` metadata. Legacy transformation branches and obsolete staged-edit properties have been removed. Native Scale edits, reference-space Location and reference-space Rotation each have one active implementation.
 
 ## Validation and source
+
+Version 1.5.4 tests physical widths and dimension edits under inherited nonuniform Gimbal bases, invariance under axis rescaling/reversal, unchanged coordinate bases and base meshes, invalid directions, per-group unavailable states, and Default-mode independence. Cache tests include nested GN, external native keyframes/drivers, shape keys, frame/subframe changes, backward seeks, key edits, modifier toggles, undo/redo and same-frame translation reuse. A real UI test verifies the previously stale 6-to-10 reading and the independently unavailable groups.
+
 
 The 1.5.3 tests cover read/write rejection without mutation for Quaternion/Axis-Angle, the functioning native storage fields, Euler edits, unsupported Dimensions types, the separate zero-Dimension diagnostic, missing-frame and missing-orientation readouts, valid zero vectors, wrong-scene detection and actual UI rendering. Existing precision, reference, arrangement and undo/redo tests also pass.
 

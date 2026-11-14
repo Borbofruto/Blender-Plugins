@@ -99,10 +99,22 @@ def _coordinates(obj,depsgraph,key):
     return coordinates
 
 
+def _dimension_directions(axes):
+    """Physical widths use unit directions, preserving their oblique angles."""
+    directions=axes.copy()
+    for i in range(3):
+        column=tuple(axes.col[i])
+        length=math.hypot(*column)
+        if not math.isfinite(length) or length==0:
+            raise BetterItemError('Dimensions requires finite, nonzero reference directions.')
+        directions.col[i]=tuple(value/length for value in column)
+    return directions
+
+
 def dimensions(obj, axes):
     depsgraph=bpy.context.evaluated_depsgraph_get()
     key=_geometry_key(obj,depsgraph)
-    transform=axes.transposed() @ obj.matrix_world.to_3x3()
+    transform=_dimension_directions(axes).transposed() @ obj.matrix_world.to_3x3()
     projection=tuple(v for row in transform for v in row)
     if key in _dimension_cache and _dimension_cache[key][0]==projection:
         _dimension_cache.move_to_end(key)
@@ -240,7 +252,7 @@ def _write_affine(group, matrix):
 
 def set_dimensions(context,obj,desired):
     if any(obj.lock_scale):raise BetterItemError('Unlock Scale before editing Dimensions.')
-    axes = frames.object_axes(context,obj)
+    axes = _dimension_directions(frames.object_axes(context,obj))
     before = dimensions(obj,axes)
     if any(v<0 for v in desired):raise BetterItemError('Dimensions cannot be negative.')
     if any(size<=1e-12 and abs(value-size)>1e-12 for size,value in zip(before,desired)):

@@ -54,7 +54,8 @@ for kind in ('origin','axes'):
   assert titles==['Better Item','Default'],titles
 # No relative-animation schema, operator or handler in the active package.
 assert not hasattr(o.better_item,'animation')
-assert not any(getattr(h,'__module__','').startswith('better_item') for h in bpy.app.handlers.frame_change_pre+bpy.app.handlers.frame_change_post)
+assert not any(getattr(h,'__module__','').startswith('better_item') for h in bpy.app.handlers.frame_change_pre)
+assert [h for h in bpy.app.handlers.frame_change_post if getattr(h,'__module__','').startswith('better_item')]==[transform_view.clear_cache]
 assert not hasattr(bpy.types,'BETTERITEM_OT_keyframe')
 assert not hasattr(bpy.types,'BETTERITEM_OT_animation')
 # Raw vector display matches native storage for quaternion and axis-angle too.

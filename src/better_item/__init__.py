@@ -246,6 +246,10 @@ def _linked_rows(layout,obj,group,label,prefix,lock_name=None):
     if group=='DIMENSIONS' and not transform_view.has_surface_geometry(obj):
         row.label(text='Unavailable')
         return
+    try:transform_view.values(bpy.context,obj,group)
+    except BetterItemError:
+        row.label(text='Unavailable',icon='INFO')
+        return
     readonly=group=='SCALE' and not transform_view.scale_editable(obj)
     if not readonly:
         row.operator('better_item.link_group',text='',icon='LINKED' if all(links) else 'UNLINKED').group=group
@@ -407,6 +411,11 @@ def register():
             bpy.app.handlers.depsgraph_update_post.append(transform_view.invalidate_geometry)
         if native_refs.invalidate_normal not in bpy.app.handlers.depsgraph_update_post:
             bpy.app.handlers.depsgraph_update_post.append(native_refs.invalidate_normal)
+        # Measurement invalidation only: never writes a transform or animation.
+        # Frame changes can update indirect geometry without geometry flags in
+        # depsgraph_update_post (e.g. an animated Object Info source in GN).
+        if transform_view.clear_cache not in bpy.app.handlers.frame_change_post:
+            bpy.app.handlers.frame_change_post.append(transform_view.clear_cache)
         frames.migrate()
         _retire_animation_dependencies()
         if not bpy.app.timers.is_registered(native_refs.sync):bpy.app.timers.register(native_refs.sync,first_interval=.2,persistent=True)
@@ -416,6 +425,8 @@ def register():
 
 
 def unregister():
+    if transform_view.clear_cache in bpy.app.handlers.frame_change_post:
+        bpy.app.handlers.frame_change_post.remove(transform_view.clear_cache)
     if bpy.app.timers.is_registered(native_refs.sync):bpy.app.timers.unregister(native_refs.sync)
     for handlers in (bpy.app.handlers.load_post,bpy.app.handlers.undo_post,bpy.app.handlers.redo_post):
         if _clear_runtime in handlers:handlers.remove(_clear_runtime)

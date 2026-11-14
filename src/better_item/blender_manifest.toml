@@ -1,7 +1,7 @@
 schema_version = "1.0.0"
 id = "better_item"
 name = "Better Item"
-version = "1.5.3"
+version = "1.5.4"
 tagline = "Linked transforms and origin-based alignment and distribution"
 maintainer = "Gabriel Webber do Nascimento"
 type = "add-on"
