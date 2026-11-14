@@ -1,0 +1,60 @@
+{
+  "groups": {
+    "group1": {
+      "cases": 9216,
+      "accepted": 6240,
+      "coded_atomic_rejections": 2976,
+      "rejection_codes": {
+        "[BI-T009]": 1952,
+        "[BI-V001]": 1024
+      }
+    },
+    "group2": {
+      "actual_native_rotation_comparisons": 192,
+      "single_axis_gimbal_direction_comparisons": 54
+    },
+    "group3": {
+      "parent_types": 4,
+      "collapsed_child_cases": 3,
+      "deep_signed_delta_chain": true
+    },
+    "group4": {
+      "extreme_signed_scale_cases": 16
+    },
+    "group5": {
+      "float64_truth_from_stored_vertices": 3
+    },
+    "group6": {
+      "chained_edits": 1000,
+      "max_ratio_drift": 1.4916061719105755e-07,
+      "linked_lock_rollback": true
+    },
+    "group7": {
+      "angle_zero_turn_crossing_cases": 5,
+      "gimbal_lock_rejected": true
+    },
+    "group8": {
+      "chain_lengths": [
+        2,
+        20,
+        100
+      ],
+      "cycle_rename_removal_cases": 3
+    },
+    "group9": {
+      "coordinate_unit_cases": 8,
+      "expected_precision_rejections": 0,
+      "ambiguity_and_collapse": true,
+      "selected_parent_child_operations": 2
+    },
+    "group10": {
+      "array_mirror_shape_key_cases": 3
+    },
+    "group11": {
+      "undo_redo_creation": true,
+      "copy_on_write": true,
+      "blend_roundtrip": true
+    }
+  },
+  "errors": {}
+}

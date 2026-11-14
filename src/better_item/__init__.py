@@ -29,8 +29,8 @@ def _component(group,axis):
         try:
             transform_view.edit_component(bpy.context,obj,group,axis,value)
             _field_errors.pop(obj.as_pointer(),None)
-        except (BetterItemError,ValueError,RuntimeError) as exc:
-            _field_errors[obj.as_pointer()]=str(exc)
+        except (BetterItemError,ValueError,RuntimeError,TypeError) as exc:
+            _field_errors[obj.as_pointer()]=str(exc) if isinstance(exc,BetterItemError) else '[BI-V002] Blender rejected the field edit: '+str(exc)
         if bpy.context.area:
             bpy.context.area.tag_redraw()
     args=dict(name='XYZ'[axis],get=read_value,set=write_value,precision=3,options=set())
@@ -51,6 +51,10 @@ def _orientation_changed(self,context):
 
 
 def _origin_changed(self,context):
+    _field_errors.pop(self.id_data.as_pointer(),None)
+
+
+def _links_changed(self,context):
     _field_errors.pop(self.id_data.as_pointer(),None)
 
 
@@ -88,11 +92,11 @@ class BetterItemObjectSettings(bpy.types.PropertyGroup):
         description='Rotate around the selected Location reference; otherwise rotate around the object origin',options=set())
     origin_object:bpy.props.PointerProperty(name='Origin Object',type=bpy.types.Object,update=_origin_changed)
     view_rotation_order:bpy.props.EnumProperty(name='Rotation Mode',items=[
-        (order,order+' Euler','Euler order for reference-space Rotation') for order in ('XYZ','XZY','YXZ','YZX','ZXY','ZYX')],default='XYZ',options=set())
-    link_location:bpy.props.BoolVectorProperty(name='Link Location',size=3,default=(False,False,False),options=set())
-    link_rotation:bpy.props.BoolVectorProperty(name='Link Rotation',size=3,default=(False,False,False),options=set())
-    link_scale:bpy.props.BoolVectorProperty(name='Link Scale',size=3,default=(False,False,False),options=set())
-    link_dimensions:bpy.props.BoolVectorProperty(name='Link Dimensions',size=3,default=(False,False,False),options=set())
+        (order,order+' Euler','Euler order for reference-space Rotation') for order in ('XYZ','XZY','YXZ','YZX','ZXY','ZYX')],default='XYZ',options=set(),update=_orientation_changed)
+    link_location:bpy.props.BoolVectorProperty(name='Link Location',size=3,default=(False,False,False),options=set(),update=_links_changed)
+    link_rotation:bpy.props.BoolVectorProperty(name='Link Rotation',size=3,default=(False,False,False),options=set(),update=_links_changed)
+    link_scale:bpy.props.BoolVectorProperty(name='Link Scale',size=3,default=(False,False,False),options=set(),update=_links_changed)
+    link_dimensions:bpy.props.BoolVectorProperty(name='Link Dimensions',size=3,default=(False,False,False),options=set(),update=_links_changed)
     location_x:_component('LOCATION',0)
     location_y:_component('LOCATION',1)
     location_z:_component('LOCATION',2)
@@ -335,6 +339,7 @@ class BETTERITEM_PT_alignment(bpy.types.Panel):
         for i,axis in enumerate('XYZ'):row.prop(settings,'axes',index=i,text=axis,toggle=True)
         box=layout.box()
         box.label(text='Alignment')
+        if bounds:box.label(text='Range: selected object origins')
         row=box.row(align=True)
         if not bounds:
             row.operator('better_item.align',text='Align to Reference').mode='CENTER'

@@ -9,6 +9,7 @@ from contextlib import contextmanager
 import math
 import uuid
 import bpy
+import numpy as np
 from bpy.app.handlers import persistent
 from mathutils import Matrix, Vector, Quaternion
 from .math_core import BetterItemError
@@ -75,8 +76,11 @@ def named(scene,name):
 
 
 def checked(matrix):
-    if not all(math.isfinite(v) for row in matrix for v in row) or abs(matrix.determinant())<1e-6:
-        raise BetterItemError('[BI-F005] Reference axes are singular (for example, Gimbal lock). Change the source rotation.')
+    # Singular values are invariant to uniform unit rescaling, unlike det(B).
+    array=np.asarray(matrix,dtype=np.float64)
+    singular=np.linalg.svd(array,compute_uv=False) if np.isfinite(array).all() else (0.,0.,0.)
+    if singular[0]==0 or singular[-1]<=8*np.finfo(np.float32).eps*singular[0]:
+        raise BetterItemError('[BI-F005] Reference axes are singular or too ill-conditioned for float32 source data (for example, Gimbal lock). Apply a stable reference or change the source rotation.')
     return matrix.copy()
 
 

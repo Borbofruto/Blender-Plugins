@@ -3,7 +3,6 @@
 import math
 import numpy as np
 from mathutils import Vector
-from . import frames
 from .math_core import BetterItemError,align_positions,distribute_positions
 
 _last_error=(None,'')

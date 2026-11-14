@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Blender integration: native transforms and transactional world positioning."""
 import math
 import bpy
@@ -13,17 +14,22 @@ def editable(obj):
         raise BetterItemError('[BI-T001] Object "%s" is not locally editable.' % obj.name)
 
 
-def _driver_guard(obj,paths):
+def _driver_guard(obj,paths,components=None):
     animation=obj.animation_data
-    drivers=[curve for curve in animation.drivers if not curve.mute and curve.data_path in paths] if animation else []
+    drivers=[curve for curve in animation.drivers if not curve.mute and curve.data_path in paths
+             and (components is None or curve.array_index in components.get(curve.data_path,range(4)))] if animation else []
     if drivers:
         labels=['%s[%s]'%(curve.data_path,curve.array_index) for curve in drivers]
         raise BetterItemError('[BI-T002] Object "%s" has an active driver on %s. '
             'Edit or disable that driver before this operation.' % (obj.name,', '.join(labels)))
 
 
-def _matches(actual,expected):
-    return all(math.isclose(a,b,rel_tol=3e-7,abs_tol=1e-8) for a,b in zip(actual,expected))
+def _native_matches(actual,expected):
+    """Native channels must retain the requested representable float32 value."""
+    with np.errstate(over='ignore',under='ignore'):
+        stored=np.asarray(expected,dtype=np.float32)
+    return all(math.isfinite(a) and math.isfinite(b) and math.isfinite(float(s))
+        and (b==0 or s!=0) and a==float(s) for a,b,s in zip(actual,expected,stored))
 
 
 def edit_scale_component(obj,axis,value):
@@ -34,11 +40,11 @@ def edit_scale_component(obj,axis,value):
     for i,locked in enumerate(obj.lock_scale):
         if locked and different(before[i],desired[i]):
             raise BetterItemError('Axis %s is locked on "%s". The linked edit was cancelled.' % ('XYZ'[i],obj.name))
-    _driver_guard(obj,{'scale'})
+    _driver_guard(obj,{'scale'},{'scale':{i for i in range(3) if before[i]!=desired[i]}})
     try:
         obj.scale=desired
         bpy.context.view_layer.update()
-        if not _matches(obj.scale,desired):
+        if not _native_matches(obj.scale,desired):
             raise BetterItemError('Blender did not retain the requested Scale. Check drivers and constraints on "%s".' % obj.name)
     except Exception as exc:
         obj.scale=before
@@ -68,7 +74,7 @@ def _parent_matrix(obj):
             return obj.parent.matrix_world @ obj.matrix_parent_inverse
         return obj.matrix_world @ obj.matrix_basis.inverted()
     except ValueError as exc:
-        raise BetterItemError('[BI-T005] Parent transform of "%s" is singular; restore nonzero parent Scale.' % obj.name) from exc
+        raise BetterItemError('[BI-T005] Cannot resolve %s parenting for "%s": its own matrix_basis is singular. Restore nonzero child Scale before this operation.' % (obj.parent_type,obj.name)) from exc
 
 
 def _target_location(obj,target):
@@ -104,11 +110,10 @@ def _world_roundoff(obj,target):
 
 def _position_matches(obj,target,accepted_world_roundoff=None):
     actual=tuple(obj.matrix_world.translation)
-    if _matches(actual,target):return True
-    if not obj.parent and not any(obj.delta_location) and accepted_world_roundoff is None:return False
+    if not all(math.isfinite(v) for v in (*actual,*target)):return False
     budget=_world_roundoff(obj,target)
     if accepted_world_roundoff is not None:budget+=accepted_world_roundoff
-    return all(abs(a-t)<=max(1e-8,3e-7*abs(t),float(budget[i])) for i,(a,t) in enumerate(zip(actual,target)))
+    return all(abs(a-t)<=max(3e-7*abs(t),float(budget[i])) for i,(a,t) in enumerate(zip(actual,target)))
 
 
 def _local_roundoff(obj,target):
@@ -145,9 +150,9 @@ def apply_world_positions(objects,targets,*,verify=None):
             locked_roundoff=np.zeros(3,dtype=np.float64)
             for axis,locked in enumerate(obj.lock_location):
                 if locked:
-                    if abs(desired[axis]-obj.location[axis])>max(1e-12,float(roundoff[axis])):
+                    if abs(desired[axis]-obj.location[axis])>float(roundoff[axis]):
                         raise BetterItemError('[BI-T003] Local %s is locked on "%s". Unlock it before moving; no objects were repositioned.' % ('XYZ'[axis],obj.name))
-                    if desired[axis]!=obj.location[axis]:locked_roundoff[axis]=max(1e-12,float(roundoff[axis]))
+                    if desired[axis]!=obj.location[axis]:locked_roundoff[axis]=float(roundoff[axis])
                     desired[axis]=obj.location[axis]
             if np.any(locked_roundoff):
                 accepted_roundoff[obj]=np.abs(np.asarray(_parent_matrix(obj),dtype=np.float64)[:3,:3]) @ locked_roundoff

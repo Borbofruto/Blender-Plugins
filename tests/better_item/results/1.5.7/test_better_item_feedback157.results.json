@@ -1,0 +1,14 @@
+{
+  "results": {
+    "precision": "large local coordinates, tiny/large Dimensions, zero guard, channel retention and scale-invariant conditioning passed",
+    "moving_gimbal": {
+      "accepted_with_roundtrip": 2,
+      "rejected_atomically": 16
+    },
+    "modifier_integrity": "missing marker/link/source, changed operation/selection, shared-copy rollback, rename and reload passed",
+    "channels": "unrelated Scale driver allowed, affected driver blocked, rotation preserves driven Scale, link error reset and tiny locked edits passed",
+    "rotation_position": "fault-injected final position mismatch rejected; full Rotation/Location/Scale rollback passed",
+    "instances": "unrealized instances rejected; Realize Instances restores valid measurement"
+  },
+  "errors": {}
+}

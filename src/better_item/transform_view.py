@@ -71,6 +71,9 @@ def _coordinates(obj,depsgraph,key):
     if key in _geometry_cache:
         _geometry_cache.move_to_end(key)
         return _geometry_cache[key]
+    if any(instance.is_instance and instance.parent and instance.parent.original==obj
+           for instance in depsgraph.object_instances):
+        raise BetterItemError('[BI-M005] Dimensions cannot measure unrealized Geometry Nodes instances. Use Realize Instances upstream before measuring or editing Dimensions.')
     evaluated=obj.evaluated_get(depsgraph)
     try:mesh=evaluated.to_mesh()
     except RuntimeError as exc:
@@ -106,18 +109,23 @@ def _dimension_directions(axes):
 def dimensions(obj, axes):
     depsgraph=bpy.context.evaluated_depsgraph_get()
     key=_geometry_key(obj,depsgraph)
-    transform=_dimension_directions(axes).transposed() @ obj.matrix_world.to_3x3()
-    projection=tuple(v for row in transform for v in row)
+    directions=np.asarray(axes,dtype=np.float64)
+    lengths=np.linalg.norm(directions,axis=0)
+    if not np.isfinite(directions).all() or np.any(lengths==0):
+        raise BetterItemError('[BI-F005] Dimensions requires finite nonzero directions.')
+    transform=(directions/lengths).T @ np.asarray(obj.matrix_world.to_3x3(),dtype=np.float64)
+    projection=tuple(transform.ravel())
     if key in _dimension_cache and _dimension_cache[key][0]==projection:
         _dimension_cache.move_to_end(key)
         return _dimension_cache[key][1]
     coordinates=_coordinates(obj,depsgraph,key)
-    matrix=np.asarray(transform,dtype=np.float32)
     extents=[]
-    for row in matrix:
-        projected=np.einsum('ij,j->i',coordinates,row,optimize=False)
+    for row in transform:
+        projected=np.einsum('ij,j->i',coordinates,row,dtype=np.float64,optimize=False)
         extents.append(float(projected.max())-float(projected.min()))
     result=tuple(extents)
+    if not all(math.isfinite(value) for value in result):
+        raise BetterItemError('[BI-T007] Dimensions exceeds the numeric range of the evaluated geometry.')
     _dimension_cache[key]=(projection,result)
     _dimension_cache.move_to_end(key)
     while len(_dimension_cache)>_DIMENSION_CACHE_ENTRIES:_dimension_cache.popitem(last=False)
@@ -138,6 +146,8 @@ def _validate_default_group(obj,group):
 
 
 def values(context, obj, group):
+    if obj.name not in context.scene.objects:
+        raise BetterItemError('[BI-T001] The target object is not in the active scene.')
     if obj.better_item.transform_space=='DEFAULT':
         _validate_default_group(obj,group)
         return tuple(getattr(obj,{'LOCATION':'location','ROTATION':'rotation_euler','SCALE':'scale','DIMENSIONS':'dimensions'}[group]))
@@ -158,10 +168,11 @@ def _restore(obj, previous):
 
 
 def set_rotation(context, obj, values):
+    engine.editable(obj)
     if any(not c.mute and c.influence for c in obj.constraints):
         raise BetterItemError('Disable active constraints before editing Rotation.')
-    engine._driver_guard(obj, {'location','rotation_euler','rotation_quaternion','rotation_axis_angle',
-        'scale','delta_rotation_euler','delta_rotation_quaternion','delta_scale'})
+    engine._driver_guard(obj, {'rotation_euler','rotation_quaternion','rotation_axis_angle',
+        'delta_rotation_euler','delta_rotation_quaternion'})
     if any(obj.lock_rotation) or obj.lock_rotation_w:
         raise BetterItemError('Unlock Rotation before editing reference-space rotation.')
     from .native_refs import rotation_basis
@@ -173,6 +184,7 @@ def set_rotation(context, obj, values):
         and max(abs(axes[i][j]-(1 if i==j else 0)) for i in range(3) for j in range(3))<1e-8)
     center = frames.object_origin(context,obj) if obj.better_item.use_reference_pivot else obj.matrix_world.translation.copy()
     previous = _snapshot(obj)
+    delta_scale_before=tuple(obj.delta_scale)
     world = obj.matrix_world.copy()
     local_before=orientation.local_rotation(obj).to_matrix()
     try:
@@ -196,13 +208,21 @@ def set_rotation(context, obj, values):
         gram=world_delta.transposed() @ world_delta
         if max(abs(gram[i][j]-(1 if i==j else 0)) for i in range(3) for j in range(3))>2e-5:
             raise BetterItemError('The nonuniform parent transform prevents a rigid reference-space rotation.')
-        target=center+world_delta @ (world.translation-center)
-        obj.location=engine._target_location(obj,target)
-        context.view_layer.update()
+        target=np.asarray(center,dtype=np.float64)+np.asarray(world_delta,dtype=np.float64) @ (
+            np.asarray(world.translation,dtype=np.float64)-np.asarray(center,dtype=np.float64))
+        engine.apply_world_positions([obj],{obj.name:tuple(target)})
         actual = orientation.rotation(obj).to_quaternion()
         error = actual.rotation_difference(desired.to_quaternion()).angle
         if min(abs(error),abs(math.tau-error)) > 2e-4:
             raise BetterItemError('The parent transform prevents this reference-space rotation.')
+        # A moving basis must not silently turn a requested absolute value into
+        # a different readout. Gimbal can follow the edited target itself.
+        resolved=rotation_basis(frames.object_axes(context,obj)).transposed() @ orientation.rotation(obj)
+        read_error=resolved.to_quaternion().rotation_difference(Euler(values,order).to_quaternion()).angle
+        if min(abs(read_error),abs(math.tau-read_error))>2e-4:
+            raise BetterItemError('[BI-T009] The Orientation reference moved with the target, so the requested Rotation would read back differently. Apply the Orientation to an independent Frame, then edit relative to that frame. The operation was rolled back.')
+        if tuple(obj.scale)!=previous['scale'] or tuple(obj.delta_scale)!=delta_scale_before:
+            raise BetterItemError('[BI-T011] Rotation changed an evaluated Scale channel. Check dependent drivers; the operation was rolled back.')
         for name,locks in (('location',obj.lock_location),('scale',obj.lock_scale)):
             if any(lock and engine.different(a,b) for lock,a,b in zip(locks,previous[name],getattr(obj,name))):
                 raise BetterItemError('This rotation would change a locked native axis.')
@@ -215,6 +235,13 @@ def set_rotation(context, obj, values):
 
 def _new_affine_group():
     group = bpy.data.node_groups.new('Better Item Dimensions','GeometryNodeTree')
+    try:return _initialize_affine_group(group)
+    except Exception:
+        bpy.data.node_groups.remove(group)
+        raise
+
+
+def _initialize_affine_group(group):
     group['better_item_affine'] = 1
     group.interface.new_socket(name='Geometry',in_out='INPUT',socket_type='NodeSocketGeometry')
     group.interface.new_socket(name='Geometry',in_out='OUTPUT',socket_type='NodeSocketGeometry')
@@ -244,40 +271,96 @@ def _write_affine(group, matrix):
 
 def _dimensions_modifier(obj):
     """Resolve our one final affine stage without changing the user's stack."""
-    owned=[mod for mod in obj.modifiers if mod.type=='NODES' and mod.node_group
-           and mod.node_group.get('better_item_affine')==1]
+    owned=[mod for mod in obj.modifiers if mod.type=='NODES' and
+           (mod.persistent_uid==obj.better_item.get('dimensions_modifier_uid',-1) or mod.node_group and
+            (mod.node_group.get('better_item_affine')==1 or 'better_item_matrix' in mod.node_group))]
     if len(owned)>1:
         raise BetterItemError('[BI-M001] Object "%s" has multiple Better Item Dimensions modifiers: %s. Resolve the stack before editing Reference Dimensions; no modifiers were changed.'%
             (obj.name,', '.join(mod.name for mod in owned)))
     if not owned:return None
     modifier=owned[0]
+    _validate_affine_group(modifier.node_group)
     if modifier!=obj.modifiers[-1]:
         raise BetterItemError('[BI-M002] Move "%s" to the end of the modifier stack before editing Reference Dimensions. The addon will not reorder or duplicate it.'%modifier.name)
     if not modifier.show_viewport or not modifier.show_render:
-        raise BetterItemError('Enable the Better Item Dimensions modifier before editing Dimensions.')
+        raise BetterItemError('[BI-M004] Enable the Better Item Dimensions modifier before editing Dimensions.')
     return modifier
 
 
+def _validate_affine_group(group):
+    try:return _inspect_affine_group(group)
+    except BetterItemError:raise
+    except (KeyError,ValueError,TypeError,AttributeError,StopIteration) as exc:
+        raise BetterItemError('[BI-M003] The Better Item Dimensions node group has an incompatible structure. Restore the original group; no data was changed.') from exc
+
+
+def _inspect_affine_group(group):
+    """Validate our complete constant affine graph before any mutation/copy."""
+    def invalid():
+        raise BetterItemError('[BI-M003] The Better Item Dimensions node group has missing ownership data or an incompatible graph. Restore the original group; no modifiers or geometry were changed.')
+    if group is None or group.get('better_item_affine')!=1:invalid()
+    types={'NodeGroupInput':1,'NodeGroupOutput':1,'GeometryNodeInputPosition':1,
+           'ShaderNodeCombineXYZ':1,'GeometryNodeSetPosition':1,'ShaderNodeVectorMath':3}
+    if len(group.nodes)!=8 or any(sum(n.bl_idname==kind for n in group.nodes)!=count for kind,count in types.items()):invalid()
+    def node(kind):return next(n for n in group.nodes if n.bl_idname==kind)
+    inp,out,pos,combine,setpos=(node(kind) for kind in ('NodeGroupInput','NodeGroupOutput',
+        'GeometryNodeInputPosition','ShaderNodeCombineXYZ','GeometryNodeSetPosition'))
+    rows=[group.nodes.get('Better Item Row %d'%i) for i in range(3)]
+    if any(row is None or row.bl_idname!='ShaderNodeVectorMath' or row.operation!='DOT_PRODUCT' for row in rows):invalid()
+    if not out.is_active_output or not setpos.inputs['Selection'].default_value or any(setpos.inputs['Offset'].default_value):invalid()
+    required=[(inp.outputs.get('Geometry'),setpos.inputs['Geometry']),
+        (combine.outputs['Vector'],setpos.inputs['Position']),(setpos.outputs['Geometry'],out.inputs.get('Geometry'))]
+    for i,row in enumerate(rows):required.extend(((pos.outputs['Position'],row.inputs[0]),(row.outputs['Value'],combine.inputs[i])))
+    if any(a is None or b is None for a,b in required):invalid()
+    expected={(a.as_pointer(),b.as_pointer()) for a,b in required}
+    actual={(link.from_socket.as_pointer(),link.to_socket.as_pointer()) for link in group.links if link.is_valid and not link.is_muted}
+    if len(group.links)!=len(expected) or actual!=expected:invalid()
+    stored=group.get('better_item_matrix',())
+    current=tuple(v for row in rows for v in row.inputs[1].default_value)
+    if len(stored)!=9 or not all(math.isfinite(v) for v in current) or tuple(stored)!=current:invalid()
+    return Matrix(tuple(tuple(row.inputs[1].default_value) for row in rows))
+
+
+def _dimensions_match(actual,expected):
+    # No fixed absolute floor: losing a tiny positive width must not pass.
+    return all(math.isfinite(a) and math.isfinite(b) and (a==b or b>0 and a>0 and
+        abs(a-b)<=32*np.finfo(np.float32).eps*abs(b)) for a,b in zip(actual,expected))
+
+
+def _dimension_targets(before,desired):
+    from .math_core import vector3
+    desired=vector3(desired)
+    if any(v<0 for v in desired):raise BetterItemError('[BI-T010] Dimensions cannot be negative.')
+    if any(old>0 and new==0 for old,new in zip(before,desired)):
+        raise BetterItemError('[BI-T010] Dimensions cannot collapse a nonzero width to zero: that edit is singular and cannot be reopened through Dimensions. Use native Scale deliberately if collapse is intended.')
+    if any(old==0 and new!=0 for old,new in zip(before,desired)):
+        raise BetterItemError('[BI-T010] A zero Dimension requires restoring Scale or editing geometry first.')
+    return desired
+
+
 def set_dimensions(context,obj,desired):
+    engine.editable(obj)
     if any(obj.lock_scale):raise BetterItemError('Unlock Scale before editing Dimensions.')
     modifier=_dimensions_modifier(obj)
     axes = _dimension_directions(frames.object_axes(context,obj))
     before = dimensions(obj,axes)
-    if any(v<0 for v in desired):raise BetterItemError('Dimensions cannot be negative.')
-    if any(size<=1e-12 and abs(value-size)>1e-12 for size,value in zip(before,desired)):
-        raise BetterItemError('A zero dimension requires editing the geometry first.')
-    factors=tuple(value/size if size>1e-12 else 1 for size,value in zip(before,desired))
-    world_linear=obj.matrix_world.to_3x3()
-    try: local=world_linear.inverted() @ axes.transposed().inverted() @ Matrix.Diagonal(factors) @ axes.transposed() @ world_linear
-    except ValueError as exc:raise BetterItemError('The object transform is singular; restore a nonzero Scale first.') from exc
+    desired=_dimension_targets(before,desired)
+    factors=tuple(value/size if size!=0 else 1 for size,value in zip(before,desired))
+    world_linear=np.asarray(obj.matrix_world.to_3x3(),dtype=np.float64)
+    directions=np.asarray(axes,dtype=np.float64)
+    directions/=np.linalg.norm(directions,axis=0)
+    try: local=np.linalg.solve(world_linear,np.linalg.solve(directions.T,np.diag(factors) @ directions.T @ world_linear))
+    except np.linalg.LinAlgError as exc:raise BetterItemError('[BI-T005] The object transform is singular; restore a nonzero Scale first.') from exc
+    if not np.isfinite(local).all():raise BetterItemError('[BI-T007] Dimensions exceeds the numeric range.')
     # Use native Scale whenever the requested affine transform is diagonal locally.
     if all(abs(local[i][j])<2e-6 for i in range(3) for j in range(3) if i!=j):
-        engine._driver_guard(obj,{'scale'})
         previous=tuple(obj.scale)
+        proposed=tuple(previous[i]*local[i][i] for i in range(3))
+        engine._driver_guard(obj,{'scale'},{'scale':{i for i in range(3) if previous[i]!=proposed[i]}})
         try:
-            obj.scale=tuple(previous[i]*local[i][i] for i in range(3))
+            obj.scale=proposed
             context.view_layer.update()
-            if all(math.isclose(a,b,rel_tol=2e-5,abs_tol=1e-7) for a,b in zip(dimensions(obj,axes),desired)):return
+            if _dimensions_match(dimensions(obj,axes),desired):return
         except Exception:
             obj.scale=previous
             context.view_layer.update()
@@ -290,30 +373,30 @@ def set_dimensions(context,obj,desired):
     # affine Geometry Nodes modifier stores the edit without linking any source.
     created=False
     old_group=None
-    if modifier is None:
-        group=_new_affine_group()
-        modifier=obj.modifiers.new('Better Item Dimensions','NODES')
-        modifier.node_group=group
-        created=True
-    else:
-        group=modifier.node_group
-        if len(group.get('better_item_matrix',()))!=9 or any('Better Item Row %d' % i not in group.nodes for i in range(3)):
-            raise BetterItemError('The Better Item Dimensions node group was modified. Restore its original nodes before editing Dimensions.')
-        if group.users>1:
-            old_group=group
-            group=group.copy()
-            modifier.node_group=group
-    old_matrix=Matrix(tuple(tuple(group.nodes['Better Item Row %d'%i].inputs[1].default_value) for i in range(3)))
+    old_matrix=_validate_affine_group(modifier.node_group) if modifier else Matrix.Identity(3)
+    group=None
     try:
-        _write_affine(group,local @ old_matrix)
+        if modifier is None:
+            group=_new_affine_group()
+            modifier=obj.modifiers.new('Better Item Dimensions','NODES')
+            created=True
+            modifier.node_group=group
+        else:
+            group=modifier.node_group
+            if group.users>1:
+                old_group=group
+                group=group.copy()
+                modifier.node_group=group
+        _write_affine(group,Matrix(local @ np.asarray(old_matrix,dtype=np.float64)))
         context.view_layer.update()
-        if not all(math.isclose(a,b,rel_tol=2e-5,abs_tol=1e-7) for a,b in zip(dimensions(obj,axes),desired)):
-            raise BetterItemError('The evaluated geometry did not reach the requested Dimensions.')
+        if not _dimensions_match(dimensions(obj,axes),desired):
+            raise BetterItemError('[BI-T012] The evaluated geometry did not reach the requested Dimensions within the float32 relative error budget. Reduce geometric coordinate magnitudes or improve the reference conditioning. The edit was rolled back.')
+        obj.better_item['dimensions_modifier_uid']=modifier.persistent_uid
     except Exception:
         if created:obj.modifiers.remove(modifier)
         elif old_group is not None:modifier.node_group=old_group
-        else:_write_affine(group,old_matrix)
-        if group.users==0:bpy.data.node_groups.remove(group)
+        elif group is not None:_write_affine(group,old_matrix)
+        if group is not None and group.users==0:bpy.data.node_groups.remove(group)
         context.view_layer.update()
         raise
 
@@ -347,21 +430,24 @@ def _edit_default(obj,group,axis,value):
     attribute={'LOCATION':'location','ROTATION':'rotation_euler','DIMENSIONS':'dimensions'}[group]
     before=tuple(getattr(obj,attribute))
     desired=linked_values(before,axis,value,getattr(obj.better_item,engine.GROUP_LINK[group]),zero_angle_as_turn=group=='ROTATION')
+    if group=='DIMENSIONS':desired=_dimension_targets(before,desired)
     locks=obj.lock_location if group=='LOCATION' else obj.lock_rotation if group=='ROTATION' else obj.lock_scale
     if group!='DIMENSIONS' and any(locked and engine.different(old,new) for locked,old,new in zip(locks,before,desired)):
         raise BetterItemError('Unlock the affected default/local channel before editing it.')
-    engine._driver_guard(obj,{'scale' if group=='DIMENSIONS' else attribute})
     previous=_snapshot(obj)
     try:
         if group=='DIMENSIONS':
-            if any(abs(old)<1e-12 and engine.different(old,new) for old,new in zip(before,desired)):
-                raise BetterItemError('A zero Dimension cannot be reopened through Scale. Restore a nonzero Scale first.')
-            obj.scale=tuple(scale*(new/old) if abs(old)>1e-12 else scale for scale,old,new in zip(obj.scale,before,desired))
-        else:setattr(obj,attribute,desired)
+            proposed=tuple(scale*(new/old) if old!=0 else scale for scale,old,new in zip(obj.scale,before,desired))
+            engine._driver_guard(obj,{'scale'},{'scale':{i for i in range(3) if proposed[i]!=previous['scale'][i]}})
+            obj.scale=proposed
+        else:
+            engine._driver_guard(obj,{attribute},{attribute:{i for i in range(3) if before[i]!=desired[i]}})
+            setattr(obj,attribute,desired)
         bpy.context.view_layer.update()
         if group=='DIMENSIONS' and any(locked and engine.different(old,new) for locked,old,new in zip(locks,previous['scale'],obj.scale)):
             raise BetterItemError('Dimensions would change a locked Scale channel.')
-        if not engine._matches(tuple(getattr(obj,attribute)),desired):
+        actual=tuple(getattr(obj,attribute))
+        if not (_dimensions_match(actual,desired) if group=='DIMENSIONS' else engine._native_matches(actual,desired)):
             raise BetterItemError('Blender did not retain the requested default/local channel values.')
     except Exception:
         _restore(obj,previous)

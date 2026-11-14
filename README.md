@@ -2,18 +2,19 @@
 
 Install individual extension ZIPs from [`addons/`](addons) using Blender's **Install from Disk**. Sources are in [`src/`](src), tests in [`tests/`](tests). The repository ZIP is not an addon installer.
 
-## Better Item 1.5.6
+## Better Item 1.5.7
 
-[Download ZIP](https://github.com/Borbofruto/Blender-Plugins/raw/refs/heads/main/addons/better_item-1.5.6.zip) | [Manual](src/better_item/README.md) | [Feedback review and remaining issues](docs/better_item/feedback-1.5.6.md) | [Source](src/better_item) | [Tests](tests/better_item)
+[Download ZIP](https://github.com/Borbofruto/Blender-Plugins/raw/refs/heads/main/addons/better_item-1.5.7.zip) | [Manual](src/better_item/README.md) | [Feedback review and remaining issues](docs/better_item/feedback-1.5.7.md) | [Source](src/better_item) | [Tests](tests/better_item)
 
 A spatial-precision Transform, Reference Frames and Align/Distribute addon for Blender 5.0+, tested in Blender 5.2.3 LTS. Compact English XYZ fields support proportional links, physical projected Dimensions, origin alignment and signed distribution.
 
-### Relative Location precision fix
+### Feedback-driven correction release
 
-- Use double precision for reference Location conversion before writing native Blender channels.
-- Retain an explicitly requested zero only while the verified target/reference state matches; preserve genuine tiny coordinates and invalidate the readout hint after external changes.
-- Reject zero or numerically unresolved proportional denominators with BI-T008 instead of magnifying rounding noise into enormous linked movements.
-- Keep animation outside the runtime scope. The feedback review separates confirmed remaining issues from unverified claims; this release does not claim to fix every audit item.
+- Use float64 Dimensions projection and affine calculations; verify tiny results without a fixed absolute tolerance. Native channels and world positioning have separate precision checks.
+- Verify Location/Rotation readback against moving references and verify Rotation's final pivot position. Invalid results reject and roll back; self-following references are never silently frozen.
+- Validate affine node structure and retain independent modifier identity. Guard zero-dimension collapse, unrealized instances and edited driver components; preserve the conservative constraint policy.
+- Execute all 11 suggested test groups, including 9,216 round-trip cases, 192 native Rotation comparisons, 1,000 linked edits, bone/vertex parenting, 100-frame chains and real UI/timer checks. Detailed limits and results are in the feedback report.
+- Keep animation outside the runtime scope; move historical validation notes out of the current usage manual.
 
 ### Current capabilities
 
@@ -23,7 +24,7 @@ Frames store manual or linked components independently. **Use Orientation in Vie
 
 Measurement caches invalidate on frame/subframe evaluation without writing transforms or animation. Normal sampling optimization, constraint flexibility and interactive frame manipulators remain separate future decisions.
 
-Tests cover stack rejection/atomicity, source preservation, stable enum serials, old reference-file migration, old authoring-data isolation, native exports, current UI, cache freshness, physical dimensions and the prior precision/arrangement regressions. Restart Blender after updating, then open **N > Better Item**.
+Tests cover stack rejection/atomicity, source preservation, stable enum serials, old reference-file migration, old authoring-data isolation, native exports, current UI, cache freshness, physical dimensions and the prior precision/arrangement regressions. If an older module remains loaded after updating, restart Blender. Open **N > Better Item**.
 
 ## Export Paper Model - Medidas 1.5.1
 

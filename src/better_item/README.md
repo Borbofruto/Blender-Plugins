@@ -1,6 +1,6 @@
-# Better Item 1.5.6
+# Better Item 1.5.7
 
-A live Transform panel for Blender 5.0+, tested in Blender 5.2.3 LTS. GPL-3.0-or-later. Author: Gabriel Webber do Nascimento.
+A live Transform panel with declared Blender 5.0+ compatibility. Runtime validation for this release used Blender 5.2.3 LTS on Windows; Blender 5.0 and 5.2.4 were not executed. GPL-3.0-or-later. Author: Gabriel Webber do Nascimento.
 
 ## Installation
 
@@ -19,13 +19,13 @@ The panel keeps Blender's familiar **Location**, **Rotation**, **Scale** and **D
 
 Changing axes or origin only changes the readings. It never moves, rotates or resizes the object. Changing only the origin changes Location, without changing Rotation or Dimensions. Dimensions is shown as Unavailable on object types without convertible surface geometry, including Empty, Camera, Light, Armature, Lattice and Grease Pencil; their other transform fields remain usable.
 
-Rotation edits preserve signed native Scale and Delta transforms, and preserve the object origin by default. Enable **Rotate Around Reference Location** to rotate around the selected reference origin instead. A reference that follows the object or selection is intentionally live: its readings may stay at zero while the object moves. No reference is silently frozen.
+Rotation edits preserve signed native Scale and Delta transforms, and preserve the object origin by default. Enable **Rotate Around Reference Location** to rotate around the selected reference origin instead. A reference that follows the object or selection is intentionally live. Numeric Location and Rotation edits must read back as requested within the operation budget. If the reference follows the edit and prevents that result, Better Item rolls back with BI-T009. Apply the relevant component to an independent Frame first; no source is silently frozen. This also covers self-following Gimbal Rotation.
 
 ### Linked components and locks
 
 Each group has independent XYZ chain toggles and a group toggle. Linked edits multiply participating components by the same ratio: (100, 200, 600) becomes (300, 600, 1800) when X is changed to 300. An unlinked axis changes alone. Native locks and drivers are checked; a rejected edit leaves the object unchanged and reports the reason in the panel.
 
-For proportional Rotation, 360 degrees is used only as the denominator when the edited axis starts at exact zero. Other linked axes keep their real values: zero stays zero. Editing Z from 40 to 10 degrees in (0, 0, 40) produces (0, 0, 10), not (90, 90, 10). Entering zero scales other linked angles to zero. The edited angle is retained, including explicit turns. Near-zero angles may still produce large ratios. A zero Location, Scale or Dimension does not define a proportional ratio: unlink that axis first. A geometrically zero dimension cannot be enlarged by scaling.
+For proportional Rotation, 360 degrees is used only as the denominator when the edited axis starts at exact zero. Other linked axes keep their real values: zero stays zero. Editing Z from 40 to 10 degrees in (0, 0, 40) produces (0, 0, 10), not (90, 90, 10). Entering zero scales other linked angles to zero. The edited angle is retained, including explicit turns. Near-zero angles may still produce large ratios. A zero Location, Scale or Dimension does not define a proportional ratio: unlink that axis first. A geometrically zero dimension cannot be enlarged by scaling. Dimensions rejects collapsing a positive width to zero (BI-T010), which would make subsequent dimension edits singular; deliberate collapse remains possible through native Scale.
 
 ### Non-destructive Dimensions
 
@@ -114,7 +114,7 @@ Multiple RGB frame indicators can be shown in the viewport. The active frame is 
 
 Alignment and distribution use object origins and the same Reference section as Transform. There is no separate Align To dropdown.
 
-- **Location = Bounding Box Center** (including through a frame) exposes Min/Center/Max alignment of selected origins and equal-interval distribution between their fixed extremes. This arrangement mode measures origin bounds in the chosen axes; the ordinary Transform readout still uses Blender's geometry-based bounding-box pivot.
+- **Location = Bounding Box Center** (including through a frame) exposes Min/Center/Max alignment of selected origins and equal-interval distribution between their fixed extremes. This arrangement mode measures origin bounds in the chosen axes; the panel explicitly labels its range as selected object origins. The ordinary Transform readout still uses the geometry-based bounding-box pivot. This is a deliberate arrangement range policy, not geometric gap distribution.
 - **Other Location choices** align origins to that reference point, or distribute at signed Spacing from it. A selected source object is kept fixed; Active Element reproduces the former key-object anchor. Use Object to select an explicit key object, independent of the active target.
 - The same behavior applies when the Location component comes through one or more frames.
 
@@ -139,7 +139,7 @@ Errors remain visible in the panel with a code and actionable details. Changing 
 | BI-F002 | Missing component source, active object or required selection |
 | BI-F003 | Missing native custom orientation |
 | BI-F004 | Missing viewport context or failed native orientation operation |
-| BI-F005 | Singular reference axes / Gimbal lock |
+| BI-F005 | Singular or ill-conditioned reference axes / Gimbal lock |
 | BI-A001 | No arrangement axis selected |
 | BI-A002 | Missing or invalid orientation/origin reference |
 | BI-A003 | Too few selected target objects |
@@ -149,6 +149,9 @@ Errors remain visible in the panel with a code and actionable details. Changing 
 | BI-D003 | Native precision collapsed the resulting spacing; the operation is rolled back |
 | BI-M001 | Multiple owned Dimensions modifiers; resolve the stack explicitly |
 | BI-M002 | Owned Dimensions modifier is not last; reorder it explicitly |
+| BI-M003 | Missing ownership data or incompatible affine node graph |
+| BI-M004 | Owned Dimensions modifier is disabled |
+| BI-M005 | Unrealized Geometry Nodes instances cannot be measured completely |
 | BI-T001 | Object is not editable |
 | BI-T002 | An active driver controls the field |
 | BI-T003 | A required local Location axis is locked |
@@ -157,6 +160,12 @@ Errors remain visible in the panel with a code and actionable details. Changing 
 | BI-T006 | Evaluated position did not retain the target; residual is reported |
 | BI-T007 | Coordinate exceeds the numeric range |
 | BI-T008 | Proportional denominator is zero or unresolved within Location rounding uncertainty |
+| BI-T009 | A moving reference prevents the requested numeric readback |
+| BI-T010 | Singular zero/negative Dimensions edit |
+| BI-T011 | Rotation unexpectedly changes evaluated Scale |
+| BI-T012 | Evaluated Dimensions fails the relative precision check |
+| BI-V001 | Other invalid input or unsupported operation; read the accompanying explanation |
+| BI-V002 | Blender API rejected a field edit |
 
 ### Relative Location zeros and proportional links
 
@@ -184,26 +193,28 @@ A synthetic benchmark on 250,000 vertices measured the old Python loop at 258-27
 
 Version and extension description live only in `blender_manifest.toml`; this is a manifest-based Blender extension, without duplicate legacy `bl_info` metadata. Legacy transformation branches and obsolete staged-edit properties have been removed. Native Scale edits, reference-space Location and reference-space Rotation each have one active implementation.
 
+## Numerical and affine-stage validation
+
+Evaluated vertex storage remains Blender float32; projection and reference affine calculations use float64 to avoid additional cancellation. This cannot recover detail already absent from stored vertices. Dimensions verification has no fixed absolute floor: a positive result must stay within 32 float32 epsilons relative to the requested width. An unrepresentable result rejects and rolls back instead of accepting a large relative loss. World-position verification uses its parent/delta/inverse rounding budget without a blanket absolute tolerance. Native channel writes verify the actual requested float32 representation.
+
+Reference matrices are checked by singular-value ratio, not absolute determinant. Uniform unit rescaling alone cannot invalidate a basis. A reciprocal condition number at or below eight float32 epsilons is rejected (BI-F005).
+
+The affine stage validates node types, operations, required links, selection/offset defaults and matrix metadata before any mutation. Its modifier persistent UID is retained independently of the node-group marker. Missing/corrupted data rejects with BI-M003; it is not rebuilt or silently reordered. Creation, copy-on-write and evaluation failures are transactional. Unrelated user Geometry Nodes groups remain untouched. Unrealized instances reject with BI-M005; add Realize Instances upstream for a complete measurement.
+
+Native Scale and Default/Local edits distinguish driven components: an unrelated driver need not block an independent channel, while edited or unexpectedly changed driven components remain protected. Active constraints are still handled conservatively. The add-on does not add/remove drivers, write keyframes or control playback.
+
 ## Validation and source
 
-Version 1.5.5 verifies that renamed final Dimensions modifiers are reused; downstream, duplicate and disabled owned stacks reject without changing geometry, transforms, group matrices or stack order; frame Apply resolves its requested components atomically; compatibility enum serials remain stable; old authoring data/drivers remain untouched; and the current runtime contains no calls that add/remove drivers or insert/delete keyframes. Runtime tests and a real Blender panel check cover the maintenance changes. The maintenance audit and deferred scope are recorded in `docs/better_item/maintenance-1.5.5.md` in the repository.
+The three audits of 1.5.5 are reviewed in [the 1.5.7 report](https://github.com/Borbofruto/Blender-Plugins/blob/main/docs/better_item/feedback-1.5.7.md), with confirmed defects, deliberate policies, unconfirmed claims and the 11-group test matrix.
 
+Executed on Blender 5.2.3 LTS / Windows:
 
-Version 1.5.4 tests physical widths and dimension edits under inherited nonuniform Gimbal bases, invariance under axis rescaling/reversal, unchanged coordinate bases and base meshes, invalid directions, per-group unavailable states, and Default-mode independence. Cache tests include nested GN, external native keyframes/drivers, shape keys, frame/subframe changes, backward seeks, key edits, modifier toggles, undo/redo and same-frame translation reuse. A real UI test verifies the previously stale 6-to-10 reading and the independently unavailable groups.
+- 9,216 read/edit combinations: 6,240 successful round trips and 2,976 verified atomic rejections for moving references or unsupported parent rotations.
+- 192 comparisons with actual native Rotation operators; 54 single-axis Gimbal direction comparisons.
+- Object/bone/vertex parenting, collapsed children, negative scales, deep hierarchies, small/large dimensions, 1,000 chained proportional edits and chains up to 100 Frames.
+- Same-frame driven shape-key/GN changes, cache freshness, malformed affine groups, fault-injected rollback, unrealized instances, modifier identity, copy-on-write, Undo/Redo and .blend persistence.
+- Real UI panel/dialog draws, timer synchronization, native-menu deletion, invalid-source recovery and rename. These are automation/smoke tests, not an exhaustive manual interaction audit.
 
+Existing suites include 1,500 locked-parent cases, 1,200 Parent Inverse cancellations, 842 mm sweep moves, arrangements, reference parity/migration, cache, signed-scale rotation and preservation of retired authoring data.
 
-The 1.5.3 tests cover read/write rejection without mutation for Quaternion/Axis-Angle, the functioning native storage fields, Euler edits, unsupported Dimensions types, the separate zero-Dimension diagnostic, missing-frame and missing-orientation readouts, valid zero vectors, wrong-scene detection and actual UI rendering. Existing precision, reference, arrangement and undo/redo tests also pass.
-
-
-Version 1.5.2 tests 1,200 Parent Inverse cancellation cases, 842 movements across -210..210 mm in two unit conventions, real-error rejection, Default / Local channels, native Dimensions, removal of animation runtime, and real timer-driven redraw following native-menu deletion. Earlier compatibility tests covered 1.5.1 authoring files; the current version leaves that data untouched without managing it. The existing precision, layout, frame and arrangement regressions remain covered.
-
-Development tests are in the [GitHub repository](https://github.com/Borbofruto/Blender-Plugins/tree/main/tests/better_item), not inside the installable add-on ZIP. The ZIP contains runtime source, its manifest, license and this manual.
-
-The 1.4.1 regression suite covers linked zero angles, 128 signed-scale rotation combinations, parent inverses, delta transforms, locked-parent roundoff, unavailable geometry, deleted frame choices and conditional UI. A real Blender window test also verifies timer-driven orientation updates, invalid-source removal, recovery and rename.
-
-Version 1.4.2 additionally tests 66 Individual orientation/location combinations for parity between the two panels, all native pivots, World frame origins, external native deletion, surviving enum serials after an intermediate removal, conditional Normal sampling, and 1,500 locked-parent positioning cases. A real two-main-window Blender test verifies separate scene orientation exports, timer updates, native-menu deletion and identical reference controls.
-
-Automated Blender tests also cover vectorized precision, cache reuse, shared geometry and modifier invalidation, memory limits and 2,000 frame renames. They cover live field updates, reference switching without object movement, true vertex extrema, non-destructive oblique Dimensions, shared data isolation, Euler orders, angle turns, proportional links, locks, drivers, alignment/distribution, parenting, saved/live frames, source deletion, renaming, persistence, undo/redo and registration. The actual viewport and panel were also opened and visually inspected. Arrangement regression tests exercise 630 combinations across axis masks, selected/key/reference origins, signed spacing, rotated reference axes, and rotated/scaled parents. They also cover coded validation, reference lines, independent frame components and persistence. Native integration tests execute G/R, compare all Euler/quaternion/axis-angle Gimbal directions with Blender (48 operations), check edit-mode Normal, component/native cycles, invalid-source recovery, old-file migration and new-process persistence.
-
-`arrange.py` plans reference-space arrangements and validates spacing/order; `__init__.py` defines the UI and properties; `transform_view.py` implements live readings and edits; `frames.py` owns independent saved frame components and viewport indicators; `native_refs.py` resolves native pivots/orientations and synchronizes native custom orientations; `engine.py` implements native Scale edits and transactional world positioning; `math_core.py` holds Blender-independent rules; `trace.py` provides read-only affine accounting; `orientation.py` provides orientation utilities; `references.py` defines the common reference options, resolution rules and UI for both consumers.
-
+Tests and machine-readable results are in [the repository](https://github.com/Borbofruto/Blender-Plugins/tree/main/tests/better_item), outside the installable ZIP. Historical delivery records are in CHANGELOG.md. The declared Blender 5.0 minimum is not a runtime-tested compatibility guarantee for every version; only 5.2.3 was available for this delivery.

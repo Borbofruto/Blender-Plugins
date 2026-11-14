@@ -1,9 +1,11 @@
 schema_version = "1.0.0"
 id = "better_item"
 name = "Better Item"
-version = "1.5.6"
+version = "1.5.7"
 tagline = "Linked transforms and origin-based alignment and distribution"
 maintainer = "Gabriel Webber do Nascimento"
+website = "https://github.com/Borbofruto/Blender-Plugins"
+copyright = ["2026 Gabriel Webber do Nascimento"]
 type = "add-on"
 tags = ["Object"]
 blender_version_min = "5.0.0"

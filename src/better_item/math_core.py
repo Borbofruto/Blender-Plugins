@@ -1,9 +1,12 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Numeric rules for Better Item. All positions passed here are world origins."""
 import math
 
 
 class BetterItemError(ValueError):
-    pass
+    def __init__(self,message):
+        message=str(message)
+        super().__init__(message if message.startswith('[BI-') else '[BI-V001] '+message)
 
 
 def vector3(values):
@@ -14,7 +17,8 @@ def vector3(values):
 
 
 def different(a,b):
-    return not math.isclose(a,b,rel_tol=1e-9,abs_tol=1e-12)
+    # Compare requested channels, not evaluated world-space roundoff.
+    return a!=b
 
 
 def linked_values(before,axis,value,links,zero_angle_as_turn=False,*,denominator_tolerance=0.):
@@ -77,6 +81,8 @@ def distribute_positions(origins,axes,reference,spacing=0,key=None):
         raise BetterItemError('Select at least %s objects.' % (3 if reference=='SELECTION' else 2))
     if not math.isfinite(spacing):
         raise BetterItemError('Enter a finite spacing.')
+    if reference=='KEY' and spacing==0:
+        raise BetterItemError('[BI-D001] Spacing must be nonzero for key/reference distribution.')
     for axis,enabled in enumerate(axes):
         if not enabled:
             continue

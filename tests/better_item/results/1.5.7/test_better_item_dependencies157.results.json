@@ -1,0 +1,9 @@
+{
+  "same_frame_driver_shape_key_values": 5,
+  "same_frame_driven_gn_values": 5,
+  "near_singular_cases": {
+    "accepted": 4,
+    "rejected_atomically": 1
+  },
+  "group_initialization_rollback": true
+}

@@ -33,7 +33,7 @@ def find(scene, uid):
     for frame in scene.better_item.frames:
         if frame.uid == uid:
             return frame
-    raise BetterItemError('Choose a reference frame that exists in this scene.')
+    raise BetterItemError('[BI-F002] Choose a reference frame that exists in this scene.')
 
 
 def _enter(frame,component,stack):
@@ -174,8 +174,13 @@ def set_position(context, obj, values):
     # Avoid rounding the reference-to-world conversion before the native solve.
     target=np.asarray(object_origin(context,obj),dtype=np.float64)+np.asarray(object_axes(context,obj),dtype=np.float64) @ np.asarray(values,dtype=np.float64)
     sample=[]
+    def verify(objects):
+        actual,uncertainty,signature=_position_sample(context,obj)
+        if any(abs(a-b)>error+8*np.finfo(np.float64).eps*abs(b) for a,b,error in zip(actual,values,uncertainty)):
+            raise BetterItemError('[BI-T009] The Location reference moved with the target, so the requested value would read back differently. Apply Location to an independent Frame first. The operation was rolled back.')
+        sample.append((actual,uncertainty,signature))
     result=engine.apply_world_positions([obj],{obj.name:tuple(target)},
-        verify=lambda objects:sample.append(_position_sample(context,obj)))
+        verify=verify)
     actual,uncertainty,signature=sample[0]
     obj.better_item['view_location_zero_signature']=signature
     obj.better_item['view_location_zero_mask']=[int(value==0 and abs(actual[i])<=uncertainty[i]) for i,value in enumerate(values)]
@@ -279,6 +284,7 @@ def _frame_component(kind, axis):
             setattr(self, attribute, result)
     args = dict(name='XYZ'[axis], get=get, set=set_value, options=set(), precision=5,
         unit='LENGTH' if kind == 'POSITION' else 'ROTATION')
+    if kind=='ROTATION':args['description']='Manual Euler orientation; with an applied non-orthogonal basis, these angles are an offset on the preserved basis, not absolute Euler axes'
     if kind == 'ROTATION': args['subtype'] = 'ANGLE'
     return bpy.props.FloatProperty(**args)
 
@@ -347,7 +353,7 @@ class BETTERITEM_OT_new_frame(bpy.types.Operator):
         settings=context.scene.better_item
         obj=context.scene.objects.get(self.target_name) if self.target_name else context.active_object
         if self.target in {'AXES','ORIGIN','BOTH'} and (obj is None or not obj.is_editable):
-            self.report({'ERROR'},'Select an editable target object.')
+            self.report({'ERROR'},'[BI-T001] Select an editable target object.')
             return {'CANCELLED'}
         frame=create(context,self.frame_name.strip() or 'Frame',Vector(),Matrix.Identity(3))
         if self.target=='AXES':
@@ -410,7 +416,7 @@ class BETTERITEM_OT_frame(bpy.types.Operator):
             elif self.action.startswith('APPLY'):
                 apply_reference(frame,{'APPLY':'ALL','APPLY_POSITION':'POSITION','APPLY_ROTATION':'ROTATION'}[self.action])
             elif self.action == 'USE':
-                if obj is None: raise BetterItemError('Select the target object.')
+                if obj is None or not obj.is_editable: raise BetterItemError('[BI-T001] Select an editable target object.')
                 obj.better_item.reference_mode='FRAME'
                 obj.better_item.reference_frame=frame.uid
                 obj.better_item.orientation = 'SAVED'
