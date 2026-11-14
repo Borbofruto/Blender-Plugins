@@ -48,6 +48,9 @@ def frame_origin(frame,context=None,stack=()):
     stack=_enter(frame,'Location',stack)
     mode=frame.position_mode
     if mode=='GLOBAL':return Vector()
+    if mode=='PARENT':
+        if frame.position_source is None:raise BetterItemError('[BI-F002] Choose a child object for the parent Location source.')
+        return frame.position_source.parent.matrix_world.translation.copy() if frame.position_source.parent else Vector()
     if mode=='OBJECT':
         source=frame.position_source
         if source is None:raise BetterItemError('[BI-F002] Frame "%s": choose a Location Object.'%frame.name)
@@ -64,6 +67,10 @@ def frame_axes(frame,context=None,stack=()):
     context=context or bpy.context
     stack=_enter(frame,'Orientation',stack)
     mode=frame.rotation_mode
+    if mode=='PARENT':
+        if frame.rotation_source is None:raise BetterItemError('[BI-F002] Choose a child object for the parent Orientation source.')
+        from .orientation import rotation
+        return rotation(frame.rotation_source.parent) if frame.rotation_source.parent else Matrix.Identity(3)
     if mode=='OBJECT':
         source=frame.rotation_source
         if source is None:raise BetterItemError('[BI-F002] Frame "%s": choose an Orientation Object.'%frame.name)
@@ -81,6 +88,7 @@ def frame_axes(frame,context=None,stack=()):
 
 def position_reference_object(frame,scene,seen=()):
     if frame.uid in seen:return None
+    if frame.position_mode=='PARENT':return frame.position_source.parent if frame.position_source else None
     if frame.position_mode=='OBJECT':return frame.position_source
     if frame.position_mode=='FRAME':return position_reference_object(find(scene,frame.position_frame),scene,(*seen,frame.uid))
     return None
@@ -96,6 +104,9 @@ def viewport_axes(context,obj):
 
 
 def object_axes(context,obj):
+    if obj.better_item.animation.enabled:
+        from .animation import basis
+        return basis(context,obj)[1]
     from . import references
     return references.axes(context,obj.better_item,obj)
 
@@ -106,6 +117,9 @@ def viewport_origin(context,obj):
 
 
 def object_origin(context,obj):
+    if obj.better_item.animation.enabled:
+        from .animation import basis
+        return basis(context,obj)[0]
     from . import references
     return references.origin(context,obj.better_item,obj)[0]
 
@@ -172,9 +186,18 @@ def store_axes(frame,axes):
     else:frame.rotation=axes.to_euler('XYZ')
 
 
-def apply_reference(frame,component='ALL'):
-    origin=frame_origin(frame) if component in {'ALL','POSITION'} else None
-    axes=frame_axes(frame) if component in {'ALL','ROTATION'} else None
+def apply_reference(frame,component='ALL',*,fallback_origin=None,fallback_axes=None,force_cached=False):
+    origin=axes=None
+    if component in {'ALL','POSITION'}:
+        try:origin=fallback_origin if force_cached and fallback_origin is not None else frame_origin(frame)
+        except BetterItemError:
+            if fallback_origin is None:raise
+            origin=fallback_origin
+    if component in {'ALL','ROTATION'}:
+        try:axes=fallback_axes if force_cached and fallback_axes is not None else frame_axes(frame)
+        except BetterItemError:
+            if fallback_axes is None:raise
+            axes=fallback_axes
     if origin is not None:
         frame.position=origin
         frame.position_mode='MANUAL'
@@ -255,8 +278,8 @@ class BetterItemFrame(bpy.types.PropertyGroup):
     rotation: bpy.props.FloatVectorProperty(size=3, subtype='EULER', unit='ROTATION', options=set())
     # Keep the old pointer solely to migrate existing .blend files.
     source: bpy.props.PointerProperty(type=bpy.types.Object)
-    position_mode:bpy.props.EnumProperty(name='Source',items=[('MANUAL','Manual',''),('OBJECT','Object',''),('PIVOT','Pivot',''),('FRAME','Frame',''),('GLOBAL','World','')],options=set())
-    rotation_mode:bpy.props.EnumProperty(name='Source',items=[('MANUAL','Manual',''),('OBJECT','Object',''),('NATIVE','Native',''),('FRAME','Frame','')],options=set())
+    position_mode:bpy.props.EnumProperty(name='Source',items=[('MANUAL','Manual',''),('OBJECT','Object',''),('PIVOT','Pivot',''),('FRAME','Frame',''),('GLOBAL','World',''),('PARENT','Parent','')],options=set())
+    rotation_mode:bpy.props.EnumProperty(name='Source',items=[('MANUAL','Manual',''),('OBJECT','Object',''),('NATIVE','Native',''),('FRAME','Frame',''),('PARENT','Parent','')],options=set())
     position_source:bpy.props.PointerProperty(name='Location Object',type=bpy.types.Object)
     rotation_source:bpy.props.PointerProperty(name='Orientation Object',type=bpy.types.Object)
     position_pivot:bpy.props.EnumProperty(name='Pivot',items=native_refs.PIVOTS,options=set())
@@ -404,7 +427,10 @@ class BETTERITEM_PT_frames(bpy.types.Panel):
             box.label(text=label+' (World)')
             box.row(align=True).prop(frame,kind+'_mode',expand=True)
             mode=getattr(frame,kind+'_mode')
-            if mode=='OBJECT':box.prop(frame,kind+'_source',text='Object')
+            if mode in {'OBJECT','PARENT'}:box.prop(frame,kind+'_source',text='Child Object' if mode=='PARENT' else 'Object')
+            if mode=='PARENT':
+                from .trace import parent_label
+                box.label(text=parent_label(getattr(frame,kind+'_source')))
             elif mode=='FRAME':box.prop(frame,kind+'_frame',text='Frame')
             elif mode=='PIVOT':
                 box.prop(frame,'position_pivot',text='')

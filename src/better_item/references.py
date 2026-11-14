@@ -15,10 +15,10 @@ ORIENTATIONS=[('GLOBAL','Global','World axes'),('LOCAL','Local','Active object a
     ('SAVED','Saved Frame','Orientation component of a scene frame'),
     ('NORMAL','Normal','Native selection normal'),('GIMBAL','Gimbal','Native Gimbal axes'),
     ('VIEW','View','Current view axes'),('CURSOR','Cursor','3D Cursor axes'),
-    ('PARENT','Parent','Active object parent axes'),('NATIVE','Native Orientation','Link to a named native custom orientation')]
+    ('PARENT','Parent','Direct parent axes, ignoring scale; World when no parent'),('NATIVE','Native Orientation','Link to a named native custom orientation')]
 LOCATIONS=[('GLOBAL','Global','World origin'),('VIEWPORT','Viewport Pivot','Current native pivot choice'),
     ('FRAME','Saved Frame','Location component of a scene frame'),('OBJECT','Object','Chosen object origin'),
-    ('CURSOR','3D Cursor','3D Cursor position'),('PIVOT','Pivot','Choose any native pivot type')]
+    ('CURSOR','3D Cursor','3D Cursor position'),('PIVOT','Pivot','Choose any native pivot type'),('PARENT','Parent','Direct parent origin, or World')]
 _FIELDS={False:dict(mode='reference_mode',frame='reference_frame',axes='orientation',axes_object='orientation_object',
     axes_frame='orientation_frame',origin='pivot_mode',origin_object='origin_object',origin_frame='pivot_frame'),
     True:dict(mode='arrange_reference_mode',frame='arrange_reference_frame',axes='arrange_orientation',
@@ -54,6 +54,7 @@ def axes(context,settings,active,arrangement=False):
     f=_FIELDS[arrangement]
     if getattr(settings,f['mode'])=='FRAME':return frames.frame_axes(frames.find(context.scene,getattr(settings,f['frame'])),context)
     mode=getattr(settings,f['axes'])
+    if mode=='PARENT':return orientation.rotation(active.parent) if active and active.parent else Matrix.Identity(3)
     if mode=='SAVED':return frames.frame_axes(frames.find(context.scene,getattr(settings,f['axes_frame'])),context)
     if mode=='VIEWPORT':return frames.viewport_axes(context,active)
     if mode=='NATIVE':return native_refs.orientation(context,settings.reference_native,active)
@@ -69,6 +70,7 @@ def origin(context,settings,active,arrangement=False):
         return frames.frame_origin(frame,context),frames.position_reference_object(frame,context.scene)
     mode=_location_mode(settings,arrangement)
     if mode=='GLOBAL':return Vector(),None
+    if mode=='PARENT':return (active.parent.matrix_world.translation.copy(),active.parent) if active and active.parent else (Vector(),None)
     if mode=='FRAME':
         name=f['axes_frame'] if arrangement and settings.arrange_origin=='MATCH' else f['origin_frame']
         frame=frames.find(context.scene,getattr(settings,name))
@@ -106,8 +108,14 @@ def draw(layout,settings,arrangement=False):
         box.label(text='Source: '+settings.reference_native)
         box.prop(bpy.context.scene.transform_orientation_slots[0],'type',text='Viewport')
         box.operator('better_item.reference_native',text='Use Viewport Choice').arrangement=arrangement
+    if mode=='PARENT':
+        from .trace import draw_parent_label
+        draw_parent_label(box,bpy.context.active_object)
     box.prop(settings,'reference_location',text='Location')
     mode=_location_mode(settings,arrangement)
+    if mode=='PARENT' and getattr(settings,f['axes'])!='PARENT':
+        from .trace import draw_parent_label
+        draw_parent_label(box,bpy.context.active_object)
     if mode=='OBJECT':
         name=f['axes_object'] if arrangement and settings.arrange_origin=='MATCH' else f['origin_object']
         box.prop(settings,name,text='Object')

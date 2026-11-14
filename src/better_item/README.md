@@ -1,17 +1,17 @@
-# Better Item 1.4.2
+# Better Item 1.5.0
 
 A live Transform panel for Blender 5.0+, tested in Blender 5.2.3 LTS. GPL-3.0-or-later. Author: Gabriel Webber do Nascimento.
 
 ## Installation
 
-Download `addons/better_item-1.4.2.zip` from the repository. In Blender use **Edit > Preferences > Add-ons > Install from Disk**, choose that ZIP, enable Better Item, and restart Blender after an update. Open **N > Better Item** in Object Mode. The repository ZIP is not the extension package.
+Download `addons/better_item-1.5.0.zip` from the repository. In Blender use **Edit > Preferences > Add-ons > Install from Disk**, choose that ZIP, enable Better Item, and restart Blender after an update. Open **N > Better Item** in Object Mode. The repository ZIP is not the extension package.
 
 ## One live Transform panel
 
 The panel keeps Blender's familiar **Location**, **Rotation**, **Scale** and **Dimensions** names and compact stacked XYZ fields. There are no separate native/incremental panels and no Apply buttons for object transformations. Drag a number or enter a value: the active object updates immediately.
 
-- **Reference > Individual > Orientation** chooses Global, Local, another Object, Viewport, a Saved Frame, Normal, Gimbal, View, Cursor, Parent, or a named Native Orientation. Both Transform and Align and Distribute offer the same choices and use the same resolver.
-- **Reference > Individual > Location** chooses Global (world origin), Viewport Pivot, a Saved Frame, another Object, 3D Cursor, or an explicit native Pivot such as Bounding Box Center, Median Point, Active Element or Individual Origins.
+- **Reference > Individual > Orientation** chooses Global, Local, another Object, Viewport, a Saved Frame, Normal, Gimbal, View, Cursor, Parent, or a named Native Orientation. Both Transform and Align and Distribute offer the same choices and use the same resolver. Parent selects the direct parent's scale-free world axes, or Global when the target has no parent.
+- **Reference > Individual > Location** chooses Global (world origin), Viewport Pivot, a Saved Frame, another Object, 3D Cursor, an explicit native Pivot such as Bounding Box Center, Median Point, Active Element or Individual Origins, or Parent (the direct parent's world origin, with a World fallback).
 - **Location** is the object's world origin expressed in the chosen axes, relative to the chosen origin.
 - **Rotation** is the object's orientation relative to the chosen axes. The display supports the six Euler orders, independently of the object's underlying rotation storage mode.
 - **Dimensions** is the distance between extreme evaluated vertices along each chosen axis. It is not the projection of the object's local bounding box. Modifiers are included in the measurement.
@@ -29,11 +29,60 @@ For proportional Rotation, 360 degrees is used only as the denominator when the 
 
 ### Non-destructive Dimensions
 
-When a requested dimension change is representable by native local Scale, Better Item uses it, and the Scale readout updates accordingly. An oblique, nonuniform dimension edit may require a shear that native Scale cannot represent. For Mesh objects the add-on then creates or updates a **Better Item Dimensions** Geometry Nodes modifier containing a constant affine transform.
+When a requested dimension change is representable by native local Scale, Better Item uses it, and the Scale readout updates accordingly. An oblique, nonuniform dimension edit may require a shear that native Scale cannot represent. For Mesh objects the add-on then creates or updates a **Better Item Dimensions** Geometry Nodes modifier containing a affine transform whose rows remain constant unless explicitly keyed.
 
 The modifier preserves the base mesh, shared mesh users and shape keys. It does not read the source object or frame, so moving the reference later does not modify the already-edited geometry. Repeated edits update the same final modifier. A copied modifier group is made single-user before editing. In this case native Scale can remain unchanged, which is what the Scale readout correctly shows.
 
 Oblique dimension editing currently requires a Mesh object. A disabled Better Item Dimensions modifier must be enabled before further edits. Parent transforms that cannot represent a rigid requested Rotation are rejected and rolled back. Reflected or singular parent-inverse/bone matrices without an unambiguous channel rotation are rejected rather than guessing their scale signs. Dimensions are scaled about the object's origin.
+
+## Animation
+
+### Native keys
+
+The diamond beside each transform group inserts real animation data. Outside Relative Animation, it keys native Location, the active native rotation storage (Euler, Quaternion or Axis-Angle), native Scale, or Scale plus the owned affine Geometry Nodes rows for Dimensions. If Use Reference Pivot moved the object while editing Rotation, the Rotation diamond also captures native Location. Alt-click a group diamond to delete its keys at the current frame.
+
+The ordinary display proxies remain non-animatable. Use their group diamond rather than trying to key a getter/setter UI proxy. Native keys preserve the pose already resolved through the selected reference; changing that reference afterward does not change those native keys. Existing native parenting and Delta transforms retain Blender's normal behavior.
+
+### Relative Animation / rigless pose control
+
+1. Select the target and configure its ordinary Reference.
+2. Expand **Animation**, choose whether Relative Animation owns Location, Rotation or both, and click **Start Relative Animation**.
+3. Edit the usual compact Location/Rotation rows. Owned rows now expose stored, animatable RNA vectors. Use **I** over a component for native Blender component keying, or the group diamond for the entire relative vector.
+4. Move through the timeline. A moving reference changes the target trajectory, without adding parenting or Child Of constraints.
+
+An owned scene frame named `Animation Reference - <object>` records the binding. It is hidden as a viewport indicator by default, but remains visible/editable in Reference Frames. The main reference picker and Euler display order are locked during live animation so accidental readout changes cannot reinterpret an authored clip. Pause to change the reference or order. Restarting with a different reference intentionally reinterprets existing relative keys; bake first if the old world motion must be preserved.
+
+Object, Parent, Cursor, named native custom orientations and context-independent saved-frame components stay live. Local axes, View/Viewport, Gimbal/Normal and selection-dependent pivots are captured at activation when their evaluation would otherwise depend on editor context, the active object or current selection. Blender does not permit native keyframes on the 3D Cursor; its manual or pre-handler script changes remain live. Use an Object controller for a keyframed reference. A public frame that later changes into a context-dependent source requires pausing/restarting to capture the new base. Relative Animation keys a pose (position and orientation); Reference Pivot orbit editing is disabled while active. Animate Location as well as Rotation to author an orbit. Native G/R edits on owned channels are overwritten by relative evaluation; edit the relative fields or the controller instead.
+
+The frame-change handler reads Blender's evaluated dependency graph for the current playback or render frame. A guarded timer also refreshes reference changes at the same timeline frame. It does not run viewport pose updates during a render. Starting Relative Animation enables Render > Lock Interface for Blender's handler/render data-safety requirement. This render setting stays enabled until changed by the user or undone with the start operation. A private zero-valued dependency driver tells Blender to evaluate reference controllers even when hidden or excluded from the rendered collection; it does not drive native pose channels. Pause, Bake and unregister remove that bookkeeping driver. A bounded signature cache skips repeated pose writes when inputs and results are unchanged.
+
+Target constraints, driven owned channels, existing native keys on owned Location/Rotation, active NLA tracks/tweak mode, and non-Replace/reduced-influence actions are rejected rather than overwritten. Native Scale and Delta animation may coexist. A target shared by multiple scenes needs a scene-specific object; references must be present in its binding scene. Explicit object/frame/native-parent dependencies are evaluated in order, and cyclic reference chains are rejected. Arbitrary custom scripts that mutate poses outside this dependency system are not an animation constraint solver.
+
+### Deleted-source defense
+
+Each valid evaluation persists the binding's last valid world origin and full axes. If an object/frame component disappears, the owned animation frame applies that cached component as Manual using `apply_reference`'s fallback. Relative keys continue against this fixed base; the source's future motion cannot be inferred after deletion. The addon never applies this fallback to a public user frame shared by other consumers.
+
+Location and Orientation fall back independently. If the entire owned animation frame is removed, the object uses its persisted manual cache without recreating the deleted frame. A panel message identifies the fallback. Structural cycles, constraints and unrepresentable transforms produce errors and preserve the previous native pose rather than silently replacing the reference with World.
+
+### Bake to Native Keyframes
+
+Set Start, End and Step in Animation, then click **Bake to Native Keyframes**. The operator samples the evaluated relative motion, writes a separate native action and pauses relative control. The original authoring action is retained with a fake user. The baked action removes its relative-channel curves, while retaining unrelated Scale/Delta curves. Native parenting remains in place; baking does not unparent the target. Bake every relative actor needed by the hierarchy or export; this operator bakes the active target.
+
+Use Step = 1 for per-frame sampling, particularly for rotations with multiple turns. The result is sampled animation, not a mathematical promise of identical interpolation between unsampled frames/subframes. Native quaternion samples are sign-compatible. Bake before removing Better Item or exporting to tools that cannot run its handlers. Playback without the addon, and actual CPU-rendered movement, are covered by tests.
+
+## Parent references and Transform Information
+
+Parent is available independently for Orientation and Location in both consumers, and as a component source in scene frames. It always means the direct parent, even when that parent has ancestors. Labels distinguish **No parent: using World / Global**, **Direct parent: <name>**, and **Nested hierarchy. Direct parent: <name>**.
+
+Parent reference coordinates use world distances along scale-free parent axes. They are not an alias for native Location when Parent Inverse, Delta or parent Scale is involved. Expand **Transform Information** to compare both representations.
+
+The read-only section includes reference source paths (including source-object ancestors), World Location, reference origin, actual reference-space Location, native Location, Delta Location, the effective Parent/Inverse origin, local contribution transformed into world space, evaluation residual, World/native Rotation, parent Scale and optional full matrices.
+
+For local translation `l` including Delta and effective parent matrix `P` (parent world times Parent Inverse), it displays the exact affine accounting:
+
+`world_origin = P.translation + P.linear @ l + evaluation_residual`
+
+The residual exposes changes from constraints or evaluation outside that native parent chain. Rotation and Scale are matrices/quaternions in this accounting, not component-wise sums of Euler angles. With a simple translated parent, the display reduces to the familiar example: parent at Y = 40 plus local Y = 10 gives world Y = 50. With rotation or scale, the transformed local contribution explains the difference.
 
 ## Reference Frames
 
@@ -43,8 +92,8 @@ The panel order is **Reference Frames > Transform > Align and Distribute**.
 
 **New Frame** asks only for a name. Configure its two components afterward with compact source tabs:
 
-- **Location:** Manual world coordinates, an Object origin, a native Pivot, the Location of another Frame, or World (the world origin).
-- **Orientation:** Manual world rotation, an Object's axes, a Native transform orientation, or the Orientation of another Frame.
+- **Location:** Manual world coordinates, an Object origin, a native Pivot, the Location of another Frame, World (the world origin), or the Parent of a chosen child object.
+- **Orientation:** Manual world rotation, an Object's axes, a Native transform orientation, another Frame, or the Parent of a chosen child object.
 
 Each Object tab has its own searchable object picker. To get both components from the same object, choose that object twice. A frame may instead follow Object A's position and Object B's rotation, or use a manual component with a linked component. Existing one-source frames are migrated into separate pointers while preserving their links.
 
@@ -77,7 +126,7 @@ Native orientations contain rotation/directions only. Exporting one does not cha
 
 Gimbal axes can be nonorthogonal. Their full basis is retained for native transforms, reference coordinates and projected Dimensions. Euler Rotation fields display/edit the rotational component of that basis. Applying a nonorthogonal basis stores it without loss; manual Rotation then applies a world-space rotation offset to that stored basis (`offset @ stored_basis`). Singular bases, including Gimbal lock, are rejected with BI-F005.
 
-The only live dependency is from sources to frames. There is no parenting, Child Of, constraint or continuing transform link on targets. Moving a source changes readings and future transformations, never the target's previously applied transformation.
+Ordinary Transform and Align/Distribute operations have no continuing transform link on targets: moving a source changes readings and future operations, never an already-applied pose. Explicitly enabled Relative Animation is the exception: its keyed pose follows the reference until paused or baked. Neither mode adds parenting or Child Of constraints.
 
 Multiple RGB frame indicators can be shown in the viewport. The active frame is larger; visibility is controlled per frame and globally. These arrows are indicators; manual editing uses panel fields.
 
@@ -147,6 +196,8 @@ Version and extension description live only in `blender_manifest.toml`; this is 
 
 ## Validation and source
 
+Version 1.5.0 adds playback and interpolation, animated/deleted references, signed Scale and native rotation storage, exact trace accounting, dependency ordering, fresh-process live-animation restoration, actual CPU-render pixel movement, native/affine Dimensions keys, clean native bake playback with the addon unregistered, and a real UI playback/timer/fallback test. Earlier reference and precision regressions remain in the suite.
+
 Development tests are in the [GitHub repository](https://github.com/Borbofruto/Blender-Plugins/tree/main/tests/better_item), not inside the installable add-on ZIP. The ZIP contains runtime source, its manifest, license and this manual.
 
 The 1.4.1 regression suite covers linked zero angles, 128 signed-scale rotation combinations, parent inverses, delta transforms, locked-parent roundoff, unavailable geometry, deleted frame choices and conditional UI. A real Blender window test also verifies timer-driven orientation updates, invalid-source removal, recovery and rename.
@@ -155,5 +206,5 @@ Version 1.4.2 additionally tests 66 Individual orientation/location combinations
 
 Automated Blender tests also cover vectorized precision, cache reuse, shared geometry and modifier invalidation, memory limits and 2,000 frame renames. They cover live field updates, reference switching without object movement, true vertex extrema, non-destructive oblique Dimensions, shared data isolation, Euler orders, angle turns, proportional links, locks, drivers, alignment/distribution, parenting, saved/live frames, source deletion, renaming, persistence, undo/redo and registration. The actual viewport and panel were also opened and visually inspected. Arrangement regression tests exercise 630 combinations across axis masks, selected/key/reference origins, signed spacing, rotated reference axes, and rotated/scaled parents. They also cover coded validation, reference lines, independent frame components and persistence. Native integration tests execute G/R, compare all Euler/quaternion/axis-angle Gimbal directions with Blender (48 operations), check edit-mode Normal, component/native cycles, invalid-source recovery, old-file migration and new-process persistence.
 
-`arrange.py` plans reference-space arrangements and validates spacing/order; `__init__.py` defines the UI and properties; `transform_view.py` implements live readings and edits; `frames.py` owns independent saved frame components and viewport indicators; `native_refs.py` resolves native pivots/orientations and synchronizes native custom orientations; `engine.py` implements native Scale edits and transactional world positioning; `math_core.py` holds Blender-independent rules; `orientation.py` provides orientation utilities; `references.py` defines the common reference options, resolution rules and UI for both consumers.
+`arrange.py` plans reference-space arrangements and validates spacing/order; `__init__.py` defines the UI and properties; `transform_view.py` implements live readings and edits; `frames.py` owns independent saved frame components and viewport indicators; `native_refs.py` resolves native pivots/orientations and synchronizes native custom orientations; `engine.py` implements native Scale edits and transactional world positioning; `math_core.py` holds Blender-independent rules; `animation.py` owns explicit relative playback, cache fallback, keying and baking; `trace.py` provides read-only affine accounting; `orientation.py` provides orientation utilities; `references.py` defines the common reference options, resolution rules and UI for both consumers.
 

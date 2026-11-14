@@ -35,11 +35,16 @@ def invalidate_geometry(_scene,depsgraph):
     """
     updated_objects=set()
     updated_data=set()
+    updated_trees=set()
     for update in depsgraph.updates:
+        if isinstance(update.id.original,bpy.types.NodeTree):updated_trees.add(update.id.original.as_pointer())
         if not update.is_updated_geometry:continue
         original=update.id.original
         if isinstance(original,bpy.types.Object):updated_objects.add(original.as_pointer())
         else:updated_data.add(original.as_pointer())
+    if updated_trees:
+        for obj in bpy.data.objects:
+            if any(mod.type=='NODES' and mod.node_group and _tree_matches(mod.node_group,updated_trees) for mod in obj.modifiers):updated_objects.add(obj.as_pointer())
     def changed(key):return key[1] in updated_objects or key[2] in updated_data
     for key in list(_geometry_cache):
         if changed(key):del _geometry_cache[key]
@@ -47,8 +52,25 @@ def invalidate_geometry(_scene,depsgraph):
         if changed(key):del _dimension_cache[key]
 
 
+def _tree_matches(tree,pointers,seen=()):
+    pointer=tree.as_pointer()
+    if pointer in seen:return False
+    if pointer in pointers:return True
+    return any(node.type=='GROUP' and node.node_tree and _tree_matches(node.node_tree,pointers,(*seen,pointer)) for node in tree.nodes)
+
+
+def _animated_tree(tree,seen=()):
+    pointer=tree.as_pointer()
+    if pointer in seen:return False
+    if tree.animation_data and (tree.animation_data.action or tree.animation_data.drivers):return True
+    return any(node.type=='GROUP' and node.node_tree and _animated_tree(node.node_tree,(*seen,pointer)) for node in tree.nodes)
+
+
 def _geometry_key(obj,depsgraph):
-    return (depsgraph.as_pointer(),obj.as_pointer(),obj.data.as_pointer() if obj.data else 0)
+    animated=any(mod.type=='NODES' and mod.node_group and _animated_tree(mod.node_group) for mod in obj.modifiers)
+    scene=depsgraph.scene
+    time=(scene.frame_current,scene.frame_subframe) if animated else None
+    return (depsgraph.as_pointer(),obj.as_pointer(),obj.data.as_pointer() if obj.data else 0,time)
 
 
 def _coordinates(obj,depsgraph,key):
@@ -253,7 +275,7 @@ def set_dimensions(context,obj,desired):
             old_group=group
             group=group.copy()
             modifier.node_group=group
-    old_matrix=Matrix(tuple(tuple(group['better_item_matrix'][i*3+j] for j in range(3)) for i in range(3)))
+    old_matrix=Matrix(tuple(tuple(group.nodes['Better Item Row %d'%i].inputs[1].default_value) for i in range(3)))
     try:
         _write_affine(group,local @ old_matrix)
         context.view_layer.update()
