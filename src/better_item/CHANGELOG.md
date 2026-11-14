@@ -1,5 +1,11 @@
 # Better Item — changelog
 
+## 1.6.3
+
+### Changed
+- Show Location before Orientation in shared reference controls and the Frame editor.
+- Use the Gimbal icon beside the Orientation label.
+
 ## 1.6.2
 
 ### Changed

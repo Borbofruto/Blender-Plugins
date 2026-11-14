@@ -4,11 +4,15 @@ Install individual extension ZIPs from [`addons/`](addons) using Blender's **Ins
 
 Each addon uses a stable installer filename. Updates replace that file; earlier contents remain available in Git history.
 
-## Better Item 1.6.2
+## Better Item 1.6.3
 
 [Download ZIP](https://github.com/Borbofruto/Blender-Plugins/raw/refs/heads/main/addons/better_item.zip) | [Manual](src/better_item/README.md) | [Reference UI update](docs/better_item/ui-1.6.2.md) | [Review and limitations](docs/better_item/review-1.6.1.md) | [Source](src/better_item) | [Tests](tests/better_item)
 
 A spatial-precision Transform, Reference Frames and Align/Distribute addon for Blender 5.0+, tested in Blender 5.2.3 LTS. Compact English XYZ fields support proportional links, physical projected Dimensions, origin alignment and signed distribution.
+
+### Reference order in 1.6.3
+
+Location precedes Orientation in Transform, Align and Distribute and the Frame editor. Orientation uses the Gimbal icon beside its label.
 
 ### Reference hierarchy in 1.6.2
 

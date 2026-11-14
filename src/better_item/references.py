@@ -210,7 +210,7 @@ def draw_component(layout,settings,kind,arrangement=False,frame=False):
     prop=('reference_orientation' if kind=='axes' else 'reference_location')
     row=layout.split(factor=.52,align=True)
     row.label(text='Orientation:' if kind=='axes' else 'Location:',
-        icon='ORIENTATION_GLOBAL' if kind=='axes' else 'OBJECT_ORIGIN')
+        icon='ORIENTATION_GIMBAL' if kind=='axes' else 'OBJECT_ORIGIN')
     row.prop(settings,prop,text='')
     mode=_visible(settings,kind,arrangement,frame)
     if mode in {'OBJECT','REFERENCE','PARENT'}:
@@ -241,8 +241,8 @@ def draw(layout,settings,arrangement=False):
         row=box.row(align=True);row.prop(settings,f['frame'],text='')
         row.operator('better_item.new_frame',text='',icon='ADD').target='ALIGN_BOTH' if arrangement else 'BOTH'
         return
-    draw_component(box,settings,'axes',arrangement)
     draw_component(box,settings,'origin',arrangement)
+    draw_component(box,settings,'axes',arrangement)
 
 
 def migrate(scene):

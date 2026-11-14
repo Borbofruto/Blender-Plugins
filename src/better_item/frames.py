@@ -456,7 +456,7 @@ class BETTERITEM_PT_frames(bpy.types.Panel):
         frame=settings.frames[settings.active_frame]
         layout.prop(frame,'name',text='Name')
         rotation_valid=False
-        for kind,label,action in (('rotation','Orientation','APPLY_ROTATION'),('position','Location','APPLY_POSITION')):
+        for kind,label,action in (('position','Location','APPLY_POSITION'),('rotation','Orientation','APPLY_ROTATION')):
             box=layout.box()
             box.label(text=label+' (World)')
             references.draw_component(box,frame,'origin' if kind=='position' else 'axes',frame=True)

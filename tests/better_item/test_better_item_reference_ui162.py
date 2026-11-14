@@ -33,7 +33,7 @@ for arrangement in (False,True):
             references.draw_component(layout,settings,kind,arrangement)
             assert {name:getattr(settings,name) for name in fields.values()}==before
             labels=[e[2] for e in layout.events if e[0]=='label']
-            assert labels[0]==dict(text='Orientation:' if kind=='axes' else 'Location:',icon='ORIENTATION_GLOBAL' if kind=='axes' else 'OBJECT_ORIGIN')
+            assert labels[0]==dict(text='Orientation:' if kind=='axes' else 'Location:',icon='ORIENTATION_GIMBAL' if kind=='axes' else 'OBJECT_ORIGIN')
             assert sum(bool(e.get('icon')) for e in labels)==1
             branches=[e for e in layout.events if e[0]=='split' and e[2].get('factor')==.32]
             assert len(branches)==(0 if mode=='GLOBAL' else 1)
@@ -49,7 +49,7 @@ for kind,modes in (('axes',('MANUAL','OBJECT','FRAME','NATIVE')),('origin',('MAN
         if mode=='NATIVE':frame.native_source='Custom Test'
         layout=Layout();references.draw_component(layout,frame,kind,frame=True)
         labels=[e[2] for e in layout.events if e[0]=='label']
-        assert labels[0]['icon']==('ORIENTATION_GLOBAL' if kind=='axes' else 'OBJECT_ORIGIN')
+        assert labels[0]['icon']==('ORIENTATION_GIMBAL' if kind=='axes' else 'OBJECT_ORIGIN')
         assert sum(bool(e.get('icon')) for e in labels)==1
         assert sum(e.get('text')=='└' for e in labels)==(0 if mode=='MANUAL' else 1)
         count+=1
