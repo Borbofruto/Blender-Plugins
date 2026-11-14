@@ -106,7 +106,8 @@ def _dimension_directions(axes):
     return directions
 
 
-def dimensions(obj, axes):
+def projected_bounds(obj, axes):
+    """Evaluated physical bounds relative to the object's own world origin."""
     depsgraph=bpy.context.evaluated_depsgraph_get()
     key=_geometry_key(obj,depsgraph)
     directions=np.asarray(axes,dtype=np.float64)
@@ -119,17 +120,22 @@ def dimensions(obj, axes):
         _dimension_cache.move_to_end(key)
         return _dimension_cache[key][1]
     coordinates=_coordinates(obj,depsgraph,key)
-    extents=[]
+    low=[];high=[]
     for row in transform:
         projected=np.einsum('ij,j->i',coordinates,row,dtype=np.float64,optimize=False)
-        extents.append(float(projected.max())-float(projected.min()))
-    result=tuple(extents)
-    if not all(math.isfinite(value) for value in result):
+        low.append(float(projected.min()));high.append(float(projected.max()))
+    result=(tuple(low),tuple(high))
+    if not all(math.isfinite(value) for value in (*low,*high)):
         raise BetterItemError('[BI-T007] Dimensions exceeds the numeric range of the evaluated geometry.')
     _dimension_cache[key]=(projection,result)
     _dimension_cache.move_to_end(key)
     while len(_dimension_cache)>_DIMENSION_CACHE_ENTRIES:_dimension_cache.popitem(last=False)
     return result
+
+
+def dimensions(obj,axes):
+    low,high=projected_bounds(obj,axes)
+    return tuple(b-a for a,b in zip(low,high))
 
 
 def scale_editable(obj):
@@ -167,7 +173,8 @@ def _restore(obj, previous):
     bpy.context.view_layer.update()
 
 
-def set_rotation(context, obj, values):
+def set_rotation(context, obj, values,*,reference_axes=None,rotation_order=None):
+    """Shared native solver; external axes are an operation snapshot, no UI edits."""
     engine.editable(obj)
     if any(not c.mute and c.influence for c in obj.constraints):
         raise BetterItemError('Disable active constraints before editing Rotation.')
@@ -177,12 +184,12 @@ def set_rotation(context, obj, values):
         raise BetterItemError('Unlock Rotation before editing reference-space rotation.')
     from .native_refs import rotation_basis
     from . import orientation
-    axes = rotation_basis(frames.object_axes(context,obj))
-    order = obj.better_item.view_rotation_order
+    axes = rotation_basis(frames.object_axes(context,obj) if reference_axes is None else reference_axes)
+    order = obj.better_item.view_rotation_order if rotation_order is None else rotation_order
     desired = axes @ Euler(values,order).to_matrix()
     native=(obj.parent is None and obj.rotation_mode==order and all(abs(v)<1e-12 for v in obj.delta_rotation_euler)
         and max(abs(axes[i][j]-(1 if i==j else 0)) for i in range(3) for j in range(3))<1e-8)
-    center = frames.object_origin(context,obj) if obj.better_item.use_reference_pivot else obj.matrix_world.translation.copy()
+    center = frames.object_origin(context,obj) if reference_axes is None and obj.better_item.use_reference_pivot else obj.matrix_world.translation.copy()
     previous = _snapshot(obj)
     delta_scale_before=tuple(obj.delta_scale)
     world = obj.matrix_world.copy()
@@ -207,7 +214,7 @@ def set_rotation(context, obj, values):
         except ValueError as exc:raise BetterItemError('The parent transform is singular; restore nonzero parent Scale.') from exc
         gram=world_delta.transposed() @ world_delta
         if max(abs(gram[i][j]-(1 if i==j else 0)) for i in range(3) for j in range(3))>2e-5:
-            raise BetterItemError('The nonuniform parent transform prevents a rigid reference-space rotation.')
+            raise BetterItemError('Inherited parent scaling would deform "%s" during this rotation. Adjust the parent Scale or use a rigid parent transform, then retry.'%obj.name)
         target=np.asarray(center,dtype=np.float64)+np.asarray(world_delta,dtype=np.float64) @ (
             np.asarray(world.translation,dtype=np.float64)-np.asarray(center,dtype=np.float64))
         engine.apply_world_positions([obj],{obj.name:tuple(target)})
@@ -217,7 +224,7 @@ def set_rotation(context, obj, values):
             raise BetterItemError('The parent transform prevents this reference-space rotation.')
         # A moving basis must not silently turn a requested absolute value into
         # a different readout. Gimbal can follow the edited target itself.
-        resolved=rotation_basis(frames.object_axes(context,obj)).transposed() @ orientation.rotation(obj)
+        resolved=(rotation_basis(frames.object_axes(context,obj)) if reference_axes is None else axes).transposed() @ orientation.rotation(obj)
         read_error=resolved.to_quaternion().rotation_difference(Euler(values,order).to_quaternion()).angle
         if min(abs(read_error),abs(math.tau-read_error))>2e-4:
             raise BetterItemError('[BI-T009] The Orientation reference moved with the target, so the requested Rotation would read back differently. Apply the Orientation to an independent Frame, then edit relative to that frame. The operation was rolled back.')
@@ -226,8 +233,9 @@ def set_rotation(context, obj, values):
         for name,locks in (('location',obj.lock_location),('scale',obj.lock_scale)):
             if any(lock and engine.different(a,b) for lock,a,b in zip(locks,previous[name],getattr(obj,name))):
                 raise BetterItemError('This rotation would change a locked native axis.')
-        obj.better_item['view_rotation_hint']=tuple(values)
-        obj.better_item['view_rotation_hint_order']=order
+        if reference_axes is None:
+            obj.better_item['view_rotation_hint']=tuple(values)
+            obj.better_item['view_rotation_hint_order']=order
     except Exception:
         _restore(obj,previous)
         raise

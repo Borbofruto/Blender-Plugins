@@ -1,0 +1,10 @@
+{
+  "position_dependent_geometry_rollback": true,
+  "dependent_transform_rollback": true,
+  "reference_dependency_rejection": true,
+  "selected_parent_child_bounds": true,
+  "selected_orientation_key_compensation": true,
+  "orientation_storage_and_camera_targets": 9,
+  "execute_mode_axis_direction": true,
+  "batch_undo_redo": true
+}

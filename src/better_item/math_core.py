@@ -4,9 +4,17 @@ import math
 
 
 class BetterItemError(ValueError):
-    def __init__(self,message):
+    def __init__(self,message,*,severity='WARNING',subject=None):
         message=str(message)
         super().__init__(message if message.startswith('[BI-') else '[BI-V001] '+message)
+        self.severity=severity
+        self.subject=subject
+
+
+class ReferencePending(BetterItemError):
+    """A normal authoring step is incomplete, not an operation failure."""
+    def __init__(self,message):
+        super().__init__(message,severity='INFO')
 
 
 def vector3(values):

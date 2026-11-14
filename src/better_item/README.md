@@ -1,4 +1,4 @@
-# Better Item 1.5.7
+# Better Item 1.6.0
 
 A live Transform panel with declared Blender 5.0+ compatibility. Runtime validation for this release used Blender 5.2.3 LTS on Windows; Blender 5.0 and 5.2.4 were not executed. GPL-3.0-or-later. Author: Gabriel Webber do Nascimento.
 
@@ -112,29 +112,58 @@ Multiple RGB frame indicators can be shown in the viewport. The active frame is 
 
 ## Align and Distribute
 
-Alignment and distribution use object origins and the same Reference section as Transform. There is no separate Align To dropdown.
+The panel uses the same independent Location/Orientation or saved Frame reference controls as Transform. Move Axes selects positional axes for alignment/distribution. Rotation components are selected separately inside Set Rotation.
 
-- **Location = Bounding Box Center** (including through a frame) exposes Min/Center/Max alignment of selected origins and equal-interval distribution between their fixed extremes. This arrangement mode measures origin bounds in the chosen axes; the panel explicitly labels its range as selected object origins. The ordinary Transform readout still uses the geometry-based bounding-box pivot. This is a deliberate arrangement range policy, not geometric gap distribution.
-- **Other Location choices** align origins to that reference point, or distribute at signed Spacing from it. A selected source object is kept fixed; Active Element reproduces the former key-object anchor. Use Object to select an explicit key object, independent of the active target.
-- The same behavior applies when the Location component comes through one or more frames.
+### Position alignment
 
-**On Reference Axis**, with exactly one XYZ axis selected and a point reference, places target origins on that reference line. Choose a rotated Object for Orientation and the same Object for Location, or select one Frame for both components.
-Targets are arranged along its rotated X axis. With multiple axes, each axis is distributed independently and the line option is disabled. Without the line option, unselected coordinates are preserved.
+Alignment > Position retains origin alignment. Bounding Box Center (including through Frames) exposes Min/Center/Max of selected origin coordinates. Other Location references align origins to the reference point. A selected object supplying that point stays fixed.
 
-This is a straight reference-axis arrangement, not a curved-path constraint. It creates no parenting, constraints or ongoing relationship. Moving the reference later does not move the targets. A selected object that supplies the reference origin stays fixed.
+### Orientation alignment
 
-Key/reference distribution prioritizes objects on the side opposite the spacing direction, nearest to farthest, followed by objects on the same side, nearest to farthest. Each selected axis is sorted independently. Objects with coincident or insufficiently separated starting coordinates are rejected rather than ordered arbitrarily by name.
+Alignment > Orientation operates on the selection and preserves each selected world origin and signed native Scale:
 
-Example: key X=-600 mm, other objects at -800, -650 and -590 mm, spacing +30 mm. Order: -650, -800, -590; final positions: -570, -540, -510 mm. Negative spacing reverses direction and side priority.
+- Match Reference matches the full rotational component of the reference axes.
+- Set Rotation changes only the enabled reference-space Euler components, in the explicitly chosen Euler order. Disabled components are planned from each object's original rotation before the batch starts.
 
-### Minimum distance and diagnostics
+The known object providing the Orientation reference stays fixed in world orientation/position when selected with the targets. Location does not need to be configured for orientation alignment. Per-object Transform reference settings and numeric hints are not overwritten.
 
-**Minimum Distance (mm)** defaults to **0.00001 mm** and is converted using Scene Unit Scale. Zero spacing and smaller absolute spacing are rejected. Before moving anything, the add-on also checks starting coordinates on every selected reference axis. If two or more objects are coincident or closer than the minimum, the message names the objects and axes and asks for a sufficient offset. Same coordinates on an unselected axis are allowed. The resulting coordinates are checked too: if native float32 precision collapses the spacing, the operation is rolled back with BI-D003, naming the affected objects and axes.
+Axes are captured once before a batch; no continuing relationship is created. Selected parents are processed before children and the whole selection rolls back if any required edit fails. Unselected children follow their parents normally. Nonuniform parent transforms may prevent a rigid rotation and cause a diagnostic rejection. Oblique/reflected reference axes use their rotational component, with a contextual note in the panel. This release does not implement angular minimum/maximum/mean or single-vector direction matching.
 
-Errors remain visible in the panel with a code and actionable details. Changing settings, a successful operation, or Dismiss clears the message. Typical codes:
+### Distribution: Origins or Geometry Bounds
 
-| Code | Meaning |
-| --- | --- |
+Origins preserves the existing signed Spacing behavior. Bounding Box Center distributes origins at equal intervals between fixed origin extremes. Other point/object/frame references use signed steps, keeping the selected Location source fixed. Existing files default to Origins and retain their signed spacing.
+
+Geometry Bounds measures extreme evaluated vertices along the chosen unit reference directions. It uses actual projected minimum/maximum offsets relative to each origin, not just Dimensions divided by two or the object's local box corners. Modifiers and displaced origins are included. Shared meshes, native Scale/Rotation and modifier stacks are left untouched.
+
+- Spacing is signed in both modes. Positive values pack towards positive selected axes; negative values pack towards negative selected axes. In Geometry Bounds, its magnitude is the physical gap. Zero permits touching projected boundaries and always packs towards positive axes. There is no separate Direction control.
+- An Object Location reference with supported geometry anchors the first target after that object's corresponding outer boundary plus the spacing magnitude. If selected, the reference remains fixed.
+- A point reference (Global, manual Frame, cursor or Empty) anchors the first boundary at that point plus the spacing magnitude.
+- Bounding Box Center packs from the original outer selection boundary in the chosen direction. The opposite endpoint is free to move; Geometry Bounds is not the fixed-extremes Origins algorithm.
+- Ordering uses original origin projections. Relative to a point/key, objects on the opposite side come first, nearest to farthest, then objects on the direction side, nearest to farthest. Each selected axis is ordered independently.
+- On Reference Axis, when exactly one axis is enabled and a point/key reference is used, places origins on that reference line. Otherwise unselected positional information is preserved; for oblique geometry axes, physical projection components are preserved.
+
+For three cubes of side 2, choosing the first cube as the Object Location reference and Spacing = 0 places their origins at 0, 2 and 4 along that axis. Rotated or irregular objects are valid: the guarantee is a gap between projected bounds, not visual contact between arbitrary surfaces or collision-free nesting. Loose vertices count. No mesh cleanup or orientation correction is performed automatically.
+
+Starting origins still need to define an order. Coincident/indistinguishable starts name the objects and axes to separate. Zero spacing does not mean ambiguous initial ordering is accepted. Objects without supported evaluated vertices should use Origins. Unrealized GN instances must be realized first. Geometry or native transforms that change as a function of Location may invalidate a fixed-bound plan; the operation diagnoses and rolls back instead of solving a feedback dependency.
+
+Very large coordinates can make even a mathematically valid gap unrepresentable in Blender float32. Final evaluated boundaries and gaps are verified. An unresolved positive gap, unintended overlap or changed geometry rejects and restores all target locations. Verification tolerances are relative to physical extents; exact real-number contact is not promised.
+
+### Solver Settings and diagnostics
+
+Solver Settings starts collapsed. Minimum Separation (mm), default 0.00001 mm, identifies distinguishable starting coordinates and remains the minimum signed interval in Origins mode. It does not prohibit Geometry Bounds Spacing = 0. It is converted using Scene Unit Scale.
+
+- Setup needed is neutral information: choose an object/frame, select mesh elements, or complete another missing input. Only dependent controls/readouts become unavailable.
+- A refused operation is a warning with a reason and a user action, rather than a critical programming error.
+- Unexpected API/runtime failures are marked as failures; the technical exception belongs in Details for support.
+
+Support codes and technical details are collapsed by default. The usual message should explain what to do, without requiring Python knowledge. Empty object pointers do not distinguish a never-selected source from a deleted source; both ask for a valid selection rather than inventing a cause.
+
+Python operator callers must check returned CANCELLED status: user-correctable warnings/INFO need not raise RuntimeError. For background EXEC_DEFAULT distribution, pass mode/axes/spacing explicitly; the real UI INVOKE captures panel settings. Orientation operators retain their copied numeric arguments for redo while references are resolved from the current Scene at each execution.
+
+### Support codes (Details)
+
+| Code | Support meaning |
+|---|---|
 | BI-F001 | Circular frame dependency |
 | BI-F002 | Missing component source, active object or required selection |
 | BI-F003 | Missing native custom orientation |
@@ -144,9 +173,16 @@ Errors remain visible in the panel with a code and actionable details. Changing 
 | BI-A002 | Missing or invalid orientation/origin reference |
 | BI-A003 | Too few selected target objects |
 | BI-A004 | Invalid alignment reference or missing selected active key |
+| BI-A005 | Orientation reference follows a selected target |
+| BI-A006 | Batch orientation or position verification failed |
 | BI-D001 | Zero, too-small or invalid spacing/minimum |
 | BI-D002 | Ambiguous starting coordinates; objects and axes are listed |
 | BI-D003 | Native precision collapsed the resulting spacing; the operation is rolled back |
+| BI-G001 | Geometry Bounds requires supported evaluated geometry |
+| BI-G002 | The physical gap cannot be retained at native coordinate precision |
+| BI-G003 | Evaluated geometry changes during movement |
+| BI-G004 | Location reference moves with a distributed target |
+| BI-G005 | A native Rotation/Scale depends on Location |
 | BI-M001 | Multiple owned Dimensions modifiers; resolve the stack explicitly |
 | BI-M002 | Owned Dimensions modifier is not last; reorder it explicitly |
 | BI-M003 | Missing ownership data or incompatible affine node graph |
@@ -166,6 +202,7 @@ Errors remain visible in the panel with a code and actionable details. Changing 
 | BI-T012 | Evaluated Dimensions fails the relative precision check |
 | BI-V001 | Other invalid input or unsupported operation; read the accompanying explanation |
 | BI-V002 | Blender API rejected a field edit |
+
 
 ### Relative Location zeros and proportional links
 
@@ -204,6 +241,9 @@ The affine stage validates node types, operations, required links, selection/off
 Native Scale and Default/Local edits distinguish driven components: an unrelated driver need not block an independent channel, while edited or unexpectedly changed driven components remain protected. Active constraints are still handled conservatively. The add-on does not add/remove drivers, write keyframes or control playback.
 
 ## Validation and source
+
+The 1.6.0 feature contract, release notes and execution evidence are in [the release report](https://github.com/Borbofruto/Blender-Plugins/blob/main/docs/better_item/release-1.6.0.md). New feature tests cover 168 geometric combinations, 72 orientation batches (288 targets), hierarchy/dependency/precision rollback, persistence, Undo/Redo and real sidebar/invoke behavior. Earlier numerical regression grids continue below; these are finite matrices, not every possible scene.
+
 
 The three audits of 1.5.5 are reviewed in [the 1.5.7 report](https://github.com/Borbofruto/Blender-Plugins/blob/main/docs/better_item/feedback-1.5.7.md), with confirmed defects, deliberate policies, unconfirmed claims and the 11-group test matrix.
 

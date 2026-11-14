@@ -12,7 +12,7 @@ import bpy
 import numpy as np
 from bpy.app.handlers import persistent
 from mathutils import Matrix, Vector, Quaternion
-from .math_core import BetterItemError
+from .math_core import BetterItemError,ReferencePending
 
 BUILTINS=('GLOBAL','LOCAL','NORMAL','GIMBAL','VIEW','CURSOR','PARENT')
 PIVOTS=[('BOUNDING_BOX_CENTER','Bounding Box Center','Center of selected bounds'),
@@ -120,19 +120,19 @@ def orientation(context,name,obj=None,stack=()):
     if name not in BUILTINS:
         slot=context.scene.transform_orientation_slots[0]
         matrix=slot.custom_orientation.matrix if slot.type==name and slot.custom_orientation else _custom_cache.get((context.scene.as_pointer(),name))
-        if matrix is None:raise BetterItemError('[BI-F003] Native orientation "%s" is missing or awaiting refresh.'%name)
+        if matrix is None:raise ReferencePending('[BI-F003] Choose an existing custom orientation and wait for its reference to refresh.')
         return checked(matrix)
     if name=='GLOBAL':return Matrix.Identity(3)
     if name=='CURSOR':return checked(context.scene.cursor.matrix.to_3x3())
     if name=='VIEW':
         with view_context(context) as ctx:return ctx.space_data.region_3d.view_rotation.to_matrix()
     obj=obj or context.active_object
-    if obj is None:raise BetterItemError('[BI-F002] %s orientation needs an active object.'%name.title())
+    if obj is None:raise ReferencePending('[BI-F002] Select an active object for %s orientation.'%name.title())
     if name=='PARENT':return checked(obj.parent.matrix_world.to_3x3().normalized()) if obj.parent else Matrix.Identity(3)
     if name=='GIMBAL':return _gimbal(obj)
     if name=='NORMAL' and context.mode!='OBJECT':
         matrix=_normal_cache.get(context.scene.as_pointer())
-        if matrix is None:raise BetterItemError('[BI-F002] Select elements for Normal orientation and wait for refresh.')
+        if matrix is None:raise ReferencePending('[BI-F002] Select mesh elements for Normal orientation and wait for refresh.')
         return checked(matrix)
     return checked(obj.matrix_world.to_3x3().normalized())
 
@@ -140,7 +140,7 @@ def orientation(context,name,obj=None,stack=()):
 def pivot(context,mode,obj=None):
     if mode=='CURSOR':return context.scene.cursor.location.copy()
     obj=obj or context.active_object
-    if obj is None:raise BetterItemError('[BI-F002] This pivot needs an active object or selection.')
+    if obj is None:raise ReferencePending('[BI-F002] Select an active object or mesh elements for this Location reference.')
     if mode=='INDIVIDUAL_ORIGINS':return obj.matrix_world.translation.copy()
     points=[]
     if context.mode=='EDIT_MESH':
@@ -163,7 +163,7 @@ def pivot(context,mode,obj=None):
                 evaluated=item.evaluated_get(graph)
                 if all(tuple(c)==(-1,-1,-1) for c in evaluated.bound_box):points.append(evaluated.matrix_world.translation.copy())
                 else:points.extend(evaluated.matrix_world@Vector(c) for c in evaluated.bound_box)
-    if not points:raise BetterItemError('[BI-F002] Select elements to define this pivot.')
+    if not points:raise ReferencePending('[BI-F002] Select mesh elements to define this Location reference.')
     if mode=='MEDIAN_POINT':return sum(points,Vector())/len(points)
     return Vector(tuple((min(p[i] for p in points)+max(p[i] for p in points))/2 for i in range(3)))
 
@@ -343,6 +343,7 @@ class BETTERITEM_OT_native_frame(bpy.types.Operator):
                 frame.native_name=''
             else:publish(context,frame,select=True)
         except (BetterItemError,RuntimeError) as exc:
-            self.report({'ERROR'},str(exc))
+            from . import diagnostics
+            diagnostics.report(self,exc)
             return {'CANCELLED'}
         return {'FINISHED'}

@@ -1,0 +1,8 @@
+{
+  "key_geometry": 4,
+  "projected_bounds": 10,
+  "geometry_rollback": 3,
+  "orientation": 8,
+  "ux": "INFO pending, WARNING domain failures, ERROR unexpected; no red pending; solver collapsed; independent frame components",
+  "persistence": true
+}

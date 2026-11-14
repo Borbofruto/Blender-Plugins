@@ -2,25 +2,25 @@
 
 Install individual extension ZIPs from [`addons/`](addons) using Blender's **Install from Disk**. Sources are in [`src/`](src), tests in [`tests/`](tests). The repository ZIP is not an addon installer.
 
-## Better Item 1.5.7
+## Better Item 1.6.0
 
-[Download ZIP](https://github.com/Borbofruto/Blender-Plugins/raw/refs/heads/main/addons/better_item-1.5.7.zip) | [Manual](src/better_item/README.md) | [Feedback review and remaining issues](docs/better_item/feedback-1.5.7.md) | [Source](src/better_item) | [Tests](tests/better_item)
+[Download ZIP](https://github.com/Borbofruto/Blender-Plugins/raw/refs/heads/main/addons/better_item-1.6.0.zip) | [Manual](src/better_item/README.md) | [Feedback review and remaining issues](docs/better_item/release-1.6.0.md) | [Source](src/better_item) | [Tests](tests/better_item)
 
 A spatial-precision Transform, Reference Frames and Align/Distribute addon for Blender 5.0+, tested in Blender 5.2.3 LTS. Compact English XYZ fields support proportional links, physical projected Dimensions, origin alignment and signed distribution.
 
-### Feedback-driven correction release
+### Geometry distribution and orientation alignment
 
-- Use float64 Dimensions projection and affine calculations; verify tiny results without a fixed absolute tolerance. Native channels and world positioning have separate precision checks.
-- Verify Location/Rotation readback against moving references and verify Rotation's final pivot position. Invalid results reject and roll back; self-following references are never silently frozen.
-- Validate affine node structure and retain independent modifier identity. Guard zero-dimension collapse, unrealized instances and edited driver components; preserve the conservative constraint policy.
-- Execute all 11 suggested test groups, including 9,216 round-trip cases, 192 native Rotation comparisons, 1,000 linked edits, bone/vertex parenting, 100-frame chains and real UI/timer checks. Detailed limits and results are in the feedback report.
-- Keep animation outside the runtime scope; move historical validation notes out of the current usage manual.
+- Choose Origins or Geometry Bounds distribution. Signed Spacing sets direction in both modes; Geometry Bounds uses its magnitude as a physical gap, with zero contact packing in the positive direction. There is no separate Direction selector.
+- Measure evaluated geometry along the reference directions, including rotated objects, offset origins and modifiers. Plan and verify the complete operation, rolling back unsupported or unrepresentable results.
+- Match Reference orientation or Set Rotation on selected Euler components, preserving selected world origins, native Scale and the orientation key.
+- Keep minimum separation in collapsed Solver Settings. Pending configuration is neutral; actionable warnings and unexpected failures have separate presentation, with technical codes in Details.
+- Runtime tested in Blender 5.2.3 LTS on Windows: 168 geometry combinations, 72 orientation batches (288 targets), real sidebar interaction and prior numerical regressions. See the release report for limitations.
 
 ### Current capabilities
 
 **Default / Local** shows actual Item channels; **Reference** measures and edits with independent Location/Orientation choices or one saved Frame. Selectors use **Better Item / Default** groups and standard icons. Scale remains native. Reference Dimensions projects evaluated geometry along unit directions and may use a final affine GN modifier when native Scale cannot represent the edit. Location coordinates and exported axes retain their full basis.
 
-Frames store manual or linked components independently. **Use Orientation in Viewport** publishes live native custom axes for G/R; deletion through Blender's menu ends the export. Transform and Align/Distribute use references without adding parenting or constraints. Alignment/distribution operates on origins, not gaps between geometric bounds.
+Frames store manual or linked components independently. **Use Orientation in Viewport** publishes live native custom axes for G/R; deletion through Blender's menu ends the export. Transform and Align/Distribute use references without adding parenting or constraints. Position alignment operates on origins; distribution supports origins or projected geometry bounds. Orientation alignment is a separate action.
 
 Measurement caches invalidate on frame/subframe evaluation without writing transforms or animation. Normal sampling optimization, constraint flexibility and interactive frame manipulators remain separate future decisions.
 

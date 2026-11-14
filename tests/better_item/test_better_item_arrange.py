@@ -96,9 +96,9 @@ settings.reference='KEY'
 settings.axes=(True,False,False)
 def rejects(code):
     before=[tuple(obj.location) for obj in objects]
-    try:bpy.ops.better_item.distribute(reference=settings.reference,axes=tuple(settings.axes),spacing=settings.spacing,minimum_mm=settings.minimum_distance_mm)
+    try:status=bpy.ops.better_item.distribute(reference=settings.reference,axes=tuple(settings.axes),spacing=settings.spacing,minimum_mm=settings.minimum_distance_mm)
     except RuntimeError:pass
-    else:raise AssertionError('Expected '+code)
+    else:assert status=={'CANCELLED'},('Expected rejection',code,status)
     message=arrange.error(context.scene)
     assert code in message,message
     assert [tuple(obj.location) for obj in objects]==before
@@ -263,7 +263,7 @@ manual_axes=frames.create(bpy.context,'Axes only',Vector((1,2,3)),Euler((.1,.2,.
 manual_axes.position_source=None
 near(frames.frame_axes(manual_axes)[0],Euler((.1,.2,.3)).to_matrix()[0])
 try:frames.frame_origin(manual_axes)
-except Exception as exc:assert 'Location Object' in str(exc)
+except Exception as exc:assert 'BI-F002' in str(exc) and 'Location' in str(exc) and exc.severity=='INFO'
 else:raise AssertionError('The missing linked Location must still fail when requested')
 manual_origin=frames.create(bpy.context,'Origin only',Vector((4,5,6)),Euler((.2,.3,.4)).to_matrix(),source,
     follow_position=False,follow_rotation=True)
@@ -299,9 +299,9 @@ settings.reference='KEY'
 settings.axes=(True,False,False)
 settings.minimum_distance_mm=.00001
 original_positions=[tuple(obj.location) for obj in precision_objects]
-try:bpy.ops.better_item.distribute(reference='KEY',axes=(True,False,False),spacing=1e-8)
+try:status=bpy.ops.better_item.distribute(reference='KEY',axes=(True,False,False),spacing=1e-8)
 except RuntimeError:pass
-else:raise AssertionError('Native precision must not silently collapse spacing')
+else:assert status=={'CANCELLED'},'Native precision must not silently collapse spacing'
 assert 'BI-D003' in arrange.error(bpy.context.scene)
 assert 'Precision 1' in arrange.error(bpy.context.scene)
 assert [tuple(obj.location) for obj in precision_objects]==original_positions

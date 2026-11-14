@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 """Orthonormal axes for world and object orientations."""
 from mathutils import Matrix,Quaternion,Euler
-from .math_core import BetterItemError
+from .math_core import BetterItemError,ReferencePending
 
 
 def channel_rotation(obj):
@@ -62,7 +62,7 @@ def basis(obj, mode, reference=None):
         return Matrix.Identity(3)
     source = obj if mode == 'LOCAL' else reference
     if source is None:
-        raise BetterItemError('Choose an Orientation Object.')
+        raise ReferencePending('[BI-F002] Choose an object for Orientation.')
     if mode not in {'LOCAL', 'REFERENCE'}:
         raise BetterItemError('Invalid orientation.')
     return rotation(source)

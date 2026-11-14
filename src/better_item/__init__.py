@@ -1,10 +1,9 @@
 # SPDX-FileCopyrightText: 2026 Gabriel Webber do Nascimento
 # SPDX-License-Identifier: GPL-3.0-or-later
-import textwrap
 import bpy
 from bpy.app.handlers import persistent
-from . import engine, frames, transform_view, arrange, native_refs, references, trace
-from .math_core import BetterItemError
+from . import engine, frames, transform_view, arrange, native_refs, references, trace,diagnostics,geometry_arrange
+from .math_core import BetterItemError,ReferencePending
 
 _field_errors={}
 _groups=[('LOCATION','Location','Object Location'),
@@ -14,6 +13,16 @@ _groups=[('LOCATION','Location','Object Location'),
 _references=[('SELECTION','Selection Bounds (Origins)','Minimum and maximum selected object origins in world space'),
              ('KEY','Key Object (Active)','Keep the selected active object fixed'),
              ('REFERENCE','Reference Origin','Use the selected reference origin as a fixed anchor')]
+
+
+def _arrangement_failed(operator,context,error):
+    """Domain diagnostics keep their severity; unknown API faults are critical."""
+    message=diagnostics.Diagnostic(error)
+    operation=operator.bl_idname.rsplit('_OT_',1)[-1].rsplit('.',1)[-1]
+    message.operation={'distribute':'Distribution','align_orientation':'Orientation','align':'Alignment'}.get(operation)
+    arrange.set_error(context.scene,message)
+    diagnostics.report(operator,error)
+    return {'CANCELLED'}
 
 
 def _active(context):
@@ -30,7 +39,7 @@ def _component(group,axis):
             transform_view.edit_component(bpy.context,obj,group,axis,value)
             _field_errors.pop(obj.as_pointer(),None)
         except (BetterItemError,ValueError,RuntimeError,TypeError) as exc:
-            _field_errors[obj.as_pointer()]=str(exc) if isinstance(exc,BetterItemError) else '[BI-V002] Blender rejected the field edit: '+str(exc)
+            _field_errors[obj.as_pointer()]=diagnostics.Diagnostic(exc)
         if bpy.context.area:
             bpy.context.area.tag_redraw()
     args=dict(name='XYZ'[axis],get=read_value,set=write_value,precision=3,options=set())
@@ -67,6 +76,7 @@ _reference_modes=[('INDIVIDUAL','Individual','Choose Location and Orientation in
 
 
 class BetterItemObjectSettings(bpy.types.PropertyGroup):
+    show_diagnostic_details:bpy.props.BoolProperty(default=False,options=set())
     trace:bpy.props.PointerProperty(type=trace.BetterItemTrace)
     transform_space:bpy.props.EnumProperty(name='Coordinates',items=[('DEFAULT','Default / Local','Blender Item channels, excluding inherited transforms'),('REFERENCE','Reference','Measure and edit in the chosen reference')],default='REFERENCE',options=set(),update=_orientation_changed)
     reference_mode:bpy.props.EnumProperty(name='Reference',items=_reference_modes,options=set(),update=_orientation_changed)
@@ -112,6 +122,14 @@ class BetterItemObjectSettings(bpy.types.PropertyGroup):
 
 
 class BetterItemSceneSettings(bpy.types.PropertyGroup):
+    show_diagnostic_details:bpy.props.BoolProperty(default=False,options=set())
+    show_solver:bpy.props.BoolProperty(name='Solver Settings',default=False,options=set())
+    alignment_type:bpy.props.EnumProperty(name='Alignment',items=[('POSITION','Position','Align object origins'),('ORIENTATION','Orientation','Align selected object rotations, preserving positions')],options=set(),update=_arrange_changed)
+    orientation_action:bpy.props.EnumProperty(name='Mode',items=[('MATCH','Match Reference','Match the full reference orientation'),('SET','Set Rotation','Set selected Euler components relative to the reference')],options=set(),update=_arrange_changed)
+    orientation_axes:bpy.props.BoolVectorProperty(name='Rotation Components',size=3,default=(True,True,True),options=set(),update=_arrange_changed)
+    orientation_angles:bpy.props.FloatVectorProperty(name='Rotation',size=3,subtype='EULER',unit='ROTATION',options=set(),update=_arrange_changed)
+    orientation_order:bpy.props.EnumProperty(name='Euler Order',items=[(order,order+' Euler','Order used to read and set reference-space components') for order in ('XYZ','XZY','YXZ','YZX','ZXY','ZYX')],options=set(),update=_arrange_changed)
+    distribution_mode:bpy.props.EnumProperty(name='Distribute',items=[('ORIGINS','Origins','Signed origin intervals, preserving existing behavior'),('GEOMETRY','Geometry Bounds','Physical gaps between extreme evaluated vertices projected on reference axes')],options=set(),update=_arrange_changed)
     frames:bpy.props.CollectionProperty(type=frames.BetterItemFrame)
     arrange_reference_mode:bpy.props.EnumProperty(name='Reference',items=_reference_modes,options=set(),update=_arrange_changed)
     arrange_reference_frame:bpy.props.EnumProperty(name='Frame',items=frames.frame_items,options=set(),update=_arrange_changed)
@@ -138,11 +156,11 @@ class BetterItemSceneSettings(bpy.types.PropertyGroup):
     arrange_origin_frame:bpy.props.EnumProperty(name='Origin Frame',items=frames.frame_items,options=set(),update=_arrange_changed)
     arrange_on_axis:bpy.props.BoolProperty(name='On Reference Axis',
         description='For single-axis Reference Origin distribution, place all origins on that reference line',options=set())
-    minimum_distance_mm:bpy.props.FloatProperty(name='Minimum Distance (mm)',default=.00001,min=.00000001,
-        precision=8,description='Minimum spacing and coordinate separation, in physical millimeters',options=set(),update=_arrange_changed)
-    axes:bpy.props.BoolVectorProperty(name='Axes',size=3,default=(True,False,False),options=set(),update=_arrange_changed)
+    minimum_distance_mm:bpy.props.FloatProperty(name='Minimum Separation (mm)',default=.00001,min=.00000001,
+        precision=8,description='Minimum distinguishable starting origin separation. Also the minimum interval in Origins mode; Geometry Gap may be zero',options=set(),update=_arrange_changed)
+    axes:bpy.props.BoolVectorProperty(name='Move Axes',description='Reference axes used by Position alignment and Distribution',size=3,default=(True,False,False),options=set(),update=_arrange_changed)
     spacing:bpy.props.FloatProperty(name='Spacing',unit='LENGTH',default=.1,precision=5,
-        description='Signed spacing from the fixed key object or reference origin',options=set(),update=_arrange_changed)
+        description='Sign selects direction on each move axis. Origins: coordinate interval. Geometry Bounds: physical gap between boundaries; zero packs touching bounds towards positive axes',options=set(),update=_arrange_changed)
 
 
 class BETTERITEM_OT_link_group(bpy.types.Operator):
@@ -198,10 +216,8 @@ class BETTERITEM_OT_align(bpy.types.Operator):
             objects,origins=engine.selection_origins(context)
             targets=arrange.plan(context,objects,origins,self.axes,self.reference,mode=self.mode)
             count=engine.apply_world_positions(objects,targets)
-        except BetterItemError as exc:
-            arrange.set_error(context.scene,str(exc))
-            self.report({'ERROR'},str(exc))
-            return {'CANCELLED'}
+        except (BetterItemError,RuntimeError,ValueError,TypeError) as exc:
+            return _arrangement_failed(self,context,exc)
         arrange.clear_error()
         self.report({'INFO'},'%s object(s) aligned.' % count)
         return {'FINISHED'}
@@ -209,13 +225,15 @@ class BETTERITEM_OT_align(bpy.types.Operator):
 
 class BETTERITEM_OT_distribute(bpy.types.Operator):
     bl_idname='better_item.distribute'
-    bl_label='Distribute Origins'
-    bl_description='Distribute origins between bounds or at signed intervals from the key object'
+    bl_label='Distribute Objects'
+    bl_description='Distribute origins or evaluated projected geometry bounds using the selected reference'
     bl_options={'REGISTER','UNDO'}
     axes:bpy.props.BoolVectorProperty(name='Axes',size=3,default=(True,False,False))
     reference:bpy.props.EnumProperty(name='Operation',items=[('AUTO','Reference','Use the selected Location')]+_references,default='AUTO',options={'HIDDEN'})
     spacing:bpy.props.FloatProperty(name='Spacing',unit='LENGTH',default=.1)
     minimum_mm:bpy.props.FloatProperty(name='Minimum Distance (mm)',default=.00001,min=.00000001,precision=8)
+    distribution_mode:bpy.props.EnumProperty(items=[('ORIGINS','Origins',''),('GEOMETRY','Geometry Bounds','')],default='ORIGINS')
+    show_solver:bpy.props.BoolProperty(name='Solver Settings',default=False,options={'SKIP_SAVE'})
     @classmethod
     def poll(cls,context):return context.mode=='OBJECT' and len(context.selected_objects)>=1
     def invoke(self,context,event):
@@ -224,20 +242,66 @@ class BETTERITEM_OT_distribute(bpy.types.Operator):
         self.reference='AUTO'
         self.spacing=settings.spacing
         self.minimum_mm=settings.minimum_distance_mm
+        self.distribution_mode=settings.distribution_mode
         return self.execute(context)
+    def draw(self,context):
+        layout=self.layout
+        row=layout.row(align=True);row.label(text='Move')
+        for i,axis in enumerate('XYZ'):row.prop(self,'axes',index=i,text=axis,toggle=True)
+        layout.prop(self,'distribution_mode',expand=True)
+        layout.prop(self,'spacing')
+        layout.prop(self,'show_solver',emboss=False,icon='TRIA_DOWN' if self.show_solver else 'TRIA_RIGHT')
+        if self.show_solver:layout.prop(self,'minimum_mm')
     def execute(self,context):
         try:
             objects,origins=engine.selection_origins(context)
-            targets=arrange.plan(context,objects,origins,self.axes,self.reference,spacing=self.spacing,minimum_mm=self.minimum_mm)
-            verify=arrange.distribution_verifier(context,self.axes,self.reference,self.minimum_mm)
+            if self.distribution_mode=='GEOMETRY':
+                targets,verify=geometry_arrange.plan(context,objects,origins,self.axes,self.reference,spacing=self.spacing,
+                    minimum_mm=self.minimum_mm)
+            else:
+                targets=arrange.plan(context,objects,origins,self.axes,self.reference,spacing=self.spacing,minimum_mm=self.minimum_mm)
+                verify=arrange.distribution_verifier(context,self.axes,self.reference,self.minimum_mm)
             count=engine.apply_world_positions(objects,targets,verify=verify)
-        except BetterItemError as exc:
-            arrange.set_error(context.scene,str(exc))
-            self.report({'ERROR'},str(exc))
-            return {'CANCELLED'}
+        except (BetterItemError,RuntimeError,ValueError,TypeError) as exc:
+            return _arrangement_failed(self,context,exc)
         arrange.clear_error()
         self.report({'INFO'},'%s object(s) distributed.' % count)
         return {'FINISHED'}
+
+
+class BETTERITEM_OT_align_orientation(bpy.types.Operator):
+    bl_idname='better_item.align_orientation'
+    bl_label='Align Orientation'
+    bl_description='Align selected rotations relative to the reference, preserving each world origin and native Scale'
+    bl_options={'REGISTER','UNDO'}
+    mode:bpy.props.EnumProperty(name='Mode',items=[('MATCH','Match Reference',''),('SET','Set Rotation','')],default='MATCH')
+    axes:bpy.props.BoolVectorProperty(name='Components',size=3,default=(True,True,True))
+    angles:bpy.props.FloatVectorProperty(name='Rotation',size=3,unit='ROTATION',subtype='EULER')
+    order:bpy.props.EnumProperty(name='Euler Order',items=[(order,order+' Euler','') for order in ('XYZ','XZY','YXZ','YZX','ZXY','ZYX')])
+    @classmethod
+    def poll(cls,context):return context.mode=='OBJECT' and bool(context.selected_objects)
+    def invoke(self,context,event):
+        settings=context.scene.better_item
+        self.mode=settings.orientation_action;self.axes=settings.orientation_axes
+        self.angles=settings.orientation_angles;self.order=settings.orientation_order
+        return self.execute(context)
+    def execute(self,context):
+        settings=context.scene.better_item
+        for field,source in (('mode','orientation_action'),('axes','orientation_axes'),('angles','orientation_angles'),('order','orientation_order')):
+            if not self.properties.is_property_set(field):setattr(self,field,getattr(settings,source))
+        try:
+            count=arrange.align_orientations(context,list(context.selected_objects),mode=self.mode,
+                axes=self.axes,angles=self.angles,order=self.order)
+        except (BetterItemError,RuntimeError,ValueError,TypeError) as exc:
+            return _arrangement_failed(self,context,exc)
+        arrange.clear_error();self.report({'INFO'},'%s object(s) oriented.'%count);return {'FINISHED'}
+    def draw(self,context):
+        self.layout.prop(self,'mode')
+        if self.mode=='SET':
+            self.layout.prop(self,'order',text='')
+            for i,axis in enumerate('XYZ'):
+                row=self.layout.row(align=True);row.prop(self,'axes',index=i,text=axis,toggle=True)
+                field=row.row();field.enabled=self.axes[i];field.prop(self,'angles',index=i,text='')
 
 
 def _linked_rows(layout,obj,group,label,prefix,lock_name=None):
@@ -298,18 +362,14 @@ class BETTERITEM_PT_transform(bpy.types.Panel):
             _draw_reference(layout,settings)
             layout.prop(settings,'use_reference_pivot')
         error=_field_errors.get(obj.as_pointer())
+        configuration_error=False
         try:
             if settings.transform_space=='REFERENCE':
                 frames.object_axes(context,obj)
                 frames.object_origin(context,obj)
-        except BetterItemError as exc:error=str(exc)
+        except BetterItemError as exc:error=exc;configuration_error=True
         if error:
-            row=layout.row(align=True)
-            row.alert=True
-            row.label(text='Transform unavailable',icon='ERROR')
-            row.operator('better_item.clear_error',text='',icon='X')
-            width=min(34,max(22,int((context.region.width-40)/7)))
-            for line in textwrap.wrap(error,width):layout.label(text=line)
+            diagnostics.draw(layout,error,settings,clear_operator='better_item.clear_error',configuration=configuration_error)
         _linked_rows(layout,obj,'LOCATION','Location','location','lock_location')
         if settings.transform_space=='DEFAULT' and obj.rotation_mode in {'QUATERNION','AXIS_ANGLE'}:
             layout.label(text='Rotation:')
@@ -330,25 +390,59 @@ class BETTERITEM_PT_alignment(bpy.types.Panel):
     def draw(self,context):
         layout=self.layout
         settings=context.scene.better_item
-        layout.label(text='Use object origins.')
         _draw_reference(layout,settings,arrangement=True)
+        axes_error=origin_error=None
+        resolved_axes=None
+        try:resolved_axes=references.axes(context,settings,context.active_object,True)
+        except BetterItemError as exc:axes_error=exc
+        try:references.origin(context,settings,context.active_object,True)
+        except BetterItemError as exc:origin_error=exc
+        reference_error=axes_error or origin_error
+        if reference_error:diagnostics.draw(layout,reference_error,settings,configuration=True)
+        message=arrange.error(context.scene)
+        if message:diagnostics.draw(layout,message,settings,clear_operator='better_item.clear_arrange_error')
         try:bounds=arrange.operation_reference(context)=='SELECTION'
         except BetterItemError:bounds=False
         row=layout.row(align=True)
-        row.label(text='Axes')
+        row.label(text='Move')
         for i,axis in enumerate('XYZ'):row.prop(settings,'axes',index=i,text=axis,toggle=True)
+        if not any(settings.axes):layout.label(text='Choose axes for position operations.',icon='INFO')
+        if not context.selected_objects:layout.label(text='Select objects to arrange.',icon='INFO')
         box=layout.box()
         box.label(text='Alignment')
-        if bounds:box.label(text='Range: selected object origins')
-        row=box.row(align=True)
-        if not bounds:
-            row.operator('better_item.align',text='Align to Reference').mode='CENTER'
+        box.row(align=True).prop(settings,'alignment_type',expand=True)
+        if settings.alignment_type=='ORIENTATION':
+            if resolved_axes is not None:
+                normalized=resolved_axes.normalized();gram=normalized.transposed()@normalized
+                if normalized.determinant()<0 or max(abs(gram[i][j]-(1 if i==j else 0)) for i in range(3) for j in range(3))>1e-5:
+                    box.label(text='Reflected reference axes.' if normalized.determinant()<0 else 'Non-orthogonal reference.',icon='INFO')
+                    box.label(text='Uses its rotational component.')
+            box.prop(settings,'orientation_action',text='Mode')
+            if settings.orientation_action=='SET':
+                box.prop(settings,'orientation_order',text='')
+                for i,axis in enumerate('XYZ'):
+                    row=box.row(align=True)
+                    row.prop(settings,'orientation_axes',index=i,text=axis,toggle=True)
+                    field=row.row(align=True);field.enabled=settings.orientation_axes[i]
+                    field.prop(settings,'orientation_angles',index=i,text='')
+            box.label(text='Selected positions stay fixed.')
+            row=box.row();row.enabled=axes_error is None and bool(context.selected_objects)
+            row.operator('better_item.align_orientation',text='Align Orientation' if settings.orientation_action=='MATCH' else 'Set Rotation')
         else:
-            for mode,label in (('MIN','Min'),('CENTER','Center'),('MAX','Max')):
-                row.operator('better_item.align',text=label).mode=mode
+            if bounds:box.label(text='Range: selected object origins')
+            row=box.row(align=True);row.enabled=reference_error is None and any(settings.axes) and bool(context.selected_objects)
+            if not bounds:row.operator('better_item.align',text='Align to Reference').mode='CENTER'
+            else:
+                for mode,label in (('MIN','Min'),('CENTER','Center'),('MAX','Max')):
+                    row.operator('better_item.align',text=label).mode=mode
         box=layout.box()
         box.label(text='Distribution')
-        if not bounds:
+        box.row(align=True).prop(settings,'distribution_mode',expand=True)
+        if settings.distribution_mode=='GEOMETRY':
+            box.prop(settings,'spacing')
+            box.label(text='Sign sets direction; zero is valid.')
+            if bounds:box.label(text='Pack from selection boundary.')
+        elif not bounds:
             box.prop(settings,'spacing')
             box.label(text='Spacing sign sets the direction.')
         else:
@@ -357,18 +451,13 @@ class BETTERITEM_PT_alignment(bpy.types.Panel):
             row=box.row()
             row.enabled=sum(settings.axes)==1
             row.prop(settings,'arrange_on_axis')
-        box.prop(settings,'minimum_distance_mm')
-        box.operator('better_item.distribute',text='Distribute')
-        message=arrange.error(context.scene)
-        if message:
-            box=layout.box()
-            box.alert=True
-            row=box.row(align=True)
-            row.label(text='Arrangement Error',icon='ERROR')
-            row.operator('better_item.clear_arrange_error',text='',icon='X')
-            width=min(30,max(24,int((context.region.width-40)/7)))
-            for paragraph in message.splitlines():
-                for line in textwrap.wrap(paragraph,width):box.label(text=line)
+        row=box.row();row.enabled=reference_error is None and any(settings.axes) and bool(context.selected_objects)
+        row.operator('better_item.distribute',text='Distribute')
+        row=layout.row(align=True)
+        row.prop(settings,'show_solver',text='Solver Settings',emboss=False,icon='TRIA_DOWN' if settings.show_solver else 'TRIA_RIGHT')
+        if settings.show_solver:
+            solver=layout.box();solver.prop(settings,'minimum_distance_mm',text='Minimum (mm)')
+            solver.label(text='Used to distinguish starting order.')
 
 
 @persistent
@@ -381,7 +470,7 @@ def _clear_runtime(_unused):
 
 
 classes=(frames.BetterItemFrame,trace.BetterItemTrace,BetterItemObjectSettings,BetterItemSceneSettings,BETTERITEM_OT_link_group,
-         BETTERITEM_OT_clear_error,BETTERITEM_OT_clear_arrange_error,BETTERITEM_OT_align,BETTERITEM_OT_distribute,
+         BETTERITEM_OT_clear_error,BETTERITEM_OT_clear_arrange_error,BETTERITEM_OT_align,BETTERITEM_OT_distribute,BETTERITEM_OT_align_orientation,
          BETTERITEM_PT_transform,BETTERITEM_PT_alignment)+frames.classes+(native_refs.BETTERITEM_OT_native_frame,)
 
 

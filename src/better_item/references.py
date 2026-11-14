@@ -8,7 +8,7 @@ the responsibility of the arrangement planner.
 import bpy
 from mathutils import Matrix,Vector
 from . import native_refs,orientation
-from .math_core import BetterItemError
+from .math_core import BetterItemError,ReferencePending
 
 # Storage extension order is historical: both object/scene enum tables append
 # these at IDs 5..10. Retired entries remain readable for .blend migration;
@@ -149,7 +149,7 @@ def origin(context,settings,active,arrangement=False):
         else:
             name=f['axes_object'] if arrangement and settings.arrange_origin=='MATCH' else f['origin_object']
             source=getattr(settings,name)
-        if source is None:raise BetterItemError('[BI-F002] Choose a Location Object.')
+        if source is None:raise ReferencePending('[BI-F002] Choose an object for Location.')
         return source.matrix_world.translation.copy(),source
     if mode=='CURSOR':return context.scene.cursor.location.copy(),None
     pivot=settings.reference_pivot if mode=='PIVOT' else context.scene.tool_settings.transform_pivot_point
@@ -170,6 +170,30 @@ def location_kind(context,settings,arrangement=False):
         if frame.uid in seen:raise BetterItemError('[BI-F001] Circular Location reference.')
         seen.add(frame.uid);frame=frames.find(context.scene,frame.position_frame)
     return frame.position_pivot if frame.position_mode=='PIVOT' else frame.position_mode
+
+
+def orientation_source_object(context,settings,arrangement=False):
+    """Known orientation key, following saved/exported frame pointers only."""
+    from . import frames
+    active=context.active_object;fields=_FIELDS[arrangement];seen=set()
+    def native(name):
+        if name in {'NORMAL','GIMBAL','LOCAL'}:return active
+        if name=='PARENT':return active.parent if active else None
+        match=next((frame for frame in context.scene.better_item.frames if frame.native_enabled and frame.native_name==name),None)
+        return follow(match) if match else None
+    def follow(frame):
+        if frame.uid in seen:raise BetterItemError('[BI-F001] Circular Orientation reference.')
+        seen.add(frame.uid)
+        if frame.rotation_mode=='OBJECT':return frame.rotation_source
+        if frame.rotation_mode=='PARENT':return frame.rotation_source.parent if frame.rotation_source else None
+        if frame.rotation_mode=='FRAME':return follow(frames.find(context.scene,frame.rotation_frame))
+        if frame.rotation_mode=='NATIVE':return native(frame.native_source)
+        return None
+    if getattr(settings,fields['mode'])=='FRAME':return follow(frames.find(context.scene,getattr(settings,fields['frame'])))
+    mode=getattr(settings,fields['axes'])
+    if mode=='REFERENCE':return getattr(settings,fields['axes_object'])
+    if mode=='SAVED':return follow(frames.find(context.scene,getattr(settings,fields['axes_frame'])))
+    return native(settings.reference_native if mode=='NATIVE' else mode)
 
 
 def draw_component(layout,settings,kind,arrangement=False,frame=False):

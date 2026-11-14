@@ -50,7 +50,7 @@ def edit_scale_component(obj,axis,value):
         obj.scale=before
         bpy.context.view_layer.update()
         if isinstance(exc,BetterItemError):raise
-        raise BetterItemError(str(exc)) from exc
+        raise BetterItemError('[BI-V002] '+str(exc),severity='ERROR') from exc
 
 
 def selection_origins(context):
@@ -173,5 +173,5 @@ def apply_world_positions(objects,targets,*,verify=None):
         bpy.context.view_layer.update()
         if isinstance(exc,BetterItemError):
             raise
-        raise BetterItemError(str(exc)) from exc
+        raise BetterItemError('[BI-V002] '+str(exc),severity='ERROR') from exc
     return len(changed)

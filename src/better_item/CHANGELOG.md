@@ -1,5 +1,9 @@
 # Better Item — delivery records
 
+## 1.6.0
+
+Add projected Geometry Bounds distribution with signed Spacing (zero allows touching projected bounds); add Match Reference/Set Rotation selection alignment, preserving selected world positions. Reuse the existing evaluated geometry cache and native rotation solver. Add collapsed Solver Settings, typed pending-input diagnostics, warning-level domain refusals and optional technical Details. Origins behavior/data remain compatible. No animation runtime or new viewport manipulators.
+
 ## 1.5.7
 
 Feedback-driven numerical validation and affine-stage integrity. See README and the repository audit report for current execution evidence.

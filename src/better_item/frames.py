@@ -4,7 +4,7 @@ import uuid
 import bpy
 import numpy as np
 from mathutils import Matrix, Vector, Euler
-from .math_core import BetterItemError
+from .math_core import BetterItemError,ReferencePending
 from . import native_refs,references
 
 _enum_cache = {}
@@ -33,7 +33,7 @@ def find(scene, uid):
     for frame in scene.better_item.frames:
         if frame.uid == uid:
             return frame
-    raise BetterItemError('[BI-F002] Choose a reference frame that exists in this scene.')
+    raise ReferencePending('[BI-F002] Choose a saved Frame in this scene.')
 
 
 def _enter(frame,component,stack):
@@ -50,11 +50,11 @@ def frame_origin(frame,context=None,stack=()):
     mode=frame.position_mode
     if mode=='GLOBAL':return Vector()
     if mode=='PARENT':
-        if frame.position_source is None:raise BetterItemError('[BI-F002] Choose a child object for the parent Location source.')
+        if frame.position_source is None:raise ReferencePending('[BI-F002] Choose a child object for the parent Location source.')
         return frame.position_source.parent.matrix_world.translation.copy() if frame.position_source.parent else Vector()
     if mode=='OBJECT':
         source=frame.position_source
-        if source is None:raise BetterItemError('[BI-F002] Frame "%s": choose a Location Object.'%frame.name)
+        if source is None:raise ReferencePending('[BI-F002] Frame "%s": choose an object for Location.'%frame.name)
         return source.matrix_world.translation.copy()
     if mode=='PIVOT':
         if getattr(context,'scene',None)!=frame.id_data:raise BetterItemError('[BI-F004] Activate the frame scene to read its viewport pivot.')
@@ -69,12 +69,12 @@ def frame_axes(frame,context=None,stack=()):
     stack=_enter(frame,'Orientation',stack)
     mode=frame.rotation_mode
     if mode=='PARENT':
-        if frame.rotation_source is None:raise BetterItemError('[BI-F002] Choose a child object for the parent Orientation source.')
+        if frame.rotation_source is None:raise ReferencePending('[BI-F002] Choose a child object for the parent Orientation source.')
         from .orientation import rotation
         return rotation(frame.rotation_source.parent) if frame.rotation_source.parent else Matrix.Identity(3)
     if mode=='OBJECT':
         source=frame.rotation_source
-        if source is None:raise BetterItemError('[BI-F002] Frame "%s": choose an Orientation Object.'%frame.name)
+        if source is None:raise ReferencePending('[BI-F002] Frame "%s": choose an object for Orientation.'%frame.name)
         from .orientation import rotation
         return rotation(source)
     if mode=='NATIVE':
@@ -302,6 +302,7 @@ def _link_property(kind):
 
 
 class BetterItemFrame(bpy.types.PropertyGroup):
+    show_diagnostic_details:bpy.props.BoolProperty(default=False,options=set())
     uid: bpy.props.StringProperty()
     number: bpy.props.IntProperty()
     position: bpy.props.FloatVectorProperty(size=3, subtype='TRANSLATION', unit='LENGTH', options=set())
@@ -353,7 +354,8 @@ class BETTERITEM_OT_new_frame(bpy.types.Operator):
         settings=context.scene.better_item
         obj=context.scene.objects.get(self.target_name) if self.target_name else context.active_object
         if self.target in {'AXES','ORIGIN','BOTH'} and (obj is None or not obj.is_editable):
-            self.report({'ERROR'},'[BI-T001] Select an editable target object.')
+            from . import diagnostics
+            diagnostics.report(self,BetterItemError('[BI-T001] Select an editable target object.'))
             return {'CANCELLED'}
         frame=create(context,self.frame_name.strip() or 'Frame',Vector(),Matrix.Identity(3))
         if self.target=='AXES':
@@ -425,7 +427,8 @@ class BETTERITEM_OT_frame(bpy.types.Operator):
                 obj.better_item.pivot_frame = frame.uid
                 obj.better_item.use_reference_pivot = True
         except BetterItemError as exc:
-            self.report({'ERROR'},str(exc))
+            from . import diagnostics
+            diagnostics.report(self,exc)
             return {'CANCELLED'}
         return {'FINISHED'}
 
@@ -452,25 +455,33 @@ class BETTERITEM_PT_frames(bpy.types.Panel):
         if not 0 <= settings.active_frame < len(settings.frames): return
         frame=settings.frames[settings.active_frame]
         layout.prop(frame,'name',text='Name')
+        rotation_valid=False
         for kind,label,action in (('rotation','Orientation','APPLY_ROTATION'),('position','Location','APPLY_POSITION')):
             box=layout.box()
             box.label(text=label+' (World)')
             references.draw_component(box,frame,'origin' if kind=='position' else 'axes',frame=True)
             mode=getattr(frame,kind+'_mode')
+            valid=True
             try:
                 frame_origin(frame,context) if kind=='position' else frame_axes(frame,context)
             except BetterItemError as exc:
-                import textwrap
-                for line in textwrap.wrap(str(exc),34):box.label(text=line,icon='ERROR' if line.startswith('[BI-') else 'NONE')
+                valid=False
+                from . import diagnostics
+                diagnostics.draw(box,exc,frame,configuration=True)
+            if kind=='rotation':rotation_valid=valid
+            if not valid:
+                box.label(text=label+' unavailable')
+                if mode!='MANUAL':continue
             column=box.column(align=True)
             column.enabled=mode=='MANUAL'
             if kind=='rotation' and frame.has_manual_basis and mode=='MANUAL':box.label(text='Rotation offset on applied axes')
             for axis in 'xyz':column.prop(frame,kind+'_'+axis,text=axis.upper())
             if mode!='MANUAL':box.operator('better_item.frame',text='Apply '+label).action=action
-        layout.operator('better_item.native_frame',text='Use Orientation in Viewport',icon='ORIENTATION_GLOBAL').action='PUBLISH'
+        row=layout.row();row.enabled=rotation_valid
+        row.operator('better_item.native_frame',text='Use Orientation in Viewport',icon='ORIENTATION_GLOBAL').action='PUBLISH'
         if frame.native_enabled:
             layout.label(text='Exported: '+frame.native_name)
-            if frame.native_suspended:layout.label(text='Invalid source: orientation suspended.',icon='ERROR')
+            if frame.native_suspended:layout.label(text='Export paused. Check its source.',icon='INFO')
             layout.operator('better_item.native_frame',text='Remove Exported Orientation').action='REMOVE'
         layout.operator('better_item.frame',text='Use Frame for Active Object').action='USE'
         layout.operator('better_item.frame',text='Remove Frame',icon='X').action='REMOVE'
