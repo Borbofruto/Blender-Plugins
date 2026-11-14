@@ -1,0 +1,30 @@
+{
+  "object_info_relative_geometry_atomic_rejection": true,
+  "units": [
+    {
+      "system": "METRIC",
+      "scale_length": 1.0,
+      "gap_mm": 30
+    },
+    {
+      "system": "METRIC",
+      "scale_length": 0.001,
+      "gap_mm": 30
+    },
+    {
+      "system": "IMPERIAL",
+      "scale_length": 1.0,
+      "gap_mm": 30
+    },
+    {
+      "system": "IMPERIAL",
+      "scale_length": 0.3048,
+      "gap_mm": 30
+    }
+  ],
+  "batch240": {
+    "seconds_plan_apply_verify": 0.28379729999869596,
+    "maximum_gap_error_blender_units": 0.0
+  },
+  "distribution_undo_redo_reopen": true
+}

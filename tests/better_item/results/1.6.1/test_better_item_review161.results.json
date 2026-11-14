@@ -1,0 +1,12 @@
+{
+  "quaternion_gimbal_rotation_remains_supported": true,
+  "euler_gimbal_edits": {
+    "accepted": 3,
+    "atomic_rejections": 15
+  },
+  "normal_frame_snapshot_allows_rotation": true,
+  "opposite_halfspace_order_both_signs": true,
+  "central_code_fallback_and_hidden_ui_code": true,
+  "specific_input_codes": 5,
+  "object_orthogonal_gimbal_oblique_under_shear": true
+}

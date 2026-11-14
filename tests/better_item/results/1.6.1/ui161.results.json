@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "phases": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "checks": [
+    "Normal fields allow an edit attempt; moving reference rejects as WARNING and rolls back",
+    "Manual frame snapshot accepts the requested relative angle",
+    "Quaternion Gimbal fields remain live and editable"
+  ]
+}

@@ -3,7 +3,7 @@
 import bpy
 from bpy.app.handlers import persistent
 from . import engine, frames, transform_view, arrange, native_refs, references, trace,diagnostics,geometry_arrange
-from .math_core import BetterItemError,ReferencePending
+from .math_core import BetterItemError
 
 _field_errors={}
 _groups=[('LOCATION','Location','Object Location'),

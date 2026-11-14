@@ -58,20 +58,20 @@ def linked_values(before,axis,value,links,zero_angle_as_turn=False,*,denominator
 
 def _inputs(origins,axes,reference,key):
     if len(axes)!=3 or not any(axes):
-        raise BetterItemError('Select at least one axis: X, Y or Z.')
+        raise BetterItemError('[BI-A001] Select at least one axis: X, Y or Z.')
     if reference not in {'SELECTION','KEY'}:
-        raise BetterItemError('Invalid alignment reference.')
+        raise BetterItemError('[BI-A004] Invalid alignment reference.')
     if reference=='KEY' and key not in origins:
-        raise BetterItemError('The key object must be active and selected.')
+        raise BetterItemError('[BI-A004] The key object must be active and selected.')
     return {name:list(vector3(position)) for name,position in origins.items()}
 
 
 def align_positions(origins,axes,reference,mode='MIN',key=None):
     result=_inputs(origins,axes,reference,key)
     if len(result)<2:
-        raise BetterItemError('Select at least two objects.')
+        raise BetterItemError('[BI-A003] Select at least two objects.')
     if mode not in {'MIN','CENTER','MAX'}:
-        raise BetterItemError('Invalid alignment mode.')
+        raise BetterItemError('[BI-A004] Invalid alignment mode.')
     for axis,enabled in enumerate(axes):
         if not enabled:
             continue
@@ -86,9 +86,9 @@ def align_positions(origins,axes,reference,mode='MIN',key=None):
 def distribute_positions(origins,axes,reference,spacing=0,key=None):
     result=_inputs(origins,axes,reference,key)
     if len(result)<(3 if reference=='SELECTION' else 2):
-        raise BetterItemError('Select at least %s objects.' % (3 if reference=='SELECTION' else 2))
+        raise BetterItemError('[BI-A003] Select at least %s objects.' % (3 if reference=='SELECTION' else 2))
     if not math.isfinite(spacing):
-        raise BetterItemError('Enter a finite spacing.')
+        raise BetterItemError('[BI-D001] Enter a finite spacing.')
     if reference=='KEY' and spacing==0:
         raise BetterItemError('[BI-D001] Spacing must be nonzero for key/reference distribution.')
     for axis,enabled in enumerate(axes):

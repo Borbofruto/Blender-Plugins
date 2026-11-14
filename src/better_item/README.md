@@ -1,4 +1,4 @@
-# Better Item 1.6.0
+# Better Item 1.6.1
 
 A live Transform panel with declared Blender 5.0+ compatibility. Runtime validation for this release used Blender 5.2.3 LTS on Windows; Blender 5.0 and 5.2.4 were not executed. GPL-3.0-or-later. Author: Gabriel Webber do Nascimento.
 
@@ -19,7 +19,9 @@ The panel keeps Blender's familiar **Location**, **Rotation**, **Scale** and **D
 
 Changing axes or origin only changes the readings. It never moves, rotates or resizes the object. Changing only the origin changes Location, without changing Rotation or Dimensions. Dimensions is shown as Unavailable on object types without convertible surface geometry, including Empty, Camera, Light, Armature, Lattice and Grease Pencil; their other transform fields remain usable.
 
-Rotation edits preserve signed native Scale and Delta transforms, and preserve the object origin by default. Enable **Rotate Around Reference Location** to rotate around the selected reference origin instead. A reference that follows the object or selection is intentionally live. Numeric Location and Rotation edits must read back as requested within the operation budget. If the reference follows the edit and prevents that result, Better Item rolls back with BI-T009. Apply the relevant component to an independent Frame first; no source is silently frozen. This also covers self-following Gimbal Rotation.
+Rotation edits preserve signed native Scale and Delta transforms, and preserve the object origin by default. Enable **Rotate Around Reference Location** to rotate around the selected reference origin instead. A reference that follows the object or selection is intentionally live. Numeric Location and Rotation edits must read back as requested within the operation budget. If the reference follows the edit and prevents that result, Better Item rolls back with BI-T009. Apply the relevant component to an independent Frame first; no source is silently frozen.
+
+In Object Mode, Normal follows the active object's axes; when that object is also the target, a nonzero relative Rotation generally cannot remain the absolute value entered. Euler Gimbal can also follow the edit, but some components remain editable. An unparented quaternion object's Gimbal basis is stationary world axes, and Rotation edits remain supported. The panel therefore does not disable every Normal/Gimbal field based only on its name. It keeps the readback/rollback guard. To edit against a stable snapshot, create a Frame with the required Orientation source and use Apply Orientation to make that component Manual before selecting it as the reference. These fields set absolute relative angles, not incremental rotation commands. Gimbal does not remove Gimbal lock; singular bases remain unavailable.
 
 ### Linked components and locks
 
@@ -106,6 +108,8 @@ Exported custom orientations contain rotation/directions only. Exporting one doe
 
 Gimbal axes can be nonorthogonal. Their full basis is retained for native transforms, reference coordinates and projected Dimensions. Euler Rotation fields display/edit the rotational component of that basis. Dimensions normalizes each direction before projection, so a scaled Gimbal direction cannot scale the reported length; Location continues to use coordinates in the original full basis. Applying a nonorthogonal basis stores it without loss; manual Rotation then applies a world-space rotation offset to that stored basis (`offset @ stored_basis`). Singular bases, including Gimbal lock, are rejected with BI-F005.
 
+Object Orientation resolves a proper orthonormal rotational basis, with signed-scale handling; it does not expose inherited shear or axis lengths as reference coordinates. Gimbal instead reproduces the native storage-dependent axis construction and can retain oblique axes under nonuniform parent transforms. These sources are not interchangeable in a sheared hierarchy. Manual Frames can also retain a full stored basis. Location uses that basis, Dimensions projects onto its unit directions, and Rotation uses its rotational component as described above.
+
 Transform and Align/Distribute operations have no continuing transform link on targets: moving a source changes readings and future operations, never an already-applied pose. They do not add parenting or Child Of constraints.
 
 Multiple RGB frame indicators can be shown in the viewport. The active frame is larger; visibility is controlled per frame and globally. These arrows are indicators; manual editing uses panel fields.
@@ -143,6 +147,8 @@ Geometry Bounds measures extreme evaluated vertices along the chosen unit refere
 - On Reference Axis, when exactly one axis is enabled and a point/key reference is used, places origins on that reference line. Otherwise unselected positional information is preserved; for oblique geometry axes, physical projection components are preserved.
 
 For three cubes of side 2, choosing the first cube as the Object Location reference and Spacing = 0 places their origins at 0, 2 and 4 along that axis. Rotated or irregular objects are valid: the guarantee is a gap between projected bounds, not visual contact between arbitrary surfaces or collision-free nesting. Loose vertices count. No mesh cleanup or orientation correction is performed automatically.
+
+The point/key ordering rule applies to both Origins and Geometry Bounds, and intentionally differs from sorting coordinates from negative to positive. For original X = (-5, -1, 2, 7), a Global point reference and positive Spacing process objects in order (-1, -5, 2, 7). Negative Spacing processes them as (2, 7, -1, -5). All moving targets are placed on the side selected by the sign. A selected Object reference remains fixed and is excluded from this order. Selection-bound distribution instead follows coordinate order in the packing direction; Origins mode keeps its two extremes fixed.
 
 Starting origins still need to define an order. Coincident/indistinguishable starts name the objects and axes to separate. Zero spacing does not mean ambiguous initial ordering is accepted. Objects without supported evaluated vertices should use Origins. Unrealized GN instances must be realized first. Geometry or native transforms that change as a function of Location may invalidate a fixed-bound plan; the operation diagnoses and rolls back instead of solving a feedback dependency.
 
@@ -241,6 +247,8 @@ The affine stage validates node types, operations, required links, selection/off
 Native Scale and Default/Local edits distinguish driven components: an unrelated driver need not block an independent channel, while edited or unexpectedly changed driven components remain protected. Active constraints are still handled conservatively. The add-on does not add/remove drivers, write keyframes or control playback.
 
 ## Validation and source
+
+The [1.6.1 review](https://github.com/Borbofruto/Blender-Plugins/blob/main/docs/better_item/review-1.6.1.md) separates confirmed maintenance issues from deliberate behavior and unverified claims. Historical validation paragraphs removed from CHANGELOG are preserved in the repository's documentation history. The installer remains `addons/better_item.zip`; its filename is stable across updates.
 
 The 1.6.0 feature contract, release notes and execution evidence are in [the release report](https://github.com/Borbofruto/Blender-Plugins/blob/main/docs/better_item/release-1.6.0.md). New feature tests cover 168 geometric combinations, 72 orientation batches (288 targets), hierarchy/dependency/precision rollback, persistence, Undo/Redo and real sidebar/invoke behavior. Earlier numerical regression grids continue below; these are finite matrices, not every possible scene.
 

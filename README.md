@@ -4,11 +4,15 @@ Install individual extension ZIPs from [`addons/`](addons) using Blender's **Ins
 
 Each addon uses a stable installer filename. Updates replace that file; earlier contents remain available in Git history.
 
-## Better Item 1.6.0
+## Better Item 1.6.1
 
-[Download ZIP](https://github.com/Borbofruto/Blender-Plugins/raw/refs/heads/main/addons/better_item.zip) | [Manual](src/better_item/README.md) | [Feedback review and remaining issues](docs/better_item/release-1.6.0.md) | [Source](src/better_item) | [Tests](tests/better_item)
+[Download ZIP](https://github.com/Borbofruto/Blender-Plugins/raw/refs/heads/main/addons/better_item.zip) | [Manual](src/better_item/README.md) | [Review and limitations](docs/better_item/review-1.6.1.md) | [Source](src/better_item) | [Tests](tests/better_item)
 
 A spatial-precision Transform, Reference Frames and Align/Distribute addon for Blender 5.0+, tested in Blender 5.2.3 LTS. Compact English XYZ fields support proportional links, physical projected Dimensions, origin alignment and signed distribution.
+
+### Maintenance in 1.6.1
+
+Clarify Normal/Gimbal absolute Rotation and Object/Gimbal basis semantics; explain signed ordering with examples; classify arrangement input diagnostics; remove an unused import and keep CHANGELOG concise. Preserve valid Gimbal edits and the existing panel layout. See the review for reproduced cases and deferred UI decisions.
 
 ### Geometry distribution and orientation alignment
 
