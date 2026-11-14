@@ -10,15 +10,13 @@ from mathutils import Matrix,Vector
 from . import native_refs,orientation
 from .math_core import BetterItemError
 
-ORIENTATIONS=[('GLOBAL','Global','World axes'),('LOCAL','Local','Active object axes'),
-    ('REFERENCE','Object','Chosen object axes'),('VIEWPORT','Viewport','Current viewport orientation'),
-    ('SAVED','Saved Frame','Orientation component of a scene frame'),
-    ('NORMAL','Normal','Native selection normal'),('GIMBAL','Gimbal','Native Gimbal axes'),
-    ('VIEW','View','Current view axes'),('CURSOR','Cursor','3D Cursor axes'),
-    ('PARENT','Parent','Direct parent axes, ignoring scale; World when no parent'),('NATIVE','Native Orientation','Link to a named native custom orientation')]
-LOCATIONS=[('GLOBAL','Global','World origin'),('VIEWPORT','Viewport Pivot','Current native pivot choice'),
-    ('FRAME','Saved Frame','Location component of a scene frame'),('OBJECT','Object','Chosen object origin'),
-    ('CURSOR','3D Cursor','3D Cursor position'),('PIVOT','Pivot','Choose any native pivot type'),('PARENT','Parent','Direct parent origin, or World')]
+# Storage extension order is historical: both object/scene enum tables append
+# these at IDs 5..10. Retired entries remain readable for .blend migration;
+# they are not offered by the current selectors below.
+STORED_AXIS_EXTENSIONS=[('NORMAL','Normal','Native selection normal'),
+    ('GIMBAL','Gimbal','Native Gimbal axes'),('VIEW','View','Current view axes'),
+    ('CURSOR','Cursor','3D Cursor axes'),('PARENT','Parent','Direct parent axes'),
+    ('NATIVE','Native Orientation','Link to a named native custom orientation')]
 _FIELDS={False:dict(mode='reference_mode',frame='reference_frame',axes='orientation',axes_object='orientation_object',
     axes_frame='orientation_frame',origin='pivot_mode',origin_object='origin_object',origin_frame='pivot_frame'),
     True:dict(mode='arrange_reference_mode',frame='arrange_reference_frame',axes='arrange_orientation',

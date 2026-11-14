@@ -2,32 +2,28 @@
 
 Install individual extension ZIPs from [`addons/`](addons) using Blender's **Install from Disk**. Sources are in [`src/`](src), tests in [`tests/`](tests). The repository ZIP is not an addon installer.
 
-## Better Item 1.5.4
+## Better Item 1.5.5
 
-[Download ZIP](https://github.com/Borbofruto/Blender-Plugins/raw/refs/heads/main/addons/better_item-1.5.4.zip) | [Manual](src/better_item/README.md) | [Source](src/better_item) | [Tests](tests/better_item)
+[Download ZIP](https://github.com/Borbofruto/Blender-Plugins/raw/refs/heads/main/addons/better_item-1.5.5.zip) | [Manual](src/better_item/README.md) | [Maintenance audit](docs/better_item/maintenance-1.5.5.md) | [Source](src/better_item) | [Tests](tests/better_item)
 
-### Patch 1.5.4
+A spatial-precision Transform, Reference Frames and Align/Distribute addon for Blender 5.0+, tested in Blender 5.2.3 LTS. Compact English XYZ fields support proportional links, physical projected Dimensions, origin alignment and signed distribution.
 
-- Fix stale Dimensions after frame/subframe changes, including nested GN driven by external native keyframes/drivers. The frame callback invalidates measurement caches only and never writes a pose. Same-frame translation cache reuse remains intact.
-- Reference Dimensions now measures physical projected widths along unit directions, including inherited nonunit Gimbal axes. The full original basis remains unchanged for Location coordinates, frame storage and exported native axes. Dimension edits use the same unit-direction convention; existing geometry is not changed by reading it.
-- Unreadable transform groups display **Unavailable** without fake zero fields or edit/link controls. Other readable groups remain available. Missing Location and Orientation are validated independently.
+### Maintenance revision
 
-Tested with external GN dependencies, shape keys, modifier toggles, subframes, backward seeks, key edits, undo/redo, nonunit/scaled/reversed axes, dimension editing, base-mesh preservation and actual Blender UI. Existing precision, 64 reference combinations, 48 native Gimbal transforms and arrangement regressions pass. Normal optimization, constraint handling and frame interaction behavior are unchanged.
+- Keep the affine Geometry Nodes solution, but require its owned modifier to be unique, enabled and final before Reference Dimensions edits. Invalid stacks reject without creating, reordering or deleting modifiers. Renamed final modifiers are reused; evaluated measurements remain readable.
+- Remove all active handling of the retired animation prototype: no migration/driver cleanup, legacy warning, playback controller or cache inspection of actions/drivers. Existing authoring data is left untouched. The archived implementation remains separately preserved in [`archive/better_item-animation-1.5.1`](archive/better_item-animation-1.5.1).
+- Simplify measurement cache identity and frame Apply, remove unused helpers/catalogs, replace a historical enum-table slice with an explicit storage extension, and declare frame selectors in the frame class itself. Serialized selector numbers and reference-file migration stay compatible.
+- Label the Reference-mode scale group **Scale (Default)** and clarify Dimensions measurement/center in its tooltip. Correct stale animation documentation and record the review/deferred scope.
 
-A spatial-precision Transform, Reference Frames and Align/Distribute addon for Blender 5.0+, tested in Blender 5.2.3 LTS. English compact XYZ fields support proportional links, projected Dimensions, origin alignment and signed distribution.
+### Current capabilities
 
-- **Default / Local** reads and edits the actual Item channels. **Reference** measures and edits using selected Location and Orientation references.
-- Reference selectors are shared by Transform, Align/Distribute and frame components. Dropdown groups are **Better Item** and **Default**, with familiar icons. Default pivots are directly selectable.
-- Object, Frame, Global, the standard pivots/axes and explicitly named custom orientations cover reference choices. Parent shortcuts are removed from the visible list; existing shortcuts migrate to explicit Object sources. There is no capture-from-viewport control.
-- **Rotate Around Reference Location** uses the chosen Location reference as the rotation center; otherwise Rotation preserves the object's own origin.
-- **Use Orientation in Viewport** still exports a frame as native custom axes for G/R. Native-menu deletion ends the export; the 0.2-second detector now explicitly redraws affected viewports without mouse interaction.
-- The BI-T006 rounding budget now retains separate parent and Parent Inverse terms before cancellation. Tests pass for 1,200 such cases and 842 moves across -210..210 mm with the reported manual frame settings, alongside 1,500 locked-parent cases and existing reference/arrangement regressions.
+**Default / Local** shows actual Item channels; **Reference** measures and edits with independent Location/Orientation choices or one saved Frame. Selectors use **Better Item / Default** groups and standard icons. Scale remains native. Reference Dimensions projects evaluated geometry along unit directions and may use a final affine GN modifier when native Scale cannot represent the edit. Location coordinates and exported axes retain their full basis.
 
-### Current scope and archived animation prototype
+Frames store manual or linked components independently. **Use Orientation in Viewport** publishes live native custom axes for G/R; deletion through Blender's menu ends the export. Transform and Align/Distribute use references without adding parenting or constraints. Alignment/distribution operates on origins, not gaps between geometric bounds.
 
-The active ZIP has no Better Item keyframe operators, relative-animation properties, pose-writing playback handlers, animation panel or bake controls. The full 1.5.1 prototype, its tests and its original ZIP are preserved separately in [`archive/better_item-animation-1.5.1`](archive/better_item-animation-1.5.1). Existing relative authoring data is retained but not evaluated by 1.5.4; use the archived version to bake an existing clip before switching. This is a deliberate scope boundary.
+Measurement caches invalidate on frame/subframe evaluation without writing transforms or animation. Normal sampling optimization, constraint flexibility and interactive frame manipulators remain separate future decisions.
 
-Restart Blender after updating, then open **N > Better Item**. The runtime ZIP contains source, manifest, license and manual; development tests and the archive are outside it.
+Tests cover stack rejection/atomicity, source preservation, stable enum serials, old reference-file migration, old authoring-data isolation, native exports, current UI, cache freshness, physical dimensions and the prior precision/arrangement regressions. Restart Blender after updating, then open **N > Better Item**.
 
 ## Export Paper Model - Medidas 1.5.1
 

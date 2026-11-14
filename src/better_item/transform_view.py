@@ -59,18 +59,10 @@ def _tree_matches(tree,pointers,seen=()):
     return any(node.type=='GROUP' and node.node_tree and _tree_matches(node.node_tree,pointers,(*seen,pointer)) for node in tree.nodes)
 
 
-def _animated_tree(tree,seen=()):
-    pointer=tree.as_pointer()
-    if pointer in seen:return False
-    if tree.animation_data and (tree.animation_data.action or tree.animation_data.drivers):return True
-    return any(node.type=='GROUP' and node.node_tree and _animated_tree(node.node_tree,(*seen,pointer)) for node in tree.nodes)
-
-
 def _geometry_key(obj,depsgraph):
-    animated=any(mod.type=='NODES' and mod.node_group and _animated_tree(mod.node_group) for mod in obj.modifiers)
-    scene=depsgraph.scene
-    time=(scene.frame_current,scene.frame_subframe) if animated else None
-    return (depsgraph.as_pointer(),obj.as_pointer(),obj.data.as_pointer() if obj.data else 0,time)
+    # Frame/subframe evaluation invalidates all measurements through clear_cache.
+    # No action/driver introspection is required to identify cached geometry.
+    return (depsgraph.as_pointer(),obj.as_pointer(),obj.data.as_pointer() if obj.data else 0)
 
 
 def _coordinates(obj,depsgraph,key):
@@ -250,8 +242,25 @@ def _write_affine(group, matrix):
     group['better_item_matrix']=[v for row in matrix for v in row]
 
 
+def _dimensions_modifier(obj):
+    """Resolve our one final affine stage without changing the user's stack."""
+    owned=[mod for mod in obj.modifiers if mod.type=='NODES' and mod.node_group
+           and mod.node_group.get('better_item_affine')==1]
+    if len(owned)>1:
+        raise BetterItemError('[BI-M001] Object "%s" has multiple Better Item Dimensions modifiers: %s. Resolve the stack before editing Reference Dimensions; no modifiers were changed.'%
+            (obj.name,', '.join(mod.name for mod in owned)))
+    if not owned:return None
+    modifier=owned[0]
+    if modifier!=obj.modifiers[-1]:
+        raise BetterItemError('[BI-M002] Move "%s" to the end of the modifier stack before editing Reference Dimensions. The addon will not reorder or duplicate it.'%modifier.name)
+    if not modifier.show_viewport or not modifier.show_render:
+        raise BetterItemError('Enable the Better Item Dimensions modifier before editing Dimensions.')
+    return modifier
+
+
 def set_dimensions(context,obj,desired):
     if any(obj.lock_scale):raise BetterItemError('Unlock Scale before editing Dimensions.')
+    modifier=_dimensions_modifier(obj)
     axes = _dimension_directions(frames.object_axes(context,obj))
     before = dimensions(obj,axes)
     if any(v<0 for v in desired):raise BetterItemError('Dimensions cannot be negative.')
@@ -279,13 +288,9 @@ def set_dimensions(context,obj,desired):
         raise BetterItemError('Oblique reference-space dimension editing currently requires a Mesh object.')
     # Preserve the base mesh, shape keys, and shared mesh users. A constant
     # affine Geometry Nodes modifier stores the edit without linking any source.
-    modifier=obj.modifiers[-1] if obj.modifiers else None
-    owned=modifier and modifier.type=='NODES' and modifier.node_group and modifier.node_group.get('better_item_affine')==1
     created=False
     old_group=None
-    if owned and (not modifier.show_viewport or not modifier.show_render):
-        raise BetterItemError('Enable the Better Item Dimensions modifier before editing Dimensions.')
-    if not owned:
+    if modifier is None:
         group=_new_affine_group()
         modifier=obj.modifiers.new('Better Item Dimensions','NODES')
         modifier.node_group=group

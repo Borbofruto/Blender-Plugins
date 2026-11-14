@@ -4,7 +4,7 @@ import uuid
 import bpy
 from mathutils import Matrix, Vector, Euler
 from .math_core import BetterItemError
-from . import native_refs
+from . import native_refs,references
 
 _enum_cache = {}
 
@@ -104,13 +104,11 @@ def viewport_axes(context,obj):
 
 
 def object_axes(context,obj):
-    from . import references
     return references.axes(context,obj.better_item,obj)
 
 
 
 def object_origin(context,obj):
-    from . import references
     return references.origin(context,obj.better_item,obj)[0]
 
 
@@ -176,18 +174,13 @@ def store_axes(frame,axes):
     else:frame.rotation=axes.to_euler('XYZ')
 
 
-def apply_reference(frame,component='ALL',*,fallback_origin=None,fallback_axes=None,force_cached=False):
-    origin=axes=None
-    if component in {'ALL','POSITION'}:
-        try:origin=fallback_origin if force_cached and fallback_origin is not None else frame_origin(frame)
-        except BetterItemError:
-            if fallback_origin is None:raise
-            origin=fallback_origin
-    if component in {'ALL','ROTATION'}:
-        try:axes=fallback_axes if force_cached and fallback_axes is not None else frame_axes(frame)
-        except BetterItemError:
-            if fallback_axes is None:raise
-            axes=fallback_axes
+def apply_reference(frame,component='ALL'):
+    """Apply only live frame components; never recover a missing source silently."""
+    if component not in {'ALL','POSITION','ROTATION'}:
+        raise BetterItemError('Choose a valid frame component to apply.')
+    # Resolve both before writing either, so a missing source leaves it intact.
+    origin=frame_origin(frame) if component in {'ALL','POSITION'} else None
+    axes=frame_axes(frame) if component in {'ALL','ROTATION'} else None
     if origin is not None:
         frame.position=origin
         frame.position_mode='MANUAL'
@@ -214,8 +207,7 @@ def migrate():
             frame.source=None
             frame['source_schema']=2
         clear_missing_choices(scene)
-        from .references import migrate as migrate_references
-        migrate_references(scene)
+        references.migrate(scene)
 
 
 def clear_missing_choices(scene,removed=None):
@@ -281,6 +273,8 @@ class BetterItemFrame(bpy.types.PropertyGroup):
     native_suspended:bpy.props.BoolProperty(default=False)
     has_manual_basis:bpy.props.BoolProperty(default=False)
     manual_basis:bpy.props.FloatVectorProperty(size=9,default=(1,0,0,0,1,0,0,0,1))
+    reference_location:references.choice_property('origin',frame=True)
+    reference_orientation:references.choice_property('axes',frame=True)
     link_position: _link_property('position')
     link_rotation: _link_property('rotation')
     visible: bpy.props.BoolProperty(name='Show Axes', default=True, options=set())
@@ -413,7 +407,6 @@ class BETTERITEM_PT_frames(bpy.types.Panel):
         for kind,label,action in (('rotation','Orientation','APPLY_ROTATION'),('position','Location','APPLY_POSITION')):
             box=layout.box()
             box.label(text=label+' (World)')
-            from . import references
             references.draw_component(box,frame,'origin' if kind=='position' else 'axes',frame=True)
             mode=getattr(frame,kind+'_mode')
             try:

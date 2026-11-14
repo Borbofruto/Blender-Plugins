@@ -23,11 +23,6 @@ def clear_error():
     _last_error=(None,'')
 
 
-def _frame_origin(scene,uid):
-    frame=frames.find(scene,uid)
-    return frames.frame_origin(frame),frames.position_reference_object(frame,scene)
-
-
 def operation_reference(context):
     from . import references
     return 'SELECTION' if references.location_kind(context,context.scene.better_item,True)=='BOUNDING_BOX_CENTER' else 'REFERENCE'

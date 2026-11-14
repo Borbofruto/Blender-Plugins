@@ -6,9 +6,6 @@ from bpy.app.handlers import persistent
 from . import engine, frames, transform_view, arrange, native_refs, references, trace
 from .math_core import BetterItemError
 
-frames.BetterItemFrame.__annotations__['reference_location']=references.choice_property('origin',frame=True)
-frames.BetterItemFrame.__annotations__['reference_orientation']=references.choice_property('axes',frame=True)
-
 _field_errors={}
 _groups=[('LOCATION','Location','Object Location'),
          ('ROTATION','Rotation','Object Euler angles'),
@@ -43,6 +40,7 @@ def _component(group,axis):
         args.update(unit='ROTATION',subtype='ANGLE')
     if group=='DIMENSIONS':
         args['min']=0
+        args['description']='Reference: physical projected width along the chosen unit direction. Default / Local: Blender Item Dimensions. Edits are centered on the object origin.'
     return bpy.props.FloatProperty(**args)
 
 
@@ -78,7 +76,7 @@ class BetterItemObjectSettings(bpy.types.PropertyGroup):
         ('LOCAL','Local','Object local axes'),
         ('REFERENCE','Object','Use another object orientation only; ignore its position and scale'),
         ('VIEWPORT','Viewport','Current viewport transform orientation'),
-        ('SAVED','Saved Frame','Use a saved reference frame orientation')]+references.ORIENTATIONS[5:],
+        ('SAVED','Saved Frame','Use a saved reference frame orientation')]+references.STORED_AXIS_EXTENSIONS,
         default='GLOBAL',options=set(),update=_orientation_changed)
     orientation_object:bpy.props.PointerProperty(name='Orientation Object',type=bpy.types.Object,update=_orientation_changed)
     orientation_frame:bpy.props.EnumProperty(name='Orientation Frame',items=frames.frame_items,options=set(),update=_orientation_changed)
@@ -124,7 +122,7 @@ class BetterItemSceneSettings(bpy.types.PropertyGroup):
     arrange_orientation:bpy.props.EnumProperty(name='Axes',items=[
         ('GLOBAL','Global','World axes'),('LOCAL','Active Local','Active object local axes'),
         ('REFERENCE','Object','Use a chosen object orientation'),('SAVED','Saved Frame','Use a saved frame orientation'),
-        ('VIEWPORT','Viewport','Use the viewport transform orientation')]+references.ORIENTATIONS[5:],default='GLOBAL',options=set(),update=_arrange_changed)
+        ('VIEWPORT','Viewport','Use the viewport transform orientation')]+references.STORED_AXIS_EXTENSIONS,default='GLOBAL',options=set(),update=_arrange_changed)
     arrange_object:bpy.props.PointerProperty(name='Orientation Object',type=bpy.types.Object,update=_arrange_changed)
     arrange_frame:bpy.props.EnumProperty(name='Orientation Frame',items=frames.frame_items,options=set(),update=_arrange_changed)
     arrange_origin:bpy.props.EnumProperty(name='Origin',items=[
@@ -291,11 +289,6 @@ class BETTERITEM_PT_transform(bpy.types.Panel):
             layout.label(text='Select an object in Object Mode.')
             return
         settings=obj.better_item
-        retired=settings.get('animation')
-        if retired and retired.get('enabled',False):
-            box=layout.box();box.alert=True
-            for line in ('This file used Relative Animation.', 'Playback is not supported in 1.5.2.', 'Use archived 1.5.1 to bake first.'):
-                box.label(text=line)
         layout.row(align=True).prop(settings,'transform_space',expand=True)
         if settings.transform_space=='REFERENCE':
             _draw_reference(layout,settings)
@@ -311,7 +304,7 @@ class BETTERITEM_PT_transform(bpy.types.Panel):
             row.alert=True
             row.label(text='Transform unavailable',icon='ERROR')
             row.operator('better_item.clear_error',text='',icon='X')
-            width=max(22,int((context.region.width-40)/7))
+            width=min(34,max(22,int((context.region.width-40)/7)))
             for line in textwrap.wrap(error,width):layout.label(text=line)
         _linked_rows(layout,obj,'LOCATION','Location','location','lock_location')
         if settings.transform_space=='DEFAULT' and obj.rotation_mode in {'QUATERNION','AXIS_ANGLE'}:
@@ -319,7 +312,7 @@ class BETTERITEM_PT_transform(bpy.types.Panel):
             layout.prop(obj,'rotation_quaternion' if obj.rotation_mode=='QUATERNION' else 'rotation_axis_angle',text='')
         else:_linked_rows(layout,obj,'ROTATION','Rotation','rotation','lock_rotation')
         layout.prop(obj if settings.transform_space=='DEFAULT' else settings,'rotation_mode' if settings.transform_space=='DEFAULT' else 'view_rotation_order',text='')
-        _linked_rows(layout,obj,'SCALE','Scale','scale','lock_scale')
+        _linked_rows(layout,obj,'SCALE','Scale (Default)' if settings.transform_space=='REFERENCE' else 'Scale','scale','lock_scale')
         _linked_rows(layout,obj,'DIMENSIONS','Dimensions','dimensions')
         trace.draw(layout,obj)
 
@@ -380,16 +373,6 @@ def _clear_runtime(_unused):
     arrange.clear_error()
     native_refs.clear_cache()
     frames.migrate()
-    _retire_animation_dependencies()
-
-
-def _retire_animation_dependencies():
-    if not hasattr(bpy.data,'objects'):return
-    for obj in bpy.data.objects:
-        retired=obj.better_item.get('animation')
-        if obj.is_editable and retired and retired.get('dependencies_owned',False):
-            obj.driver_remove('better_item.animation.dependency_stamp')
-            retired['dependencies_owned']=False
 
 
 classes=(frames.BetterItemFrame,trace.BetterItemTrace,BetterItemObjectSettings,BetterItemSceneSettings,BETTERITEM_OT_link_group,
@@ -417,7 +400,6 @@ def register():
         if transform_view.clear_cache not in bpy.app.handlers.frame_change_post:
             bpy.app.handlers.frame_change_post.append(transform_view.clear_cache)
         frames.migrate()
-        _retire_animation_dependencies()
         if not bpy.app.timers.is_registered(native_refs.sync):bpy.app.timers.register(native_refs.sync,first_interval=.2,persistent=True)
     except Exception:
         unregister()

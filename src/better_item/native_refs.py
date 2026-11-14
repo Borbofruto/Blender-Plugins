@@ -205,12 +205,12 @@ def publish(context,frame,select=False):
 
 
 def _source_names(scene):
-    names={frame.native_source for frame in scene.better_item.frames if frame.rotation_mode=='NATIVE'}
+    names={frame.native_source for frame in scene.better_item.frames if frame.rotation_mode=='NATIVE' and frame.native_source}
     settings=[(scene.better_item,'arrange_orientation')]
     settings.extend((obj.better_item,'orientation') for obj in scene.objects)
     for owner,field in settings:
         mode=getattr(owner,field)
-        if mode=='NATIVE':names.add(owner.reference_native)
+        if mode=='NATIVE' and owner.reference_native:names.add(owner.reference_native)
         elif mode in BUILTINS:names.add(mode)
         elif mode=='VIEWPORT':names.add(scene.transform_orientation_slots[0].type)
     return names
@@ -272,8 +272,6 @@ def sync():
         from . import frames
         if _needs_migration:
             frames.migrate()
-            from . import _retire_animation_dependencies
-            _retire_animation_dependencies()
             _needs_migration=False
         live_scenes={scene.as_pointer() for scene in bpy.data.scenes}
         live_names={(scene.as_pointer(),name) for scene in bpy.data.scenes for name in _source_names(scene)}

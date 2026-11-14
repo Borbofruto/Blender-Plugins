@@ -1,22 +1,10 @@
-# Better Item 1.5.4
+# Better Item 1.5.5
 
 A live Transform panel for Blender 5.0+, tested in Blender 5.2.3 LTS. GPL-3.0-or-later. Author: Gabriel Webber do Nascimento.
 
-## Patch 1.5.4
-
-Measurements are invalidated on frame/subframe changes, including geometry indirectly driven by external animated objects, drivers and nested Geometry Nodes. This callback clears measurement caches only; it never writes object transforms or adds animation controls. Same-frame geometry/extent cache reuse remains available.
-
-Reference Dimensions means physical width projected onto each **unit direction** of the chosen axes. Direction lengths are normalized for measurement and dimension editing; oblique angles and signs remain intact. The original full basis is unchanged for Location coordinates, frame storage and native orientation exports. Rotation still uses the basis's rotational component. These are different, deliberate mathematical operations, not interchangeable inverses/transposes.
-
-Transform groups whose readings fail now show **Unavailable** and omit their numeric/edit/link controls. Other groups remain available: a missing Location does not disable readable Rotation/Dimensions, and Scale retains its native readout when an Orientation source is missing. Repairing the source restores the fields. No object channels are changed by drawing these states.
-
-## Patch 1.5.3
-
-Default / Local's three-component Euler API now explicitly rejects Quaternion and Axis-Angle storage, with guidance to the correct native property. Their actual native UI fields remain editable. Dimensions calls on unsupported object types report unavailable geometry instead of a zero-dimension error. Transform Information displays Unavailable with the reason for failed reference readings, while valid zero vectors and independent readable components remain visible. Four unused imports were removed. Bounding Box Center, frame enum identities and removal rules are unchanged.
-
 ## Installation
 
-Download `addons/better_item-1.5.4.zip` from the repository. In Blender use **Edit > Preferences > Add-ons > Install from Disk**, choose that ZIP, enable Better Item, and restart Blender after an update. Open **N > Better Item** in Object Mode. The repository ZIP is not the extension package.
+Download `addons/better_item-1.5.5.zip` from the repository. In Blender use **Edit > Preferences > Add-ons > Install from Disk**, choose that ZIP, enable Better Item, and restart Blender after an update. Open **N > Better Item** in Object Mode. The repository ZIP is not the extension package.
 
 ## One live Transform panel
 
@@ -27,7 +15,7 @@ The panel keeps Blender's familiar **Location**, **Rotation**, **Scale** and **D
 - **Location** is the object's world origin expressed in the chosen axes, relative to the chosen origin.
 - **Rotation** is the object's orientation relative to the chosen axes. The display supports the six Euler orders, independently of the object's underlying rotation storage mode.
 - **Dimensions** is the physical distance between extreme evaluated vertices projected onto each chosen unit direction. It is not the projection of the object's local bounding box. Modifiers are included in the measurement.
-- **Scale** always shows the object's native Scale. It is read-only when external/reference axes or a non-global origin are selected. In Global axes with Global origin, it remains editable.
+- **Scale** (labeled **Scale (Default)** in Reference mode) always shows the object's native Scale. It is read-only when external/reference axes or a non-global origin are selected. In Global axes with Global origin, it remains editable.
 
 Changing axes or origin only changes the readings. It never moves, rotates or resizes the object. Changing only the origin changes Location, without changing Rotation or Dimensions. Dimensions is shown as Unavailable on object types without convertible surface geometry, including Empty, Camera, Light, Armature, Lattice and Grease Pencil; their other transform fields remain usable.
 
@@ -41,17 +29,17 @@ For proportional Rotation, 360 degrees is used only as the denominator when the 
 
 ### Non-destructive Dimensions
 
-When a requested dimension change is representable by native local Scale, Better Item uses it, and the Scale readout updates accordingly. An oblique, nonuniform dimension edit may require a shear that native Scale cannot represent. For Mesh objects the add-on then creates or updates a **Better Item Dimensions** Geometry Nodes modifier containing a affine transform whose rows remain constant unless explicitly keyed.
+When a requested dimension change is representable by native local Scale, Better Item uses it, and the Scale readout updates accordingly. An oblique, nonuniform dimension edit may require a shear that native Scale cannot represent. For Mesh objects the add-on then creates or updates a **Better Item Dimensions** Geometry Nodes modifier containing an affine transform that stores the cumulative geometric correction.
 
-The modifier preserves the base mesh, shared mesh users and shape keys. It does not read the source object or frame, so moving the reference later does not modify the already-edited geometry. Repeated edits update the same final modifier. A copied modifier group is made single-user before editing. In this case native Scale can remain unchanged, which is what the Scale readout correctly shows.
+The modifier preserves the base mesh, shared mesh users and shape keys. It does not read the source object or frame, so moving the reference later does not modify the already-edited geometry. Repeated edits update the same final modifier, even if renamed. Before any Reference Dimensions edit, the owned modifier must be unique, enabled and last in the stack. Multiple owned modifiers reject with BI-M001; an owned modifier followed by another rejects with BI-M002. The addon does not reorder, delete, apply or duplicate them automatically. Reading evaluated Dimensions remains available for those stacks. Default / Local edits continue to use the native channels. A copied modifier group is made single-user before editing. In this case native Scale can remain unchanged, which is what the Scale readout correctly shows.
 
 Oblique dimension editing currently requires a Mesh object. A disabled Better Item Dimensions modifier must be enabled before further edits. Parent transforms that cannot represent a rigid requested Rotation are rejected and rolled back. Reflected or singular parent-inverse/bone matrices without an unambiguous channel rotation are rejected rather than guessing their scale signs. Dimensions are scaled about the object's origin.
 
 ## Scope: spatial precision
 
-Version 1.5.2 contains no Better Item keyframe operators, relative-animation channels, playback handlers, baking controls or animation panel. The earlier animation prototype is preserved separately under `archive/better_item-animation-1.5.1`, with its source, tests and installable ZIP; it is outside the current runtime package.
+The active extension has no relative-animation schema, keyframe/bake operators, playback controller, legacy-animation warning or automatic migration/removal of animation data and drivers. It does not manage clips from the archived prototype. Existing authoring data is left untouched. The complete 1.5.1 prototype remains separately preserved at `archive/better_item-animation-1.5.1`; evaluating or recovering those files is a separate, manual workflow.
 
-Files authored with relative animation in 1.5.0/1.5.1 retain their authoring action and stored data. The current extension removes only its own obsolete zero-valued dependency stamp and displays a warning for enabled relative clips. It does not evaluate or convert those clips. Use the archived version to bake them before switching; 1.5.2 does not silently claim to preserve their playback.
+The frame/subframe callback invalidates measurement caches only. Reading current evaluated geometry, including geometry affected by Blender's native systems, is part of accurate measurement; it does not write object poses or animation. The driver guard only inspects native driven channels to prevent overwriting them.
 
 ## Default / Local and Reference
 
@@ -118,7 +106,7 @@ Exported custom orientations contain rotation/directions only. Exporting one doe
 
 Gimbal axes can be nonorthogonal. Their full basis is retained for native transforms, reference coordinates and projected Dimensions. Euler Rotation fields display/edit the rotational component of that basis. Dimensions normalizes each direction before projection, so a scaled Gimbal direction cannot scale the reported length; Location continues to use coordinates in the original full basis. Applying a nonorthogonal basis stores it without loss; manual Rotation then applies a world-space rotation offset to that stored basis (`offset @ stored_basis`). Singular bases, including Gimbal lock, are rejected with BI-F005.
 
-Ordinary Transform and Align/Distribute operations have no continuing transform link on targets: moving a source changes readings and future operations, never an already-applied pose. Explicitly enabled Relative Animation is the exception: its keyed pose follows the reference until paused or baked. Neither mode adds parenting or Child Of constraints.
+Transform and Align/Distribute operations have no continuing transform link on targets: moving a source changes readings and future operations, never an already-applied pose. They do not add parenting or Child Of constraints.
 
 Multiple RGB frame indicators can be shown in the viewport. The active frame is larger; visibility is controlled per frame and globally. These arrows are indicators; manual editing uses panel fields.
 
@@ -159,6 +147,8 @@ Errors remain visible in the panel with a code and actionable details. Changing 
 | BI-D001 | Zero, too-small or invalid spacing/minimum |
 | BI-D002 | Ambiguous starting coordinates; objects and axes are listed |
 | BI-D003 | Native precision collapsed the resulting spacing; the operation is rolled back |
+| BI-M001 | Multiple owned Dimensions modifiers; resolve the stack explicitly |
+| BI-M002 | Owned Dimensions modifier is not last; reorder it explicitly |
 | BI-T001 | Object is not editable |
 | BI-T002 | An active driver controls the field |
 | BI-T003 | A required local Location axis is locked |
@@ -189,13 +179,16 @@ Version and extension description live only in `blender_manifest.toml`; this is 
 
 ## Validation and source
 
+Version 1.5.5 verifies that renamed final Dimensions modifiers are reused; downstream, duplicate and disabled owned stacks reject without changing geometry, transforms, group matrices or stack order; frame Apply resolves its requested components atomically; compatibility enum serials remain stable; old authoring data/drivers remain untouched; and the current runtime contains no calls that add/remove drivers or insert/delete keyframes. Runtime tests and a real Blender panel check cover the maintenance changes. The maintenance audit and deferred scope are recorded in `docs/better_item/maintenance-1.5.5.md` in the repository.
+
+
 Version 1.5.4 tests physical widths and dimension edits under inherited nonuniform Gimbal bases, invariance under axis rescaling/reversal, unchanged coordinate bases and base meshes, invalid directions, per-group unavailable states, and Default-mode independence. Cache tests include nested GN, external native keyframes/drivers, shape keys, frame/subframe changes, backward seeks, key edits, modifier toggles, undo/redo and same-frame translation reuse. A real UI test verifies the previously stale 6-to-10 reading and the independently unavailable groups.
 
 
 The 1.5.3 tests cover read/write rejection without mutation for Quaternion/Axis-Angle, the functioning native storage fields, Euler edits, unsupported Dimensions types, the separate zero-Dimension diagnostic, missing-frame and missing-orientation readouts, valid zero vectors, wrong-scene detection and actual UI rendering. Existing precision, reference, arrangement and undo/redo tests also pass.
 
 
-Version 1.5.2 tests 1,200 Parent Inverse cancellation cases, 842 movements across -210..210 mm in two unit conventions, real-error rejection, Default / Local channels, native Dimensions, removal of animation runtime, and real timer-driven redraw following native-menu deletion. Legacy authoring data is retained when opening a 1.5.1 file. The existing precision, layout, frame and arrangement regressions remain covered.
+Version 1.5.2 tests 1,200 Parent Inverse cancellation cases, 842 movements across -210..210 mm in two unit conventions, real-error rejection, Default / Local channels, native Dimensions, removal of animation runtime, and real timer-driven redraw following native-menu deletion. Earlier compatibility tests covered 1.5.1 authoring files; the current version leaves that data untouched without managing it. The existing precision, layout, frame and arrangement regressions remain covered.
 
 Development tests are in the [GitHub repository](https://github.com/Borbofruto/Blender-Plugins/tree/main/tests/better_item), not inside the installable add-on ZIP. The ZIP contains runtime source, its manifest, license and this manual.
 
