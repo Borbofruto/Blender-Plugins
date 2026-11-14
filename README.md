@@ -2,9 +2,11 @@
 
 Install individual extension ZIPs from [`addons/`](addons) using Blender's **Install from Disk**. Sources are in [`src/`](src), tests in [`tests/`](tests). The repository ZIP is not an addon installer.
 
+Each addon uses a stable installer filename. Updates replace that file; earlier contents remain available in Git history.
+
 ## Better Item 1.6.0
 
-[Download ZIP](https://github.com/Borbofruto/Blender-Plugins/raw/refs/heads/main/addons/better_item-1.6.0.zip) | [Manual](src/better_item/README.md) | [Feedback review and remaining issues](docs/better_item/release-1.6.0.md) | [Source](src/better_item) | [Tests](tests/better_item)
+[Download ZIP](https://github.com/Borbofruto/Blender-Plugins/raw/refs/heads/main/addons/better_item.zip) | [Manual](src/better_item/README.md) | [Feedback review and remaining issues](docs/better_item/release-1.6.0.md) | [Source](src/better_item) | [Tests](tests/better_item)
 
 A spatial-precision Transform, Reference Frames and Align/Distribute addon for Blender 5.0+, tested in Blender 5.2.3 LTS. Compact English XYZ fields support proportional links, physical projected Dimensions, origin alignment and signed distribution.
 

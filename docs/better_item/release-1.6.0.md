@@ -77,4 +77,4 @@ Os testes antigos de arranjo foram ajustados para aceitar o status **CANCELLED**
 - Os controles de Solver não são uma garantia de precisão física ilimitada. A posição nativa continua float32; espaçamentos que não possam ser representados são rejeitados.
 - Animação, novos gizmos, flexibilização de constraints, média angular e resolução automática de dependências móveis ficaram fora desta entrega.
 
-O pacote instalável fica em `addons/better_item-1.6.0.zip`; código e testes seguem separados. Não é necessário importar scripts de teste para instalar a extensão.
+O pacote instalável fica em `addons/better_item.zip`; código e testes seguem separados. Não é necessário importar scripts de teste para instalar a extensão.
