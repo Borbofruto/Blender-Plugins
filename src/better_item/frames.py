@@ -422,23 +422,12 @@ class BETTERITEM_PT_frames(bpy.types.Panel):
         if not 0 <= settings.active_frame < len(settings.frames): return
         frame=settings.frames[settings.active_frame]
         layout.prop(frame,'name',text='Name')
-        for kind,label,action in (('position','Location','APPLY_POSITION'),('rotation','Orientation','APPLY_ROTATION')):
+        for kind,label,action in (('rotation','Orientation','APPLY_ROTATION'),('position','Location','APPLY_POSITION')):
             box=layout.box()
             box.label(text=label+' (World)')
-            box.row(align=True).prop(frame,kind+'_mode',expand=True)
+            from . import references
+            references.draw_component(box,frame,'origin' if kind=='position' else 'axes',frame=True)
             mode=getattr(frame,kind+'_mode')
-            if mode in {'OBJECT','PARENT'}:box.prop(frame,kind+'_source',text='Child Object' if mode=='PARENT' else 'Object')
-            if mode=='PARENT':
-                from .trace import parent_label
-                box.label(text=parent_label(getattr(frame,kind+'_source')))
-            elif mode=='FRAME':box.prop(frame,kind+'_frame',text='Frame')
-            elif mode=='PIVOT':
-                box.prop(frame,'position_pivot',text='')
-                if frame.position_pivot=='INDIVIDUAL_ORIGINS':box.label(text='Single frame: active object origin.')
-            elif mode=='NATIVE':
-                box.label(text='Source: '+frame.native_source)
-                box.prop(context.scene.transform_orientation_slots[0],'type',text='Viewport')
-                box.operator('better_item.native_frame',text='Use Viewport Choice').action='SOURCE'
             try:
                 frame_origin(frame,context) if kind=='position' else frame_axes(frame,context)
             except BetterItemError as exc:

@@ -6,6 +6,9 @@ from bpy.app.handlers import persistent
 from . import engine, frames, transform_view, arrange, native_refs, references, trace, animation
 from .math_core import BetterItemError
 
+frames.BetterItemFrame.__annotations__['reference_location']=references.choice_property('origin',frame=True)
+frames.BetterItemFrame.__annotations__['reference_orientation']=references.choice_property('axes',frame=True)
+
 _field_errors={}
 _groups=[('LOCATION','Location','Object Location'),
          ('ROTATION','Rotation','Object Euler angles'),
@@ -113,7 +116,7 @@ class BetterItemSceneSettings(bpy.types.PropertyGroup):
     frame_serial:bpy.props.IntProperty(default=0)
     active_frame:bpy.props.IntProperty(default=-1,min=-1)
     show_frames:bpy.props.BoolProperty(name='Show Reference Frames',default=True,options=set())
-    reference:bpy.props.EnumProperty(name='Align To',items=_references,default='SELECTION',options=set(),update=_arrange_changed)
+    reference:bpy.props.EnumProperty(name='Legacy Anchor',items=_references,default='SELECTION',options={'HIDDEN'},update=_arrange_changed)
     reference_orientation:references.choice_property('axes',True)
     reference_location:references.choice_property('origin',True)
     reference_pivot:bpy.props.EnumProperty(name='Pivot',items=native_refs.PIVOTS,options=set(),update=_arrange_changed)
@@ -179,14 +182,14 @@ class BETTERITEM_OT_align(bpy.types.Operator):
     bl_description='Align object origins along the selected reference axes'
     bl_options={'REGISTER','UNDO'}
     axes:bpy.props.BoolVectorProperty(name='Axes',size=3,default=(True,False,False))
-    reference:bpy.props.EnumProperty(name='Align To',items=_references,default='SELECTION')
+    reference:bpy.props.EnumProperty(name='Operation',items=[('AUTO','Reference','Use the selected Location')]+_references,default='AUTO',options={'HIDDEN'})
     mode:bpy.props.EnumProperty(name='Alignment',items=[('MIN','Min','Lowest coordinate'),
         ('CENTER','Center','Center between extreme coordinates'),('MAX','Max','Highest coordinate')])
     @classmethod
     def poll(cls,context):return context.mode=='OBJECT' and len(context.selected_objects)>=1
     def invoke(self,context,event):
         self.axes=context.scene.better_item.axes
-        self.reference=context.scene.better_item.reference
+        self.reference='AUTO'
         return self.execute(context)
     def execute(self,context):
         try:
@@ -208,7 +211,7 @@ class BETTERITEM_OT_distribute(bpy.types.Operator):
     bl_description='Distribute origins between bounds or at signed intervals from the key object'
     bl_options={'REGISTER','UNDO'}
     axes:bpy.props.BoolVectorProperty(name='Axes',size=3,default=(True,False,False))
-    reference:bpy.props.EnumProperty(name='Align To',items=_references,default='SELECTION')
+    reference:bpy.props.EnumProperty(name='Operation',items=[('AUTO','Reference','Use the selected Location')]+_references,default='AUTO',options={'HIDDEN'})
     spacing:bpy.props.FloatProperty(name='Spacing',unit='LENGTH',default=.1)
     minimum_mm:bpy.props.FloatProperty(name='Minimum Distance (mm)',default=.00001,min=.00000001,precision=8)
     @classmethod
@@ -216,7 +219,7 @@ class BETTERITEM_OT_distribute(bpy.types.Operator):
     def invoke(self,context,event):
         settings=context.scene.better_item
         self.axes=settings.axes
-        self.reference=settings.reference
+        self.reference='AUTO'
         self.spacing=settings.spacing
         self.minimum_mm=settings.minimum_distance_mm
         return self.execute(context)
@@ -327,30 +330,28 @@ class BETTERITEM_PT_alignment(bpy.types.Panel):
         layout=self.layout
         settings=context.scene.better_item
         layout.label(text='Use object origins.')
-        layout.prop(settings,'reference')
         _draw_reference(layout,settings,arrangement=True)
-        if settings.reference=='KEY':
-            key=context.active_object
-            layout.label(text='Key: '+(key.name if key and key.select_get() else 'Select an active object'),icon='OBJECT_DATA')
+        try:bounds=arrange.operation_reference(context)=='SELECTION'
+        except BetterItemError:bounds=False
         row=layout.row(align=True)
         row.label(text='Axes')
         for i,axis in enumerate('XYZ'):row.prop(settings,'axes',index=i,text=axis,toggle=True)
         box=layout.box()
         box.label(text='Alignment')
         row=box.row(align=True)
-        if settings.reference in {'KEY','REFERENCE'}:
-            row.operator('better_item.align',text='Align to Key' if settings.reference=='KEY' else 'Align to Reference').mode='CENTER'
+        if not bounds:
+            row.operator('better_item.align',text='Align to Reference').mode='CENTER'
         else:
             for mode,label in (('MIN','Min'),('CENTER','Center'),('MAX','Max')):
                 row.operator('better_item.align',text=label).mode=mode
         box=layout.box()
         box.label(text='Distribution')
-        if settings.reference in {'KEY','REFERENCE'}:
+        if not bounds:
             box.prop(settings,'spacing')
             box.label(text='Spacing sign sets the direction.')
         else:
             box.label(text='Fixed extremes; equal intervals.')
-        if settings.reference=='REFERENCE':
+        if not bounds:
             row=box.row()
             row.enabled=sum(settings.axes)==1
             row.prop(settings,'arrange_on_axis')

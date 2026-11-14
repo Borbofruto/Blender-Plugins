@@ -30,7 +30,7 @@ with native_refs.view_context(ctx):
 o.reference_native=s.reference_native='External parity'
 native_refs.sync()
 checks=0
-for axes,loc in itertools.product(references.ORIENTATIONS,references.LOCATIONS):
+for axes,loc in itertools.product(references._ORIENTATION_CHOICES,references._LOCATION_CHOICES):
     o.reference_orientation=s.reference_orientation=axes[0]
     o.reference_location=s.reference_location=loc[0]
     o.reference_pivot=s.reference_pivot='BOUNDING_BOX_CENTER'
@@ -38,7 +38,7 @@ for axes,loc in itertools.product(references.ORIENTATIONS,references.LOCATIONS):
     near(frames.object_origin(ctx,obj),arrange.reference_frame(ctx,'REFERENCE')[1])
     checks+=1
 for pivot in native_refs.PIVOTS:
-    o.reference_location=s.reference_location='PIVOT'
+    o.reference_location=s.reference_location=pivot[0]
     o.reference_pivot=s.reference_pivot=pivot[0]
     near(frames.object_origin(ctx,obj),arrange.reference_frame(ctx,'REFERENCE')[1])
 o.reference_mode=s.arrange_reference_mode='FRAME'
@@ -106,7 +106,7 @@ near(frames.frame_origin(dependent),(3,4,5))
 # Blender process without existing enum/native caches.
 o.reference_mode=s.arrange_reference_mode='INDIVIDUAL'
 o.reference_orientation='NATIVE';o.reference_native='External parity'
-o.reference_location='PIVOT';o.reference_pivot='BOUNDING_BOX_CENTER'
+o.reference_location='BOUNDING_BOX_CENTER'
 s.reference_orientation='CURSOR';s.reference_location='FRAME'
 s.arrange_origin_frame=next(frame.uid for frame in s.frames if frame.name=='Axes and origin')
 root=Path(__file__).resolve().parents[2]/"src"
@@ -124,7 +124,7 @@ native_refs.sync()
 o=bpy.data.objects['Target'].better_item
 s=bpy.context.scene.better_item
 assert o.reference_orientation=='NATIVE' and o.reference_native=='External parity'
-assert o.reference_location=='PIVOT' and o.reference_pivot=='BOUNDING_BOX_CENTER'
+assert o.reference_location=='BOUNDING_BOX_CENTER' and o.reference_pivot=='BOUNDING_BOX_CENTER'
 assert s.reference_orientation=='CURSOR' and s.reference_location=='FRAME'
 f=frames.find(bpy.context.scene,s.arrange_origin_frame)
 assert f.position_mode=='GLOBAL' and tuple(frames.frame_origin(f))==(0,0,0)

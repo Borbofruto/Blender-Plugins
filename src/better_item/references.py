@@ -35,17 +35,88 @@ def _location_mode(settings,arrangement):
     return {'SAVED':'FRAME','REFERENCE':'OBJECT','LOCAL':'ACTIVE','VIEWPORT':'VIEWPORT'}.get(axes,'GLOBAL')
 
 
-def choice_property(kind,arrangement):
-    items=ORIENTATIONS if kind=='axes' else LOCATIONS
-    names=[item[0] for item in items]
+# Visible choices are shared by both consumers and the frame editor. Legacy
+# storage fields keep their numeric IDs so existing .blend files remain readable.
+_LOCATION_CHOICES=[
+    ('GLOBAL','Global','World origin','WORLD'),
+    ('FRAME','Frame','Location component of a saved frame','EMPTY_AXIS'),
+    ('OBJECT','Object','Chosen object origin','OBJECT_DATA'),
+    ('PARENT','Parent','Direct parent origin; World if no parent','ORIENTATION_PARENT'),
+    ('BOUNDING_BOX_CENTER','Bounding Box Center','Center of selected geometry bounds','PIVOT_BOUNDBOX'),
+    ('CURSOR','3D Cursor','3D Cursor position','PIVOT_CURSOR'),
+    ('INDIVIDUAL_ORIGINS','Individual Origins','Active object origin for a single reference point','PIVOT_INDIVIDUAL'),
+    ('MEDIAN_POINT','Median Point','Median of the selection','PIVOT_MEDIAN'),
+    ('ACTIVE_ELEMENT','Active Element','Active selection element','PIVOT_ACTIVE')]
+_ORIENTATION_CHOICES=[
+    ('GLOBAL','Global','World axes','ORIENTATION_GLOBAL'),
+    ('SAVED','Frame','Orientation component of a saved frame','EMPTY_AXIS'),
+    ('REFERENCE','Object','Chosen object axes, ignoring scale','OBJECT_DATA'),
+    ('PARENT','Parent','Direct parent axes; Global if no parent','ORIENTATION_PARENT'),
+    ('NORMAL','Normal','Native selection normal','ORIENTATION_NORMAL'),
+    ('GIMBAL','Gimbal','Native Gimbal axes','ORIENTATION_GIMBAL'),
+    ('VIEW','View','Current view axes','ORIENTATION_VIEW'),
+    ('CURSOR','3D Cursor','3D Cursor axes','ORIENTATION_CURSOR'),
+    ('NATIVE','Custom Orientation...','Choose a named custom transform orientation','EMPTY_AXIS')]
+
+def _choices(kind,frame=False):
+    values=_ORIENTATION_CHOICES if kind=='axes' else _LOCATION_CHOICES
+    if frame:values=[('MANUAL','Manual','Independent values stored in this frame','EDITMODE_HLT')]+values
+    return values
+
+
+def _visible(settings,kind,arrangement=False,frame=False):
+    if frame:
+        mode=settings.rotation_mode if kind=='axes' else settings.position_mode
+        if kind=='axes':
+            if mode=='OBJECT':return 'REFERENCE'
+            if mode=='FRAME':return 'SAVED'
+            if mode=='NATIVE':return settings.native_source if settings.native_source in {'GLOBAL','NORMAL','GIMBAL','VIEW','CURSOR'} else 'NATIVE'
+        elif mode=='PIVOT':return settings.position_pivot
+        return mode
+    f=_FIELDS[arrangement]
+    mode=getattr(settings,f['axes']) if kind=='axes' else _location_mode(settings,arrangement)
+    if kind=='origin':
+        if mode=='PIVOT':return settings.reference_pivot
+        if mode=='ACTIVE':return 'ACTIVE_ELEMENT'
+    return mode
+
+
+def choice_property(kind,arrangement=False,frame=False):
+    choices=_choices(kind,frame)
+    names=[item[0] for item in choices]
+    items=[(*item,i) for i,item in enumerate(choices)]
+    # Native entries are visible in the same dropdown, with a labeled separator.
+    split=(5 if frame else 4)
+    items.insert(split,('', 'Blender', 'Native reference types'))
     def get(self):
-        mode=getattr(self,_FIELDS[arrangement]['axes']) if kind=='axes' else _location_mode(self,arrangement)
-        if mode=='ACTIVE':mode='PIVOT'
-        return names.index(mode)
+        mode=_visible(self,kind,arrangement,frame)
+        return names.index(mode) if mode in names else 0
     def set_value(self,value):
         mode=names[value]
-        if kind=='origin' and arrangement and mode=='FRAME':mode='SAVED'
-        setattr(self,_FIELDS[arrangement][kind],mode)
+        if frame:
+            if kind=='origin':
+                if mode in {item[0] for item in native_refs.PIVOTS}:
+                    self.position_pivot=mode;self.position_mode='PIVOT'
+                else:self.position_mode=mode
+            else:
+                if mode=='REFERENCE':self.rotation_mode='OBJECT'
+                elif mode=='SAVED':self.rotation_mode='FRAME'
+                elif mode=='MANUAL':self.rotation_mode='MANUAL'
+                elif mode=='PARENT':self.rotation_mode='PARENT'
+                else:
+                    if mode!='NATIVE':self.native_source=mode
+                    elif self.native_source in native_refs.BUILTINS:self.native_source=''
+                    self.rotation_mode='NATIVE'
+        else:
+            f=_FIELDS[arrangement]
+            if kind=='origin' and mode in {item[0] for item in native_refs.PIVOTS}:
+                # Keep the dedicated legacy cursor ID, used by animation bindings.
+                self.reference_pivot=mode
+                setattr(self,f['origin'],'CURSOR' if mode=='CURSOR' else 'PIVOT')
+            else:
+                if kind=='origin' and arrangement and mode=='FRAME':mode='SAVED'
+                if kind=='axes' and mode=='NATIVE' and self.reference_native in native_refs.BUILTINS:self.reference_native=''
+                setattr(self,f[kind],mode)
     return bpy.props.EnumProperty(name='Orientation' if kind=='axes' else 'Location',items=items,get=get,set=set_value,options=set())
 
 
@@ -87,49 +158,65 @@ def origin(context,settings,active,arrangement=False):
     return native_refs.pivot(context,pivot,active),None
 
 
+def location_kind(context,settings,arrangement=False):
+    """Concrete point source, following frame pointers without evaluating it."""
+    from . import frames
+    f=_FIELDS[arrangement]
+    if getattr(settings,f['mode'])=='FRAME':
+        frame=frames.find(context.scene,getattr(settings,f['frame']))
+    elif _location_mode(settings,arrangement)=='FRAME':
+        frame=frames.find(context.scene,getattr(settings,f['axes_frame'] if arrangement and settings.arrange_origin=='MATCH' else f['origin_frame']))
+    else:return _visible(settings,'origin',arrangement)
+    seen=set()
+    while frame.position_mode=='FRAME':
+        if frame.uid in seen:raise BetterItemError('[BI-F001] Circular Location reference.')
+        seen.add(frame.uid);frame=frames.find(context.scene,frame.position_frame)
+    return frame.position_pivot if frame.position_mode=='PIVOT' else frame.position_mode
+
+
+def draw_component(layout,settings,kind,arrangement=False,frame=False):
+    from . import frames
+    f=_FIELDS[arrangement]
+    prop=('reference_orientation' if kind=='axes' else 'reference_location')
+    layout.prop(settings,prop,text='Orientation' if kind=='axes' else 'Location')
+    mode=_visible(settings,kind,arrangement,frame)
+    if mode in {'OBJECT','REFERENCE','PARENT'}:
+        if frame:
+            layout.prop(settings,'rotation_source' if kind=='axes' else 'position_source',text='Child Object' if mode=='PARENT' else 'Object')
+        elif mode!='PARENT':layout.prop(settings,f['axes_object' if kind=='axes' else 'origin_object'],text='Object')
+        if mode=='PARENT':
+            from .trace import draw_parent_label
+            source=getattr(settings,'rotation_source' if kind=='axes' else 'position_source') if frame else bpy.context.active_object
+            draw_parent_label(layout,source)
+    elif mode in {'SAVED','FRAME'}:
+        row=layout.row(align=True)
+        name=('rotation_frame' if kind=='axes' else 'position_frame') if frame else f['axes_frame' if kind=='axes' else 'origin_frame']
+        row.prop(settings,name,text='Frame')
+        if not frame:row.operator('better_item.new_frame',text='',icon='ADD').target=('ALIGN_' if arrangement else '')+('AXES' if kind=='axes' else 'ORIGIN')
+    elif mode=='NATIVE':
+        layout.prop(settings,'native_source' if frame else 'reference_native',text='Name')
+        if frame:layout.operator('better_item.native_frame',text='Use Viewport Custom Orientation').action='SOURCE'
+        else:layout.operator('better_item.reference_native',text='Use Viewport Custom Orientation').arrangement=arrangement
+    if mode=='INDIVIDUAL_ORIGINS':layout.label(text='Single reference: active origin.')
+
+
 def draw(layout,settings,arrangement=False):
     f=_FIELDS[arrangement]
-    box=layout.box()
-    box.label(text='Reference')
+    box=layout.box();box.label(text='Reference')
     box.row(align=True).prop(settings,f['mode'],expand=True)
     if getattr(settings,f['mode'])=='FRAME':
-        row=box.row(align=True)
-        row.prop(settings,f['frame'],text='')
+        row=box.row(align=True);row.prop(settings,f['frame'],text='')
         row.operator('better_item.new_frame',text='',icon='ADD').target='ALIGN_BOTH' if arrangement else 'BOTH'
         return
-    box.prop(settings,'reference_orientation',text='Orientation')
-    mode=getattr(settings,f['axes'])
-    if mode=='REFERENCE':box.prop(settings,f['axes_object'],text='Object')
-    elif mode=='SAVED':
-        row=box.row(align=True)
-        row.prop(settings,f['axes_frame'],text='Frame')
-        row.operator('better_item.new_frame',text='',icon='ADD').target='ALIGN_AXES' if arrangement else 'AXES'
-    elif mode=='NATIVE':
-        box.label(text='Source: '+settings.reference_native)
-        box.prop(bpy.context.scene.transform_orientation_slots[0],'type',text='Viewport')
-        box.operator('better_item.reference_native',text='Use Viewport Choice').arrangement=arrangement
-    if mode=='PARENT':
-        from .trace import draw_parent_label
-        draw_parent_label(box,bpy.context.active_object)
-    box.prop(settings,'reference_location',text='Location')
-    mode=_location_mode(settings,arrangement)
-    if mode=='PARENT' and getattr(settings,f['axes'])!='PARENT':
-        from .trace import draw_parent_label
-        draw_parent_label(box,bpy.context.active_object)
-    if mode=='OBJECT':
-        name=f['axes_object'] if arrangement and settings.arrange_origin=='MATCH' else f['origin_object']
-        box.prop(settings,name,text='Object')
-    elif mode=='FRAME':
-        row=box.row(align=True)
-        name=f['axes_frame'] if arrangement and settings.arrange_origin=='MATCH' else f['origin_frame']
-        row.prop(settings,name,text='Frame')
-        row.operator('better_item.new_frame',text='',icon='ADD').target='ALIGN_ORIGIN' if arrangement else 'ORIGIN'
-    elif mode in {'PIVOT','ACTIVE'}:box.prop(settings,'reference_pivot',text='Pivot')
+    draw_component(box,settings,'axes',arrangement)
+    draw_component(box,settings,'origin',arrangement)
 
 
 def migrate(scene):
     settings=scene.better_item
-    if settings.get('reference_schema',0)>=2:return
+    if settings.get('reference_schema',0)>=2:
+        _migrate_visible(scene)
+        return
     # Before 1.4.2, an absent arrangement origin meant Match Axes. Resolve it
     # once, keeping the stored axes and origin independent from then onward.
     if settings.get('arrange_origin',0)==0:
@@ -146,6 +233,36 @@ def migrate(scene):
             settings.reference_pivot='ACTIVE_ELEMENT'
         else:settings.arrange_origin=mode
     settings['reference_schema']=2
+    _migrate_visible(scene)
+
+
+def _migrate_visible(scene):
+    """Resolve retired shortcuts once; keep actual axes/pivots in old files."""
+    from . import frames
+    owners=[(scene.better_item,True,None)]+[(o.better_item,False,o) for o in scene.objects]
+    for settings,arrangement,obj in owners:
+        if settings.get('reference_ui_schema',0)>=1:continue
+        f=_FIELDS[arrangement]
+        with bpy.context.temp_override(scene=scene,view_layer=scene.view_layers[0]):
+            bpy.context.view_layer.update()
+            active=obj or bpy.context.active_object
+            mode=getattr(settings,f['axes'])
+            if mode in {'LOCAL','VIEWPORT'}:
+                try:matrix=orientation.rotation(active) if mode=='LOCAL' else frames.viewport_axes(bpy.context,active)
+                except (BetterItemError,AttributeError,RuntimeError):matrix=Matrix.Identity(3)
+                frame=frames.create(bpy.context,'Imported Orientation - '+(obj.name if obj else scene.name),Vector(),matrix)
+                settings_frame=frame.uid
+                setattr(settings,f['axes_frame'],settings_frame)
+                setattr(settings,f['axes'],'SAVED')
+            if _location_mode(settings,arrangement)=='VIEWPORT':
+                settings.reference_pivot=scene.tool_settings.transform_pivot_point
+                setattr(settings,f['origin'],'PIVOT')
+        settings['reference_ui_schema']=1
+    for frame in scene.better_item.frames:
+        if frame.rotation_mode=='NATIVE' and frame.native_source=='LOCAL':
+            with bpy.context.temp_override(scene=scene,view_layer=scene.view_layers[0]):
+                try:frames.apply_reference(frame,'ROTATION')
+                except BetterItemError:pass
 
 
 class BETTERITEM_OT_reference_native(bpy.types.Operator):
@@ -161,6 +278,8 @@ class BETTERITEM_OT_reference_native(bpy.types.Operator):
         except BetterItemError as exc:
             self.report({'ERROR'},str(exc));return {'CANCELLED'}
         custom=context.scene.transform_orientation_slots[0].custom_orientation
+        if custom is None:
+            self.report({'ERROR'},'Select a custom orientation in the viewport first. Standard axes are listed directly in Orientation.');return {'CANCELLED'}
         if custom:native_refs._custom_cache[(context.scene.as_pointer(),name)]=custom.matrix.copy()
         settings.reference_native=name
         return {'FINISHED'}

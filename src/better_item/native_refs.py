@@ -325,6 +325,8 @@ class BETTERITEM_OT_native_frame(bpy.types.Operator):
             if not 0<=settings.active_frame<len(settings.frames):raise BetterItemError('Choose a frame.')
             frame=settings.frames[settings.active_frame]
             if self.action=='SOURCE':
+                if context.scene.transform_orientation_slots[0].custom_orientation is None:
+                    raise BetterItemError('Select a custom orientation in the viewport first. Standard axes are listed directly in Orientation.')
                 previous=frame.native_source
                 frame.native_source=context.scene.transform_orientation_slots[0].type
                 custom=context.scene.transform_orientation_slots[0].custom_orientation

@@ -1,21 +1,21 @@
-# Better Item 1.5.0
+# Better Item 1.5.1
 
 A live Transform panel for Blender 5.0+, tested in Blender 5.2.3 LTS. GPL-3.0-or-later. Author: Gabriel Webber do Nascimento.
 
 ## Installation
 
-Download `addons/better_item-1.5.0.zip` from the repository. In Blender use **Edit > Preferences > Add-ons > Install from Disk**, choose that ZIP, enable Better Item, and restart Blender after an update. Open **N > Better Item** in Object Mode. The repository ZIP is not the extension package.
+Download `addons/better_item-1.5.1.zip` from the repository. In Blender use **Edit > Preferences > Add-ons > Install from Disk**, choose that ZIP, enable Better Item, and restart Blender after an update. Open **N > Better Item** in Object Mode. The repository ZIP is not the extension package.
 
 ## One live Transform panel
 
 The panel keeps Blender's familiar **Location**, **Rotation**, **Scale** and **Dimensions** names and compact stacked XYZ fields. There are no separate native/incremental panels and no Apply buttons for object transformations. Drag a number or enter a value: the active object updates immediately.
 
-- **Reference > Individual > Orientation** chooses Global, Local, another Object, Viewport, a Saved Frame, Normal, Gimbal, View, Cursor, Parent, or a named Native Orientation. Both Transform and Align and Distribute offer the same choices and use the same resolver. Parent selects the direct parent's scale-free world axes, or Global when the target has no parent.
-- **Reference > Individual > Location** chooses Global (world origin), Viewport Pivot, a Saved Frame, another Object, 3D Cursor, an explicit native Pivot such as Bounding Box Center, Median Point, Active Element or Individual Origins, or Parent (the direct parent's world origin, with a World fallback).
+- **Reference > Individual > Orientation** lists Global, Frame, Object, Parent, Normal, Gimbal, View, 3D Cursor and Custom Orientation. Native entries use Blender's familiar icons. Custom Orientation... explicitly opens a named source field; type an existing native orientation's name or capture the viewport's selected custom orientation with the adjacent button.
+- **Reference > Individual > Location** lists Global, Frame, Object, Parent, Bounding Box Center, 3D Cursor, Individual Origins, Median Point and Active Element. All pivot choices appear directly, with native icons; no nested Pivot selector or Viewport Pivot alias.
 - **Location** is the object's world origin expressed in the chosen axes, relative to the chosen origin.
 - **Rotation** is the object's orientation relative to the chosen axes. The display supports the six Euler orders, independently of the object's underlying rotation storage mode.
 - **Dimensions** is the distance between extreme evaluated vertices along each chosen axis. It is not the projection of the object's local bounding box. Modifiers are included in the measurement.
-- **Scale** always shows the object's native Scale. It is read-only when external/reference axes or a non-global origin are selected. In Global/Local axes with Global origin, it remains editable.
+- **Scale** always shows the object's native Scale. It is read-only when external/reference axes or a non-global origin are selected. In Global axes with Global origin, it remains editable.
 
 Changing axes or origin only changes the readings. It never moves, rotates or resizes the object. Changing only the origin changes Location, without changing Rotation or Dimensions. Dimensions is shown as Unavailable on object types without convertible surface geometry, including Empty, Camera, Light, Armature, Lattice and Grease Pencil; their other transform fields remain usable.
 
@@ -52,7 +52,7 @@ The ordinary display proxies remain non-animatable. Use their group diamond rath
 
 An owned scene frame named `Animation Reference - <object>` records the binding. It is hidden as a viewport indicator by default, but remains visible/editable in Reference Frames. The main reference picker and Euler display order are locked during live animation so accidental readout changes cannot reinterpret an authored clip. Pause to change the reference or order. Restarting with a different reference intentionally reinterprets existing relative keys; bake first if the old world motion must be preserved.
 
-Object, Parent, Cursor, named native custom orientations and context-independent saved-frame components stay live. Local axes, View/Viewport, Gimbal/Normal and selection-dependent pivots are captured at activation when their evaluation would otherwise depend on editor context, the active object or current selection. Blender does not permit native keyframes on the 3D Cursor; its manual or pre-handler script changes remain live. Use an Object controller for a keyframed reference. A public frame that later changes into a context-dependent source requires pausing/restarting to capture the new base. Relative Animation keys a pose (position and orientation); Reference Pivot orbit editing is disabled while active. Animate Location as well as Rotation to author an orbit. Native G/R edits on owned channels are overwritten by relative evaluation; edit the relative fields or the controller instead.
+Object, Parent, Cursor, named native custom orientations and context-independent saved-frame components stay live. View, Gimbal/Normal and selection-dependent pivots are captured at activation when their evaluation would otherwise depend on editor context, the active object or current selection. Blender does not permit native keyframes on the 3D Cursor; its manual or pre-handler script changes remain live. Use an Object controller for a keyframed reference. A public frame that later changes into a context-dependent source requires pausing/restarting to capture the new base. Relative Animation keys a pose (position and orientation); Reference Pivot orbit editing is disabled while active. Animate Location as well as Rotation to author an orbit. Native G/R edits on owned channels are overwritten by relative evaluation; edit the relative fields or the controller instead.
 
 The frame-change handler reads Blender's evaluated dependency graph for the current playback or render frame. A guarded timer also refreshes reference changes at the same timeline frame. It does not run viewport pose updates during a render. Starting Relative Animation enables Render > Lock Interface for Blender's handler/render data-safety requirement. This render setting stays enabled until changed by the user or undone with the start operation. A private zero-valued dependency driver tells Blender to evaluate reference controllers even when hidden or excluded from the rendered collection; it does not drive native pose channels. Pause, Bake and unregister remove that bookkeeping driver. A bounded signature cache skips repeated pose writes when inputs and results are unchanged.
 
@@ -90,12 +90,12 @@ Each scene stores named frames with independent world Location and Orientation. 
 
 The panel order is **Reference Frames > Transform > Align and Distribute**.
 
-**New Frame** asks only for a name. Configure its two components afterward with compact source tabs:
+**New Frame** asks only for a name. Configure its two components afterward with exactly the same reference dropdowns as Transform and Align and Distribute, plus Manual for stored frame values:
 
 - **Location:** Manual world coordinates, an Object origin, a native Pivot, the Location of another Frame, World (the world origin), or the Parent of a chosen child object.
 - **Orientation:** Manual world rotation, an Object's axes, a Native transform orientation, another Frame, or the Parent of a chosen child object.
 
-Each Object tab has its own searchable object picker. To get both components from the same object, choose that object twice. A frame may instead follow Object A's position and Object B's rotation, or use a manual component with a linked component. Existing one-source frames are migrated into separate pointers while preserving their links.
+Each Object choice has its own searchable object picker. To get both components from the same object, choose that object twice. A frame may instead follow Object A's position and Object B's rotation, or use a manual component with a linked component. Existing one-source frames are migrated into separate pointers while preserving their links.
 
 **Apply Location / Apply Orientation** copies the current component and makes it Manual. Applying one component leaves the other link intact. Editing manual values changes the frame, never the source object. Select Manual directly to return to the stored manual values; use Apply to keep the currently resolved values.
 
@@ -114,9 +114,11 @@ Frames, names, manual values, separate object pointers, component chains and con
 
 ### Native pivots and orientations
 
-Location's **Pivot** tab offers Bounding Box Center, 3D Cursor, Individual Origins, Median Point and Active Element. These follow the current viewport selection. A single frame has one location: **Individual Origins uses the active object's origin**, because several independent origins cannot be represented by one frame. In Mesh Edit Mode, median/bounds/active pivots use selected elements.
+Location lists the five native pivots directly. These follow the current selection. A single frame has one location: **Individual Origins uses the active object's origin**, because several independent origins cannot be represented by one frame. In Mesh Edit Mode, median/bounds/active pivots use selected elements.
 
-Orientation's **Native** tab can follow Global, Local, Normal, Gimbal, View, Cursor, Parent, or a custom orientation. Choose from the native **Viewport** orientation dropdown, then click **Use Viewport Choice** to link that named orientation to this frame. Changing the viewport's dropdown afterward does not change the stored source selection. Native sources that depend on an object use the current active object. In Object Mode, Normal follows Local, matching Blender. Edit-mode Normal is sampled with Blender's own operator only when selection, geometry or source transforms change, rather than once per frame on every timer tick. View requires an open 3D Viewport. Normal in Edit Mode requires a selection from which Blender can create an orientation.
+Orientation lists native axes directly, except Local, which is intentionally excluded from this reference readout. A Custom Orientation... choice accepts a native custom orientation name or captures the currently selected viewport custom orientation. Changing the viewport's dropdown later does not change that stored source. In Object Mode, Normal follows the native object's axes, matching Blender. Edit-mode Normal is sampled only when its relevant inputs change. View requires an open 3D Viewport.
+
+Old Local and Viewport orientation shortcuts are migrated to a fixed saved frame at load. Old Viewport Pivot choices become the concrete native pivot selected at migration time. Legacy RNA IDs remain readable for .blend/script compatibility, but these retired shortcuts are not presented in the addon UI.
 
 Click **Use Orientation in Viewport** to create/select a native custom orientation named `BI: <frame name>`. It appears in Blender's regular orientation dropdown and works with native **G**, **R** and axis constraints. Its matrix follows the frame while Better Item is enabled, with a 0.2-second refresh. Frame renaming updates its exported orientation and dependent frames. **Remove Native Orientation** ends synchronization and deletes that exported entry. Deleting it from Blender's native orientation menu also ends the export at the next refresh: the add-on clears its native name/status and does not recreate it. The scene frame and its Location/Orientation sources remain available; click Use Orientation in Viewport again to export it explicitly.
 
@@ -132,15 +134,14 @@ Multiple RGB frame indicators can be shown in the viewport. The active frame is 
 
 ## Align and Distribute
 
-Alignment and distribution operate on object origins, using one Frame or independent component references. The Reference section is identical to Transform and always exposes both components. Location supplies the coordinate origin in every mode. For Selection Bounds and Key Object, translating that coordinate origin cancels out of the result; Reference Origin uses it as the actual alignment/spacing anchor:
+Alignment and distribution use object origins and the same Reference section as Transform. There is no separate Align To dropdown.
 
-- **Global**, **Active Local**, a chosen **Object**, a **Saved Frame**, or the current **Viewport** orientation.
-- Saved Frame pickers include the same **+** creation shortcut as Transform.
-- **Selection Bounds (Origins):** align to Min, Center or Max; distribute between fixed extremes (at least three objects).
-- **Key Object (Active):** align to its fixed origin, or distribute at signed Spacing from it. At least two selected objects are required, including the active key.
-- **Reference Origin:** align to or distribute from the chosen reference origin. At least one target object is required. The origin can match the orientation object/frame or be selected independently: Global, 3D Cursor, another Object, another Saved Frame, or the Viewport Pivot.
+- **Location = Bounding Box Center** (including through a frame) exposes Min/Center/Max alignment of selected origins and equal-interval distribution between their fixed extremes. This arrangement mode measures origin bounds in the chosen axes; the ordinary Transform readout still uses Blender's geometry-based bounding-box pivot.
+- **Other Location choices** align origins to that reference point, or distribute at signed Spacing from it. A selected source object is kept fixed; Active Element reproduces the former key-object anchor. Use Object to select an explicit key object, independent of the active target.
+- The same behavior applies when the Location component comes through one or more frames.
 
-**Reference Origin + On Reference Axis**, with exactly one XYZ axis selected, places all target origins on that reference line, at the entered signed Spacing. For example, choose a rotated object for Orientation and the same object for Location, select X, and enable On Reference Axis. Alternatively select one Frame for both components. Targets are arranged along its rotated X axis. With multiple axes, each axis is distributed independently and the line option is disabled. Without the line option, unselected coordinates are preserved.
+**On Reference Axis**, with exactly one XYZ axis selected and a point reference, places target origins on that reference line. Choose a rotated Object for Orientation and the same Object for Location, or select one Frame for both components.
+Targets are arranged along its rotated X axis. With multiple axes, each axis is distributed independently and the line option is disabled. Without the line option, unselected coordinates are preserved.
 
 This is a straight reference-axis arrangement, not a curved-path constraint. It creates no parenting, constraints or ongoing relationship. Moving the reference later does not move the targets. A selected object that supplies the reference origin stays fixed.
 
@@ -196,7 +197,7 @@ Version and extension description live only in `blender_manifest.toml`; this is 
 
 ## Validation and source
 
-Version 1.5.0 adds playback and interpolation, animated/deleted references, signed Scale and native rotation storage, exact trace accounting, dependency ordering, fresh-process live-animation restoration, actual CPU-render pixel movement, native/affine Dimensions keys, clean native bake playback with the addon unregistered, and a real UI playback/timer/fallback test. Earlier reference and precision regressions remain in the suite.
+Version 1.5.1 unifies the visible reference choices and frame editor, removes redundant selectors, adds native icons and migrates retired reference shortcuts. Version 1.5.0 added playback and interpolation, animated/deleted references, signed Scale and native rotation storage, exact trace accounting, dependency ordering, fresh-process live-animation restoration, actual CPU-render pixel movement, native/affine Dimensions keys, clean native bake playback with the addon unregistered, and a real UI playback/timer/fallback test. Earlier reference and precision regressions remain in the suite.
 
 Development tests are in the [GitHub repository](https://github.com/Borbofruto/Blender-Plugins/tree/main/tests/better_item), not inside the installable add-on ZIP. The ZIP contains runtime source, its manifest, license and this manual.
 

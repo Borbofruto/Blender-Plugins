@@ -28,14 +28,22 @@ def _frame_origin(scene,uid):
     return frames.frame_origin(frame),frames.position_reference_object(frame,scene)
 
 
+def operation_reference(context):
+    from . import references
+    return 'SELECTION' if references.location_kind(context,context.scene.better_item,True)=='BOUNDING_BOX_CENTER' else 'REFERENCE'
+
+
 def reference_frame(context,reference=None):
     from . import references
     settings=context.scene.better_item
     active=context.active_object or next(iter(context.selected_objects),None)
-    anchor=(reference if reference is not None else settings.reference)=='REFERENCE'
+    reference=settings.reference if reference is None else (operation_reference(context) if reference=='AUTO' else reference)
+    anchor=reference=='REFERENCE'
     try:
         axes=references.axes(context,settings,active,True)
-        try:origin,source=references.origin(context,settings,active,True)
+        try:
+            origin,source=references.origin(context,settings,active,True)
+            if source is None and getattr(context,'mode','OBJECT')=='OBJECT' and references.location_kind(context,settings,True) in {'ACTIVE_ELEMENT','INDIVIDUAL_ORIGINS'}:source=active
         except BetterItemError:
             if anchor:raise
             # An unused origin must not block an orientation-only operation.
@@ -94,7 +102,8 @@ def _coordinate_conflicts(coordinates,axes,minimum):
 
 
 def distribution_verifier(context,axes,reference,minimum_mm):
-    # Capture axes/origin before movement, including moving viewport pivots.
+    reference=operation_reference(context) if reference=='AUTO' else reference
+    # Capture axes/origin before movement, including selection-derived pivots.
     basis,origin,_=reference_frame(context,reference)
     minimum=minimum_mm/_mm_per_unit(context.scene)
     def verify(objects):
@@ -108,13 +117,14 @@ def distribution_verifier(context,axes,reference,minimum_mm):
 
 
 def plan(context,objects,origins,axes,reference,*,mode='CENTER',spacing=None,minimum_mm=0.00001):
+    reference=operation_reference(context) if reference=='AUTO' else reference
     if not any(axes):raise BetterItemError('[BI-A001] Select at least one arrangement axis: X, Y or Z.')
     distributing=spacing is not None
     required=1 if reference=='REFERENCE' else (3 if distributing and reference=='SELECTION' else 2)
     if len(objects)<required:
         raise BetterItemError('[BI-A003] Select at least %s objects for this operation.' % required)
     if reference not in {'SELECTION','KEY','REFERENCE'}:
-        raise BetterItemError('[BI-A004] Choose a valid Align To reference.')
+        raise BetterItemError('[BI-A004] Choose a valid Location reference.')
     basis,origin,source=reference_frame(context,reference)
     try:coordinates={name:tuple(np.linalg.solve(basis,np.asarray(value,dtype=np.float64)-origin)) for name,value in origins.items()}
     except np.linalg.LinAlgError as exc:raise BetterItemError('[BI-A002] Reference axes are singular.') from exc

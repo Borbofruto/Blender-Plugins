@@ -2,11 +2,19 @@
 
 Installable extension ZIPs are in [`addons/`](addons); sources are in [`src/`](src). Install an individual add-on ZIP with Blender's **Install from Disk**, not the repository ZIP.
 
-## Better Item 1.5.0
+## Better Item 1.5.1
 
-[Download ZIP](https://github.com/Borbofruto/Blender-Plugins/raw/refs/heads/main/addons/better_item-1.5.0.zip) | [Manual](src/better_item/README.md) | [Source](src/better_item) | [Tests](tests/better_item)
+[Download ZIP](https://github.com/Borbofruto/Blender-Plugins/raw/refs/heads/main/addons/better_item-1.5.1.zip) | [Manual](src/better_item/README.md) | [Source](src/better_item) | [Tests](tests/better_item)
 
 Panel order: **Reference Frames > Transform > Align and Distribute**. Compact English Location, Rotation, Scale and Dimensions fields support live edits and proportional XYZ links. Transform and Align and Distribute share the full **Reference: Individual / Frame** system.
+
+### Reference UI revision in 1.5.1
+
+Transform, Align and Distribute, and the frame editor use the same component selectors. Location directly lists Global, Frame, Object, Parent and all five native pivots, with familiar native icons. Orientation lists the supported native axes and addon sources directly. Local and Viewport shortcuts are excluded from these readouts; Custom Orientation... explicitly opens a named source field. Frames add only Manual storage, keeping Location and Orientation independent.
+
+Align and Distribute has no extra Align To selector. Bounding Box Center exposes origin-bound Min/Center/Max and fixed-extreme distribution; other Location choices anchor alignment and signed Spacing to the chosen point. Active Element keeps the active selected source fixed. Frame pointers inherit their Location component's behavior.
+
+Older Local/Viewport orientation choices migrate to a fixed saved orientation; Viewport Pivot becomes the concrete selected native pivot. Validation covers 81 reference combinations, all three rendered panels, matching component controls, source parity, point/bounds arrangements, old-file migration and save/reopen. Runtime animation behavior is unchanged by this revision.
 
 ### Relative animation
 
@@ -30,7 +38,7 @@ New Frame asks only for a name. Edit Location and Orientation independently with
 
 ### Validation
 
-Tested in Blender 5.2.3 LTS: real UI playback and same-frame reference changes; animated/deleted controllers; native orientation deletion; fresh-process save/reopen; signed Scale, Delta and parented rotation storage; native bake with the addon unregistered; native/affine Dimensions keying; and actual CPU render pixel movement with a hidden controller in an excluded collection. Earlier coverage includes 1,500 locked-parent roundoff cases, 77 reference combinations, 630 arrangements and 128 signed-scale rotation cases.
+Tested in Blender 5.2.3 LTS: real UI playback and same-frame reference changes; animated/deleted controllers; native orientation deletion; fresh-process save/reopen; signed Scale, Delta and parented rotation storage; native bake with the addon unregistered; native/affine Dimensions keying; and actual CPU render pixel movement with a hidden controller in an excluded collection. Earlier coverage includes 1,500 locked-parent roundoff cases, 81 reference combinations, 630 arrangements and 128 signed-scale rotation cases.
 
 The runtime ZIP contains source, manifest, license and manual; development tests stay in the repository. Minimum Blender 5.0. Restart Blender after updating, then open **N > Better Item**.
 
