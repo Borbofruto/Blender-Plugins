@@ -325,10 +325,15 @@ def edit_component(context,obj,group,axis,value):
     if group=='SCALE':
         if not scale_editable(obj):raise BetterItemError('Scale shows native values and is read-only in reference modes.')
         return engine.edit_scale_component(obj,axis,value)
-    before=values(context,obj,group)
+    if group=='LOCATION':
+        before,uncertainty=frames.position_values(context,obj)
+        denominator_tolerance=uncertainty[axis]
+    else:
+        before=values(context,obj,group)
+        denominator_tolerance=0.
     links=getattr(obj.better_item,engine.GROUP_LINK[group])
-    desired=linked_values(before,axis,value,links,zero_angle_as_turn=group=='ROTATION')
-    if not any(engine.different(a,b) for a,b in zip(before,desired)):return
+    desired=linked_values(before,axis,value,links,zero_angle_as_turn=group=='ROTATION',denominator_tolerance=denominator_tolerance)
+    if (before==desired if group=='LOCATION' else not any(engine.different(a,b) for a,b in zip(before,desired))):return
     if group=='LOCATION':
         return frames.set_position(context,obj,desired)
     if group=='ROTATION':return set_rotation(context,obj,desired)

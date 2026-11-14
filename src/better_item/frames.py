@@ -2,6 +2,7 @@
 """Scene-owned reference frames; object pointers are sources, never constraints."""
 import uuid
 import bpy
+import numpy as np
 from mathutils import Matrix, Vector, Euler
 from .math_core import BetterItemError
 from . import native_refs,references
@@ -113,9 +114,9 @@ def object_origin(context,obj):
 
 
 def relative_values(context, obj, kind):
-    axes = object_axes(context, obj)
     if kind == 'POSITION':
-        return tuple(axes.inverted() @ (obj.matrix_world.translation-object_origin(context, obj)))
+        return position_values(context,obj)[0]
+    axes = object_axes(context, obj)
     from .native_refs import rotation_basis
     from .orientation import rotation as object_rotation
     rotation = rotation_basis(axes).transposed() @ object_rotation(obj)
@@ -133,11 +134,52 @@ def relative_values(context, obj, kind):
     return tuple(0. if abs(v)<1e-7 else v for v in rotation.to_euler(order))
 
 
+def _position_sample(context,obj):
+    """Resolve coordinates in float64, retaining Blender's stored float32 inputs.
+
+    The error budget bounds world evaluation and subtraction near a remote
+    origin. It is not a fixed snap distance, nor a user-selected unit threshold.
+    """
+    from . import engine
+    axes=np.asarray(object_axes(context,obj),dtype=np.float64)
+    origin=np.asarray(object_origin(context,obj),dtype=np.float64)
+    world=np.asarray(obj.matrix_world,dtype=np.float64)
+    try:inverse=np.linalg.inv(axes)
+    except np.linalg.LinAlgError as exc:
+        raise BetterItemError('[BI-F005] Reference axes are singular.') from exc
+    values=inverse @ (world[:3,3]-origin)
+    origin_ulp=np.abs(np.spacing(origin.astype(np.float32))).astype(np.float64)/2
+    world_error=engine._world_roundoff(obj,world[:3,3])+origin_ulp
+    arithmetic=8*np.finfo(np.float64).eps*(np.abs(world[:3,3])+np.abs(origin)+np.abs(axes) @ np.abs(values))
+    uncertainty=np.abs(inverse) @ (world_error+arithmetic)
+    signature=tuple(world.ravel())+tuple(axes.ravel())+tuple(origin)+tuple(obj.location)+tuple(obj.delta_location)
+    return values,uncertainty,signature
+
+
+def position_values(context,obj):
+    values,uncertainty,signature=_position_sample(context,obj)
+    settings=obj.better_item
+    # Only an explicitly requested and verified zero gets an exact zero readout.
+    # Moving either the target or its resolved reference invalidates this hint.
+    if tuple(settings.get('view_location_zero_signature',()))==signature:
+        mask=settings.get('view_location_zero_mask',())
+        for axis,zero in enumerate(mask):
+            if axis<3 and zero and abs(values[axis])<=uncertainty[axis]:values[axis]=0.
+    return tuple(values),tuple(uncertainty)
+
+
 def set_position(context, obj, values):
     from . import engine
     context.view_layer.update()
-    target=object_origin(context,obj)+object_axes(context,obj) @ Vector(values)
-    return engine.apply_world_positions([obj],{obj.name:tuple(target)})
+    # Avoid rounding the reference-to-world conversion before the native solve.
+    target=np.asarray(object_origin(context,obj),dtype=np.float64)+np.asarray(object_axes(context,obj),dtype=np.float64) @ np.asarray(values,dtype=np.float64)
+    sample=[]
+    result=engine.apply_world_positions([obj],{obj.name:tuple(target)},
+        verify=lambda objects:sample.append(_position_sample(context,obj)))
+    actual,uncertainty,signature=sample[0]
+    obj.better_item['view_location_zero_signature']=signature
+    obj.better_item['view_location_zero_mask']=[int(value==0 and abs(actual[i])<=uncertainty[i]) for i,value in enumerate(values)]
+    return result
 
 
 def create(context, name, origin, axes, source=None, *, follow_position=None,follow_rotation=None):

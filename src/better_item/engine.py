@@ -132,8 +132,7 @@ def apply_world_positions(objects,targets,*,verify=None):
     try:
         for obj in sorted(objects,key=lambda item:(_depth(item),item.name)):
             bpy.context.view_layer.update()
-            delta=Vector(targets[obj.name])-obj.matrix_world.translation
-            if all(not different(component,0) for component in delta):
+            if tuple(targets[obj.name])==tuple(obj.matrix_world.translation):
                 continue
             editable(obj)
             constraints=[constraint.name for constraint in obj.constraints if not constraint.mute and constraint.influence!=0]

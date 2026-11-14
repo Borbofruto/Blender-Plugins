@@ -17,18 +17,23 @@ def different(a,b):
     return not math.isclose(a,b,rel_tol=1e-9,abs_tol=1e-12)
 
 
-def linked_values(before,axis,value,links,zero_angle_as_turn=False):
+def linked_values(before,axis,value,links,zero_angle_as_turn=False,*,denominator_tolerance=0.):
     before=vector3(before)
     value=float(value)
     if axis not in (0,1,2) or len(links)!=3 or not math.isfinite(value):
         raise BetterItemError('Invalid transform axis or value.')
     result=list(before)
     result[axis]=value
-    if not different(value,before[axis]):
+    if value==before[axis]:
         return tuple(result)
     if links[axis] and sum(bool(v) for v in links)>1:
+        if not zero_angle_as_turn and before[axis]!=0 and abs(before[axis])<=denominator_tolerance:
+            raise BetterItemError('[BI-T008] Cannot define a reliable ratio from %s = %.9g: '
+                'its magnitude is within the Location rounding uncertainty (%.9g Blender units). '
+                'Unlink that axis and set a resolvable nonzero value before linking again.' %
+                ('XYZ'[axis],before[axis],denominator_tolerance))
         if before[axis]==0 and not zero_angle_as_turn:
-            raise BetterItemError('Cannot define a ratio from %s = 0. Unlink that axis first.' % 'XYZ'[axis])
+            raise BetterItemError('[BI-T008] Cannot define a ratio from %s = 0. Unlink that axis first.' % 'XYZ'[axis])
         # Zero is only a denominator fallback for the axis being edited.
         # Other zero angles remain zero, and crossing zero scales to zero.
         denominator=math.tau if zero_angle_as_turn and before[axis]==0 else before[axis]

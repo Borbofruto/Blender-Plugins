@@ -1,10 +1,10 @@
-# Better Item 1.5.5
+# Better Item 1.5.6
 
 A live Transform panel for Blender 5.0+, tested in Blender 5.2.3 LTS. GPL-3.0-or-later. Author: Gabriel Webber do Nascimento.
 
 ## Installation
 
-Download `addons/better_item-1.5.5.zip` from the repository. In Blender use **Edit > Preferences > Add-ons > Install from Disk**, choose that ZIP, enable Better Item, and restart Blender after an update. Open **N > Better Item** in Object Mode. The repository ZIP is not the extension package.
+Download the Better Item extension ZIP from the repository's `addons` directory. In Blender use **Edit > Preferences > Add-ons > Install from Disk**, choose that ZIP and enable Better Item. Open **N > Better Item** in Object Mode. If Blender still has an older module loaded after an update, restart it. The repository ZIP is not the extension package.
 
 ## One live Transform panel
 
@@ -156,6 +156,13 @@ Errors remain visible in the panel with a code and actionable details. Changing 
 | BI-T005 | Singular parent transform |
 | BI-T006 | Evaluated position did not retain the target; residual is reported |
 | BI-T007 | Coordinate exceeds the numeric range |
+| BI-T008 | Proportional denominator is zero or unresolved within Location rounding uncertainty |
+
+### Relative Location zeros and proportional links
+
+Reference Location conversions and the native position solve use double precision before writing Blender's float32 channels. An explicitly requested zero is displayed as exactly zero only after a successful position edit, and only while the evaluated object matrix, resolved origin, resolved axes and native position channels match the verified state. Its raw residual must remain within a magnitude-dependent rounding budget. This records the meaning of an accepted zero; it does not make Blender's stored matrices exact or snap arbitrary small coordinates to zero.
+
+A proportional Location edit rejects a denominator whose magnitude is indistinguishable from zero within that conversion budget, instead of multiplying other axes by an enormous ratio. Unlink the edited axis, set a resolvable nonzero coordinate, then link again. Genuine small coordinates remain measurable and editable when the scene can resolve them. Changing a source, moving the target externally, or switching resolved references invalidates the zero readout hint. Nonzero readouts remain measured, rather than replaced by requested values. No constraints, drivers or animation runtime are created.
 
 When a locked local axis is preserved within the inverse-solve roundoff budget, that accepted error is propagated through the parent linear matrix and included in final world verification. The locked channel remains exactly unchanged; real locked-axis movement and unexpected positioning errors are still rejected.
 

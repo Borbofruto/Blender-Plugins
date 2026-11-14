@@ -2,18 +2,18 @@
 
 Install individual extension ZIPs from [`addons/`](addons) using Blender's **Install from Disk**. Sources are in [`src/`](src), tests in [`tests/`](tests). The repository ZIP is not an addon installer.
 
-## Better Item 1.5.5
+## Better Item 1.5.6
 
-[Download ZIP](https://github.com/Borbofruto/Blender-Plugins/raw/refs/heads/main/addons/better_item-1.5.5.zip) | [Manual](src/better_item/README.md) | [Maintenance audit](docs/better_item/maintenance-1.5.5.md) | [Source](src/better_item) | [Tests](tests/better_item)
+[Download ZIP](https://github.com/Borbofruto/Blender-Plugins/raw/refs/heads/main/addons/better_item-1.5.6.zip) | [Manual](src/better_item/README.md) | [Feedback review and remaining issues](docs/better_item/feedback-1.5.6.md) | [Source](src/better_item) | [Tests](tests/better_item)
 
 A spatial-precision Transform, Reference Frames and Align/Distribute addon for Blender 5.0+, tested in Blender 5.2.3 LTS. Compact English XYZ fields support proportional links, physical projected Dimensions, origin alignment and signed distribution.
 
-### Maintenance revision
+### Relative Location precision fix
 
-- Keep the affine Geometry Nodes solution, but require its owned modifier to be unique, enabled and final before Reference Dimensions edits. Invalid stacks reject without creating, reordering or deleting modifiers. Renamed final modifiers are reused; evaluated measurements remain readable.
-- Remove all active handling of the retired animation prototype: no migration/driver cleanup, legacy warning, playback controller or cache inspection of actions/drivers. Existing authoring data is left untouched. The archived implementation remains separately preserved in [`archive/better_item-animation-1.5.1`](archive/better_item-animation-1.5.1).
-- Simplify measurement cache identity and frame Apply, remove unused helpers/catalogs, replace a historical enum-table slice with an explicit storage extension, and declare frame selectors in the frame class itself. Serialized selector numbers and reference-file migration stay compatible.
-- Label the Reference-mode scale group **Scale (Default)** and clarify Dimensions measurement/center in its tooltip. Correct stale animation documentation and record the review/deferred scope.
+- Use double precision for reference Location conversion before writing native Blender channels.
+- Retain an explicitly requested zero only while the verified target/reference state matches; preserve genuine tiny coordinates and invalidate the readout hint after external changes.
+- Reject zero or numerically unresolved proportional denominators with BI-T008 instead of magnifying rounding noise into enormous linked movements.
+- Keep animation outside the runtime scope. The feedback review separates confirmed remaining issues from unverified claims; this release does not claim to fix every audit item.
 
 ### Current capabilities
 
