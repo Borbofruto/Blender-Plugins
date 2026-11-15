@@ -4,41 +4,25 @@ Install individual extension ZIPs from [`addons/`](addons) using Blender's **Ins
 
 Each addon uses a stable installer filename. Updates replace that file; earlier contents remain available in Git history.
 
-## Better Item 1.6.3
+## Better Item 1.7.0
 
-[Download ZIP](https://github.com/Borbofruto/Blender-Plugins/raw/refs/heads/main/addons/better_item.zip) | [Manual](src/better_item/README.md) | [Reference UI update](docs/better_item/ui-1.6.2.md) | [Review and limitations](docs/better_item/review-1.6.1.md) | [Source](src/better_item) | [Tests](tests/better_item)
+[Download ZIP](https://github.com/Borbofruto/Blender-Plugins/raw/refs/heads/main/addons/better_item.zip) | [Manual](src/better_item/README.md) | [Release report](docs/better_item/release-1.7.0.md) | [Review and limitations](docs/better_item/review-1.6.1.md) | [Source](src/better_item) | [Tests](tests/better_item)
 
 A spatial-precision Transform, Reference Frames and Align/Distribute addon for Blender 5.0+, tested in Blender 5.2.3 LTS. Compact English XYZ fields support proportional links, physical projected Dimensions, origin alignment and signed distribution.
 
-### Reference order in 1.6.3
+### Distribution by references, points and occupied geometry
 
-Location precedes Orientation in Transform, Align and Distribute and the Frame editor. Orientation uses the Gimbal icon beside its label.
+- Explicit Offset / Endpoint. Between Points uses Start-to-End direction; Reference Axis projects End onto one chosen reference axis.
+- Start inherits shared Location or uses an override. End accepts world coordinates, Object, Frame Location, cursor, Global or active object. Selected endpoint objects remain fixed.
+- Origins, Bounds Center, Surface Centroid, Volume Centroid and Geometry Bounds. Equal point intervals and equal physical gaps are distinct operations; no origin, Scale or Rotation is rewritten.
+- Inspect actual spacing or Mixed. Live Preview starts without movement, replans from the initial selection, and supports Confirm/Cancel with native Undo/Redo. This is not a permanent relationship or animation runtime.
+- Contextual Frame sources are explicit Capture actions; native Bounding Box Center uses origins. The old single-reference Individual Origins choice is retired while legacy saved data remains readable.
 
-### Reference hierarchy in 1.6.2
+[1.7.0 behavior, tests and limitations](docs/better_item/release-1.7.0.md). Tested on Blender 5.2.3 LTS / Windows: 320 Endpoint batches, 140 Offset batches, independent centroid/bounds checks, preview/undo, dependency rollback, fresh-process persistence, legacy-file compatibility and real UI. Existing numerical regressions also pass, including the 9,216-case grid. Declared minimum Blender 5.0 has not been runtime-tested here.
 
-Orientation and Location have category icons beside their labels. Required Object, Frame and Name sources use an indented branch beneath the corresponding choice, with icons kept inside the selection widgets. This shared hierarchy appears in Transform, Align and Distribute and the Frame editor. Reference values and transform calculations are unchanged.
+The sidebar retains Location before Orientation, the Gimbal category icon and indented dependent fields. Frames store independent Manual or linked Location/Orientation and can publish axes to Blender's native custom orientations for G/R. Transform edits the active object; alignment/distribution works on the selection.
 
-### Maintenance in 1.6.1
-
-Clarify Normal/Gimbal absolute Rotation and Object/Gimbal basis semantics; explain signed ordering with examples; classify arrangement input diagnostics; remove an unused import and keep CHANGELOG concise. Preserve valid Gimbal edits and the existing panel layout. See the review for reproduced cases and deferred UI decisions.
-
-### Geometry distribution and orientation alignment
-
-- Choose Origins or Geometry Bounds distribution. Signed Spacing sets direction in both modes; Geometry Bounds uses its magnitude as a physical gap, with zero contact packing in the positive direction. There is no separate Direction selector.
-- Measure evaluated geometry along the reference directions, including rotated objects, offset origins and modifiers. Plan and verify the complete operation, rolling back unsupported or unrepresentable results.
-- Match Reference orientation or Set Rotation on selected Euler components, preserving selected world origins, native Scale and the orientation key.
-- Keep minimum separation in collapsed Solver Settings. Pending configuration is neutral; actionable warnings and unexpected failures have separate presentation, with technical codes in Details.
-- Runtime tested in Blender 5.2.3 LTS on Windows: 168 geometry combinations, 72 orientation batches (288 targets), real sidebar interaction and prior numerical regressions. See the release report for limitations.
-
-### Current capabilities
-
-**Default / Local** shows actual Item channels; **Reference** measures and edits with independent Location/Orientation choices or one saved Frame. Selectors use **Better Item / Default** groups and standard icons. Scale remains native. Reference Dimensions projects evaluated geometry along unit directions and may use a final affine GN modifier when native Scale cannot represent the edit. Location coordinates and exported axes retain their full basis.
-
-Frames store manual or linked components independently. **Use Orientation in Viewport** publishes live native custom axes for G/R; deletion through Blender's menu ends the export. Transform and Align/Distribute use references without adding parenting or constraints. Position alignment operates on origins; distribution supports origins or projected geometry bounds. Orientation alignment is a separate action.
-
-Measurement caches invalidate on frame/subframe evaluation without writing transforms or animation. Normal sampling optimization, constraint flexibility and interactive frame manipulators remain separate future decisions.
-
-Tests cover stack rejection/atomicity, source preservation, stable enum serials, old reference-file migration, old authoring-data isolation, native exports, current UI, cache freshness, physical dimensions and the prior precision/arrangement regressions. If an older module remains loaded after updating, restart Blender. Open **N > Better Item**.
+Install from Disk using the stable ZIP above. Restart Blender if an older module remains loaded. Open **N > Better Item**. The [manual](src/better_item/README.md) covers volume conditions, native precision, unsupported parent/constraint cases, preview lifecycle and migration. No tests or animation prototype are included in the installer.
 
 ## Export Paper Model - Medidas 1.5.1
 

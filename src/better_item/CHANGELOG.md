@@ -1,5 +1,20 @@
 # Better Item — changelog
 
+## 1.7.0
+
+### Added
+- Explicit Offset / Endpoint methods, inherited or overridden Start and independent End sources.
+- Between Points segments and Reference Axis projection, with selected endpoint objects preserved.
+- Bounds Center, Surface Centroid and Volume Centroid placement alongside Origins and Geometry Bounds.
+- Actual spacing inspection and nonpersistent Live Preview with Confirm/Cancel and initial-state replanning.
+
+### Changed
+- Context-dependent Frame sources are capture actions; Transform selection-based Location choices capture independent Frames.
+- Remove Individual Origins from the visible single-reference choices; retain legacy stored values.
+- Make Offset independent of the Location source type. Saved legacy selection-range configurations retain a compatibility path.
+- Match native Object Mode Bounding Box Center to selected origins. Reset deleted Frame choices in endpoint references too.
+- Keep the stable installer filename and the existing animation-free scope.
+
 ## 1.6.3
 
 ### Changed

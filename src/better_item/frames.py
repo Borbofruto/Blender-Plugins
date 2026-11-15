@@ -261,6 +261,8 @@ def clear_missing_choices(scene,removed=None):
     """Reset RNA enum numbers without reading their invalid enum identifiers."""
     valid={0}|{frame.number for frame in scene.better_item.frames if frame.number!=removed}
     owners=[(scene.better_item,('arrange_reference_frame','arrange_frame','arrange_origin_frame'))]
+    if hasattr(scene.better_item,'distribution_start'):
+        owners.extend((source,('frame',)) for source in (scene.better_item.distribution_start,scene.better_item.distribution_end))
     owners.extend((obj.better_item,('reference_frame','orientation_frame','pivot_frame')) for obj in scene.objects)
     owners.extend((frame,('position_frame','rotation_frame')) for frame in scene.better_item.frames)
     for owner,fields in owners:
@@ -461,6 +463,8 @@ class BETTERITEM_PT_frames(bpy.types.Panel):
             box.label(text=label+' (World)')
             references.draw_component(box,frame,'origin' if kind=='position' else 'axes',frame=True)
             mode=getattr(frame,kind+'_mode')
+            if mode=='PIVOT' and frame.position_pivot!='CURSOR' or kind=='rotation' and mode=='NATIVE' and frame.native_source in {'NORMAL','GIMBAL','VIEW'}:
+                box.label(text='Legacy live context. Apply to capture.',icon='INFO')
             valid=True
             try:
                 frame_origin(frame,context) if kind=='position' else frame_axes(frame,context)

@@ -1,4 +1,4 @@
-# Better Item 1.6.3
+# Better Item 1.7.0
 
 A live Transform panel with declared Blender 5.0+ compatibility. Runtime validation for this release used Blender 5.2.3 LTS on Windows; Blender 5.0 and 5.2.4 were not executed. GPL-3.0-or-later. Author: Gabriel Webber do Nascimento.
 
@@ -11,13 +11,13 @@ Download the Better Item extension ZIP from the repository's `addons` directory.
 The panel keeps Blender's familiar **Location**, **Rotation**, **Scale** and **Dimensions** names and compact stacked XYZ fields. There are no separate native/incremental panels and no Apply buttons for object transformations. Drag a number or enter a value: the active object updates immediately.
 
 - **Reference > Individual > Orientation** lists Global, Frame, Object, Normal, Gimbal, View, 3D Cursor and Custom Orientation. Default entries use Blender's familiar icons. Custom Orientation... explicitly opens a named source field; enter the existing custom orientation name. There is no capture-from-viewport control.
-- **Reference > Individual > Location** lists Global, Frame, Object, Bounding Box Center, 3D Cursor, Individual Origins, Median Point and Active Element. All pivot choices appear directly, with native icons; no nested Pivot selector or Viewport Pivot alias.
+- **Reference > Individual > Location** offers Global, Frame, Object and 3D Cursor. Selection-based Location choices in Transform are explicit Capture actions: they create an independent saved Frame. Alignment/distribution can capture selection context at operation start. Individual Origins is no longer offered as a single reference point.
 - **Location** is the object's world origin expressed in the chosen axes, relative to the chosen origin.
 - **Rotation** is the object's orientation relative to the chosen axes. The display supports the six Euler orders, independently of the object's underlying rotation storage mode.
 - **Dimensions** is the physical distance between extreme evaluated vertices projected onto each chosen unit direction. It is not the projection of the object's local bounding box. Modifiers are included in the measurement.
 - **Scale** (labeled **Scale (Default)** in Reference mode) always shows the object's native Scale. It is read-only when external/reference axes or a non-global origin are selected. In Global axes with Global origin, it remains editable.
 
-Changing axes or origin only changes the readings. It never moves, rotates or resizes the object. Changing only the origin changes Location, without changing Rotation or Dimensions. Dimensions is shown as Unavailable on object types without convertible surface geometry, including Empty, Camera, Light, Armature, Lattice and Grease Pencil; their other transform fields remain usable.
+Choosing a normal linked/manual source changes only the readings. A Capture choice stores its current result independently. Changing axes or origin only changes the readings. It never moves, rotates or resizes the object. Changing only the origin changes Location, without changing Rotation or Dimensions. Dimensions is shown as Unavailable on object types without convertible surface geometry, including Empty, Camera, Light, Armature, Lattice and Grease Pencil; their other transform fields remain usable.
 
 Reference choices appear in Location, then Orientation order, including in the Frame editor. Location uses the origin icon and Orientation uses the Gimbal icon beside its label. A required Object, Frame or custom-orientation Name is shown one level below its parent choice, with an indented branch marker. Those child labels have no category icon; source icons remain inside their selector widgets. This hierarchy is shared by Transform, Align and Distribute and the Frame editor.
 
@@ -96,9 +96,9 @@ Frames, names, manual values, separate object pointers, component chains and con
 
 ### Default pivots and custom orientations
 
-Location lists the five native pivots directly. These follow the current selection. A single frame has one location: **Individual Origins uses the active object's origin**, because several independent origins cannot be represented by one frame. In Mesh Edit Mode, median/bounds/active pivots use selected elements.
+Frame Location offers stable Manual, Global, Object, Frame and 3D Cursor sources. Selection-dependent Median Point, Bounding Box Center and Active Element are Capture actions that store a Manual point. In Mesh Edit Mode those actions capture selected elements. Individual Origins is not offered as a single frame Location; legacy sources can be applied manually.
 
-Orientation lists native axes directly, except Local, which is intentionally excluded from this reference readout. A Custom Orientation... choice accepts a native custom orientation name by explicit name. Changing the viewport's dropdown later does not change that stored source. In Object Mode, Normal follows the native object's axes, matching Blender. Edit-mode Normal is sampled only when its relevant inputs change. View requires an open 3D Viewport.
+Transform/Arrangement Orientation lists native axes directly, except Local, which is intentionally excluded from this reference readout. In the Frame editor, Normal/Gimbal/View choices are Capture actions rather than continuing context links. A Custom Orientation... choice accepts a native custom orientation name by explicit name. Changing the viewport's dropdown later does not change that stored source. In Object Mode, Normal follows the native object's axes, matching Blender. Edit-mode Normal is sampled only when its relevant inputs change. View requires an open 3D Viewport.
 
 Old Local and Viewport orientation shortcuts are migrated to a fixed saved frame at load. Old Viewport Pivot choices become the concrete native pivot selected at migration time. Legacy RNA IDs remain readable for .blend/script compatibility, but these retired shortcuts are not presented in the addon UI.
 
@@ -118,55 +118,67 @@ Multiple RGB frame indicators can be shown in the viewport. The active frame is 
 
 ## Align and Distribute
 
-The panel uses the same independent Location/Orientation or saved Frame reference controls as Transform. Move Axes selects positional axes for alignment/distribution. Rotation components are selected separately inside Set Rotation.
+The panel retains Location before Orientation, with indented source fields. Alignment and Offset use the shared references. Endpoint / Between Points uses the inherited Location only as Start, or an explicitly overridden Start; it does not consume the shared Orientation or Move axes.
 
-### Position alignment
+### Position and orientation alignment
 
-Alignment > Position retains origin alignment. Bounding Box Center (including through Frames) exposes Min/Center/Max of selected origin coordinates. Other Location references align origins to the reference point. A selected object supplying that point stays fixed.
+Position alignment uses origins. Selection-derived Bounds exposes Min/Center/Max; other references align to their point and keep a selected known source fixed. Match Reference / Set Rotation retains the six Euler orders, selected component masks, signed native Scale and selected world positions. Parents are processed first and unsupported rigid rotations reject atomically. Distribution changes neither per-object Transform reference settings nor source mesh data.
 
-### Orientation alignment
+### Distribution method
 
-Alignment > Orientation operates on the selection and preserves each selected world origin and signed native Scale:
+- **Offset:** signed Spacing in the shared reference axes. Positive goes positive; negative goes negative. No Direction selector. Choose one axis or multiple independent axes. On Reference Axis puts placement points on the chosen single reference line.
+- **Endpoint / Between Points:** Start and End define a 3D segment and its direction. No external Orientation is required. Start uses shared Location by default; Override Start gives it a separate Location source.
+- **Endpoint / Reference Axis:** projects End onto exactly one Move axis through Start. This explicitly uses the shared Orientation. An endpoint object can be off that line; its position is used as an axial limit, and it is not moved.
 
-- Match Reference matches the full rotational component of the reference axes.
-- Set Rotation changes only the enabled reference-space Euler components, in the explicitly chosen Euler order. Disabled components are planned from each object's original rotation before the batch starts.
+Start/End accept world XYZ Manual coordinates, Global, a chosen Object, saved Frame Location, 3D Cursor or the operation's Active Object. A Frame's unused Orientation may be missing without blocking its valid Location. End does not acquire an Orientation of its own.
 
-The known object providing the Orientation reference stays fixed in world orientation/position when selected with the targets. Location does not need to be configured for orientation alignment. Per-object Transform reference settings and numeric hints are not overwritten.
+### Placement basis
 
-Axes are captured once before a batch; no continuing relationship is created. Selected parents are processed before children and the whole selection rolls back if any required edit fails. Unselected children follow their parents normally. Nonuniform parent transforms may prevent a rigid rotation and cause a diagnostic rejection. Oblique/reflected reference axes use their rotational component, with a contextual note in the panel. This release does not implement angular minimum/maximum/mean or single-vector direction matching.
+| Basis | Contract |
+|---|---|
+| Origins | Use the existing native origin point. |
+| Bounds Center | Use the center of evaluated world-axis-aligned geometric bounds; do not change the native origin. |
+| Surface Centroid | Area-weighted center of the evaluated triangulated surface, including world deformation. Loose vertices have no surface weight. |
+| Volume Centroid | Uniform-density signed-volume centroid. Requires a nonzero closed volume with consistent triangle orientation. The check rejects open/nonmanifold edge incidence and inconsistent winding, but does not certify absence of self-intersections or physical validity of nested shells. |
+| Geometry Bounds | Use evaluated occupied intervals projected along the distribution direction(s), so physical gaps are equal rather than point intervals. Loose vertices count. |
 
-### Distribution: Origins or Geometry Bounds
+Point bases are supported in both methods. Offset changes point-to-point intervals or physical gaps. In Endpoint, point bases place the first and last points at the effective limits and space the other points evenly. Geometry Bounds instead fits the outer boundaries and computes the gap from available length minus the sum of projected widths, divided by the number of internal gaps. Insufficient space rejects and reports the missing length; nothing is scaled, rotated or compressed.
 
-Origins preserves the existing signed Spacing behavior. Bounding Box Center distributes origins at equal intervals between fixed origin extremes. Other point/object/frame references use signed steps, keeping the selected Location source fixed. Existing files default to Origins and retain their signed spacing.
+Example: widths 100/200/300 mm in a 1,000 mm interval yield a 200 mm geometric gap and, for centered origins, centers at 50/400/850 mm. Origins in the same interval are placed at 0/500/1,000 mm.
 
-Geometry Bounds measures extreme evaluated vertices along the chosen unit reference directions. It uses actual projected minimum/maximum offsets relative to each origin, not just Dimensions divided by two or the object's local box corners. Modifiers and displaced origins are included. Shared meshes, native Scale/Rotation and modifier stacks are left untouched.
+For Geometry Bounds / Between Points, transverse centering uses the evaluated world bounds center. Its axial component is replaced by the actual projected interval midpoint. The representative point is placed on the segment, while the interval sets the gap. This deterministic convention requires no arbitrary roll rotation and changes no object Rotation.
 
-- Spacing is signed in both modes. Positive values pack towards positive selected axes; negative values pack towards negative selected axes. In Geometry Bounds, its magnitude is the physical gap. Zero permits touching projected boundaries and always packs towards positive axes. There is no separate Direction control.
-- An Object Location reference with supported geometry anchors the first target after that object's corresponding outer boundary plus the spacing magnitude. If selected, the reference remains fixed.
-- A point reference (Global, manual Frame, cursor or Empty) anchors the first boundary at that point plus the spacing magnitude.
-- Bounding Box Center packs from the original outer selection boundary in the chosen direction. The opposite endpoint is free to move; Geometry Bounds is not the fixed-extremes Origins algorithm.
-- Ordering uses original origin projections. Relative to a point/key, objects on the opposite side come first, nearest to farthest, then objects on the direction side, nearest to farthest. Each selected axis is ordered independently.
-- On Reference Axis, when exactly one axis is enabled and a point/key reference is used, places origins on that reference line. Otherwise unselected positional information is preserved; for oblique geometry axes, physical projection components are preserved.
+### Endpoint anchors and ordering
 
-For three cubes of side 2, choosing the first cube as the Object Location reference and Spacing = 0 places their origins at 0, 2 and 4 along that axis. Rotated or irregular objects are valid: the guarantee is a gap between projected bounds, not visual contact between arbitrary surfaces or collision-free nesting. Loose vertices count. No mesh cleanup or orientation correction is performed automatically.
+A known endpoint source object selected with the targets is fixed and occupies its first/last point slot. With a geometric point basis, that selected anchor's corresponding geometric point becomes the effective segment endpoint. For Geometry Bounds, selected geometric anchors occupy their existing intervals; the available span runs from the first anchor's outer boundary to the last anchor's outer boundary. This preserves offset origins and native anchor transforms.
 
-The point/key ordering rule applies to both Origins and Geometry Bounds, and intentionally differs from sorting coordinates from negative to positive. For original X = (-5, -1, 2, 7), a Global point reference and positive Spacing process objects in order (-1, -5, 2, 7). Negative Spacing processes them as (2, 7, -1, -5). All moving targets are placed on the side selected by the sign. A selected Object reference remains fixed and is excluded from this order. Selection-bound distribution instead follows coordinate order in the packing direction; Origins mode keeps its two extremes fixed.
+Empty/Camera and other non-geometric source objects remain valid fixed point anchors. In Geometry Bounds they delimit available space but do not consume a geometric piece/gap slot. A selected non-anchor without the geometry required by the chosen basis is rejected. At least two placement slots are required; selecting only two fixed endpoint objects leaves no target to arrange.
 
-Starting origins still need to define an order. Coincident/indistinguishable starts name the objects and axes to separate. Zero spacing does not mean ambiguous initial ordering is accepted. Objects without supported evaluated vertices should use Origins. Unrealized GN instances must be realized first. Geometry or native transforms that change as a function of Location may invalidate a fixed-bound plan; the operation diagnoses and rolls back instead of solving a feedback dependency.
+Offset preserves the requested ordering rule: opposite half-space first, then nearest to farthest within each half-space. Endpoint has no pre-existing axis and orders by the opposite half-space of Start→End, then **spatial distance from Start**. This permits objects initially lying in a plane perpendicular to a new segment. Indistinguishable distances within a half-space name the conflicting objects and require separation; names are not silently used to invent a meaningful order.
 
-Very large coordinates can make even a mathematically valid gap unrepresentable in Blender float32. Final evaluated boundaries and gaps are verified. An unresolved positive gap, unintended overlap or changed geometry rejects and restores all target locations. Verification tolerances are relative to physical extents; exact real-number contact is not promised.
+### Current spacing and Live Preview
 
-### Solver Settings and diagnostics
+Offset inspection includes the anchor-to-first interval, the selected axes and the selected placement basis. A uniform selection displays its measured spacing. Mixed spacing is a normal state and is never represented as a fabricated zero or average. Outside a preview, Set Spacing is an explicit requested value; inside a preview the editable Spacing field reads back the current uniform result. Endpoint intervals/gaps are derived from its references and are read-only.
 
-Solver Settings starts collapsed. Minimum Separation (mm), default 0.00001 mm, identifies distinguishable starting coordinates and remains the minimum signed interval in Origins mode. It does not prohibit Geometry Bounds Spacing = 0. It is converted using Scene Unit Scale.
+**Live Preview** captures a selection without moving it. The first parameter edit normalizes it. Every later edit replans from the original locations and selection, rather than repeatedly reordering the previous result. Confirm retains the current poses; Cancel restores the initial native locations. Invalid edits retain the last valid preview. Selection/external transform changes stop further preview edits until Confirm/Cancel; removed targets can still be cancelled safely. Selection-dependent Median/Bounding Box starts must first be captured into an independent Frame for Live Preview; a one-shot operation can still capture their initial context. Active Object remains valid as a fixed anchor. Only one preview session can be open at a time. Native undo/redo clears the transient session; ordinary resulting transforms remain standard .blend data.
 
-- Setup needed is neutral information: choose an object/frame, select mesh elements, or complete another missing input. Only dependent controls/readouts become unavailable.
-- A refused operation is a warning with a reason and a user action, rather than a critical programming error.
-- Unexpected API/runtime failures are marked as failures; the technical exception belongs in Details for support.
+The session updates on its controls, not on a playback timer. It creates no parenting, constraints, drivers, keyframes or animation runtime. Changing a linked source externally does not establish a permanent arrangement relationship; edit a preview control to recompute, or run a new operation. Preview state is not serialized: reopening a saved file retains the saved ordinary poses, not an ongoing editing session.
 
-Support codes and technical details are collapsed by default. The usual message should explain what to do, without requiring Python knowledge. Empty object pointers do not distinguish a never-selected source from a deleted source; both ask for a valid selection rather than inventing a cause.
+The operator remains REGISTER/UNDO and supports Blender's Adjust Last Operation (F9) for copied method, path, basis, axes and spacing parameters. Source choices are scene settings; changing those inside the sidebar requires a new operation or an active preview rather than pretending F9 owns the sources. Python callers that need undo recording should pass the native undo argument, e.g. `bpy.ops.better_item.distribution_preview('EXEC_DEFAULT', True, action='CONFIRM')`.
 
-Python operator callers must check returned CANCELLED status: user-correctable warnings/INFO need not raise RuntimeError. For background EXEC_DEFAULT distribution, pass mode/axes/spacing explicitly; the real UI INVOKE captures panel settings. Orientation operators retain their copied numeric arguments for redo while references are resolved from the current Scene at each execution.
+### Reference context and compatibility
+
+Individual Origins is removed from visible single-point selectors; legacy stored IDs remain readable. Frame selection-dependent Location choices and Normal/Gimbal/View Orientation choices are labelled **Capture** and store independent Manual values. Explicit Object/Frame links remain live pointers. Old files may retain a legacy contextual Frame source, marked in the editor with Apply available to capture it; no arbitrary replacement source is invented.
+
+Bounding Box Center in Object Mode now matches Blender's origin-based pivot. It differs from Bounds Center placement, which measures each object's evaluated geometry. Context-derived selection points in new Transform choices are captures into independent Frames; they are not continuous self-following editing references.
+
+New Offset operations never switch solvers just because Location is Bounding Box Center. Saved pre-1.7 selection-range configurations retain a marked compatibility path for the old Distribute operation; switch Method to choose the new explicit behavior. Live Preview is unavailable for that legacy range until switched. An explicit shared-source choice also exits that legacy range. The old Python operator SELECTION/KEY/REFERENCE paths remain supported.
+
+### Solver and diagnostics
+
+Solver Settings remains collapsed. Minimum Separation (mm) distinguishes starting positions/distances and valid endpoint lengths, and remains the minimum nonzero Offset point interval. Geometry Bounds allows a zero Offset gap. Units use Scene Unit Scale. Native coordinates remain float32; inverse solves and geometry integration use double precision. Position checks propagate the existing parent/native rounding budget, including cancellation around offset origins. Endpoint gaps and point intervals use relative float32 tolerances scaled by the number of placement slots, without a fixed absolute floor. Positive gaps that collapse to zero and Offset point intervals that cannot retain the requested spacing are rejected.
+
+Unsupported geometry, moving endpoint dependencies, native locks/drivers/constraints and unrepresentable fits reject atomically. Setup needed is neutral, a refused operation is a warning, and unexpected failures have technical Details. These are finite precision guarantees, not a collision solver or a proof that arbitrary meshes are valid solids.
 
 ### Support codes (Details)
 
@@ -186,6 +198,13 @@ Python operator callers must check returned CANCELLED status: user-correctable w
 | BI-D001 | Zero, too-small or invalid spacing/minimum |
 | BI-D002 | Ambiguous starting coordinates; objects and axes are listed |
 | BI-D003 | Native precision collapsed the resulting spacing; the operation is rolled back |
+| BI-E001 | Missing, coincident, reversed or invalid endpoint limits/path |
+| BI-E002 | Geometry does not fit the available interval |
+| BI-E003 | Endpoint placement or gap failed native precision verification |
+| BI-P001 | Placement basis requires supported geometry |
+| BI-P002 | Unresolved/zero surface area or centroid |
+| BI-P003 | Invalid/open/inconsistently oriented or zero volume |
+| BI-L001 | Inactive/changed/legacy preview session |
 | BI-G001 | Geometry Bounds requires supported evaluated geometry |
 | BI-G002 | The physical gap cannot be retained at native coordinate precision |
 | BI-G003 | Evaluated geometry changes during movement |
@@ -249,6 +268,8 @@ The affine stage validates node types, operations, required links, selection/off
 Native Scale and Default/Local edits distinguish driven components: an unrelated driver need not block an independent channel, while edited or unexpectedly changed driven components remain protected. Active constraints are still handled conservatively. The add-on does not add/remove drivers, write keyframes or control playback.
 
 ## Validation and source
+
+Version 1.7.0 adds 320 Endpoint batches and 140 Offset batches across placement bases, endpoint paths, fixed anchors, mirrors, parents and unit scales; contract, dependency, centroid cache, source removal, persistence and native preview undo tests; and a real-sidebar preview test. See [the 1.7.0 report](https://github.com/Borbofruto/Blender-Plugins/blob/main/docs/better_item/release-1.7.0.md) for execution results and limits. Historical tests below are separately identified.
 
 The [1.6.1 review](https://github.com/Borbofruto/Blender-Plugins/blob/main/docs/better_item/review-1.6.1.md) separates confirmed maintenance issues from deliberate behavior and unverified claims. Historical validation paragraphs removed from CHANGELOG are preserved in the repository's documentation history. The installer remains `addons/better_item.zip`; its filename is stable across updates.
 

@@ -156,13 +156,8 @@ def pivot(context,mode,obj=None):
     else:
         if mode=='ACTIVE_ELEMENT':return obj.matrix_world.translation.copy()
         selected=list(context.selected_objects) or [obj]
-        if mode=='MEDIAN_POINT':points=[item.matrix_world.translation.copy() for item in selected]
-        else:
-            graph=context.evaluated_depsgraph_get()
-            for item in selected:
-                evaluated=item.evaluated_get(graph)
-                if all(tuple(c)==(-1,-1,-1) for c in evaluated.bound_box):points.append(evaluated.matrix_world.translation.copy())
-                else:points.extend(evaluated.matrix_world@Vector(c) for c in evaluated.bound_box)
+        # Native Object Mode pivots use selected origins, not mesh bounds.
+        points=[item.matrix_world.translation.copy() for item in selected]
     if not points:raise ReferencePending('[BI-F002] Select mesh elements to define this Location reference.')
     if mode=='MEDIAN_POINT':return sum(points,Vector())/len(points)
     return Vector(tuple((min(p[i] for p in points)+max(p[i] for p in points))/2 for i in range(3)))
@@ -276,6 +271,8 @@ def sync():
         from . import frames
         if _needs_migration:
             frames.migrate()
+            from . import distribution
+            distribution.migrate()
             _needs_migration=False
         live_scenes={scene.as_pointer() for scene in bpy.data.scenes}
         live_names={(scene.as_pointer(),name) for scene in bpy.data.scenes for name in _source_names(scene)}

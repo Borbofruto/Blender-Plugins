@@ -39,7 +39,7 @@ _LOCATION_CHOICES=[
     ('GLOBAL','Global','World origin','WORLD'),
     ('FRAME','Frame','Location component of a saved frame','EMPTY_AXIS'),
     ('OBJECT','Object','Chosen object origin','OBJECT_DATA'),
-    ('BOUNDING_BOX_CENTER','Bounding Box Center','Center of selected geometry bounds','PIVOT_BOUNDBOX'),
+    ('BOUNDING_BOX_CENTER','Bounding Box Center','Center between selected origins in Object Mode','PIVOT_BOUNDBOX'),
     ('CURSOR','3D Cursor','3D Cursor position','PIVOT_CURSOR'),
     ('INDIVIDUAL_ORIGINS','Individual Origins','Active object origin for a single reference point','PIVOT_INDIVIDUAL'),
     ('MEDIAN_POINT','Median Point','Median of the selection','PIVOT_MEDIAN'),
@@ -55,8 +55,13 @@ _ORIENTATION_CHOICES=[
     ('NATIVE','Custom Orientation...','Choose a named custom transform orientation','EMPTY_AXIS')]
 
 
-def _choices(kind,frame=False):
+def _choices(kind,frame=False,arrangement=False):
     values=_ORIENTATION_CHOICES if kind=='axes' else _LOCATION_CHOICES
+    values=[item for item in values if item[0]!='INDIVIDUAL_ORIGINS']
+    if frame or not arrangement and kind=='origin':
+        captures={'BOUNDING_BOX_CENTER','MEDIAN_POINT','ACTIVE_ELEMENT'} if kind=='origin' else {'NORMAL','GIMBAL','VIEW'}
+        values=[(name,'Capture '+label if name in captures else label,
+            'Capture this context into independent manual frame values' if name in captures else description,icon) for name,label,description,icon in values]
     if frame:values=[('MANUAL','Manual','Independent values stored in this frame','EDITMODE_HLT')]+values
     return values
 
@@ -68,18 +73,18 @@ def _visible(settings,kind,arrangement=False,frame=False):
             if mode=='OBJECT':return 'REFERENCE'
             if mode=='FRAME':return 'SAVED'
             if mode=='NATIVE':return settings.native_source if settings.native_source in {'GLOBAL','NORMAL','GIMBAL','VIEW','CURSOR'} else 'NATIVE'
-        elif mode=='PIVOT':return settings.position_pivot
+        elif mode=='PIVOT':return 'ACTIVE_ELEMENT' if settings.position_pivot=='INDIVIDUAL_ORIGINS' else settings.position_pivot
         return mode
     f=_FIELDS[arrangement]
     mode=getattr(settings,f['axes']) if kind=='axes' else _location_mode(settings,arrangement)
     if kind=='origin':
-        if mode=='PIVOT':return settings.reference_pivot
+        if mode=='PIVOT':return 'ACTIVE_ELEMENT' if settings.reference_pivot=='INDIVIDUAL_ORIGINS' else settings.reference_pivot
         if mode=='ACTIVE':return 'ACTIVE_ELEMENT'
     return mode
 
 
 def choice_property(kind,arrangement=False,frame=False):
-    choices=_choices(kind,frame)
+    choices=_choices(kind,frame,arrangement)
     names=[item[0] for item in choices]
     items=[]
     custom={'MANUAL','FRAME','SAVED','OBJECT','REFERENCE','NATIVE'}
@@ -91,7 +96,21 @@ def choice_property(kind,arrangement=False,frame=False):
         return names.index(mode) if mode in names else 0
     def set_value(self,value):
         mode=names[value]
+        if 'reference_capture_error' in self:del self['reference_capture_error']
+        if arrangement and not frame and hasattr(self,'distribution_legacy_range'):
+            self['distribution_schema']=1;self.distribution_legacy_range=False
         if frame:
+            if kind=='origin' and mode in {'BOUNDING_BOX_CENTER','MEDIAN_POINT','ACTIVE_ELEMENT'}:
+                try:value=native_refs.pivot(bpy.context,mode)
+                except BetterItemError as exc:
+                    self['reference_capture_error']=str(exc);self['reference_capture_kind']=kind;self['reference_capture_severity']=exc.severity;return
+                self.position=value;self.position_mode='MANUAL';return
+            if kind=='axes' and mode in {'NORMAL','GIMBAL','VIEW'}:
+                from . import frames
+                try:value=native_refs.orientation(bpy.context,mode)
+                except BetterItemError as exc:
+                    self['reference_capture_error']=str(exc);self['reference_capture_kind']=kind;self['reference_capture_severity']=exc.severity;return
+                frames.store_axes(self,value);self.rotation_mode='MANUAL';return
             if kind=='origin':
                 if mode in {item[0] for item in native_refs.PIVOTS}:
                     self.position_pivot=mode;self.position_mode='PIVOT'
@@ -107,6 +126,13 @@ def choice_property(kind,arrangement=False,frame=False):
                     self.rotation_mode='NATIVE'
         else:
             f=_FIELDS[arrangement]
+            if not arrangement and kind=='origin' and mode in {'BOUNDING_BOX_CENTER','MEDIAN_POINT','ACTIVE_ELEMENT'}:
+                from . import frames
+                try:value=native_refs.pivot(bpy.context,mode)
+                except BetterItemError as exc:
+                    self['reference_capture_error']=str(exc);self['reference_capture_kind']=kind;self['reference_capture_severity']=exc.severity;return
+                captured=frames.create(bpy.context,'Captured '+mode.replace('_',' ').title(),value,Matrix.Identity(3))
+                self.pivot_frame=captured.uid;self.pivot_mode='FRAME';return
             if kind=='origin' and mode in {item[0] for item in native_refs.PIVOTS}:
                 # Keep the dedicated legacy cursor ID, retained for old file compatibility.
                 self.reference_pivot=mode
@@ -196,11 +222,11 @@ def orientation_source_object(context,settings,arrangement=False):
     return native(settings.reference_native if mode=='NATIVE' else mode)
 
 
-def _source_row(layout,label):
+def _source_row(layout,label,connector='└'):
     """One indented continuation of the reference choice immediately above it."""
     row=layout.split(factor=.52,align=True)
     branch=row.split(factor=.32,align=True)
-    branch.label(text='└')
+    branch.label(text=connector)
     branch.label(text=label+':')
     return row.row(align=True)
 
@@ -212,6 +238,9 @@ def draw_component(layout,settings,kind,arrangement=False,frame=False):
     row.label(text='Orientation:' if kind=='axes' else 'Location:',
         icon='ORIENTATION_GIMBAL' if kind=='axes' else 'OBJECT_ORIGIN')
     row.prop(settings,prop,text='')
+    if settings.get('reference_capture_error') and settings.get('reference_capture_kind')==kind:
+        from . import diagnostics
+        diagnostics.draw(layout,BetterItemError(settings['reference_capture_error'],severity=settings.get('reference_capture_severity','WARNING')),settings,configuration=True)
     mode=_visible(settings,kind,arrangement,frame)
     if mode in {'OBJECT','REFERENCE','PARENT'}:
         if frame:

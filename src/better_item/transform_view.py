@@ -11,6 +11,7 @@ from bpy.app.handlers import persistent
 
 _dimension_cache=OrderedDict()
 _geometry_cache=OrderedDict()
+_geometry_revision=0
 _GEOMETRY_CACHE_ENTRIES=8
 _GEOMETRY_CACHE_BYTES=64*1024*1024
 _DIMENSION_CACHE_ENTRIES=32
@@ -22,6 +23,8 @@ def has_surface_geometry(obj):
 
 @persistent
 def clear_cache(_scene=None,_depsgraph=None):
+    global _geometry_revision
+    _geometry_revision+=1
     _dimension_cache.clear()
     _geometry_cache.clear()
 
@@ -33,6 +36,7 @@ def invalidate_geometry(_scene,depsgraph):
     Transform-only updates are handled by the projection key. Translation is
     intentionally absent from that key because it cannot change extents.
     """
+    global _geometry_revision
     updated_objects=set()
     updated_data=set()
     updated_trees=set()
@@ -45,6 +49,7 @@ def invalidate_geometry(_scene,depsgraph):
     if updated_trees:
         for obj in bpy.data.objects:
             if any(mod.type=='NODES' and mod.node_group and _tree_matches(mod.node_group,updated_trees) for mod in obj.modifiers):updated_objects.add(obj.as_pointer())
+    if updated_objects or updated_data or updated_trees:_geometry_revision+=1
     def changed(key):return key[1] in updated_objects or key[2] in updated_data
     for key in list(_geometry_cache):
         if changed(key):del _geometry_cache[key]
