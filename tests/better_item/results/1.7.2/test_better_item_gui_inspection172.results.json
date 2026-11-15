@@ -1,0 +1,6 @@
+{
+  "passed": true,
+  "objects": 600,
+  "stable_timer_redraw_ticks": 5,
+  "full_inspections": 1
+}

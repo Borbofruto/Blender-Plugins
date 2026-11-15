@@ -68,6 +68,7 @@ def _links_changed(self,context):
 
 
 def _arrange_changed(self,context):
+    distribution.clear_inspection()
     arrange.clear_error()
     distribution_preview.update(context)
 
@@ -509,6 +510,7 @@ class BETTERITEM_PT_alignment(bpy.types.Panel):
 def _clear_runtime(_unused):
     _field_errors.clear()
     transform_view.clear_cache()
+    distribution.clear_inspection()
     placement._point_cache.clear()
     arrange.clear_error()
     native_refs.clear_cache()
@@ -532,6 +534,10 @@ def register():
             bpy.types.Scene.better_item=bpy.props.PointerProperty(type=BetterItemSceneSettings)
         for handlers in (bpy.app.handlers.load_post,bpy.app.handlers.undo_post,bpy.app.handlers.redo_post):
             if _clear_runtime not in handlers:handlers.append(_clear_runtime)
+        if distribution.invalidate_inspection not in bpy.app.handlers.depsgraph_update_post:
+            bpy.app.handlers.depsgraph_update_post.append(distribution.invalidate_inspection)
+        if distribution.clear_inspection not in bpy.app.handlers.frame_change_post:
+            bpy.app.handlers.frame_change_post.append(distribution.clear_inspection)
         if transform_view.invalidate_geometry not in bpy.app.handlers.depsgraph_update_post:
             bpy.app.handlers.depsgraph_update_post.append(transform_view.invalidate_geometry)
         if native_refs.invalidate_normal not in bpy.app.handlers.depsgraph_update_post:
@@ -552,6 +558,11 @@ def register():
 def unregister():
     if hasattr(bpy.types.Scene,'better_item') and getattr(bpy.context,'scene',None) and distribution_preview.active(bpy.context.scene):distribution_preview.finish(bpy.context,cancel=True)
     distribution_preview.forget()
+    distribution.clear_inspection()
+    if distribution.invalidate_inspection in bpy.app.handlers.depsgraph_update_post:
+        bpy.app.handlers.depsgraph_update_post.remove(distribution.invalidate_inspection)
+    if distribution.clear_inspection in bpy.app.handlers.frame_change_post:
+        bpy.app.handlers.frame_change_post.remove(distribution.clear_inspection)
     if transform_view.clear_cache in bpy.app.handlers.frame_change_post:
         bpy.app.handlers.frame_change_post.remove(transform_view.clear_cache)
     if bpy.app.timers.is_registered(native_refs.sync):bpy.app.timers.unregister(native_refs.sync)

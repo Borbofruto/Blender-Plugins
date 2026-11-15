@@ -1,0 +1,238 @@
+{
+  "passed": true,
+  "cases": [
+    {
+      "method": "OFFSET",
+      "count": 200,
+      "offset": 100,
+      "spacing": 0.05,
+      "seed": 0,
+      "inspection_state": "UNIFORM",
+      "accepted": true,
+      "max_gap_error": 1.8310546874997224e-05,
+      "expected_gap": 0.05
+    },
+    {
+      "method": "OFFSET",
+      "count": 200,
+      "offset": 100,
+      "spacing": 0.05,
+      "seed": 1,
+      "inspection_state": "UNIFORM",
+      "accepted": true,
+      "max_gap_error": 1.8310546874997224e-05,
+      "expected_gap": 0.05
+    },
+    {
+      "method": "OFFSET",
+      "count": 200,
+      "offset": 100,
+      "spacing": 0.05,
+      "seed": 2,
+      "inspection_state": "UNIFORM",
+      "accepted": true,
+      "max_gap_error": 1.8310546874997224e-05,
+      "expected_gap": 0.05
+    },
+    {
+      "method": "OFFSET",
+      "count": 200,
+      "offset": 100,
+      "spacing": 0.2,
+      "seed": 0,
+      "inspection_state": "UNIFORM",
+      "accepted": true,
+      "max_gap_error": 4.88281250000111e-05,
+      "expected_gap": 0.2
+    },
+    {
+      "method": "OFFSET",
+      "count": 200,
+      "offset": 100,
+      "spacing": 0.2,
+      "seed": 1,
+      "inspection_state": "UNIFORM",
+      "accepted": true,
+      "max_gap_error": 4.88281250000111e-05,
+      "expected_gap": 0.2
+    },
+    {
+      "method": "OFFSET",
+      "count": 200,
+      "offset": 100,
+      "spacing": 0.2,
+      "seed": 2,
+      "inspection_state": "UNIFORM",
+      "accepted": true,
+      "max_gap_error": 4.88281250000111e-05,
+      "expected_gap": 0.2
+    },
+    {
+      "method": "OFFSET",
+      "count": 200,
+      "offset": 100,
+      "spacing": 1.0,
+      "seed": 0,
+      "inspection_state": "UNIFORM",
+      "accepted": true,
+      "max_gap_error": 0.0,
+      "expected_gap": 1.0
+    },
+    {
+      "method": "OFFSET",
+      "count": 200,
+      "offset": 100,
+      "spacing": 1.0,
+      "seed": 1,
+      "inspection_state": "UNIFORM",
+      "accepted": true,
+      "max_gap_error": 0.0,
+      "expected_gap": 1.0
+    },
+    {
+      "method": "OFFSET",
+      "count": 200,
+      "offset": 100,
+      "spacing": 1.0,
+      "seed": 2,
+      "inspection_state": "UNIFORM",
+      "accepted": true,
+      "max_gap_error": 0.0,
+      "expected_gap": 1.0
+    },
+    {
+      "method": "ENDPOINT",
+      "count": 12,
+      "offset": 300,
+      "spacing": 0.2,
+      "seed": 0,
+      "inspection_state": "UNIFORM",
+      "accepted": true,
+      "max_gap_error": 1.912730376751881e-05,
+      "expected_gap": 6.51770761609165
+    },
+    {
+      "method": "ENDPOINT",
+      "count": 12,
+      "offset": 300,
+      "spacing": 0.2,
+      "seed": 1,
+      "inspection_state": "UNIFORM",
+      "accepted": true,
+      "max_gap_error": 1.912730376751881e-05,
+      "expected_gap": 6.51770761609165
+    },
+    {
+      "method": "ENDPOINT",
+      "count": 12,
+      "offset": 300,
+      "spacing": 0.2,
+      "seed": 2,
+      "inspection_state": "UNIFORM",
+      "accepted": true,
+      "max_gap_error": 1.912730376751881e-05,
+      "expected_gap": 6.51770761609165
+    },
+    {
+      "method": "ENDPOINT",
+      "count": 12,
+      "offset": 300,
+      "spacing": 0.2,
+      "seed": 3,
+      "inspection_state": "UNIFORM",
+      "accepted": true,
+      "max_gap_error": 1.912730376751881e-05,
+      "expected_gap": 6.51770761609165
+    },
+    {
+      "method": "ENDPOINT",
+      "count": 12,
+      "offset": 1000,
+      "spacing": 0.2,
+      "seed": 0,
+      "inspection_state": "UNIFORM",
+      "accepted": true,
+      "max_gap_error": 7.738527320988453e-05,
+      "expected_gap": 6.51770761609165
+    },
+    {
+      "method": "ENDPOINT",
+      "count": 12,
+      "offset": 1000,
+      "spacing": 0.2,
+      "seed": 1,
+      "inspection_state": "UNIFORM",
+      "accepted": true,
+      "max_gap_error": 7.738527320988453e-05,
+      "expected_gap": 6.51770761609165
+    },
+    {
+      "method": "ENDPOINT",
+      "count": 12,
+      "offset": 1000,
+      "spacing": 0.2,
+      "seed": 2,
+      "inspection_state": "UNIFORM",
+      "accepted": true,
+      "max_gap_error": 7.738527320988453e-05,
+      "expected_gap": 6.51770761609165
+    },
+    {
+      "method": "ENDPOINT",
+      "count": 12,
+      "offset": 1000,
+      "spacing": 0.2,
+      "seed": 3,
+      "inspection_state": "UNIFORM",
+      "accepted": true,
+      "max_gap_error": 7.738527320988453e-05,
+      "expected_gap": 6.51770761609165
+    },
+    {
+      "method": "ENDPOINT",
+      "count": 4,
+      "offset": 5000,
+      "spacing": 0.2,
+      "seed": 0,
+      "inspection_state": "UNIFORM",
+      "accepted": true,
+      "max_gap_error": 0.000400639613868492,
+      "expected_gap": 31.116694363119674
+    },
+    {
+      "method": "ENDPOINT",
+      "count": 4,
+      "offset": 5000,
+      "spacing": 0.2,
+      "seed": 1,
+      "inspection_state": "UNIFORM",
+      "accepted": true,
+      "max_gap_error": 0.000400639613868492,
+      "expected_gap": 31.116694363119674
+    },
+    {
+      "method": "ENDPOINT",
+      "count": 4,
+      "offset": 5000,
+      "spacing": 0.2,
+      "seed": 2,
+      "inspection_state": "UNIFORM",
+      "accepted": true,
+      "max_gap_error": 0.000400639613868492,
+      "expected_gap": 31.116694363119674
+    },
+    {
+      "method": "ENDPOINT",
+      "count": 4,
+      "offset": 5000,
+      "spacing": 0.2,
+      "seed": 3,
+      "inspection_state": "UNIFORM",
+      "accepted": true,
+      "max_gap_error": 0.000400639613868492,
+      "expected_gap": 31.116694363119674
+    }
+  ],
+  "accepted": 21,
+  "rejected": 0
+}

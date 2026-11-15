@@ -1,0 +1,203 @@
+{
+  "passed": false,
+  "cases": [
+    {
+      "method": "OFFSET",
+      "count": 200,
+      "offset": 100,
+      "spacing": 0.05,
+      "seed": 0,
+      "accepted": false,
+      "error": "[BI-G002] The requested gap on X cannot be retained for \"Piece0078\" at the current coordinate precision. Use a larger spacing magnitude or reduce large object/parent offsets. The operation was rolled back."
+    },
+    {
+      "method": "OFFSET",
+      "count": 200,
+      "offset": 100,
+      "spacing": 0.05,
+      "seed": 1,
+      "accepted": false,
+      "error": "[BI-G002] The requested gap on X cannot be retained for \"Piece0078\" at the current coordinate precision. Use a larger spacing magnitude or reduce large object/parent offsets. The operation was rolled back."
+    },
+    {
+      "method": "OFFSET",
+      "count": 200,
+      "offset": 100,
+      "spacing": 0.05,
+      "seed": 2,
+      "accepted": false,
+      "error": "[BI-G002] The requested gap on X cannot be retained for \"Piece0078\" at the current coordinate precision. Use a larger spacing magnitude or reduce large object/parent offsets. The operation was rolled back."
+    },
+    {
+      "method": "OFFSET",
+      "count": 200,
+      "offset": 100,
+      "spacing": 0.2,
+      "seed": 0,
+      "accepted": false,
+      "error": "[BI-G002] The requested gap on X cannot be retained for \"Piece0073\" at the current coordinate precision. Use a larger spacing magnitude or reduce large object/parent offsets. The operation was rolled back."
+    },
+    {
+      "method": "OFFSET",
+      "count": 200,
+      "offset": 100,
+      "spacing": 0.2,
+      "seed": 1,
+      "accepted": false,
+      "error": "[BI-G002] The requested gap on X cannot be retained for \"Piece0073\" at the current coordinate precision. Use a larger spacing magnitude or reduce large object/parent offsets. The operation was rolled back."
+    },
+    {
+      "method": "OFFSET",
+      "count": 200,
+      "offset": 100,
+      "spacing": 0.2,
+      "seed": 2,
+      "accepted": false,
+      "error": "[BI-G002] The requested gap on X cannot be retained for \"Piece0073\" at the current coordinate precision. Use a larger spacing magnitude or reduce large object/parent offsets. The operation was rolled back."
+    },
+    {
+      "method": "OFFSET",
+      "count": 200,
+      "offset": 100,
+      "spacing": 1.0,
+      "seed": 0,
+      "accepted": true,
+      "max_gap_error": 0.0,
+      "expected_gap": 1.0
+    },
+    {
+      "method": "OFFSET",
+      "count": 200,
+      "offset": 100,
+      "spacing": 1.0,
+      "seed": 1,
+      "accepted": true,
+      "max_gap_error": 0.0,
+      "expected_gap": 1.0
+    },
+    {
+      "method": "OFFSET",
+      "count": 200,
+      "offset": 100,
+      "spacing": 1.0,
+      "seed": 2,
+      "accepted": true,
+      "max_gap_error": 0.0,
+      "expected_gap": 1.0
+    },
+    {
+      "method": "ENDPOINT",
+      "count": 12,
+      "offset": 300,
+      "spacing": 0.2,
+      "seed": 0,
+      "accepted": true,
+      "max_gap_error": 1.912730376751881e-05,
+      "expected_gap": 6.51770761609165
+    },
+    {
+      "method": "ENDPOINT",
+      "count": 12,
+      "offset": 300,
+      "spacing": 0.2,
+      "seed": 1,
+      "accepted": true,
+      "max_gap_error": 1.912730376751881e-05,
+      "expected_gap": 6.51770761609165
+    },
+    {
+      "method": "ENDPOINT",
+      "count": 12,
+      "offset": 300,
+      "spacing": 0.2,
+      "seed": 2,
+      "accepted": true,
+      "max_gap_error": 1.912730376751881e-05,
+      "expected_gap": 6.51770761609165
+    },
+    {
+      "method": "ENDPOINT",
+      "count": 12,
+      "offset": 300,
+      "spacing": 0.2,
+      "seed": 3,
+      "accepted": true,
+      "max_gap_error": 1.912730376751881e-05,
+      "expected_gap": 6.51770761609165
+    },
+    {
+      "method": "ENDPOINT",
+      "count": 12,
+      "offset": 1000,
+      "spacing": 0.2,
+      "seed": 0,
+      "accepted": false,
+      "error": "[BI-E003] The gap before \"Piece0005\" cannot be resolved at native coordinate precision. Reduce large offsets or increase the endpoint interval."
+    },
+    {
+      "method": "ENDPOINT",
+      "count": 12,
+      "offset": 1000,
+      "spacing": 0.2,
+      "seed": 1,
+      "accepted": false,
+      "error": "[BI-E003] The gap before \"Piece0005\" cannot be resolved at native coordinate precision. Reduce large offsets or increase the endpoint interval."
+    },
+    {
+      "method": "ENDPOINT",
+      "count": 12,
+      "offset": 1000,
+      "spacing": 0.2,
+      "seed": 2,
+      "accepted": false,
+      "error": "[BI-E003] The gap before \"Piece0005\" cannot be resolved at native coordinate precision. Reduce large offsets or increase the endpoint interval."
+    },
+    {
+      "method": "ENDPOINT",
+      "count": 12,
+      "offset": 1000,
+      "spacing": 0.2,
+      "seed": 3,
+      "accepted": false,
+      "error": "[BI-E003] The gap before \"Piece0005\" cannot be resolved at native coordinate precision. Reduce large offsets or increase the endpoint interval."
+    },
+    {
+      "method": "ENDPOINT",
+      "count": 4,
+      "offset": 5000,
+      "spacing": 0.2,
+      "seed": 0,
+      "accepted": false,
+      "error": "[BI-E003] The gap before \"Piece0002\" cannot be resolved at native coordinate precision. Reduce large offsets or increase the endpoint interval."
+    },
+    {
+      "method": "ENDPOINT",
+      "count": 4,
+      "offset": 5000,
+      "spacing": 0.2,
+      "seed": 1,
+      "accepted": false,
+      "error": "[BI-E003] The gap before \"Piece0002\" cannot be resolved at native coordinate precision. Reduce large offsets or increase the endpoint interval."
+    },
+    {
+      "method": "ENDPOINT",
+      "count": 4,
+      "offset": 5000,
+      "spacing": 0.2,
+      "seed": 2,
+      "accepted": false,
+      "error": "[BI-E003] The gap before \"Piece0001\" cannot be resolved at native coordinate precision. Reduce large offsets or increase the endpoint interval."
+    },
+    {
+      "method": "ENDPOINT",
+      "count": 4,
+      "offset": 5000,
+      "spacing": 0.2,
+      "seed": 3,
+      "accepted": false,
+      "error": "[BI-E003] The gap before \"Piece0002\" cannot be resolved at native coordinate precision. Reduce large offsets or increase the endpoint interval."
+    }
+  ],
+  "accepted": 7,
+  "rejected": 14
+}

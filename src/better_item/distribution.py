@@ -1,10 +1,12 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 """Distribution contracts: explicit sources, point placement and interval fitting."""
 import math
+from collections import OrderedDict
+from bpy.app.handlers import persistent
 import bpy
 import numpy as np
 from mathutils import Matrix
-from . import arrange,engine,frames,references,placement,native_refs,geometry_arrange
+from . import arrange,engine,frames,references,placement,geometry_arrange
 from .math_core import BetterItemError,ReferencePending
 from .transform_view import has_surface_geometry
 
@@ -19,8 +21,25 @@ POINT_MODES=[('MANUAL','Manual','World-space coordinates','EDITMODE_HLT'),
     ('ACTIVE','Active Object','Capture the active object as a fixed operation anchor','PIVOT_ACTIVE')]
 
 
+# Small scalar-result cache shared by panel drawing and the live field getter.
+# Evaluation updates clear it; reference values and selection are part of the key.
+_inspection_cache=OrderedDict()
+
+
+@persistent
+def clear_inspection(*_unused):
+    _inspection_cache.clear()
+
+
+@persistent
+def invalidate_inspection(_scene,depsgraph):
+    if any(True for _ in depsgraph.updates):clear_inspection()
+
+
+
 def changed(self,context):
     arrange.clear_error()
+    clear_inspection()
     from . import distribution_preview
     distribution_preview.update(context)
 
@@ -192,9 +211,16 @@ def endpoint_plan(context,objects,*,basis='ORIGINS',path='SEGMENT',axes=(True,Fa
     def verify(actual):
         _verify_state(actual,state)
         measured_intervals={}
+        budgets={}
         for source,position in source_positions.items():
             if not engine._position_matches(source,position):raise BetterItemError('[BI-G004] An endpoint moves with a distributed target. Use an independent endpoint or detach that dependency.')
         for obj in actual:
+            if basis=='GEOMETRY' and obj.name in extents:
+                left,right=placement.intervals(obj,measurement_axes)
+                old_left,old_right=extents[obj.name]
+                shape_budget=32*np.finfo(np.float32).eps*(old_right-old_left)+64*np.finfo(np.float64).eps*np.maximum(np.abs(old_left),np.abs(old_right))
+                if np.any(np.abs(left-old_left)>shape_budget) or np.any(np.abs(right-old_right)>shape_budget):
+                    raise BetterItemError('[BI-G003] Geometry of "%s" changes as it moves. Apply or disable position-dependent geometry before distributing.'%obj.name)
             if obj.name in anchors:
                 if basis=='GEOMETRY' and obj.name in expected:
                     left,right=placement.intervals(obj,measurement_axes);coordinate=float(np.dot(np.asarray(obj.matrix_world.translation)-start,direction))
@@ -205,12 +231,13 @@ def endpoint_plan(context,objects,*,basis='ORIGINS',path='SEGMENT',axes=(True,Fa
             if np.linalg.norm(new_offset-offsets[obj.name])>_tolerance(width,distance):
                 raise BetterItemError('[BI-G003] Geometry of "%s" changes as it moves. Apply or disable position-dependent geometry before distributing.'%obj.name)
             current=np.asarray(obj.matrix_world.translation,dtype=np.float64)
+            if basis=='GEOMETRY':budgets[obj.name]=geometry_arrange.position_roundoff(obj,targets[obj.name],direction)
             if basis=='GEOMETRY':
                 left,right=placement.intervals(obj,measurement_axes)
                 coordinate=float(np.dot(current-start,direction))
                 measured_intervals[obj.name]=(coordinate+left[0],coordinate+right[0])
-                if max(abs(coordinate+left[0]-expected[obj.name][0]),abs(coordinate+right[0]-expected[obj.name][1]))>_tolerance(distance):
-                    raise BetterItemError('[BI-E003] Endpoint geometry could not retain its planned bounds at native coordinate precision. Reduce large offsets.')
+                if max(abs(coordinate+left[0]-expected[obj.name][0]),abs(coordinate+right[0]-expected[obj.name][1]))>_tolerance(distance)+budgets[obj.name]:
+                    raise BetterItemError('[BI-E003] Endpoint geometry could not retain its planned bounds at native coordinate precision. Check the gap and coordinate resolution; no objects were repositioned.')
             else:
                 wanted=start+direction*expected[obj.name]
                 budget=_tolerance(distance,float(np.linalg.norm(wanted)))+float(np.linalg.norm(engine._world_roundoff(obj,targets[obj.name])))
@@ -219,8 +246,9 @@ def endpoint_plan(context,objects,*,basis='ORIGINS',path='SEGMENT',axes=(True,Fa
         if basis=='GEOMETRY':
             for previous,name in zip(chain,chain[1:]):
                 actual_gap=measured_intervals[name][0]-measured_intervals[previous][1]
-                if gap>0 and actual_gap<=0 or abs(actual_gap-gap)>_interval_tolerance(len(chain),widths[name],widths[previous],gap):
-                    raise BetterItemError('[BI-E003] The gap before "%s" cannot be resolved at native coordinate precision. Reduce large offsets or increase the endpoint interval.'%name)
+                advance=(sum(measured_intervals[name])-sum(measured_intervals[previous]))*.5
+                if (widths[name]+widths[previous]+2*gap>0 and advance<=0) or (gap>0 and actual_gap<=0) or abs(actual_gap-gap)>_interval_tolerance(len(chain),widths[name],widths[previous],gap)+budgets.get(name,0.)+budgets.get(previous,0.):
+                    raise BetterItemError('[BI-E003] The gap before "%s" cannot be resolved at native coordinate precision. Increase the endpoint interval or use a nearby working origin; a positive gap must remain distinguishable.'%name)
     return targets,verify,{'spacing':gap,'order':chain,'anchors':anchors,'start':tuple(start),'end':tuple(end)}
 
 
@@ -288,6 +316,34 @@ def apply(context,objects,**kwargs):
 
 
 def inspect_spacing(context,objects):
+    """Reuse an inspection only for the same evaluated scene and references."""
+    if not objects:return 'EMPTY',None
+    s=context.scene.better_item
+    try:
+        if s.distribution_method=='ENDPOINT':
+            start,first=_start(context);end,last=point(context,s.distribution_end)
+            source=(tuple(start),first.as_pointer() if first else 0,tuple(end),last.as_pointer() if last else 0)
+            orientation=tuple(v for row in references.axes(context,s,context.active_object,True) for v in row) if s.endpoint_path=='AXIS' else ()
+        else:
+            axes,origin,obj=arrange.reference_frame(context,'REFERENCE')
+            source=(tuple(origin),obj.as_pointer() if obj else 0)
+            orientation=tuple(float(v) for v in axes.flat)
+        from . import transform_view
+        key=(context.scene.as_pointer(),context.view_layer.as_pointer(),context.evaluated_depsgraph_get().as_pointer(),transform_view._geometry_revision,context.mode,
+            context.active_object.as_pointer() if context.active_object else 0,
+            tuple((obj.as_pointer(),obj.name) for obj in objects),
+            s.distribution_method,s.distribution_mode,s.endpoint_path,tuple(s.axes),
+            s.spacing,s.distribution_last_sign,s.minimum_distance_mm,source,orientation)
+    except BetterItemError:return 'UNAVAILABLE',None
+    if key in _inspection_cache:
+        _inspection_cache.move_to_end(key);return _inspection_cache[key]
+    result=_inspect_spacing(context,objects)
+    _inspection_cache[key]=result
+    while len(_inspection_cache)>4:_inspection_cache.popitem(last=False)
+    return result
+
+
+def _inspect_spacing(context,objects):
     """Measure against the same plan, including the reference-to-first interval."""
     if not objects:return 'EMPTY',None
     try:
@@ -301,7 +357,7 @@ def inspect_spacing(context,objects):
         physical=s.distribution_mode=='GEOMETRY'
         axes=matrix/np.linalg.norm(matrix,axis=0) if physical else matrix
         transform=axes.T if physical else np.linalg.inv(axes)
-        fixed=source.name if source and source in objects else None;gaps=[]
+        fixed=source.name if source and source in objects else None;gaps=[];gap_budgets=[]
         offsets={obj.name:np.zeros(3) if physical or obj.name==fixed and not has_surface_geometry(obj) else placement.offset(obj,s.distribution_mode) for obj in objects}
         values={obj.name:transform@(np.asarray(obj.matrix_world.translation)+offsets[obj.name]-origin) for obj in objects}
         sign=-1 if s.spacing<0 or s.spacing==0 and s.distribution_last_sign<0 else 1
@@ -312,13 +368,16 @@ def inspect_spacing(context,objects):
                 if source and has_surface_geometry(source):
                     left,right=placement.intervals(source,Matrix(matrix));previous=float((transform@anchor)[axis]+(right if sign>0 else left)[axis])
                 else:previous=float((transform@anchor)[axis])
+                previous_budget=geometry_arrange.position_roundoff(source,tuple(source.matrix_world.translation),axes[:,axis]) if source else 0.
                 occupied=[]
                 for obj in objects:
                     if obj.name==fixed:continue
                     left,right=placement.intervals(obj,Matrix(matrix))
                     center=float((transform@(np.asarray(obj.matrix_world.translation)-origin))[axis])
-                    occupied.append((center+(left if sign>0 else right)[axis],center+(right if sign>0 else left)[axis]))
-                for edge,far in sorted(occupied,key=lambda interval:sign*interval[0]):
+                    occupied.append((center+(left if sign>0 else right)[axis],center+(right if sign>0 else left)[axis],obj))
+                for edge,far,obj in sorted(occupied,key=lambda interval:sign*interval[0]):
+                    budget=geometry_arrange.position_roundoff(obj,tuple(obj.matrix_world.translation),axes[:,axis])
+                    gap_budgets.append(budget+previous_budget);previous_budget=budget
                     gaps.append(sign*(edge-previous));previous=far
             else:
                 previous=float((transform@placement.offset(source,s.distribution_mode))[axis]) if source and has_surface_geometry(source) else 0.
@@ -326,7 +385,9 @@ def inspect_spacing(context,objects):
                 for name in order:gaps.append(sign*(values[name][axis]-previous));previous=values[name][axis]
         if not gaps:return 'EMPTY',None
         first=gaps[0]
-        uniform=all(abs(value-first)<=_interval_tolerance(len(objects),value,first) for value in gaps)
+        uniform=all(abs(value-first)<=_interval_tolerance(len(objects),value,first)+(gap_budgets[i]+gap_budgets[0] if physical else 0.) for i,value in enumerate(gaps))
+        # Do not call collapsed and positive intervals one uniform nonzero gap.
+        if physical and any(np.sign(value)!=np.sign(first) for value in gaps):uniform=False
         return ('UNIFORM',sign*first) if uniform else ('MIXED',None)
     except BetterItemError:return 'UNAVAILABLE',None
 

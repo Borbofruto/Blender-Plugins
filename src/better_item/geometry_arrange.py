@@ -17,6 +17,15 @@ def _bounds(obj,basis):
     return np.asarray(low),np.asarray(high)
 
 
+def position_roundoff(obj,target,direction):
+    """Project the existing native parent/delta/world evaluation budget.
+
+    Stored translations round independently; a gap needs both endpoint budgets.
+    This is a storage-error allowance, not a tolerance relative to scene size.
+    """
+    return float(np.abs(direction) @ engine._world_roundoff(obj,target))
+
+
 def plan(context,objects,origins,axes,reference='AUTO',*,spacing=0.,minimum_mm=.00001,preserve_transverse=False):
     if context.mode!='OBJECT':raise ReferencePending('[BI-A003] Switch to Object Mode to distribute whole objects.')
     if not any(axes):raise ReferencePending('[BI-A001] Select an axis for distribution.')
@@ -75,6 +84,7 @@ def plan(context,objects,origins,axes,reference='AUTO',*,spacing=0.,minimum_mm=.
             world=origin+directions[:,axis]*planned[obj.name][axis]
         else:world=origin+np.linalg.solve(directions.T,planned[obj.name])
         targets[obj.name]=tuple(world)
+    by_name={obj.name:obj for obj in objects}
     expected={name:(planned[name]+low,planned[name]+high) for name,(low,high) in local.items()}
     def verify(actual_objects):
         if key is not None and (not np.array_equal(np.asarray(key.matrix_world.translation),key_position) if fixed is None else not engine._position_matches(key,key_position)):
@@ -99,8 +109,9 @@ def plan(context,objects,origins,axes,reference='AUTO',*,spacing=0.,minimum_mm=.
                 low,high=measured[name];want_low,want_high=expected[name]
                 width=local[name][1][axis]-local[name][0][axis]
                 tolerance=32*np.finfo(np.float32).eps*max(width,gap)+64*np.finfo(np.float64).eps*max(abs(want_low[axis]),abs(want_high[axis]))
-                if max(abs(low[axis]-want_low[axis]),abs(high[axis]-want_high[axis]))>tolerance:
-                    raise BetterItemError('[BI-G002] The requested gap on %s cannot be retained for "%s" at the current coordinate precision. Use a larger spacing magnitude or reduce large object/parent offsets. The operation was rolled back.'%('XYZ'[axis],name))
+                native_budget=position_roundoff(by_name[name],targets[name],directions[:,axis])
+                if max(abs(low[axis]-want_low[axis]),abs(high[axis]-want_high[axis]))>tolerance+native_budget:
+                    raise BetterItemError('[BI-G002] The requested gap on %s cannot be retained for "%s" at the current coordinate precision. Check the requested gap against the coordinate resolution; increase the gap or work closer to the origin if necessary. The operation was rolled back.'%('XYZ'[axis],name))
                 if index or reference!='SELECTION':
                     if index:previous=measured[order[index-1]]
                     else:
@@ -110,6 +121,8 @@ def plan(context,objects,origins,axes,reference='AUTO',*,spacing=0.,minimum_mm=.
                             raise BetterItemError('[BI-G003] Reference geometry changes when a target moves. Apply or disable its position-dependent modifiers before geometric distribution. The operation was rolled back.')
                         previous=tuple(actual_key_coordinate+value for value in actual_key_bounds)
                     actual_gap=low[axis]-previous[1][axis] if direction>0 else previous[0][axis]-high[axis]
-                    if gap>0 and actual_gap<=0 or abs(actual_gap-gap)>tolerance*2:
-                        raise BetterItemError('[BI-G002] The gap before "%s" on %s cannot be distinguished at this coordinate precision. Use a larger spacing magnitude or reduce coordinate offsets. The operation was rolled back.'%(name,'XYZ'[axis]))
+                    previous_budget=position_roundoff(by_name[order[index-1]],targets[order[index-1]],directions[:,axis]) if index else 0.
+                    advance=direction*((low[axis]+high[axis])-(previous[0][axis]+previous[1][axis]))*.5
+                    if (width+previous[1][axis]-previous[0][axis]+2*gap>0 and advance<=0) or (gap>0 and actual_gap<=0) or abs(actual_gap-gap)>tolerance*2+native_budget+previous_budget:
+                        raise BetterItemError('[BI-G002] The gap before "%s" on %s cannot be distinguished at this coordinate precision. Increase the gap or use a nearby working origin; the requested positive gap must remain distinguishable. The operation was rolled back.'%(name,'XYZ'[axis]))
     return targets,verify

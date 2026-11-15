@@ -1,4 +1,4 @@
-# Better Item 1.7.1
+# Better Item 1.7.2
 
 A live Transform panel with declared Blender 5.0+ compatibility. Runtime validation for this release used Blender 5.2.3 LTS on Windows; Blender 5.0 and 5.2.4 were not executed. GPL-3.0-or-later. Author: Gabriel Webber do Nascimento.
 
@@ -291,3 +291,11 @@ Existing suites include 1,500 locked-parent cases, 1,200 Parent Inverse cancella
 Tests and machine-readable results are in [the repository](https://github.com/Borbofruto/Blender-Plugins/tree/main/tests/better_item), outside the installable ZIP. Historical delivery records are in CHANGELOG.md. The declared Blender 5.0 minimum is not a runtime-tested compatibility guarantee for every version; only 5.2.3 was available for this delivery.
 
 1.7.1 corrects transverse Offset movement and zero-spacing direction, and replaces the sidebar preview transaction buttons with a Live checkbox. See the [1.7.1 correction report](https://github.com/Borbofruto/Blender-Plugins/blob/main/docs/better_item/release-1.7.1.md).
+
+### 1.7.2 precision and inspection corrections
+
+Geometry Bounds verification includes the native world-position roundoff budget projected onto the measured direction. Adjacent gap checks include both positions. This permits normal float32 rounding in long chains and translated deployment scenes; it does not promise exact real-number contact or recover geometry/spacing below storage resolution. A requested positive gap that collapses, or a positive occupied-slot advance that collapses, still rejects and restores poses. Position-dependent geometry is checked separately; coordinate tolerance does not permit shape changes.
+
+Current spacing uses a bounded scalar-result cache shared by the panel and Live getter. Changed selection/active object, resolved references, method parameters and evaluated scene updates invalidate or change the signature. Loading, Undo/Redo and frame changes clear it. The first measurement after invalidation still evaluates geometry; redraws reuse the result. Application always plans and validates independently of this display cache.
+
+See the [1.7.2 correction report](https://github.com/Borbofruto/Blender-Plugins/blob/main/docs/better_item/release-1.7.2.md) for before/after cases, large-selection timings and runtime evidence. No features or animation support were added.

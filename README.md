@@ -4,7 +4,7 @@ Install individual extension ZIPs from [`addons/`](addons) using Blender's **Ins
 
 Each addon uses a stable installer filename. Updates replace that file; earlier contents remain available in Git history.
 
-## Better Item 1.7.1
+## Better Item 1.7.2
 
 [Download ZIP](https://github.com/Borbofruto/Blender-Plugins/raw/refs/heads/main/addons/better_item.zip) | [Manual](src/better_item/README.md) | [Release report](docs/better_item/release-1.7.0.md) | [Review and limitations](docs/better_item/review-1.6.1.md) | [Source](src/better_item) | [Tests](tests/better_item)
 
@@ -12,13 +12,15 @@ A spatial-precision Transform, Reference Frames and Align/Distribute addon for B
 
 ### Distribution by references, points and occupied geometry
 
+1.7.2 corrects geometric verification at large world coordinates and caches unchanged sidebar spacing inspection. Collapsed gaps and geometry dependencies still reject atomically; no new features are added.
+
 - Explicit Offset / Endpoint. Between Points uses Start-to-End direction; Reference Axis projects End onto one chosen reference axis.
 - Start inherits shared Location or uses an override. End accepts world coordinates, Object, Frame Location, cursor, Global or active object. Selected endpoint objects remain fixed.
 - Origins, Bounds Center, Surface Centroid, Volume Centroid and Geometry Bounds. Equal point intervals and equal physical gaps are distinct operations; no origin, Scale or Rotation is rewritten.
 - Inspect actual spacing or Mixed. Live is a checkbox: enable without movement, edit controls to replan from the initial selection, disable to keep results. Offset preserves unselected coordinates and zero Geometry Bounds gap keeps the last nonzero direction. This is not a permanent relationship or animation runtime.
 - Contextual Frame sources are explicit Capture actions; native Bounding Box Center uses origins. The old single-reference Individual Origins choice is retired while legacy saved data remains readable.
 
-[1.7.1 corrections and validation](docs/better_item/release-1.7.1.md). [1.7.0 behavior and test history](docs/better_item/release-1.7.0.md). Tested on Blender 5.2.3 LTS / Windows: 320 Endpoint batches, 140 Offset batches, independent centroid/bounds checks, preview/undo, dependency rollback, fresh-process persistence, legacy-file compatibility and real UI. Existing numerical regressions also pass, including the 9,216-case grid. Declared minimum Blender 5.0 has not been runtime-tested here.
+[1.7.2 precision/cache corrections and validation](docs/better_item/release-1.7.2.md). [1.7.0 behavior and test history](docs/better_item/release-1.7.0.md). Tested on Blender 5.2.3 LTS / Windows: 320 Endpoint batches, 140 Offset batches, independent centroid/bounds checks, preview/undo, dependency rollback, fresh-process persistence, legacy-file compatibility and real UI. Existing numerical regressions also pass, including the 9,216-case grid. Declared minimum Blender 5.0 has not been runtime-tested here.
 
 The sidebar retains Location before Orientation, the Gimbal category icon and indented dependent fields. Frames store independent Manual or linked Location/Orientation and can publish axes to Blender's native custom orientations for G/R. Transform edits the active object; alignment/distribution works on the selection.
 

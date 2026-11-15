@@ -1,5 +1,16 @@
 # Better Item — changelog
 
+## 1.7.2
+
+### Fixed
+- Offset and Endpoint Geometry Bounds verification includes the projected native world-position roundoff budget, including parent/inverse/delta evaluation. Gap checks include both adjacent position budgets.
+- Positive collapsed gaps and collapsed occupied-slot advances still reject atomically. Geometry-dependency checks remain independent of the coordinate budget, including symmetric Endpoint bounds changes.
+- Geometric spacing inspection accounts for native coordinate roundoff when comparing nonzero gaps, avoiding Mixed immediately after a valid large-scene distribution.
+
+### Performance
+- Bounded scalar spacing-inspection cache shared by panel drawing and the live getter. Evaluation updates, load/undo/redo, frame changes and arrangement edits invalidate it; current resolved references, selection, active object, axes and method parameters are in the signature. No cached validation is used when applying distribution.
+- Remove the unused native_refs import from distribution.py.
+
 ## 1.7.1
 
 ### Fixed
