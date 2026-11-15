@@ -29,7 +29,7 @@ for i,o in enumerate(objects):o.location=(10+10*i,0,0)
 obj=objects[0];obj.data=obj.data.copy();obj.shape_key_add(name='Basis');shape=obj.shape_key_add(name='Symmetric expansion')
 for v in shape.data:v.co*=2
 curve=shape.driver_add('value');driver=curve.driver;var=driver.variables.new();var.name='x';var.type='TRANSFORMS';var.targets[0].id=obj;var.targets[0].transform_type='LOC_X';var.targets[0].transform_space='WORLD_SPACE';driver.expression='abs(x)/100'
-s.distribution_method='ENDPOINT';ctx.scene.cursor.location=(0,0,0);s.distribution_end.position=(100,0,0);ctx.view_layer.update()
+s.distribution_method='OFFSET';s.distribution_mode='GEOMETRY';ctx.scene.cursor.location=(0,0,0);s.distribution_end.position=(100,0,0);ctx.view_layer.update()
 before=[tuple(o.location) for o in objects]
 try:d.apply(ctx,objects)
 except BetterItemError as exc:assert 'BI-G003' in str(exc),str(exc)

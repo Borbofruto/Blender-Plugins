@@ -91,14 +91,6 @@ def _start(context):
     return np.asarray(value,dtype=np.float64).copy(),source
 
 
-def _line_axes(direction):
-    """A deterministic measurement frame; X follows the line, roll is not applied."""
-    x=np.asarray(direction,dtype=np.float64)
-    seed=np.eye(3)[int(np.argmin(np.abs(x)))]
-    y=np.cross(seed,x);y/=np.linalg.norm(y);z=np.cross(x,y)
-    return Matrix(np.column_stack((x,y,z)))
-
-
 def _order(values,start,direction,minimum):
     names=sorted(values,key=lambda name:(values[name],name))
     for left,right in zip(names,names[1:]):
@@ -146,7 +138,8 @@ def _display_mm(context,value):
     return ('%.3f'%mm).rstrip('0').rstrip('.')+' mm'
 
 
-def endpoint_plan(context,objects,*,basis='ORIGINS',path='SEGMENT',axes=(True,False,False),minimum_mm=.00001):
+def endpoint_plan(context,objects,*,basis='ORIGINS',path='SEGMENT',axes=(True,False,False),minimum_mm=.00001,order_override=None):
+    if basis=='GEOMETRY':raise ReferencePending('[BI-E002] Geometry Bounds is an Offset placement. Choose Origins, Bounds Center or Center of Mass for Endpoint.')
     if len(objects)<2:raise ReferencePending('[BI-A003] Select at least two objects for Endpoint distribution.')
     start,start_obj=_start(context);end,end_obj=point(context,context.scene.better_item.distribution_end)
     selected={obj.name for obj in objects}
@@ -154,7 +147,7 @@ def endpoint_plan(context,objects,*,basis='ORIGINS',path='SEGMENT',axes=(True,Fa
     # placement point. Native transforms remain fixed, including offset origins.
     for source,is_start in ((start_obj,True),(end_obj,False)):
         if source is not None and source.name in selected and basis!='ORIGINS' and has_surface_geometry(source):
-            value=np.asarray(source.matrix_world.translation)+placement.offset(source,'BOUNDS_CENTER' if basis=='GEOMETRY' else basis)
+            value=np.asarray(source.matrix_world.translation)+placement.offset(source,basis)
             if is_start:start=value
             else:end=value
     if path=='AXIS':
@@ -167,88 +160,51 @@ def endpoint_plan(context,objects,*,basis='ORIGINS',path='SEGMENT',axes=(True,Fa
     minimum=minimum_mm/arrange._mm_per_unit(context.scene)
     if not math.isfinite(minimum) or minimum<=0:raise BetterItemError('[BI-D001] Solver minimum separation must be positive.')
     if not math.isfinite(distance) or distance<minimum:raise BetterItemError('[BI-E001] Start and End are coincident or too close. Separate the endpoint references.')
-    direction=(end-start)/distance;measurement_axes=_line_axes(direction)
+    direction=(end-start)/distance
     origins={obj.name:np.asarray(obj.matrix_world.translation,dtype=np.float64).copy() for obj in objects}
     anchors={obj.name for obj in (start_obj,end_obj) if obj is not None and obj.name in origins}
-    offsets={obj.name:np.zeros(3) if obj.name in anchors and not has_surface_geometry(obj) else placement.offset(obj,basis,measurement_axes if basis=='GEOMETRY' else None) for obj in objects}
+    offsets={obj.name:np.zeros(3) if obj.name in anchors and not has_surface_geometry(obj) else placement.offset(obj,basis) for obj in objects}
     points={name:origins[name]+offset for name,offset in offsets.items()}
     if start_obj is not None and start_obj==end_obj:raise BetterItemError('[BI-E001] Start and End cannot use the same fixed object.')
     values={name:float(np.dot(value-start,direction)) for name,value in points.items()}
     moving={name:value for name,value in values.items() if name not in anchors}
-    order=_endpoint_order({name:points[name] for name in moving},start,direction,minimum)
-    occupied=anchors if basis!='GEOMETRY' else {obj.name for obj in objects if obj.name in anchors and has_surface_geometry(obj)}
+    if order_override is not None and set(order_override)==set(moving):order=list(order_override)
+    else:order=_endpoint_order({name:points[name] for name in moving},start,direction,minimum)
+    occupied=anchors
     chain=([start_obj.name] if start_obj is not None and start_obj.name in occupied else [])+order+([end_obj.name] if end_obj is not None and end_obj.name in occupied else [])
     if len(chain)<2:raise ReferencePending('[BI-A003] Select objects between the endpoint anchors.')
     if not moving:raise ReferencePending('[BI-A003] Both selected objects are fixed endpoints. Select an intermediate target.')
     targets={name:tuple(value) for name,value in origins.items()};expected={}
-    if basis=='GEOMETRY':
-        extents={obj.name:placement.intervals(obj,measurement_axes) for obj in objects if obj.name in chain}
-        widths={name:float(high[0]-low[0]) for name,(low,high) in extents.items()}
-        # A selected anchor occupies its measured interval, rather than forcing
-        # its center/origin to a different geometric point.
-        low=float(np.dot(origins[chain[0]]-start,direction)+extents[chain[0]][0][0]) if chain[0] in anchors else 0.
-        high=float(np.dot(origins[chain[-1]]-start,direction)+extents[chain[-1]][1][0]) if chain[-1] in anchors else distance
-        gap=(high-low-sum(widths[name] for name in chain))/(len(chain)-1)
-        if gap < -_tolerance(high-low,*widths.values()):
-            missing=-gap*(len(chain)-1)*arrange._mm_per_unit(context.scene)
-            raise BetterItemError('[BI-E002] The geometry does not fit between these limits; %.6g mm more space is needed. Move the endpoints or choose a point placement basis.'%missing)
-        gap=max(0.,gap);boundary=low
-        for name in chain:
-            left,right=extents[name];center=boundary+widths[name]*.5
-            if name not in anchors:targets[name]=tuple(start+direction*center-offsets[name])
-            expected[name]=(boundary,boundary+widths[name]);boundary+=widths[name]+gap
-    else:
-        low=values[chain[0]] if chain[0] in anchors else 0.
-        high=values[chain[-1]] if chain[-1] in anchors else distance
-        if high-low<minimum:raise BetterItemError('[BI-E001] The anchor placement points are coincident or reversed. Check the placement basis and endpoint references.')
-        gap=(high-low)/(len(chain)-1)
-        for i,name in enumerate(chain):
-            coordinate=low+i*gap
-            if name not in anchors:targets[name]=tuple(start+direction*coordinate-offsets[name])
-            expected[name]=coordinate
+    low=values[chain[0]] if chain[0] in anchors else 0.
+    high=values[chain[-1]] if chain[-1] in anchors else distance
+    if high-low<minimum:raise BetterItemError('[BI-E001] The anchor placement points are coincident or reversed. Check the placement basis and endpoint references.')
+    gap=(high-low)/(len(chain)-1)
+    for i,name in enumerate(chain):
+        coordinate=low+i*gap
+        if name not in anchors:targets[name]=tuple(start+direction*coordinate-offsets[name])
+        expected[name]=coordinate
     state=_state(objects)
     source_positions={obj:tuple(obj.matrix_world.translation) for obj in (start_obj,end_obj) if obj is not None}
     def verify(actual):
         _verify_state(actual,state)
-        measured_intervals={}
-        budgets={}
         for source,position in source_positions.items():
             if not engine._position_matches(source,position):raise BetterItemError('[BI-G004] An endpoint moves with a distributed target. Use an independent endpoint or detach that dependency.')
+        measured={}
         for obj in actual:
-            if basis=='GEOMETRY' and obj.name in extents:
-                left,right=placement.intervals(obj,measurement_axes)
-                old_left,old_right=extents[obj.name]
-                shape_budget=32*np.finfo(np.float32).eps*(old_right-old_left)+64*np.finfo(np.float64).eps*np.maximum(np.abs(old_left),np.abs(old_right))
-                if np.any(np.abs(left-old_left)>shape_budget) or np.any(np.abs(right-old_right)>shape_budget):
-                    raise BetterItemError('[BI-G003] Geometry of "%s" changes as it moves. Apply or disable position-dependent geometry before distributing.'%obj.name)
-            if obj.name in anchors:
-                if basis=='GEOMETRY' and obj.name in expected:
-                    left,right=placement.intervals(obj,measurement_axes);coordinate=float(np.dot(np.asarray(obj.matrix_world.translation)-start,direction))
-                    measured_intervals[obj.name]=(coordinate+left[0],coordinate+right[0])
-                continue
-            new_offset=placement.offset(obj,basis,measurement_axes if basis=='GEOMETRY' else None)
+            measured[obj.name]=float(np.dot(np.asarray(obj.matrix_world.translation)+offsets[obj.name]-start,direction))
+            if obj.name in anchors:continue
+            new_offset=placement.offset(obj,basis)
             width=float(np.linalg.norm(offsets[obj.name]))
             if np.linalg.norm(new_offset-offsets[obj.name])>_tolerance(width,distance):
                 raise BetterItemError('[BI-G003] Geometry of "%s" changes as it moves. Apply or disable position-dependent geometry before distributing.'%obj.name)
             current=np.asarray(obj.matrix_world.translation,dtype=np.float64)
-            if basis=='GEOMETRY':budgets[obj.name]=geometry_arrange.position_roundoff(obj,targets[obj.name],direction)
-            if basis=='GEOMETRY':
-                left,right=placement.intervals(obj,measurement_axes)
-                coordinate=float(np.dot(current-start,direction))
-                measured_intervals[obj.name]=(coordinate+left[0],coordinate+right[0])
-                if max(abs(coordinate+left[0]-expected[obj.name][0]),abs(coordinate+right[0]-expected[obj.name][1]))>_tolerance(distance)+budgets[obj.name]:
-                    raise BetterItemError('[BI-E003] Endpoint geometry could not retain its planned bounds at native coordinate precision. Check the gap and coordinate resolution; no objects were repositioned.')
-            else:
-                wanted=start+direction*expected[obj.name]
-                budget=_tolerance(distance,float(np.linalg.norm(wanted)))+float(np.linalg.norm(engine._world_roundoff(obj,targets[obj.name])))
-                if np.linalg.norm(current+new_offset-wanted)>budget:
-                    raise BetterItemError('[BI-E003] The placement point of "%s" cannot retain its segment position (residual %.9g; budget %.9g Blender units). Reduce large offsets.'%(obj.name,np.linalg.norm(current+new_offset-wanted),budget))
-        if basis=='GEOMETRY':
-            for previous,name in zip(chain,chain[1:]):
-                actual_gap=measured_intervals[name][0]-measured_intervals[previous][1]
-                advance=(sum(measured_intervals[name])-sum(measured_intervals[previous]))*.5
-                if (widths[name]+widths[previous]+2*gap>0 and advance<=0) or (gap>0 and actual_gap<=0) or abs(actual_gap-gap)>_interval_tolerance(len(chain),widths[name],widths[previous],gap)+budgets.get(name,0.)+budgets.get(previous,0.):
-                    raise BetterItemError('[BI-E003] The gap before "%s" cannot be resolved at native coordinate precision. Increase the endpoint interval or use a nearby working origin; a positive gap must remain distinguishable.'%name)
+            wanted=start+direction*expected[obj.name]
+            budget=_tolerance(distance,float(np.linalg.norm(wanted)))+float(np.linalg.norm(engine._world_roundoff(obj,targets[obj.name])))
+            if np.linalg.norm(current+new_offset-wanted)>budget:
+                raise BetterItemError('[BI-E003] The placement point of "%s" cannot retain its segment position (residual %.9g; budget %.9g Blender units). Reduce large offsets.'%(obj.name,np.linalg.norm(current+new_offset-wanted),budget))
+        for previous,name in zip(chain,chain[1:]):
+            if measured[name]<=measured[previous]:
+                raise BetterItemError('[BI-E003] Distinct Endpoint placement points collapse at native coordinate precision. Enlarge the interval or use a nearby working origin; no objects were repositioned.')
     return targets,verify,{'spacing':gap,'order':chain,'anchors':anchors,'start':tuple(start),'end':tuple(end)}
 
 
@@ -294,13 +250,13 @@ def offset_plan(context,objects,*,basis,axes,spacing,minimum_mm):
     return targets,verify,{'spacing':spacing,'anchors':{fixed} if fixed else set()}
 
 
-def plan(context,objects,*,basis=None,method=None,path=None,axes=None,spacing=None,minimum_mm=None):
+def plan(context,objects,*,basis=None,method=None,path=None,axes=None,spacing=None,minimum_mm=None,order_override=None):
     if context.mode!='OBJECT':raise ReferencePending('[BI-A003] Switch to Object Mode to distribute whole objects.')
     s=context.scene.better_item
     args=dict(basis=basis or s.distribution_mode,axes=tuple(s.axes) if axes is None else tuple(axes),
         minimum_mm=s.minimum_distance_mm if minimum_mm is None else minimum_mm)
     method=method or s.distribution_method
-    if method=='ENDPOINT':return endpoint_plan(context,objects,path=path or s.endpoint_path,**args)
+    if method=='ENDPOINT':return endpoint_plan(context,objects,path=path or s.endpoint_path,order_override=order_override,**args)
     if method!='OFFSET':raise BetterItemError('[BI-E001] Choose Offset or Endpoint.')
     return offset_plan(context,objects,spacing=s.spacing if spacing is None else spacing,**args)
 
@@ -316,6 +272,16 @@ def apply(context,objects,**kwargs):
 
 
 def inspect_spacing(context,objects):
+    from . import distribution_preview as live
+    if live.active(context.scene) and not live.in_context():
+        try:
+            with live.reference_context(context) as captured:
+                return _cached_inspection(captured,live.captured_objects(captured))
+        except (BetterItemError,ReferenceError):return 'UNAVAILABLE',None
+    return _cached_inspection(context,objects)
+
+
+def _cached_inspection(context,objects):
     """Reuse an inspection only for the same evaluated scene and references."""
     if not objects:return 'EMPTY',None
     s=context.scene.better_item
@@ -398,6 +364,9 @@ def draw(layout,context):
     box.row(align=True).prop(settings,'distribution_method',expand=True)
     row=box.split(factor=.42,align=True);row.label(text='Placement:');row.prop(settings,'distribution_mode',text='')
     live=distribution_preview.active(context.scene)
+    if settings.distribution_method=='ENDPOINT' and settings.get('placement_migration_notice',False):
+        box.label(text='Endpoint now uses point placements.',icon='INFO')
+        box.label(text='Previous Geometry Bounds kept for Offset.')
     if settings.distribution_legacy_range and settings.distribution_method=='OFFSET':
         box.label(text='Legacy selection-bound distribution.',icon='INFO')
         box.label(text='Switch Method to use explicit references.')
@@ -409,9 +378,9 @@ def draw(layout,context):
         draw_point(box,settings.distribution_end,'End')
         if settings.endpoint_path=='SEGMENT':box.label(text='Start → End defines the direction.')
         else:box.label(text='End is projected onto one Move axis.')
-        box.label(text='Endpoint objects stay fixed.')
+        box.label(text='References are not moved.')
         status,value=inspect_spacing(context,list(context.selected_objects))
-        if status=='UNIFORM' and value is not None:box.label(text=('Gap: ' if settings.distribution_mode=='GEOMETRY' else 'Point interval: ')+_display_mm(context,value))
+        if status=='UNIFORM' and value is not None:box.label(text='Point interval: '+_display_mm(context,value))
         else:box.label(text='Spacing is derived from the endpoints.')
     else:
         status,value=inspect_spacing(context,list(context.selected_objects))
@@ -424,6 +393,10 @@ def draw(layout,context):
     row=box.row()
     row.enabled=live or (not settings.distribution_legacy_range and not distribution_preview.contextual_start(context))
     row.prop(settings,'distribution_live',text='Live')
+    if live:
+        box.label(text=distribution_preview.status(context.scene),icon='INFO')
+        name=distribution_preview.active_name(context.scene)
+        if name:box.label(text='Captured Active: '+name)
     if not live:
         row=box.row();row.enabled=bool(context.selected_objects)
         row.operator('better_item.distribute',text='Distribute')
@@ -435,6 +408,7 @@ def migrate():
     if not hasattr(bpy.data,'scenes'):return  # addon_utils uses a restricted registration context.
     for scene in bpy.data.scenes:
         settings=scene.better_item
+        placement.migrate(settings)
         if 'distribution_last_sign' not in settings and settings.spacing:
             settings['distribution_last_sign']=-1 if settings.spacing<0 else 1
         if settings.get('distribution_schema',0)>=1:continue

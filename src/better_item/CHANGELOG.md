@@ -1,5 +1,15 @@
 # Better Item — changelog
 
+## 1.7.3
+
+### Changed
+- Endpoint offers Origins, Bounds Center and Center of Mass (Surface / Volume), distributing points without a geometric-fit requirement. Geometry Bounds is available only for Offset; the retired Endpoint interval solver was removed.
+- Each method remembers its own Placement, including F9. Old Endpoint / Geometry files migrate to Origins with a visible notice, preserving Geometry Bounds for Offset.
+- Use the native Blender labels Center of Mass (Surface) and Center of Mass (Volume).
+- Live observes cursor, object and Frame references during an explicitly enabled editing session. Target selection and Active Object identity are captured; users may select and move reference objects without retargeting distribution. Endpoint order is retained after its first successful update.
+- Live updates stop when disabled, on Undo/Redo/load, before frame changes or rendering, and when the add-on is disabled. No animation or permanent constraint is created. Direct target edits pause updates instead of being overwritten.
+- Display the captured object count and active identity. Transform references remain stored per object.
+
 ## 1.7.2
 
 ### Fixed

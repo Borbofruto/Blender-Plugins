@@ -4,23 +4,23 @@ Install individual extension ZIPs from [`addons/`](addons) using Blender's **Ins
 
 Each addon uses a stable installer filename. Updates replace that file; earlier contents remain available in Git history.
 
-## Better Item 1.7.2
+## Better Item 1.7.3
 
-[Download ZIP](https://github.com/Borbofruto/Blender-Plugins/raw/refs/heads/main/addons/better_item.zip) | [Manual](src/better_item/README.md) | [Release report](docs/better_item/release-1.7.0.md) | [Review and limitations](docs/better_item/review-1.6.1.md) | [Source](src/better_item) | [Tests](tests/better_item)
+[Download ZIP](https://github.com/Borbofruto/Blender-Plugins/raw/refs/heads/main/addons/better_item.zip) | [Manual](src/better_item/README.md) | [Release report](docs/better_item/release-1.7.3.md) | [Review and limitations](docs/better_item/review-1.6.1.md) | [Source](src/better_item) | [Tests](tests/better_item)
 
 A spatial-precision Transform, Reference Frames and Align/Distribute addon for Blender 5.0+, tested in Blender 5.2.3 LTS. Compact English XYZ fields support proportional links, physical projected Dimensions, origin alignment and signed distribution.
 
 ### Distribution by references, points and occupied geometry
 
-1.7.2 corrects geometric verification at large world coordinates and caches unchanged sidebar spacing inspection. Collapsed gaps and geometry dependencies still reject atomically; no new features are added.
+1.7.3 makes Endpoint point-only and Live follow spatial references while enabled. Each method remembers Placement; the existing precision and inspection-cache corrections remain.
 
 - Explicit Offset / Endpoint. Between Points uses Start-to-End direction; Reference Axis projects End onto one chosen reference axis.
-- Start inherits shared Location or uses an override. End accepts world coordinates, Object, Frame Location, cursor, Global or active object. Selected endpoint objects remain fixed.
-- Origins, Bounds Center, Surface Centroid, Volume Centroid and Geometry Bounds. Equal point intervals and equal physical gaps are distinct operations; no origin, Scale or Rotation is rewritten.
-- Inspect actual spacing or Mixed. Live is a checkbox: enable without movement, edit controls to replan from the initial selection, disable to keep results. Offset preserves unselected coordinates and zero Geometry Bounds gap keeps the last nonzero direction. This is not a permanent relationship or animation runtime.
+- Start inherits shared Location or uses an override. End accepts world coordinates, Object, Frame Location, cursor, Global or active object. The distributor does not move endpoint objects; users may move them as Live inputs.
+- Endpoint uses Origins, Bounds Center and Center of Mass (Surface / Volume) points, permitting overlap without resizing. Offset also offers Geometry Bounds for physical gaps.
+- Inspect actual spacing or Mixed. Live captures targets and Active Object without movement, follows cursor / Object / Frame references even after selecting an Empty, and stops when disabled. It is transient editing, not animation. Offset preserves unselected coordinates and zero Geometry Bounds gap keeps the last nonzero direction. This is not a permanent relationship or animation runtime.
 - Contextual Frame sources are explicit Capture actions; native Bounding Box Center uses origins. The old single-reference Individual Origins choice is retired while legacy saved data remains readable.
 
-[1.7.2 precision/cache corrections and validation](docs/better_item/release-1.7.2.md). [1.7.0 behavior and test history](docs/better_item/release-1.7.0.md). Tested on Blender 5.2.3 LTS / Windows: 320 Endpoint batches, 140 Offset batches, independent centroid/bounds checks, preview/undo, dependency rollback, fresh-process persistence, legacy-file compatibility and real UI. Existing numerical regressions also pass, including the 9,216-case grid. Declared minimum Blender 5.0 has not been runtime-tested here.
+[1.7.3 behavior and validation](docs/better_item/release-1.7.3.md). [1.7.0 behavior and test history](docs/better_item/release-1.7.0.md). Tested on Blender 5.2.3 LTS / Windows: 256 Endpoint batches, 140 Offset batches, 96 Live batches / 192 reference updates, independent centroid/bounds checks, preview/undo, dependency rollback, fresh-process persistence, legacy-file compatibility and real UI. The 9,216-case numerical grid belongs to earlier validation records and was not repeated in this correction. Declared minimum Blender 5.0 has not been runtime-tested here.
 
 The sidebar retains Location before Orientation, the Gimbal category icon and indented dependent fields. Frames store independent Manual or linked Location/Orientation and can publish axes to Blender's native custom orientations for G/R. Transform edits the active object; alignment/distribution works on the selection.
 

@@ -1,4 +1,4 @@
-# Better Item 1.7.2
+# Better Item 1.7.3
 
 A live Transform panel with declared Blender 5.0+ compatibility. Runtime validation for this release used Blender 5.2.3 LTS on Windows; Blender 5.0 and 5.2.4 were not executed. GPL-3.0-or-later. Author: Gabriel Webber do Nascimento.
 
@@ -43,7 +43,7 @@ Oblique dimension editing currently requires a Mesh object. A disabled Better It
 
 The active extension has no relative-animation schema, keyframe/bake operators, playback controller, legacy-animation warning or automatic migration/removal of animation data and drivers. It does not manage clips from the archived prototype. Existing authoring data is left untouched. The complete 1.5.1 prototype remains separately preserved at `archive/better_item-animation-1.5.1`; evaluating or recovering those files is a separate, manual workflow.
 
-The frame/subframe callback invalidates measurement caches only. Reading current evaluated geometry, including geometry affected by Blender's native systems, is part of accurate measurement; it does not write object poses or animation. The driver guard only inspects native driven channels to prevent overwriting them.
+Measurement frame/subframe callbacks invalidate caches. A separate guard ends a transient Live session before frame changes or rendering; it does not apply distribution during playback. Reading current evaluated geometry, including geometry affected by Blender's native systems, is part of accurate measurement; it does not write object poses or animation. The driver guard only inspects native driven channels to prevent overwriting them.
 
 ## Default / Local and Reference
 
@@ -138,33 +138,37 @@ Start/End accept world XYZ Manual coordinates, Global, a chosen Object, saved Fr
 |---|---|
 | Origins | Use the existing native origin point. |
 | Bounds Center | Use the center of evaluated world-axis-aligned geometric bounds; do not change the native origin. |
-| Surface Centroid | Area-weighted center of the evaluated triangulated surface, including world deformation. Loose vertices have no surface weight. |
-| Volume Centroid | Uniform-density signed-volume centroid. Requires a nonzero closed volume with consistent triangle orientation. The check rejects open/nonmanifold edge incidence and inconsistent winding, but does not certify absence of self-intersections or physical validity of nested shells. |
+| Center of Mass (Surface) | Area-weighted center of the evaluated triangulated surface, including world deformation. Loose vertices have no surface weight. |
+| Center of Mass (Volume) | Uniform-density signed-volume centroid. Requires a nonzero closed volume with consistent triangle orientation. The check rejects open/nonmanifold edge incidence and inconsistent winding, but does not certify absence of self-intersections or physical validity of nested shells. |
 | Geometry Bounds | Use evaluated occupied intervals projected along the distribution direction(s), so physical gaps are equal rather than point intervals. Loose vertices count. |
 
-Point bases are supported in both methods. Offset changes point-to-point intervals or physical gaps. In Endpoint, point bases place the first and last points at the effective limits and space the other points evenly. Geometry Bounds instead fits the outer boundaries and computes the gap from available length minus the sum of projected widths, divided by the number of internal gaps. Insufficient space rejects and reports the missing length; nothing is scaled, rotated or compressed.
+Offset supports all five bases. Endpoint supports only the four point bases: Origins, Bounds Center and Center of Mass (Surface / Volume). It places the first and last points at the effective limits and spaces the other points evenly. Pieces may overlap; there is no geometric-fit requirement and nothing is resized or rotated. Geometry Bounds is available only for Offset, measuring physical gaps instead of point intervals. Each method remembers its own Placement choice, including in F9.
 
-Example: widths 100/200/300 mm in a 1,000 mm interval yield a 200 mm geometric gap and, for centered origins, centers at 50/400/850 mm. Origins in the same interval are placed at 0/500/1,000 mm.
-
-For Geometry Bounds / Between Points, transverse centering uses the evaluated world bounds center. Its axial component is replaced by the actual projected interval midpoint. The representative point is placed on the segment, while the interval sets the gap. This deterministic convention requires no arbitrary roll rotation and changes no object Rotation.
+Example: five two-unit cubes can be distributed by Origins inside a half-unit segment. Their origin points are evenly spaced from 0 to 0.5; their geometry overlaps and retains its native size. Geometry Bounds cannot be chosen for Endpoint. An older saved Endpoint / Geometry selection migrates to Origins with a setup notice, while its Geometry Bounds choice is retained for Offset. Choosing Placement explicitly clears the notice.
 
 ### Endpoint anchors and ordering
 
-A known endpoint source object selected with the targets is fixed and occupies its first/last point slot. With a geometric point basis, that selected anchor's corresponding geometric point becomes the effective segment endpoint. For Geometry Bounds, selected geometric anchors occupy their existing intervals; the available span runs from the first anchor's outer boundary to the last anchor's outer boundary. This preserves offset origins and native anchor transforms.
+A known endpoint source object selected with the targets is fixed and occupies its first/last point slot. With a geometric point basis, that selected anchor's corresponding geometric point becomes the effective segment endpoint. The distributor does not move anchor objects; users may move them as live spatial inputs. Offset origins and native anchor transforms are preserved.
 
-Empty/Camera and other non-geometric source objects remain valid fixed point anchors. In Geometry Bounds they delimit available space but do not consume a geometric piece/gap slot. A selected non-anchor without the geometry required by the chosen basis is rejected. At least two placement slots are required; selecting only two fixed endpoint objects leaves no target to arrange.
+Empty/Camera and other non-geometric source objects remain valid fixed point anchors. A selected non-anchor without the geometry required by the chosen basis is rejected. At least two placement slots are required; selecting only two fixed endpoint objects leaves no target to arrange.
 
 Offset preserves the requested ordering rule: opposite half-space first, then nearest to farthest within each half-space. Endpoint has no pre-existing axis and orders by the opposite half-space of Start→End, then **spatial distance from Start**. This permits objects initially lying in a plane perpendicular to a new segment. Indistinguishable distances within a half-space name the conflicting objects and require separation; names are not silently used to invent a meaningful order.
 
 ### Current spacing and Live Preview
 
-Offset inspection includes the anchor-to-first interval, the selected axes and the selected placement basis. A uniform selection displays its measured spacing. Mixed spacing is a normal state and is never represented as a fabricated zero or average. With Live off, Spacing is an explicit requested value and Distribute applies it. With Live on, the editable Spacing field reads back the current uniform result. Current is measured automatically in both modes; enabling Live does not overwrite the requested spacing. Endpoint intervals/gaps are derived from its references and are read-only.
+Offset inspection includes the anchor-to-first interval, the selected axes and the selected placement basis. A uniform selection displays its measured spacing. Mixed spacing is a normal state and is never represented as a fabricated zero or average. With Live off, Spacing is an explicit requested value and Distribute applies it. With Live on, the editable Spacing field reads back the current uniform result. Current is measured automatically in both modes; enabling Live does not overwrite the requested spacing. Endpoint point intervals are derived from its references and are read-only. There is no independent distance slider; its spatial sources are the controls.
 
-The **Live** checkbox captures a selection without moving it. The first parameter edit normalizes it. Every later edit replans from the original locations and selection, rather than repeatedly reordering the previous result. Unchecking Live keeps current poses and ends live editing; there are no Confirm/Cancel buttons in the sidebar. Invalid edits retain the last valid result. After changing the selection or editing target transforms elsewhere, disable and re-enable Live to capture the new state. Selection-dependent Median/Bounding Box starts must first be captured into an independent Frame for Live; a one-shot operation can still capture their initial context. Active Object remains valid as a fixed anchor. Only one live session can be open at a time. Native undo/redo clears the transient session; ordinary resulting transforms remain standard .blend data.
+The **Live** checkbox captures the selected input objects and the identity of the active object without moving them. The first control/reference edit applies a distribution. Later edits replan from the initial native locations; Endpoint retains the object order established by its first successful update for that method/basis/path/axis configuration. Switching a configuration can establish its own order. Live remembers these object identities even when they are renamed.
 
-The session updates on its controls, not on a playback timer. It creates no parenting, constraints, drivers, keyframes or animation runtime. Changing a linked source externally does not establish a permanent arrangement relationship; edit a preview control to recompute, or run a new operation. Preview state is not serialized: reopening a saved file retains the saved ordinary poses, not an ongoing editing session.
+While enabled, a lightweight 0.1-second editing observer detects changes to cursor, Manual coordinates, object references, Frame components and relevant orientation/geometry. Select an Empty and move it normally: the original captured targets continue to update, without changing Blender's actual selection. Active Object / Active Element references use the object captured at enable time, rather than whichever object was most recently selected. Selected endpoint objects are editable sources too; distribution does not restore them to their old locations.
 
-The operator remains REGISTER/UNDO and supports Blender's Adjust Last Operation (F9) for copied method, path, basis, axes and spacing parameters. Source choices are scene settings; changing those inside the sidebar requires a new operation or an active preview rather than pretending F9 owns the sources. The legacy preview operator remains available to Python callers for backward compatibility; the sidebar uses the Live checkbox.
+The sidebar shows the captured object count and active name. Its spacing inspection uses those captured objects even if none of them remain selected. Alignment continues to operate on the actual current selection. Changing the target set requires disabling Live, selecting new inputs, and enabling it again. Direct external changes to a moving target's Location/Rotation/Scale pause updates with an informational message instead of overwriting the user's edit. Missing/invalid sources retain the last valid poses and can recover after the source is fixed. Unrelated geometry updates do not normalize a previously untouched selection.
+
+Unchecking Live keeps current poses and stops the observer. There are no Confirm/Cancel buttons in the sidebar. Disabling the add-on also keeps the result. Undo/Redo or loading another file ends the session; changing frame or starting a render stops it before any evaluated animation can be followed. Live is an editing session, not a saved linkage or animation system: it creates no parenting, constraints, drivers, keyframes or geometry modifiers. Reopening a saved file retains ordinary object poses and references, not an ongoing Live session. Only one scene/view-layer session may be active; switching scenes/view-layers suspends polling until the captured context is active again.
+
+Selection-dependent Median/Bounding Box starts must first be captured into an independent Frame for Live; a one-shot operation can still use their initial context. Legacy selection-dependent Frame sources should likewise be applied to independent components before use.
+
+The one-shot operator remains REGISTER/UNDO and supports Blender's Adjust Last Operation (F9) for copied method, path, basis, axes and spacing parameters. Source choices are scene settings. Existing Python preview BEGIN/CONFIRM/CANCEL actions remain supported for compatibility, while the sidebar uses the Live checkbox.
 
 ### Reference context and compatibility
 
@@ -176,7 +180,7 @@ New Offset operations never switch solvers just because Location is Bounding Box
 
 ### Solver and diagnostics
 
-Solver Settings remains collapsed. Minimum Separation (mm) distinguishes starting positions/distances and valid endpoint lengths, and remains the minimum nonzero Offset point interval. Geometry Bounds allows a zero Offset gap. Units use Scene Unit Scale. Native coordinates remain float32; inverse solves and geometry integration use double precision. Position checks propagate the existing parent/native rounding budget, including cancellation around offset origins. Endpoint gaps and point intervals use relative float32 tolerances scaled by the number of placement slots, without a fixed absolute floor. Positive gaps that collapse to zero and Offset point intervals that cannot retain the requested spacing are rejected.
+Solver Settings remains collapsed. Minimum Separation (mm) distinguishes starting positions/distances and valid endpoint lengths, and remains the minimum nonzero Offset point interval. Geometry Bounds allows a zero Offset gap. Units use Scene Unit Scale. Native coordinates remain float32; inverse solves and geometry integration use double precision. Position checks propagate the existing parent/native rounding budget, including cancellation around offset origins. Endpoint point placement uses the native world-position rounding budget. Offset interval checks also use relative float32 tolerances without a fixed arbitrary scene-unit floor. Positive gaps that collapse to zero and Offset point intervals that cannot retain the requested spacing are rejected.
 
 Unsupported geometry, moving endpoint dependencies, native locks/drivers/constraints and unrepresentable fits reject atomically. Setup needed is neutral, a refused operation is a warning, and unexpected failures have technical Details. These are finite precision guarantees, not a collision solver or a proof that arbitrary meshes are valid solids.
 
@@ -199,12 +203,12 @@ Unsupported geometry, moving endpoint dependencies, native locks/drivers/constra
 | BI-D002 | Ambiguous starting coordinates; objects and axes are listed |
 | BI-D003 | Native precision collapsed the resulting spacing; the operation is rolled back |
 | BI-E001 | Missing, coincident, reversed or invalid endpoint limits/path |
-| BI-E002 | Geometry does not fit the available interval |
-| BI-E003 | Endpoint placement or gap failed native precision verification |
+| BI-E002 | Geometry Bounds is only available for Offset; choose a point basis for Endpoint |
+| BI-E003 | Endpoint point placement failed native precision verification or distinct points collapsed |
 | BI-P001 | Placement basis requires supported geometry |
 | BI-P002 | Unresolved/zero surface area or centroid |
 | BI-P003 | Invalid/open/inconsistently oriented or zero volume |
-| BI-L001 | Inactive/changed/legacy preview session |
+| BI-L001 | Live needs capture/restart, a captured target changed/was removed, or the session ended |
 | BI-G001 | Geometry Bounds requires supported evaluated geometry |
 | BI-G002 | The physical gap cannot be retained at native coordinate precision |
 | BI-G003 | Evaluated geometry changes during movement |
@@ -299,3 +303,5 @@ Geometry Bounds verification includes the native world-position roundoff budget 
 Current spacing uses a bounded scalar-result cache shared by the panel and Live getter. Changed selection/active object, resolved references, method parameters and evaluated scene updates invalidate or change the signature. Loading, Undo/Redo and frame changes clear it. The first measurement after invalidation still evaluates geometry; redraws reuse the result. Application always plans and validates independently of this display cache.
 
 See the [1.7.2 correction report](https://github.com/Borbofruto/Blender-Plugins/blob/main/docs/better_item/release-1.7.2.md) for before/after cases, large-selection timings and runtime evidence. No features or animation support were added.
+
+The [1.7.3 report](https://github.com/Borbofruto/Blender-Plugins/blob/main/docs/better_item/release-1.7.3.md) records the current point-only Endpoint contract, independent Placement choices, reference-driven Live behavior, migration and finite validation. Earlier reports describe historical behavior; the retired Endpoint geometric-fit solver is no longer offered. Transform settings remain per object, while arrangement settings and Frames belong to the scene.

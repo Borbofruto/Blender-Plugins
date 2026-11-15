@@ -27,15 +27,15 @@ def bounds(obj,axis):
 for method,count,offset,spacing,seed in [('OFFSET',200,100,g,k) for g in (.05,.2,1.) for k in range(3)]+[('ENDPOINT',n,o,.2,k) for n,o in ((12,300),(12,1000),(4,5000)) for k in range(4)]:
  objects=setup(count,offset,seed);before=[tuple(o.location) for o in objects]
  s.arrange_origin='CURSOR';ctx.scene.cursor.location=(offset,12,20);s.arrange_orientation='GLOBAL';s.axes=(True,False,False)
- s.distribution_method=method;s.distribution_mode='GEOMETRY';s.spacing=spacing
+ s.distribution_method=method;s.distribution_mode='GEOMETRY' if method=='OFFSET' else 'ORIGINS';s.spacing=spacing
  if method=='ENDPOINT':
   s.distribution_end.mode='MANUAL';s.distribution_end.position=(offset+100,35,38)
   start=np.array(ctx.scene.cursor.location);end=np.array(s.distribution_end.position);axis=(end-start)/np.linalg.norm(end-start)
  else:axis=np.array((1.,0.,0.))
- row=dict(method=method,count=count,offset=offset,spacing=spacing,seed=seed)
+ row=dict(method=method,basis='GEOMETRY' if method=='OFFSET' else 'ORIGINS',count=count,offset=offset,spacing=spacing,seed=seed)
  try:
   _,info=d.apply(ctx,objects)
-  intervals=sorted(bounds(o,axis) for o in objects);actual=np.array([b[0]-a[1] for a,b in zip(intervals,intervals[1:])]);wanted=spacing if method=='OFFSET' else info['spacing']
+  intervals=sorted(bounds(o,axis) for o in objects);actual=np.array([b[0]-a[1] for a,b in zip(intervals,intervals[1:])]);wanted=spacing if method=='OFFSET' else info['spacing']-2*np.abs(axis).sum()
   row['inspection_state']=d.inspect_spacing(ctx,objects)[0]
   if not baseline:assert row['inspection_state']=='UNIFORM',row
   row.update(accepted=True,max_gap_error=float(np.max(np.abs(actual-wanted))),expected_gap=float(wanted))

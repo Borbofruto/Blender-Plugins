@@ -23,7 +23,7 @@ axis_source=bpy.data.objects.new('Axes',None);ctx.scene.collection.objects.link(
 start_source=bpy.data.objects.new('Start proxy',None);ctx.scene.collection.objects.link(start_source)
 s.arrange_reference_mode='INDIVIDUAL';s.arrange_origin='GLOBAL';s.arrange_on_axis=False
 bases=[item[0] for item in placement.BASES];endpoint=offset=0
-for basis,path,anchor_mode,unit,sign,parented in itertools.product(bases,('SEGMENT','AXIS'),('NONE','START','END','BOTH'),(1.,.001),(1,-1),(False,True)):
+for basis,path,anchor_mode,unit,sign,parented in itertools.product([b for b in bases if b!='GEOMETRY'],('SEGMENT','AXIS'),('NONE','START','END','BOTH'),(1.,.001),(1,-1),(False,True)):
     scale=1/(1000*unit);ctx.scene.unit_settings.scale_length=unit
     s.distribution_method='ENDPOINT';s.distribution_mode=basis;s.endpoint_path=path;s.axes=(True,False,False)
     s.arrange_orientation='REFERENCE';s.arrange_object=axis_source

@@ -33,7 +33,7 @@ assert bpy.ops.better_item.distribution_preview(action='BEGIN')=={'FINISHED'}
 s.spacing=3;latest={o:tuple(o.location) for o in objects};s.spacing=0
 assert latest=={o:tuple(o.location) for o in objects} and 'BI-D001' in arrange.error(ctx.scene)
 objects[-1].select_set(False);s.spacing=5
-assert latest=={o:tuple(o.location) for o in objects};assert 'BI-L001' in arrange.error(ctx.scene)
+assert [o.location.x for o in objects]==[5,10,15];assert not arrange.error(ctx.scene)
 assert bpy.ops.better_item.distribution_preview(action='CANCEL')=={'FINISHED'}
 assert {o.name:tuple(o.location) for o in objects}==after
 # Selection captures in Transform produce a stable saved Frame, not a moving pivot.
@@ -51,11 +51,12 @@ ctx.view_layer.objects.active=key;s.arrange_origin='OBJECT';s.arrange_origin_obj
 empty_cases=0
 for basis in ('ORIGINS','BOUNDS_CENTER','SURFACE','VOLUME','GEOMETRY'):
     for i,o in enumerate(objects):o.location=(10+i*5,0,0)
-    s.distribution_mode=basis;s.distribution_method='OFFSET';s.spacing=.5
+    s.distribution_method='OFFSET';s.distribution_mode=basis;s.spacing=.5
     d.apply(ctx,[key,*objects]);assert tuple(key.location)==(0,0,0)
     assert d.inspect_spacing(ctx,[key,*objects])[0]=='UNIFORM'
     for i,o in enumerate(objects):o.location=(10+i*5,0,0)
-    s.distribution_method='ENDPOINT';s.distribution_end.mode='MANUAL';s.distribution_end.position=(20,0,0)
+    if basis=='GEOMETRY':continue
+    s.distribution_method='ENDPOINT';s.distribution_mode=basis;s.distribution_end.mode='MANUAL';s.distribution_end.position=(20,0,0)
     d.apply(ctx,[key,*objects]);assert tuple(key.location)==(0,0,0);empty_cases+=1
-result={'native_preview_undo_redo':True,'invalid_preview_retains_last_valid':True,'selection_guard':True,'cancel_restores_session_start':True,'transform_selection_capture':True,'empty_anchor_bases':empty_cases}
+result={'native_preview_undo_redo':True,'invalid_preview_retains_last_valid':True,'selection_changes_keep_capture':True,'cancel_restores_session_start':True,'transform_selection_capture':True,'empty_anchor_bases':empty_cases}
 Path(__file__).with_suffix('.results.json').write_text(json.dumps(result,indent=2)+'\n',encoding='utf-8');print('170 PREVIEW PASSED',json.dumps(result))

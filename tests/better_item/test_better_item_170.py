@@ -36,10 +36,10 @@ s=reset();objects=[cube('Width'+str(i),10+i*400,width) for i,width in enumerate(
 select(objects);s.distribution_method='ENDPOINT';s.distribution_end.position=(1000,0,0)
 d.apply(ctx,objects);near([o.location.x for o in objects],[0,500,1000])
 for i,o in enumerate(objects):o.location.x=10+i*400
-s.distribution_mode='GEOMETRY';d.apply(ctx,objects);near([o.location.x for o in objects],[50,400,850]);result['point_vs_interval_example']=True
+failure(lambda:d.endpoint_plan(ctx,objects,basis='GEOMETRY'),'BI-E002');result['point_endpoint_and_retired_interval_rejection']=True
 # Segment uses two positions even with no valid shared Orientation.
 cases=0
-for basis in ('ORIGINS','BOUNDS_CENTER','SURFACE','VOLUME','GEOMETRY'):
+for basis in ('ORIGINS','BOUNDS_CENTER','SURFACE','VOLUME'):
     for vector in ((30,15,-9),(-30,6,12)):
         s=reset();objects=[cube('Segment'+str(i),i*5+1) for i in range(4)]
         for i,o in enumerate(objects):o.rotation_euler=(i*.1,i*.2,-i*.15);o.scale=(-1 if i%2 else 1,1+i*.1,1)
@@ -88,10 +88,10 @@ near(placement.offset(obj,'SURFACE'),np.average(facecoords.mean(axis=1),axis=0,w
 mesh.polygons[0].flip();mesh.update();ctx.view_layer.update();failure(lambda:placement.offset(obj,'VOLUME'),'BI-P003')
 result['surface_volume_oracle_and_open_volume_rejection']=True
 # Insufficient space and dependent endpoints reject atomically.
-s=reset();objects=[cube('Too wide'+str(i),4+i*4) for i in range(3)];select(objects);s.distribution_method='ENDPOINT';s.distribution_mode='GEOMETRY';s.distribution_end.position=(3,0,0)
-before={o:tuple(o.location) for o in objects};failure(lambda:d.apply(ctx,objects),'BI-E002');assert before=={o:tuple(o.location) for o in objects}
+s=reset();objects=[cube('Too wide'+str(i),4+i*4) for i in range(3)];select(objects);s.distribution_method='ENDPOINT';s.distribution_mode='ORIGINS';s.distribution_end.position=(3,0,0)
+before={o:tuple(o.location) for o in objects};failure(lambda:d.endpoint_plan(ctx,objects,basis='GEOMETRY'),'BI-E002');assert before=={o:tuple(o.location) for o in objects}
 s.distribution_mode='ORIGINS';source=empty('Dependent End',(20,0,0));source.parent=objects[0];s.distribution_end.mode='OBJECT';s.distribution_end.object=source;ctx.view_layer.update()
-failure(lambda:d.apply(ctx,objects),'BI-G004');assert before=={o:tuple(o.location) for o in objects};result['atomic_fit_and_dependency_rejections']=True
+failure(lambda:d.apply(ctx,objects),'BI-G004');assert before=={o:tuple(o.location) for o in objects};result['retired_basis_and_dependency_rejections']=True
 # Bounds Center Offset with displaced origins and an explicit geometric anchor.
 s=reset();a=cube('Offset key',0);b=cube('Offset point',5)
 for v in b.data.vertices:v.co.x+=3

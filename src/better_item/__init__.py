@@ -162,14 +162,14 @@ class BetterItemSceneSettings(bpy.types.PropertyGroup):
     orientation_axes:bpy.props.BoolVectorProperty(name='Rotation Components',size=3,default=(True,True,True),options=set(),update=_arrange_changed)
     orientation_angles:bpy.props.FloatVectorProperty(name='Rotation',size=3,subtype='EULER',unit='ROTATION',options=set(),update=_arrange_changed)
     orientation_order:bpy.props.EnumProperty(name='Euler Order',items=[(order,order+' Euler','Order used to read and set reference-space components') for order in ('XYZ','XZY','YXZ','YZX','ZXY','ZYX')],options=set(),update=_arrange_changed)
-    distribution_mode:bpy.props.EnumProperty(name='Placement Basis',items=[(*item,{'ORIGINS':0,'GEOMETRY':1,'BOUNDS_CENTER':2,'SURFACE':3,'VOLUME':4}[item[0]]) for item in placement.BASES],options=set(),update=_arrange_changed)
+    distribution_mode:bpy.props.EnumProperty(name='Placement Basis',items=placement.items,get=placement.read,set=placement.write,options=set(),update=_arrange_changed)
     distribution_method:bpy.props.EnumProperty(name='Method',items=distribution.METHODS,default='OFFSET',options=set(),update=_method_changed)
     endpoint_path:bpy.props.EnumProperty(name='Path',items=distribution.PATHS,default='SEGMENT',options=set(),update=_arrange_changed)
     distribution_start_override:bpy.props.BoolProperty(name='Override Start',description='Otherwise use the shared Location reference as Start',options=set(),update=_arrange_changed)
     distribution_start:bpy.props.PointerProperty(type=distribution.BetterItemPointReference)
     distribution_end:bpy.props.PointerProperty(type=distribution.BetterItemPointReference)
     distribution_legacy_range:bpy.props.BoolProperty(options={'HIDDEN'})
-    distribution_live:bpy.props.BoolProperty(name='Live',description='Update distribution while editing controls. Enabling does not move objects; disabling keeps the result. Use Undo to revert edits.',options={'SKIP_SAVE'},get=_live_get,set=_live_set)
+    distribution_live:bpy.props.BoolProperty(name='Live',description='Capture the selected targets and active object; update them when controls or references move. Enabling does not move objects. Disabling keeps the result.',options={'SKIP_SAVE'},get=_live_get,set=_live_set)
     distribution_last_sign:bpy.props.IntProperty(default=1,min=-1,max=1,options={'HIDDEN'})
     spacing_view:bpy.props.FloatProperty(name='Spacing',unit='LENGTH',precision=5,options=set(),get=_spacing_view_get,set=_spacing_view_set)
     frames:bpy.props.CollectionProperty(type=frames.BetterItemFrame)
@@ -274,7 +274,9 @@ class BETTERITEM_OT_distribute(bpy.types.Operator):
     reference:bpy.props.EnumProperty(name='Operation',items=[('AUTO','Reference','Use the selected Location')]+_references,default='AUTO',options={'HIDDEN'})
     spacing:bpy.props.FloatProperty(name='Spacing',unit='LENGTH',default=.1)
     minimum_mm:bpy.props.FloatProperty(name='Minimum Distance (mm)',default=.00001,min=.00000001,precision=8)
-    distribution_mode:bpy.props.EnumProperty(items=placement.BASES,default='ORIGINS')
+    offset_placement:bpy.props.IntProperty(default=0,options={'HIDDEN'})
+    endpoint_placement:bpy.props.IntProperty(default=0,options={'HIDDEN'})
+    distribution_mode:bpy.props.EnumProperty(items=placement.items,get=placement.operator_read,set=placement.operator_write)
     method:bpy.props.EnumProperty(items=distribution.METHODS,default='OFFSET')
     path:bpy.props.EnumProperty(items=distribution.PATHS,default='SEGMENT')
     modern:bpy.props.BoolProperty(default=False,options={'HIDDEN'})
@@ -287,8 +289,11 @@ class BETTERITEM_OT_distribute(bpy.types.Operator):
         self.reference='AUTO'
         self.spacing=settings.spacing
         self.minimum_mm=settings.minimum_distance_mm
-        self.distribution_mode=settings.distribution_mode
+        placement.migrate(settings)
+        self.offset_placement=settings['offset_placement_value']
+        self.endpoint_placement=settings['endpoint_placement_value']
         self.method=settings.distribution_method
+        self.distribution_mode=settings.distribution_mode
         self.path=settings.endpoint_path
         self.modern=True
         return self.execute(context)
@@ -470,7 +475,7 @@ class BETTERITEM_PT_alignment(bpy.types.Panel):
         row.label(text='Move')
         for i,axis in enumerate('XYZ'):row.prop(settings,'axes',index=i,text=axis,toggle=True)
         if not any(settings.axes):layout.label(text='Choose axes for Alignment / Offset.',icon='INFO')
-        if not context.selected_objects:layout.label(text='Select objects to arrange.',icon='INFO')
+        if not context.selected_objects:layout.label(text='Select objects for Alignment.' if distribution_preview.active(context.scene) else 'Select objects to arrange.',icon='INFO')
         box=layout.box()
         box.label(text='Alignment')
         box.row(align=True).prop(settings,'alignment_type',expand=True)
@@ -547,6 +552,10 @@ def register():
         # depsgraph_update_post (e.g. an animated Object Info source in GN).
         if transform_view.clear_cache not in bpy.app.handlers.frame_change_post:
             bpy.app.handlers.frame_change_post.append(transform_view.clear_cache)
+        if distribution_preview.stop_on_frame_change not in bpy.app.handlers.frame_change_pre:
+            bpy.app.handlers.frame_change_pre.append(distribution_preview.stop_on_frame_change)
+        if distribution_preview.stop_on_render not in bpy.app.handlers.render_pre:
+            bpy.app.handlers.render_pre.append(distribution_preview.stop_on_render)
         frames.migrate()
         distribution.migrate()
         if not bpy.app.timers.is_registered(native_refs.sync):bpy.app.timers.register(native_refs.sync,first_interval=.2,persistent=True)
@@ -556,8 +565,10 @@ def register():
 
 
 def unregister():
-    if hasattr(bpy.types.Scene,'better_item') and getattr(bpy.context,'scene',None) and distribution_preview.active(bpy.context.scene):distribution_preview.finish(bpy.context,cancel=True)
+    if hasattr(bpy.types.Scene,'better_item') and getattr(bpy.context,'scene',None) and distribution_preview.active(bpy.context.scene):distribution_preview.finish(bpy.context)
     distribution_preview.forget()
+    if distribution_preview.stop_on_frame_change in bpy.app.handlers.frame_change_pre:bpy.app.handlers.frame_change_pre.remove(distribution_preview.stop_on_frame_change)
+    if distribution_preview.stop_on_render in bpy.app.handlers.render_pre:bpy.app.handlers.render_pre.remove(distribution_preview.stop_on_render)
     distribution.clear_inspection()
     if distribution.invalidate_inspection in bpy.app.handlers.depsgraph_update_post:
         bpy.app.handlers.depsgraph_update_post.remove(distribution.invalidate_inspection)

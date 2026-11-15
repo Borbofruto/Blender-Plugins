@@ -9,9 +9,52 @@ from .math_core import BetterItemError
 
 BASES=[('ORIGINS','Origins','Use each existing object origin'),
     ('BOUNDS_CENTER','Bounds Center','Use the evaluated world-aligned bounding box center, without changing the origin'),
-    ('SURFACE','Surface Centroid','Area-weighted centroid of the evaluated surface'),
-    ('VOLUME','Volume Centroid','Uniform-density centroid of a closed, consistently oriented evaluated volume'),
+    ('SURFACE','Center of Mass (Surface)','Area-weighted centroid of the evaluated surface'),
+    ('VOLUME','Center of Mass (Volume)','Uniform-density centroid of a closed, consistently oriented evaluated volume'),
     ('GEOMETRY','Geometry Bounds','Use occupied projected intervals for equal physical gaps')]
+# Explicit numeric IDs preserve saved enum values when Endpoint omits Geometry.
+_IDS={'ORIGINS':0,'GEOMETRY':1,'BOUNDS_CENTER':2,'SURFACE':3,'VOLUME':4}
+OFFSET_ITEMS=[(*item,_IDS[item[0]]) for item in BASES]
+ENDPOINT_ITEMS=[item for item in OFFSET_ITEMS if item[0]!='GEOMETRY']
+
+
+def items(owner,context):
+    method=getattr(owner,'distribution_method',getattr(owner,'method','OFFSET'))
+    return ENDPOINT_ITEMS if method=='ENDPOINT' else OFFSET_ITEMS
+
+
+def migrate(settings):
+    if settings.get('placement_schema',0)>=1:return
+    old=int(settings.get('distribution_mode',0))
+    settings['offset_placement_value']=old
+    settings['endpoint_placement_value']=old if old!=1 else 0
+    if old==1 and getattr(settings,'distribution_method',getattr(settings,'method','OFFSET'))=='ENDPOINT':settings['placement_migration_notice']=True
+    settings['placement_schema']=1
+
+
+def read(settings):
+    key='endpoint_placement_value' if getattr(settings,'distribution_method',getattr(settings,'method','OFFSET'))=='ENDPOINT' else 'offset_placement_value'
+    old=int(settings.get('distribution_mode',0))
+    fallback=old if getattr(settings,'distribution_method',getattr(settings,'method','OFFSET'))!='ENDPOINT' or old!=1 else 0
+    return int(settings.get(key,fallback))
+
+
+def write(settings,value):
+    migrate(settings)
+    key='endpoint_placement_value' if getattr(settings,'distribution_method',getattr(settings,'method','OFFSET'))=='ENDPOINT' else 'offset_placement_value'
+    settings[key]=value
+    settings['placement_migration_notice']=False
+
+
+def operator_read(owner):
+    return owner.endpoint_placement if owner.method=='ENDPOINT' else owner.offset_placement
+
+
+def operator_write(owner,value):
+    if owner.method=='ENDPOINT':owner.endpoint_placement=value
+    else:owner.offset_placement=value
+
+
 _point_cache=OrderedDict()
 
 

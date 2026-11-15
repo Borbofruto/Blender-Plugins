@@ -31,9 +31,9 @@ move=group.nodes.new('GeometryNodeSetPosition');factor=group.nodes.new('ShaderNo
 group.links.new(inp.outputs['Geometry'],move.inputs['Geometry']);group.links.new(info.outputs['Location'],factor.inputs[0]);group.links.new(factor.outputs['Vector'],move.inputs['Offset']);group.links.new(move.outputs['Geometry'],out.inputs['Geometry'])
 a.modifiers.new('Dependent evaluated geometry','NODES').node_group=group
 before={o:tuple(o.location) for o in (a,b)}
-for basis in ('BOUNDS_CENTER','SURFACE','VOLUME','GEOMETRY'):
+for basis in ('BOUNDS_CENTER','SURFACE','VOLUME'):
     s.distribution_mode=basis;ctx.view_layer.update();fails(lambda:d.apply(ctx,[a,b]),'BI-G003');assert before=={o:tuple(o.location) for o in (a,b)}
-result['object_info_dependency_bases']=4
+result['object_info_dependency_bases']=3
 # Cache tracks evaluated geometry edits, shape keys and same-frame modifier state.
 s=reset();obj=cube('Cached centroid',0);obj.shape_key_add(name='Basis');shape=obj.shape_key_add(name='Asymmetric')
 for i,p in enumerate(shape.data):
@@ -76,17 +76,17 @@ s=reset();a=cube('Context A',1);b=cube('Context B',6);select([a,b]);s.arrange_or
 fails(lambda:live.begin(ctx),'BI-L001');assert not live.active(ctx.scene)
 result['contextual_start_preview_guard']=True
 # A timed scene with different shapes; verify gaps independently from the planner.
-s=reset();s.distribution_mode='GEOMETRY';s.distribution_end.position=(1000,0,0)
+s=reset();s.distribution_method='OFFSET';s.distribution_mode='GEOMETRY';s.spacing=2
 objects=[cube('Batch%03d'%i,4+i*4) for i in range(200)]
 for i,o in enumerate(objects):o.scale.x=.5+.25*(i%3)
 select(objects);start=time.perf_counter();_,info=d.apply(ctx,objects);elapsed=time.perf_counter()-start
 intervals=[]
 for o in objects:
     matrix=np.asarray(o.matrix_world);coords=np.asarray([v.co[:] for v in o.data.vertices]);x=coords@matrix[0,:3]+matrix[0,3];intervals.append((x.min(),x.max()))
-intervals.sort();errors=[abs(right[0]-left[1]-info['spacing']) for left,right in zip(intervals,intervals[1:])]
+intervals.sort();errors=[abs(right[0]-left[1]-s.spacing) for left,right in zip(intervals,intervals[1:])]
 assert max(errors)<1e-4,max(errors)
 assert len(placement._point_cache)<=64
-result['geometry_endpoint_200']={'seconds_plan_apply_verify':elapsed,'maximum_gap_error_blender_units':max(errors)}
+result['geometry_offset_200']={'seconds_plan_apply_verify':elapsed,'maximum_gap_error_blender_units':max(errors)}
 # Removing a target during preview can still be cancelled; no dangling session.
 live.begin(ctx);s.distribution_end.position=(1200,0,0)
 deleted=objects[-1];bpy.data.objects.remove(deleted,do_unlink=True);live.finish(ctx,cancel=True);assert not live.active(ctx.scene)
