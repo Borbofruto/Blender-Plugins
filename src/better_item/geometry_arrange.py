@@ -17,11 +17,11 @@ def _bounds(obj,basis):
     return np.asarray(low),np.asarray(high)
 
 
-def plan(context,objects,origins,axes,reference='AUTO',*,spacing=0.,minimum_mm=.00001):
+def plan(context,objects,origins,axes,reference='AUTO',*,spacing=0.,minimum_mm=.00001,preserve_transverse=False):
     if context.mode!='OBJECT':raise ReferencePending('[BI-A003] Switch to Object Mode to distribute whole objects.')
     if not any(axes):raise ReferencePending('[BI-A001] Select an axis for distribution.')
     if not math.isfinite(spacing):raise BetterItemError('[BI-D001] Enter a finite Spacing.')
-    direction=-1 if spacing<0 else 1
+    direction=-1 if spacing<0 or spacing==0 and context.scene.better_item.distribution_last_sign<0 else 1
     gap=abs(spacing)
     if not math.isfinite(minimum_mm) or minimum_mm<=0:raise BetterItemError('[BI-D001] Solver minimum separation must be greater than zero.')
     reference=arrange.operation_reference(context) if reference=='AUTO' else reference
@@ -66,7 +66,7 @@ def plan(context,objects,origins,axes,reference='AUTO',*,spacing=0.,minimum_mm=.
             planned[name][axis]=boundary-(low[axis] if direction>0 else high[axis])
             boundary=planned[name][axis]+(high[axis] if direction>0 else low[axis])+direction*gap
         chains[axis]=order
-    on_line=reference!='SELECTION' and context.scene.better_item.arrange_on_axis and sum(axes)==1
+    on_line=not preserve_transverse and reference!='SELECTION' and context.scene.better_item.arrange_on_axis and sum(axes)==1
     targets={}
     for obj in objects:
         if obj.name==fixed:targets[obj.name]=tuple(origins[obj.name]);continue

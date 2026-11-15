@@ -225,7 +225,7 @@ def endpoint_plan(context,objects,*,basis='ORIGINS',path='SEGMENT',axes=(True,Fa
 
 
 def offset_plan(context,objects,*,basis,axes,spacing,minimum_mm):
-    if basis=='GEOMETRY':return (*geometry_arrange.plan(context,objects,{o.name:tuple(o.matrix_world.translation) for o in objects},axes,'REFERENCE',spacing=spacing,minimum_mm=minimum_mm),{})
+    if basis=='GEOMETRY':return (*geometry_arrange.plan(context,objects,{o.name:tuple(o.matrix_world.translation) for o in objects},axes,'REFERENCE',spacing=spacing,minimum_mm=minimum_mm,preserve_transverse=True),{})
     if not any(axes):raise ReferencePending('[BI-A001] Select at least one distribution axis.')
     if not math.isfinite(spacing):raise BetterItemError('[BI-D001] Enter a finite spacing.')
     matrix,origin,source=arrange.reference_frame(context,'REFERENCE');inverse=np.linalg.inv(matrix)
@@ -246,10 +246,6 @@ def offset_plan(context,objects,*,basis,axes,spacing,minimum_mm):
         order=_order({name:coordinates[name][axis] for name in moving},anchor[axis],spacing,minimum)
         orders[axis]=order
         for i,name in enumerate(order,1):desired[name][axis]=anchor[axis]+i*spacing
-    if context.scene.better_item.arrange_on_axis and sum(axes)==1:
-        for name in moving:
-            for i,enabled in enumerate(axes):
-                if not enabled:desired[name][i]=0.
     targets={name:tuple(origin+matrix@desired[name]-offsets[name]) if name!=fixed else tuple(origins[name]) for name in origins}
     state=_state(objects);source_position=tuple(source.matrix_world.translation) if source else None
     def verify(actual):
@@ -282,7 +278,11 @@ def plan(context,objects,*,basis=None,method=None,path=None,axes=None,spacing=No
 
 
 def apply(context,objects,**kwargs):
-    context.scene.better_item['distribution_schema']=1
+    settings=context.scene.better_item
+    settings['distribution_schema']=1
+    requested=kwargs.get('spacing',settings.spacing)
+    if (kwargs.get('method') or settings.distribution_method)=='OFFSET' and math.isfinite(requested) and requested:
+        settings['distribution_last_sign']=-1 if requested<0 else 1
     context.view_layer.update();targets,verify,info=plan(context,objects,**kwargs)
     return engine.apply_world_positions(objects,targets,verify=verify),info
 
@@ -304,7 +304,7 @@ def inspect_spacing(context,objects):
         fixed=source.name if source and source in objects else None;gaps=[]
         offsets={obj.name:np.zeros(3) if physical or obj.name==fixed and not has_surface_geometry(obj) else placement.offset(obj,s.distribution_mode) for obj in objects}
         values={obj.name:transform@(np.asarray(obj.matrix_world.translation)+offsets[obj.name]-origin) for obj in objects}
-        sign=-1 if s.spacing<0 else 1
+        sign=-1 if s.spacing<0 or s.spacing==0 and s.distribution_last_sign<0 else 1
         for axis,enabled in enumerate(s.axes):
             if not enabled:continue
             if physical:
@@ -358,20 +358,15 @@ def draw(layout,context):
         elif status=='MIXED':
             box.label(text='Mixed spacing.',icon='INFO');box.label(text='Edit Spacing to make it uniform.')
         elif status=='UNAVAILABLE':box.label(text='Complete references to measure spacing.',icon='INFO')
-        box.prop(settings,'spacing_view' if live else 'spacing',text='Set Spacing' if status!='UNIFORM' or not live else 'Spacing')
+        box.prop(settings,'spacing_view' if live else 'spacing',text='Spacing')
         box.label(text='Sign sets direction.'+(' Zero allows contact.' if settings.distribution_mode=='GEOMETRY' else ''))
-        row=box.row();row.enabled=sum(settings.axes)==1;row.prop(settings,'arrange_on_axis')
-    if live:
-        box.label(text='Live Preview',icon='INFO');box.label(text='Uses the initial selection order.')
-        row=box.row(align=True)
-        row.operator('better_item.distribution_preview',text='Confirm',icon='CHECKMARK').action='CONFIRM'
-        row.operator('better_item.distribution_preview',text='Cancel',icon='X').action='CANCEL'
-    else:
-        row=box.row(align=True);row.enabled=bool(context.selected_objects)
+    row=box.row()
+    row.enabled=live or (not settings.distribution_legacy_range and not distribution_preview.contextual_start(context))
+    row.prop(settings,'distribution_live',text='Live')
+    if not live:
+        row=box.row();row.enabled=bool(context.selected_objects)
         row.operator('better_item.distribute',text='Distribute')
-        preview=row.row(align=True);preview.enabled=not settings.distribution_legacy_range and not distribution_preview.contextual_start(context)
-        preview.operator('better_item.distribution_preview',text='Live Preview').action='BEGIN'
-        if distribution_preview.contextual_start(context):box.label(text='Capture Location to a Frame for Live.',icon='INFO')
+    if distribution_preview.contextual_start(context):box.label(text='Capture Location to a Frame for Live.',icon='INFO')
 
 
 def migrate():
@@ -379,6 +374,8 @@ def migrate():
     if not hasattr(bpy.data,'scenes'):return  # addon_utils uses a restricted registration context.
     for scene in bpy.data.scenes:
         settings=scene.better_item
+        if 'distribution_last_sign' not in settings and settings.spacing:
+            settings['distribution_last_sign']=-1 if settings.spacing<0 else 1
         if settings.get('distribution_schema',0)>=1:continue
         if bpy.data.filepath and settings.get('arrange_origin') is not None:
             try:settings.distribution_legacy_range=references.location_kind(bpy.context,settings,True)=='BOUNDING_BOX_CENTER'

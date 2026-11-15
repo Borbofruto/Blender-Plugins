@@ -78,6 +78,23 @@ def _method_changed(self,context):
     _arrange_changed(self,context)
 
 
+def _spacing_changed(self,context):
+    # Zero has no sign: retain the last explicitly entered nonzero direction.
+    if self.spacing:self['distribution_last_sign']=-1 if self.spacing<0 else 1
+    _arrange_changed(self,context)
+
+
+def _live_get(self):return distribution_preview.active(self.id_data)
+
+
+def _live_set(self,value):
+    try:
+        if value:distribution_preview.begin(bpy.context)
+        elif distribution_preview.active(self.id_data):distribution_preview.finish(bpy.context)
+        arrange.clear_error()
+    except BetterItemError as exc:arrange.set_error(self.id_data,exc)
+
+
 def _spacing_view_get(self):
     status,value=distribution.inspect_spacing(bpy.context,list(bpy.context.selected_objects))
     return value if status=='UNIFORM' and value is not None else self.spacing
@@ -151,6 +168,8 @@ class BetterItemSceneSettings(bpy.types.PropertyGroup):
     distribution_start:bpy.props.PointerProperty(type=distribution.BetterItemPointReference)
     distribution_end:bpy.props.PointerProperty(type=distribution.BetterItemPointReference)
     distribution_legacy_range:bpy.props.BoolProperty(options={'HIDDEN'})
+    distribution_live:bpy.props.BoolProperty(name='Live',description='Update distribution while editing controls. Enabling does not move objects; disabling keeps the result. Use Undo to revert edits.',options={'SKIP_SAVE'},get=_live_get,set=_live_set)
+    distribution_last_sign:bpy.props.IntProperty(default=1,min=-1,max=1,options={'HIDDEN'})
     spacing_view:bpy.props.FloatProperty(name='Spacing',unit='LENGTH',precision=5,options=set(),get=_spacing_view_get,set=_spacing_view_set)
     frames:bpy.props.CollectionProperty(type=frames.BetterItemFrame)
     arrange_reference_mode:bpy.props.EnumProperty(name='Reference',items=_reference_modes,options=set(),update=_arrange_changed)
@@ -182,7 +201,7 @@ class BetterItemSceneSettings(bpy.types.PropertyGroup):
         precision=8,description='Minimum distinguishable starting origin separation. Also the minimum interval in Origins mode; Geometry Gap may be zero',options=set(),update=_arrange_changed)
     axes:bpy.props.BoolVectorProperty(name='Move Axes',description='Reference axes used by Position alignment and Distribution',size=3,default=(True,False,False),options=set(),update=_arrange_changed)
     spacing:bpy.props.FloatProperty(name='Spacing',unit='LENGTH',default=.1,precision=5,
-        description='Sign selects direction on each move axis. Origins: coordinate interval. Geometry Bounds: physical gap between boundaries; zero packs touching bounds towards positive axes',options=set(),update=_arrange_changed)
+        description='Sign selects direction on each move axis. Origins: coordinate interval. Geometry Bounds: physical gap between boundaries; zero packs touching bounds in the last nonzero direction',options=set(),update=_spacing_changed)
 
 
 class BETTERITEM_OT_link_group(bpy.types.Operator):
@@ -286,7 +305,7 @@ class BETTERITEM_OT_distribute(bpy.types.Operator):
     def execute(self,context):
         try:
             if distribution_preview.active(context.scene):
-                raise distribution.ReferencePending('[BI-L001] Confirm or cancel Live Preview before running another distribution.')
+                raise distribution.ReferencePending('[BI-L001] Disable Live before running another distribution.')
             objects,origins=engine.selection_origins(context)
             if self.modern or self.method=='ENDPOINT' or self.distribution_mode not in {'ORIGINS','GEOMETRY'}:
                 if context.scene.better_item.distribution_legacy_range and self.method=='OFFSET':

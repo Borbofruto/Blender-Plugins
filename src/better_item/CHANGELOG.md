@@ -1,5 +1,16 @@
 # Better Item — changelog
 
+## 1.7.1
+
+### Fixed
+- Modern Offset preserves unselected coordinates even in saved scenes with On Reference Axis enabled. That transverse alignment option is no longer displayed.
+- Zero Geometry Bounds spacing retains the last entered nonzero direction, persisted in the scene; no Direction selector is added.
+
+### Changed
+- Live is a checkbox: enable without moving or overwriting requested spacing; edit controls to update immediately; disable to keep the result. Distribute appears when Live is off.
+- Actual spacing inspection remains independent and automatic; the live field reads the measured uniform result without seeding the one-shot requested value.
+- Sidebar no longer requires Confirm/Cancel. Existing Python preview operators remain compatible.
+
 ## 1.7.0
 
 ### Added

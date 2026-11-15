@@ -1,0 +1,65 @@
+{
+  "passed": true,
+  "phases": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "initial": {
+    "Start Anchor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "Part 1": [
+      5.0,
+      0.0,
+      0.0
+    ],
+    "Part 2": [
+      12.0,
+      0.0,
+      0.0
+    ],
+    "Part 3": [
+      19.0,
+      0.0,
+      0.0
+    ]
+  },
+  "confirmed": {
+    "Start Anchor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "Part 1": [
+      3.25,
+      0.0,
+      0.0
+    ],
+    "Part 2": [
+      6.75,
+      0.0,
+      0.0
+    ],
+    "Part 3": [
+      10.75,
+      0.0,
+      0.0
+    ]
+  },
+  "draw_errors": [],
+  "checks": [
+    "native Endpoint invoke using active object and cursor",
+    "Mixed is not a fabricated zero",
+    "Live Begin leaves selection unchanged",
+    "live Geometry Bounds updates",
+    "checkbox off keeps result; Spacing edit no longer moves objects",
+    "live Endpoint source coordinates",
+    "checkbox off keeps Endpoint result"
+  ]
+}

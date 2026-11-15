@@ -1,4 +1,4 @@
-# Better Item 1.7.0
+# Better Item 1.7.1
 
 A live Transform panel with declared Blender 5.0+ compatibility. Runtime validation for this release used Blender 5.2.3 LTS on Windows; Blender 5.0 and 5.2.4 were not executed. GPL-3.0-or-later. Author: Gabriel Webber do Nascimento.
 
@@ -126,7 +126,7 @@ Position alignment uses origins. Selection-derived Bounds exposes Min/Center/Max
 
 ### Distribution method
 
-- **Offset:** signed Spacing in the shared reference axes. Positive goes positive; negative goes negative. No Direction selector. Choose one axis or multiple independent axes. On Reference Axis puts placement points on the chosen single reference line.
+- **Offset:** signed Spacing in the shared reference axes. Positive goes positive; negative goes negative. No Direction selector. Choose one axis or multiple independent axes. Unselected reference coordinates are preserved. Offset does not also align objects onto a reference line; the old On Reference Axis setting is ignored by this method. In Geometry Bounds, zero retains the last nonzero spacing direction (positive only if no direction has been entered yet). This direction is saved with the scene.
 - **Endpoint / Between Points:** Start and End define a 3D segment and its direction. No external Orientation is required. Start uses shared Location by default; Override Start gives it a separate Location source.
 - **Endpoint / Reference Axis:** projects End onto exactly one Move axis through Start. This explicitly uses the shared Orientation. An endpoint object can be off that line; its position is used as an axial limit, and it is not moved.
 
@@ -158,13 +158,13 @@ Offset preserves the requested ordering rule: opposite half-space first, then ne
 
 ### Current spacing and Live Preview
 
-Offset inspection includes the anchor-to-first interval, the selected axes and the selected placement basis. A uniform selection displays its measured spacing. Mixed spacing is a normal state and is never represented as a fabricated zero or average. Outside a preview, Set Spacing is an explicit requested value; inside a preview the editable Spacing field reads back the current uniform result. Endpoint intervals/gaps are derived from its references and are read-only.
+Offset inspection includes the anchor-to-first interval, the selected axes and the selected placement basis. A uniform selection displays its measured spacing. Mixed spacing is a normal state and is never represented as a fabricated zero or average. With Live off, Spacing is an explicit requested value and Distribute applies it. With Live on, the editable Spacing field reads back the current uniform result. Current is measured automatically in both modes; enabling Live does not overwrite the requested spacing. Endpoint intervals/gaps are derived from its references and are read-only.
 
-**Live Preview** captures a selection without moving it. The first parameter edit normalizes it. Every later edit replans from the original locations and selection, rather than repeatedly reordering the previous result. Confirm retains the current poses; Cancel restores the initial native locations. Invalid edits retain the last valid preview. Selection/external transform changes stop further preview edits until Confirm/Cancel; removed targets can still be cancelled safely. Selection-dependent Median/Bounding Box starts must first be captured into an independent Frame for Live Preview; a one-shot operation can still capture their initial context. Active Object remains valid as a fixed anchor. Only one preview session can be open at a time. Native undo/redo clears the transient session; ordinary resulting transforms remain standard .blend data.
+The **Live** checkbox captures a selection without moving it. The first parameter edit normalizes it. Every later edit replans from the original locations and selection, rather than repeatedly reordering the previous result. Unchecking Live keeps current poses and ends live editing; there are no Confirm/Cancel buttons in the sidebar. Invalid edits retain the last valid result. After changing the selection or editing target transforms elsewhere, disable and re-enable Live to capture the new state. Selection-dependent Median/Bounding Box starts must first be captured into an independent Frame for Live; a one-shot operation can still capture their initial context. Active Object remains valid as a fixed anchor. Only one live session can be open at a time. Native undo/redo clears the transient session; ordinary resulting transforms remain standard .blend data.
 
 The session updates on its controls, not on a playback timer. It creates no parenting, constraints, drivers, keyframes or animation runtime. Changing a linked source externally does not establish a permanent arrangement relationship; edit a preview control to recompute, or run a new operation. Preview state is not serialized: reopening a saved file retains the saved ordinary poses, not an ongoing editing session.
 
-The operator remains REGISTER/UNDO and supports Blender's Adjust Last Operation (F9) for copied method, path, basis, axes and spacing parameters. Source choices are scene settings; changing those inside the sidebar requires a new operation or an active preview rather than pretending F9 owns the sources. Python callers that need undo recording should pass the native undo argument, e.g. `bpy.ops.better_item.distribution_preview('EXEC_DEFAULT', True, action='CONFIRM')`.
+The operator remains REGISTER/UNDO and supports Blender's Adjust Last Operation (F9) for copied method, path, basis, axes and spacing parameters. Source choices are scene settings; changing those inside the sidebar requires a new operation or an active preview rather than pretending F9 owns the sources. The legacy preview operator remains available to Python callers for backward compatibility; the sidebar uses the Live checkbox.
 
 ### Reference context and compatibility
 
@@ -289,3 +289,5 @@ Executed on Blender 5.2.3 LTS / Windows:
 Existing suites include 1,500 locked-parent cases, 1,200 Parent Inverse cancellations, 842 mm sweep moves, arrangements, reference parity/migration, cache, signed-scale rotation and preservation of retired authoring data.
 
 Tests and machine-readable results are in [the repository](https://github.com/Borbofruto/Blender-Plugins/tree/main/tests/better_item), outside the installable ZIP. Historical delivery records are in CHANGELOG.md. The declared Blender 5.0 minimum is not a runtime-tested compatibility guarantee for every version; only 5.2.3 was available for this delivery.
+
+1.7.1 corrects transverse Offset movement and zero-spacing direction, and replaces the sidebar preview transaction buttons with a Live checkbox. See the [1.7.1 correction report](https://github.com/Borbofruto/Blender-Plugins/blob/main/docs/better_item/release-1.7.1.md).

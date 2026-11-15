@@ -29,15 +29,12 @@ def begin(context):
     global _session
     if context.mode!='OBJECT':raise ReferencePending('[BI-A003] Switch to Object Mode before starting Live Preview.')
     active(context.scene)
-    if _session is not None:raise ReferencePending('[BI-L001] Confirm or cancel the existing Live Preview first.')
+    if _session is not None:raise ReferencePending('[BI-L001] Disable Live in the existing scene before enabling it here.')
     if context.scene.better_item.distribution_legacy_range:raise ReferencePending('[BI-L001] Switch Method to choose explicit distribution references before starting Live Preview on this legacy file.')
     if contextual_start(context):raise ReferencePending('[BI-L001] Capture this selection-dependent Location into a Frame, then use that Frame for Live Preview. One-shot distribution can still capture the selection at operation start.')
     objects=list(context.selected_objects)
     if not objects:raise ReferencePending('[BI-A003] Select objects before starting Live Preview.')
     context.view_layer.update()
-    status,value=distribution.inspect_spacing(context,objects)
-    if status=='UNIFORM' and value is not None and context.scene.better_item.distribution_method=='OFFSET':
-        context.scene.better_item['spacing']=value
     _session={'scene':context.scene.as_pointer(),'objects':objects,'active':context.active_object,
         'initial':{obj:tuple(obj.location) for obj in objects},
         'latest':{obj:tuple(obj.location) for obj in objects},
@@ -48,12 +45,12 @@ def _objects(context):
     if not active(context.scene):raise ReferencePending('[BI-L001] Start Live Preview for this scene first.')
     try:
         if context.mode!='OBJECT' or set(context.selected_objects)!=set(_session['objects']) or context.active_object!=_session['active']:
-            raise ReferencePending('[BI-L001] The selection changed. Confirm or cancel Live Preview before arranging another selection.')
+            raise ReferencePending('[BI-L001] The selection changed. Disable Live, then enable it again to capture the new selection.')
         for obj in _session['objects']:
-            if obj.name not in context.scene.objects:raise ReferencePending('[BI-L001] A preview object was removed. Confirm to close this session.')
+            if obj.name not in context.scene.objects:raise ReferencePending('[BI-L001] A live object was removed. Disable Live to close this session.')
             if tuple(obj.location)!=_session['latest'][obj] or tuple(v for row in obj.matrix_world.to_3x3() for v in row)!=_session['linear'][obj]:
-                raise ReferencePending('[BI-L001] A preview transform changed outside the distribution controls. Confirm to keep it, or cancel to restore the initial locations.')
-    except ReferenceError as exc:raise ReferencePending('[BI-L001] A preview object no longer exists. Confirm to close the session.') from exc
+                raise ReferencePending('[BI-L001] A preview transform changed outside the distribution controls. Disable Live, then enable it again to use the changed transforms. Undo can restore previous edits.')
+    except ReferenceError as exc:raise ReferencePending('[BI-L001] A live object no longer exists. Disable Live to close the session.') from exc
     return _session['objects']
 
 
