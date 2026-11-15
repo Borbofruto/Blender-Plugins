@@ -8,6 +8,8 @@ Each addon uses a stable installer filename. Updates replace that file; earlier 
 
 [Download ZIP](https://github.com/Borbofruto/Blender-Plugins/raw/refs/heads/main/addons/better_item.zip) | [Manual](src/better_item/README.md) | [Release report](docs/better_item/release-1.7.3.md) | [Review and limitations](docs/better_item/review-1.6.1.md) | [Source](src/better_item) | [Tests](tests/better_item)
 
+[AI maintainer handoff — Portuguese](docs/better_item/continuidade/README.md) | [Full engineering manual](docs/better_item/CONTINUIDADE-IA.md) | [Audited source snapshot](docs/better_item/handoff-1.7.3.json)
+
 A spatial-precision Transform, Reference Frames and Align/Distribute addon for Blender 5.0+, tested in Blender 5.2.3 LTS. Compact English XYZ fields support proportional links, physical projected Dimensions, origin alignment and signed distribution.
 
 ### Distribution by references, points and occupied geometry

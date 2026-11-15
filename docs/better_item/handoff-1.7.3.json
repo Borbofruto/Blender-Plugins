@@ -1,0 +1,283 @@
+{
+  "schema_version": 1,
+  "document_date": "2026-11-15",
+  "runtime_version": "1.7.3",
+  "baseline_commit": "0421e9df30b13e4cf062d9ffcd5b30759c5b2ca9",
+  "repository": "Borbofruto/Blender-Plugins",
+  "runtime_testing": {
+    "blender": "5.2.3 LTS",
+    "platform": "Windows",
+    "other_declared_versions_runtime_tested": false
+  },
+  "installer": {
+    "path": "addons/better_item.zip",
+    "sha256": "151bf9ccf0d9f780647130301aeed7eb02bda437cb3db0fa0a348928fced2fa8",
+    "git_blob_sha": "6441b7e2a74c8d6728ee2b498353deda3e5c723d",
+    "size": 95533
+  },
+  "runtime_files": [
+    {
+      "path": "src/better_item/CHANGELOG.md",
+      "git_blob_sha": "64f67d9f689784a920ac7b20b0843a91b4673166",
+      "size": 5677
+    },
+    {
+      "path": "src/better_item/LICENSE",
+      "git_blob_sha": "e62ec04cdeece724caeeeeaeb6ae1f6af1bb6b9a",
+      "size": 35129
+    },
+    {
+      "path": "src/better_item/README.md",
+      "git_blob_sha": "a558b2f619b4f36579ae60c1d56f3ede71a7a23b",
+      "size": 44052
+    },
+    {
+      "path": "src/better_item/__init__.py",
+      "git_blob_sha": "497eecc0ceec51905c5c4959d4446142be58273c",
+      "size": 37155
+    },
+    {
+      "path": "src/better_item/arrange.py",
+      "git_blob_sha": "751a7475f0fdd0726c1e279c2392565ca167bbef",
+      "size": 12277
+    },
+    {
+      "path": "src/better_item/blender_manifest.toml",
+      "git_blob_sha": "fcb92fbe2c140f90a9df652fab76d82aa3fe1256",
+      "size": 403
+    },
+    {
+      "path": "src/better_item/diagnostics.py",
+      "git_blob_sha": "7c0e0f1752a944caab2d43fd78b4c4317d9b850b",
+      "size": 4400
+    },
+    {
+      "path": "src/better_item/distribution.py",
+      "git_blob_sha": "56c6a3083a7c5cf95345038a61fbde06011d146f",
+      "size": 27459
+    },
+    {
+      "path": "src/better_item/distribution_preview.py",
+      "git_blob_sha": "03ffdcfdbd6798e439431c0a370cbb55289f8c5e",
+      "size": 12562
+    },
+    {
+      "path": "src/better_item/engine.py",
+      "git_blob_sha": "c30df854d36407504bfec81d2aa84fa300c33447",
+      "size": 9090
+    },
+    {
+      "path": "src/better_item/frames.py",
+      "git_blob_sha": "dd69451be3ad112fef0d6c15cf7a22967c15608a",
+      "size": 27380
+    },
+    {
+      "path": "src/better_item/geometry_arrange.py",
+      "git_blob_sha": "a870bc7dbb15fcc3a96b35cc643370f27741a712",
+      "size": 10086
+    },
+    {
+      "path": "src/better_item/math_core.py",
+      "git_blob_sha": "945b9817f98b5e2668b5a425e525115a97fcaf6a",
+      "size": 5127
+    },
+    {
+      "path": "src/better_item/native_refs.py",
+      "git_blob_sha": "291e5a0c1dd4acdb38d21c689c7636617fdddc13",
+      "size": 16554
+    },
+    {
+      "path": "src/better_item/orientation.py",
+      "git_blob_sha": "c5a7c4f835724eaf68481f79bdf16bfed4d31189",
+      "size": 2973
+    },
+    {
+      "path": "src/better_item/placement.py",
+      "git_blob_sha": "5f588098c137d3506a08cb5a2f70f219250200ec",
+      "size": 7406
+    },
+    {
+      "path": "src/better_item/references.py",
+      "git_blob_sha": "794c98959b0195f42665aa05ae75c6557399d3dc",
+      "size": 20183
+    },
+    {
+      "path": "src/better_item/trace.py",
+      "git_blob_sha": "af859f142c1d34e15d5a3e3f9b5675b781b71194",
+      "size": 7735
+    },
+    {
+      "path": "src/better_item/transform_view.py",
+      "git_blob_sha": "0901b78df6a55c39c393a0514db56b33a2ed0882",
+      "size": 25751
+    }
+  ],
+  "historical_docs": [
+    {
+      "path": "docs/better_item/delivery-history-through-1.6.0.md",
+      "git_blob_sha": "2c950f57d33bc923ea397926a966e7f80a456bde"
+    },
+    {
+      "path": "docs/better_item/feedback-1.5.6.md",
+      "git_blob_sha": "1cfbd97a3e2201cec9803d5991df3eb45e284e16"
+    },
+    {
+      "path": "docs/better_item/feedback-1.5.7.md",
+      "git_blob_sha": "a3be23937992095f1248ed6640447f9c28830570"
+    },
+    {
+      "path": "docs/better_item/maintenance-1.5.5.md",
+      "git_blob_sha": "b04861b5f7ad3edfce385c89341fc8859c5bca53"
+    },
+    {
+      "path": "docs/better_item/release-1.6.0.md",
+      "git_blob_sha": "dceb5d71220275848c86df52c5fd6009cb65dcff"
+    },
+    {
+      "path": "docs/better_item/release-1.7.0.md",
+      "git_blob_sha": "1fd3ad6669866d6fee6ce88c4d877341d392b6a6"
+    },
+    {
+      "path": "docs/better_item/release-1.7.1.md",
+      "git_blob_sha": "71156311317a1a8871050498bb3083d60014a10f"
+    },
+    {
+      "path": "docs/better_item/release-1.7.2.md",
+      "git_blob_sha": "aadb446e0b7850543d7cf68b271aeecfc979eca4"
+    },
+    {
+      "path": "docs/better_item/release-1.7.3.md",
+      "git_blob_sha": "2e891f4f561ec6087c95db4c3e914901fa690ec7"
+    },
+    {
+      "path": "docs/better_item/review-1.6.1.md",
+      "git_blob_sha": "58bffa5f7fd16eaf5c6e3307251f2530911acca9"
+    },
+    {
+      "path": "docs/better_item/ui-1.6.2.md",
+      "git_blob_sha": "60c35312cbb454a2e64d923a228cbd864b83618b"
+    }
+  ],
+  "test_scripts": [
+    "tests/better_item/benchmark_dimensions.py",
+    "tests/better_item/test_better_item.py",
+    "tests/better_item/test_better_item_170.py",
+    "tests/better_item/test_better_item_171.py",
+    "tests/better_item/test_better_item_173.py",
+    "tests/better_item/test_better_item_arrange.py",
+    "tests/better_item/test_better_item_arrangement161.py",
+    "tests/better_item/test_better_item_cache.py",
+    "tests/better_item/test_better_item_cache154.py",
+    "tests/better_item/test_better_item_cleanup155.py",
+    "tests/better_item/test_better_item_collapse172.py",
+    "tests/better_item/test_better_item_dependencies157.py",
+    "tests/better_item/test_better_item_directions154.py",
+    "tests/better_item/test_better_item_edge160.py",
+    "tests/better_item/test_better_item_edge170.py",
+    "tests/better_item/test_better_item_features160.py",
+    "tests/better_item/test_better_item_feedback157.py",
+    "tests/better_item/test_better_item_frame_creation.py",
+    "tests/better_item/test_better_item_frames.py",
+    "tests/better_item/test_better_item_guards153.py",
+    "tests/better_item/test_better_item_gui153.py",
+    "tests/better_item/test_better_item_gui154.py",
+    "tests/better_item/test_better_item_gui155.py",
+    "tests/better_item/test_better_item_gui157.py",
+    "tests/better_item/test_better_item_gui160.py",
+    "tests/better_item/test_better_item_gui161.py",
+    "tests/better_item/test_better_item_gui162.py",
+    "tests/better_item/test_better_item_gui170.py",
+    "tests/better_item/test_better_item_gui171.py",
+    "tests/better_item/test_better_item_gui173.py",
+    "tests/better_item/test_better_item_gui_inspection172.py",
+    "tests/better_item/test_better_item_inspection172.py",
+    "tests/better_item/test_better_item_legacy155.py",
+    "tests/better_item/test_better_item_live.py",
+    "tests/better_item/test_better_item_live173.py",
+    "tests/better_item/test_better_item_locked_roundoff.py",
+    "tests/better_item/test_better_item_matrix160.py",
+    "tests/better_item/test_better_item_matrix170.py",
+    "tests/better_item/test_better_item_migration173.py",
+    "tests/better_item/test_better_item_native_axes.py",
+    "tests/better_item/test_better_item_persistence170.py",
+    "tests/better_item/test_better_item_precision172.py",
+    "tests/better_item/test_better_item_preview170.py",
+    "tests/better_item/test_better_item_reference_gui142.py",
+    "tests/better_item/test_better_item_reference_gui152.py",
+    "tests/better_item/test_better_item_reference_migration151.py",
+    "tests/better_item/test_better_item_reference_parity.py",
+    "tests/better_item/test_better_item_reference_ui151.py",
+    "tests/better_item/test_better_item_reference_ui162.py",
+    "tests/better_item/test_better_item_references.py",
+    "tests/better_item/test_better_item_regressions.py",
+    "tests/better_item/test_better_item_review161.py",
+    "tests/better_item/test_better_item_scope152.py",
+    "tests/better_item/test_better_item_stress157.py",
+    "tests/better_item/test_better_item_sync_gui.py",
+    "tests/better_item/test_better_item_ui_undo.py",
+    "tests/better_item/test_better_item_zero_location156.py"
+  ],
+  "release_evidence": [
+    {
+      "path": "tests/better_item/results/1.7.3/test_better_item_170.results.json",
+      "git_blob_sha": "b3173fca86f04cef5c0718e95be688df01fa84d3"
+    },
+    {
+      "path": "tests/better_item/results/1.7.3/test_better_item_171.results.json",
+      "git_blob_sha": "ad6860a58c45990e446720c553733ac67a5f9a84"
+    },
+    {
+      "path": "tests/better_item/results/1.7.3/test_better_item_173.results.json",
+      "git_blob_sha": "34359b294f7c7d8425528a2320a5659ee31b2486"
+    },
+    {
+      "path": "tests/better_item/results/1.7.3/test_better_item_collapse172.results.json",
+      "git_blob_sha": "eb37b1c2386b594363f4c1643391339233fad20e"
+    },
+    {
+      "path": "tests/better_item/results/1.7.3/test_better_item_edge170.results.json",
+      "git_blob_sha": "4291edb933fbfa7cf90051daba4a0bf3574ea8d4"
+    },
+    {
+      "path": "tests/better_item/results/1.7.3/test_better_item_features160.results.json",
+      "git_blob_sha": "4356c86e54c7bc7f1a3043b256318576913d17b4"
+    },
+    {
+      "path": "tests/better_item/results/1.7.3/test_better_item_gui173.results.json",
+      "git_blob_sha": "a6ee5735a7be73cceb285ab75d17e6cc0ad87437"
+    },
+    {
+      "path": "tests/better_item/results/1.7.3/test_better_item_inspection172.results.json",
+      "git_blob_sha": "c5907fc0d7bc70faf31336158cb4534bf51730b8"
+    },
+    {
+      "path": "tests/better_item/results/1.7.3/test_better_item_live173.results.json",
+      "git_blob_sha": "5432a8da4d15ce21087ade333c849fa5492f459a"
+    },
+    {
+      "path": "tests/better_item/results/1.7.3/test_better_item_matrix160.results.json",
+      "git_blob_sha": "7310d29056d1944b2b9192e3d1f44d7b8ca8532a"
+    },
+    {
+      "path": "tests/better_item/results/1.7.3/test_better_item_matrix170.results.json",
+      "git_blob_sha": "0ab38f5ad9fd440641bcf16bb1cff2f4f89312fa"
+    },
+    {
+      "path": "tests/better_item/results/1.7.3/test_better_item_migration173.results.json",
+      "git_blob_sha": "da37411cf3a9c39eba612a444c5049e7841614f2"
+    },
+    {
+      "path": "tests/better_item/results/1.7.3/test_better_item_precision172.results.json",
+      "git_blob_sha": "1e706cde164c255dfeae7a360501079f386be742"
+    },
+    {
+      "path": "tests/better_item/results/1.7.3/test_better_item_preview170.results.json",
+      "git_blob_sha": "b8da1b49f63059c95860a2b9b176ab68fdc002ea"
+    }
+  ],
+  "notes": [
+    "Snapshot of the 1.7.3 implementation; a documentation-only commit can follow this baseline.",
+    "Historical result folders do not imply every suite was rerun in 1.7.3.",
+    "No runtime files or installer are changed by the handoff documentation."
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "passed": true,
+  "date": "2026-11-15",
+  "baseline_runtime_commit": "0421e9df30b13e4cf062d9ffcd5b30759c5b2ca9",
+  "runtime_files_matched_to_remote_git_blobs": 19,
+  "installer_sha256_unchanged": "151bf9ccf0d9f780647130301aeed7eb02bda437cb3db0fa0a348928fced2fa8",
+  "runtime_or_installer_modified_by_documentation": false,
+  "documentation": {
+    "words": 15684,
+    "characters": 111379,
+    "sections": 25,
+    "chapter_count": 5,
+    "local_links_checked": 45,
+    "pinned_repository_links_checked": 34,
+    "external_documentation_references": 35,
+    "external_reference_note": "Official search/help consulted; some full-page browser opens failed. No blanket HTTP-200 claim."
+  },
+  "recipe_checks": {
+    "negative_control_expected_exit": 1,
+    "negative_control_observed_exit": 1,
+    "headless_173_exit": 0,
+    "headless_live173_exit": 0,
+    "real_gui173_exit": 0,
+    "real_gui_passed": true,
+    "draw_errors": []
+  },
+  "scope_note": "Documentation and recipe verification only. Other historical suites were not rerun in this documentation task."
+}
