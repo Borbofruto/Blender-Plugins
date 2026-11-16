@@ -1,0 +1,19 @@
+PASS group1 {'cases': 8064, 'accepted': 5408, 'coded_atomic_rejections': 2656, 'rejection_codes': {'[BI-T009]': 1760, '[BI-V001]': 896}}
+PASS group2 {'actual_native_rotation_comparisons': 192, 'single_axis_gimbal_direction_comparisons': 54}
+PASS group3 {'parent_types': 4, 'collapsed_child_cases': 3, 'deep_signed_delta_chain': True}
+PASS group4 {'extreme_signed_scale_cases': 16}
+PASS group5 {'float64_truth_from_stored_vertices': 3}
+PASS group6 {'chained_edits': 1000, 'max_ratio_drift': np.float64(1.4916061719105755e-07), 'linked_lock_rollback': True}
+PASS group7 {'angle_zero_turn_crossing_cases': 5, 'gimbal_lock_rejected': True}
+PASS group8 {'chain_lengths': [2, 20, 100], 'cycle_rename_removal_cases': 3}
+PASS group9 {'coordinate_unit_cases': 8, 'expected_precision_rejections': 0, 'ambiguity_and_collapse': True, 'selected_parent_child_operations': 2}
+PASS group10 {'array_mirror_shape_key_cases': 3}
+00:13.047  blend            | Read blend: "C:\work\better-item-matrix-1.7.9\results\5.1.2\tmprx7kn2d0\roundtrip.blend"
+Info: Saved as "roundtrip.blend"
+PASS group11 {'undo_redo_creation': True, 'copy_on_write': True, 'blend_roundtrip': True}
+00:13.062  asset.catalog    | WARNING path not found: C:\work\better-item-matrix-1.7.9\results\5.1.2\tmprx7kn2d0\
+00:13.062  asset.catalog    | WARNING path not found: C:\work\better-item-matrix-1.7.9\results\5.1.2\tmprx7kn2d0\
+00:13.125  blend            | Saved session recovery to "C:\Users\gabri\AppData\Local\Temp\quit.blend"
+157 ELEVEN-GROUP STRESS PASSED
+
+Blender quit

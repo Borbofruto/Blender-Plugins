@@ -53,14 +53,68 @@ Com a orientação Normal em uso, o timer de 0,2 s percorria todos os vértices,
 
 Verificado: troca de um vértice por outro com a mesma contagem continua detectada.
 
-## Validação executada
+## Validação
 
-- `test_better_item_gestures179.py` (novo): deriva, zero, mudança externa, limite de âncoras, instanciadores adicionados/removidos e fingerprint de Normal. Passa em 4.2.23 e 5.3.0; o caso de deriva **falha na 1.7.8**.
-- Suítes legadas (reg, g1, o1, e2, ui2, x2, l2, q2, q5, p6, b1, new152, m2, n2, p10, q8, q9, q10): saída idêntica entre 1.7.8 e 1.7.9 nas duas builds, exceto o caminho impresso. m2 e p10 terminam com traceback, idêntico na 1.7.8; a causa não foi investigada nesta rodada.
+### Executada no PC Windows x64 da Gabriel, 16/11/2026
+
+Instalador: `addons/better_item.zip`, 99.349 bytes, SHA256 `beb561ad96f7d2b6ccb56cbf52d047b828b9aea51f97bb6494d53b73c63f6bdb`, gerado com `blender --command extension build` (5.3.0) a partir de `git archive` da branch (finais de linha LF, como o ZIP 1.7.8; os 10 módulos inalterados têm o mesmo hash da 1.7.8). `extension validate`: sucesso. `python_source_sha256`: `3339f134599139b2abcd1855ccc48170caa124e01d40a97cc52eb5180530dcd3`.
+
+**Matriz padrão, 23 entradas** (API probe, 21 anteriores e `test_better_item_gestures179.py` em `background`), portáteis oficiais conferidos com o SHA256 oficial, perfis isolados, uma extração por vez:
+
+| Build | Resultado |
+| --- | --- |
+| 4.2.0, 4.2.23, 4.3.2, 4.4.3, 4.5.16 | 23/23 em cada |
+| 5.0.1, 5.1.2, 5.2.4, 5.3.0 | 23/23 em cada |
+| 5.3.0 instalado (perfil isolado, `--factory-startup`) | 23/23 |
+
+Total: 230 execuções, 0 falhas. Os seis casos do teste novo rodaram em todas as builds (nenhum `skipped`). O teste novo, rodado contra o ZIP 1.7.8 no 5.3.0, **falha** no caso de deriva: `(5, 10, 14,99998951)`.
+
+**Benchmark** (`benchmark_cache_invalidation.py`, mesmo script nos dois ZIPs, processos novos e em sequência, sem outros testes). Foi acrescentado o cenário `cold_first_read`, que limpa todos os caches de runtime antes de cada amostra (mediana de 3); o `cold_seconds` antigo só limpava a inspeção da distribuição.
+
+| Primeira leitura (mediana) | 4.2.23: 1.7.8 | 4.2.23: 1.7.9 | 5.3.0: 1.7.8 | 5.3.0: 1.7.9 |
+| --- | ---: | ---: | ---: | ---: |
+| Geometry Bounds, 600 | 0,290 s | 0,098 s | 0,379 s | 0,101 s |
+| Volume, 600 | 0,419 s | 0,227 s | 0,543 s | 0,258 s |
+| Geometry Bounds, 1.500 | 0,733 s | 0,247 s | 1,014 s | 0,254 s |
+| Volume, 1.500 | 1,059 s | 0,551 s | 1,443 s | 0,654 s |
+
+Edição de shader usado (invalida a inspeção) segue o mesmo ganho: Geometry/1.500 0,96 → 0,26 s no 5.3.0. Transformação alheia, Origins e sync em Object Mode ficaram iguais (diferenças abaixo de 1 ms). Contagens de inspeção idênticas entre as versões.
+
+**Edit Mode, Normal** (`benchmark_editmode_normal179.py`, estudo `gui_sync` novo, janela real, UV sphere com 130.562 vértices, orientação Normal, `native_refs.sync()` chamado como o timer de 0,2 s):
+
+| | 4.2.23: 1.7.8 | 4.2.23: 1.7.9 | 5.3.0: 1.7.8 | 5.3.0: 1.7.9 |
+| --- | ---: | ---: | ---: | ---: |
+| Tick ocioso (mediana de 30) | 35,9 ms | 0,041 ms | 46,6 ms | 0,060 ms |
+| Varreduras de elementos em 30 ticks | 30 | 0 | 30 | 0 |
+| Troca por outro vértice, mesma contagem | 72,5 ms | 70,6 ms | 93,5 ms | 108,1 ms |
+| Tick após o intervalo de 2 s | 35,9 ms | 35,8 ms | 44,0 ms | 48,4 ms |
+
+A troca de vértice com a mesma contagem foi detectada nas duas versões (amostra de Normal diferente). Uma varredura completa a cada 2 s continua existindo como rede de proteção. São medições sintéticas, sem limite de aprovação; não são promessa de FPS.
+
+### Problema encontrado na validação, não corrigido
+
+**A âncora das edições linkadas não leva em conta a referência de orientação.** A chave é (objeto, grupo, links). Reprodução (`tests/better_item/results/1.7.9/extra/`): Location linkada em X/Y, Reference/Global, arrastar X até 0, o que dá `(0, 0, 3)`. Trocar a Orientation do objeto para um Frame girado 90° em Z com a mesma origem; a leitura continua `(0, 0, 3)`, então a âncora casa. Digitar X = 1:
+
+- 1.7.8: recusa com BI-T008.
+- 1.7.9: aceita e usa a razão medida em Global; o objeto vai para world `(-2, 1, 3)`.
+
+Só acontece quando a leitura no referencial novo coincide exatamente com a anterior (na prática, depois de colapsar em zero). Correção provável: incluir a identidade da referência resolvida na chave. Aguarda decisão.
+
+### Executada antes, em Linux com `bpy` do pip (relatório da sessão que gerou o patch, não repetido aqui)
+
+- `test_better_item_gestures179.py` passa em 4.2.23 e 5.3.0; o caso de deriva falha na 1.7.8.
+- Suítes legadas (reg, g1, o1, e2, ui2, x2, l2, q2, q5, p6, b1, new152, m2, n2, p10, q8, q9, q10): saída idêntica entre 1.7.8 e 1.7.9, exceto o caminho impresso. m2 e p10 terminam com traceback, idêntico na 1.7.8; causa não investigada.
 - Frescor de cache: 0 resultados velhos em 12 cenários × 3 bases.
+- Tempos de Linux citados nas seções acima.
 
 ## Não executado
 
-- Matriz Windows x64 de 22 testes e as demais builds portáteis (4.2.0, 4.3, 4.4, 4.5, 5.0, 5.1, 5.2): exigem o runner da suíte no PC.
-- Passada manual de mouse/F9, Undo/Redo, GPU e a matriz do instalador. `tests/better_item/compatibility/suite.json` ainda fixa o SHA do instalador 1.7.8; o ZIP 1.7.9 não foi gerado nesta branch.
-- Arrasto físico no painel (o teste chama o setter da propriedade, como o painel faz a cada passo).
+- Passada manual com mouse (checklist abaixo), F9, GPU/backends, macOS/Linux GUI.
+- Arrasto físico no painel: os testes chamam o setter da propriedade, como o painel faz a cada passo.
+
+### Checklist manual (mouse)
+
+1. Arrastar com o mouse um campo X linkado de Location, Rotation e Scale atravessando 0, com e sem Ctrl; depois Ctrl+Z e Ctrl+Shift+Z.
+2. Digitar valores durante o gesto e cancelar com Esc.
+3. Normal em Edit Mode com malha densa: selecionar por clique, por caixa de seleção e trocar de vértice; o eixo deve acompanhar sem atraso perceptível.
+4. Dimensions com Geometry Nodes e malha densa: arrasto contínuo do campo.

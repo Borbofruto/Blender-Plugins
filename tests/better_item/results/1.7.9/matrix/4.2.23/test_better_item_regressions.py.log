@@ -1,0 +1,5 @@
+TBBmalloc: skip allocation functions replacement in ucrtbase.dll: unknown prologue for function _msize
+REPORTED REGRESSIONS PASSED: linked zero/crossing, 128 signed-scale rotations, source consistency, delta transforms, parent locks, unsupported geometry and removed enums
+Blender 4.2.23 LTS (hash d0cbe84903e8 built 2026-07-21 01:34:46)
+
+Blender quit

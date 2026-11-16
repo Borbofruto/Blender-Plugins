@@ -1,0 +1,6 @@
+00:00.563  blend            | Read blend: "C:\work\better-item-matrix-1.7.9\results\5.1.2\tmpqbmbcf72\features.blend"
+Info: Saved as "features.blend"
+160 FEATURES PASSED {"key_geometry": 4, "projected_bounds": 10, "geometry_rollback": 3, "orientation": 8, "ux": "INFO pending, WARNING domain failures, ERROR unexpected; no red pending; solver collapsed; independent frame components", "persistence": true}
+Blender 5.1.2 (hash ec6e62d40fa9 built 2026-05-19 01:37:34)
+
+Blender quit

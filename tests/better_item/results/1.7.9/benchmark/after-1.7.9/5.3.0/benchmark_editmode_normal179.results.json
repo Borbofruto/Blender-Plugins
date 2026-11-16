@@ -1,0 +1,27 @@
+{
+  "passed": true,
+  "blender": "5.3.0",
+  "module": "C:\\work\\better-item-matrix-1.7.9\\results\\bench-5.3.0\\better_item\\__init__.py",
+  "walker": "_selection_states",
+  "vertices": 130562,
+  "first_sample_ms": 92.49790001194924,
+  "idle": {
+    "iterations": 30,
+    "median_ms": 0.059550016885623336,
+    "max_ms": 0.12240000069141388,
+    "walks": 0
+  },
+  "swap_same_count_ms": 108.14789996948093,
+  "idle_after_swap": {
+    "iterations": 30,
+    "median_ms": 0.060049991589039564,
+    "max_ms": 0.13290002243593335,
+    "walks": 0
+  },
+  "after_safety_interval": {
+    "iterations": 1,
+    "median_ms": 48.42180002015084,
+    "max_ms": 48.42180002015084,
+    "walks": 1
+  }
+}

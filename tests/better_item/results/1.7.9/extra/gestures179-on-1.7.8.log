@@ -1,0 +1,19 @@
+﻿blender.exe : Traceback (most recent call last):
+No linha:1 caractere:828
++ ... ocation $w; & "C:\Program Files\Blender Foundation\Blender 5.3\blende ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Traceback (most recent call last)::String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  File "C:\work\better-item-matrix-1.7.8\adhoc-gestures\test_better_item_gestures179.py", line 262, in <module>
+    case()
+    ~~~~^^
+  File "C:\work\better-item-matrix-1.7.8\adhoc-gestures\test_better_item_gestures179.py", line 79, in drag_ratio
+    assert abs(y / x - 2) < 1e-9 and abs(z / x - 3) < 1e-9, (space, x, y, z)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ('REFERENCE', np.float64(5.0), np.float64(10.0), np.float64(14.99998950958252))
+
+Error: script failed, file: 'C:\work\better-item-matrix-1.7.8\adhoc-gestures\test_better_item_gestures179.py', exiting.
+Blender 5.3.0 (hash 02f0899d78e3 built 2026-11-10 01:33:43)
+
+Blender quit

@@ -1,0 +1,65 @@
+{
+  "passed": true,
+  "timings": [
+    {
+      "count": 600,
+      "basis": "ORIGINS",
+      "cold_seconds": 0.009979700029361993,
+      "cached_seconds": 0.0004202199983410537
+    },
+    {
+      "count": 600,
+      "basis": "GEOMETRY",
+      "cold_seconds": 0.10180740000214428,
+      "cached_seconds": 0.0004267400014214218
+    },
+    {
+      "count": 600,
+      "basis": "VOLUME",
+      "cold_seconds": 0.25896039995132014,
+      "cached_seconds": 0.0004099800018593669
+    },
+    {
+      "count": 1500,
+      "basis": "ORIGINS",
+      "cold_seconds": 0.023833899991586804,
+      "cached_seconds": 0.0008980599930509924
+    },
+    {
+      "count": 1500,
+      "basis": "GEOMETRY",
+      "cold_seconds": 0.25217490002978593,
+      "cached_seconds": 0.0009187999996356667
+    },
+    {
+      "count": 1500,
+      "basis": "VOLUME",
+      "cold_seconds": 0.6486131999990903,
+      "cached_seconds": 0.0009399600094184279
+    }
+  ],
+  "shared_draw_getter_measurement": true,
+  "invalidation_checks": [
+    "target Location",
+    "target Rotation",
+    "target Scale",
+    "spacing sign",
+    "axis mask",
+    "placement basis",
+    "shape key",
+    "modifier creation",
+    "modifier viewport state",
+    "mesh data",
+    "frame evaluation",
+    "saved Location Frame",
+    "manual Frame value without depsgraph update",
+    "Endpoint method and source",
+    "manual Endpoint value",
+    "cursor Endpoint",
+    "active object",
+    "external Geometry Nodes dependency",
+    "unselected reference geometry",
+    "Undo/Redo clears inspection"
+  ],
+  "bounded_cache_and_unregister": true
+}

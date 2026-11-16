@@ -1,0 +1,17 @@
+{
+  "passed": true,
+  "archive": {
+    "path": "addons/better_item.zip",
+    "sha256": "beb561ad96f7d2b6ccb56cbf52d047b828b9aea51f97bb6494d53b73c63f6bdb",
+    "bytes": 99349,
+    "built_with": "Blender 5.3.0 --command extension build",
+    "built_from": "git archive of release/1.7.9 (LF line endings)"
+  },
+  "entries": 19,
+  "crlf_python_files": 0,
+  "python_source_sha256": "3339f134599139b2abcd1855ccc48170caa124e01d40a97cc52eb5180530dcd3",
+  "native_extension_validate": {
+    "5.3.0": 0
+  },
+  "unchanged_modules_match_1.7.8_hash": true
+}

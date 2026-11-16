@@ -1,0 +1,15 @@
+{
+  "blender": "4.3.2",
+  "passed": true,
+  "archive_install": true,
+  "declared_minimum": [
+    4,
+    2,
+    0
+  ],
+  "repository": "installed",
+  "operator_result": [
+    "FINISHED"
+  ],
+  "module_loaded": true
+}

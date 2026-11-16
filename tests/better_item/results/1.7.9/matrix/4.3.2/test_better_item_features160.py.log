@@ -1,0 +1,6 @@
+Info: Saved "features.blend"
+160 FEATURES PASSED {"key_geometry": 4, "projected_bounds": 10, "geometry_rollback": 3, "orientation": 8, "ux": "INFO pending, WARNING domain failures, ERROR unexpected; no red pending; solver collapsed; independent frame components", "persistence": true}
+Blender 4.3.2 (hash 32f5fdce0a0a built 2024-12-17 03:35:23)
+Read blend: "C:\work\better-item-matrix-1.7.9\results\4.3.2\tmpsmog4g1g\features.blend"
+
+Blender quit

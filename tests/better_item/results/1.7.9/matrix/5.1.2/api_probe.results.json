@@ -1,0 +1,177 @@
+{
+  "passed": true,
+  "blender": "5.1.2",
+  "version": [
+    5,
+    1,
+    2
+  ],
+  "build_hash": "ec6e62d40fa9",
+  "python": "3.13.9 (main, Jan 16 2026, 12:29:45) [MSC v.1944 64 bit (AMD64)]",
+  "numpy": "2.3.4",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "scene_orientation_attributes": [
+    "transform_orientation_slots"
+  ],
+  "slot_type_enum": [
+    "GLOBAL",
+    "LOCAL",
+    "NORMAL",
+    "GIMBAL",
+    "VIEW",
+    "CURSOR",
+    "PARENT"
+  ],
+  "slot_type_functions": [],
+  "capabilities": {
+    "NodesModifier.persistent_uid": true,
+    "NodeTree.interface": true,
+    "Object.to_mesh": true,
+    "Object.to_mesh_clear": true,
+    "UILayout.prop_search": true,
+    "UILayout.panel": true,
+    "Context.temp_override": true,
+    "Scene.transform_orientations": false
+  },
+  "registered": true,
+  "custom_discovery_removed": true,
+  "modifier_api": {
+    "GeometryNodeInputPosition": {
+      "inputs": [],
+      "outputs": [
+        [
+          "Position",
+          "Position",
+          "NodeSocketVector"
+        ]
+      ]
+    },
+    "ShaderNodeVectorMath": {
+      "inputs": [
+        [
+          "Vector",
+          "Vector",
+          "NodeSocketVector"
+        ],
+        [
+          "Vector",
+          "Vector_001",
+          "NodeSocketVector"
+        ],
+        [
+          "Vector",
+          "Vector_002",
+          "NodeSocketVector"
+        ],
+        [
+          "Scale",
+          "Scale",
+          "NodeSocketFloat"
+        ]
+      ],
+      "outputs": [
+        [
+          "Vector",
+          "Vector",
+          "NodeSocketVector"
+        ],
+        [
+          "Value",
+          "Value",
+          "NodeSocketFloat"
+        ]
+      ]
+    },
+    "ShaderNodeCombineXYZ": {
+      "inputs": [
+        [
+          "X",
+          "X",
+          "NodeSocketFloat"
+        ],
+        [
+          "Y",
+          "Y",
+          "NodeSocketFloat"
+        ],
+        [
+          "Z",
+          "Z",
+          "NodeSocketFloat"
+        ]
+      ],
+      "outputs": [
+        [
+          "Vector",
+          "Vector",
+          "NodeSocketVector"
+        ]
+      ]
+    },
+    "GeometryNodeSetPosition": {
+      "inputs": [
+        [
+          "Geometry",
+          "Geometry",
+          "NodeSocketGeometry"
+        ],
+        [
+          "Selection",
+          "Selection",
+          "NodeSocketBool"
+        ],
+        [
+          "Position",
+          "Position",
+          "NodeSocketVector"
+        ],
+        [
+          "Offset",
+          "Offset",
+          "NodeSocketVectorTranslation"
+        ]
+      ],
+      "outputs": [
+        [
+          "Geometry",
+          "Geometry",
+          "NodeSocketGeometry"
+        ]
+      ]
+    },
+    "NodeGroupInput": {
+      "inputs": [],
+      "outputs": [
+        [
+          "Geometry",
+          "Socket_0",
+          "NodeSocketGeometry"
+        ],
+        [
+          "",
+          "__extend__",
+          "NodeSocketVirtual"
+        ]
+      ]
+    },
+    "NodeGroupOutput": {
+      "inputs": [
+        [
+          "Geometry",
+          "Socket_1",
+          "NodeSocketGeometry"
+        ],
+        [
+          "",
+          "__extend__",
+          "NodeSocketVirtual"
+        ]
+      ],
+      "outputs": []
+    }
+  },
+  "modifier_input_properties": false,
+  "modifier_uid": 668223759,
+  "timer_registered": true,
+  "unregistered": true
+}

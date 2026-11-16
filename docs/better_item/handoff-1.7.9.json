@@ -1,0 +1,81 @@
+{
+  "version": "1.7.9",
+  "date": "2026-11-16",
+  "branch": "release/1.7.9",
+  "merged_into_main": false,
+  "baseline_commit": "97a676d6e320742fa83185f62296c9d1730116d5",
+  "archive": {
+    "path": "addons/better_item.zip",
+    "sha256": "beb561ad96f7d2b6ccb56cbf52d047b828b9aea51f97bb6494d53b73c63f6bdb",
+    "bytes": 99349
+  },
+  "minimum_blender": "4.2.0",
+  "runtime_changed": [
+    "engine.py",
+    "geometry_arrange.py",
+    "math_core.py",
+    "native_refs.py",
+    "transform_view.py"
+  ],
+  "unchanged_runtime_modules": 10,
+  "files": [
+    {"path": "src/better_item/__init__.py", "sha256": "91a829be064f8dae661b8b16942cfc3a9c0da2e1031f2a08ee58edc9bbfa9b52"},
+    {"path": "src/better_item/arrange.py", "sha256": "880f31ea9ad8ee76bdb406fc15b0c2874c3254afb45662aa7af7acc708ec0c04"},
+    {"path": "src/better_item/diagnostics.py", "sha256": "aa0cd4825a80be4a0d42ca0f4260829f6a40a8236d54854fd3ea4d6cf56302c2"},
+    {"path": "src/better_item/distribution.py", "sha256": "0b01bd3ae54d8383327290c64e154a00a621269856e2bdcb26b9183341e0dcc5"},
+    {"path": "src/better_item/distribution_preview.py", "sha256": "37f217cc32860c4fa47f9089ae75ec53757cf114aa3642bd81e2cc53524c476c"},
+    {"path": "src/better_item/engine.py", "sha256": "fcb8da35f865eac6eb8717fbe713e7aec8b7c601fea4fdb525bb7a7547750dfc"},
+    {"path": "src/better_item/frames.py", "sha256": "08b6db2bed3b93f7ddaacf626764d4c55d0c346347023f2749817cb9bca8491d"},
+    {"path": "src/better_item/geometry_arrange.py", "sha256": "91576acfc512187a366d9f92d0398ea38e872182561696528f8eca0535fcc79f"},
+    {"path": "src/better_item/math_core.py", "sha256": "b82bb5b160a6af1bf974e6bde2f2def9a891c90a4fe42cbeebbedfe5c9581935"},
+    {"path": "src/better_item/native_refs.py", "sha256": "b0829bfd9c2cc3c47c4dc8343d57b8c7d214fddd0987339e8b1784e5c86be260"},
+    {"path": "src/better_item/orientation.py", "sha256": "d31756a0b2a9a638ac5d9cde2a9d35af5ed989f1ff7a12b49eea8a00cbb155d5"},
+    {"path": "src/better_item/placement.py", "sha256": "fa846922f0791bf6052b5fb2789ab3a2ecbf0c190f43f3a046e3a2be19ea3b07"},
+    {"path": "src/better_item/references.py", "sha256": "6f934a1945d211eff5bdc2771eee5864be54ebe4cbbe44c71667421ead14a1f5"},
+    {"path": "src/better_item/trace.py", "sha256": "e846587508b38fb8c795ca141bb17bb8ef0424cf7612174ec53fe3305c45146f"},
+    {"path": "src/better_item/transform_view.py", "sha256": "36530298b42513f34f6a7f8b9796942b8c1fb5f566bb256393d3efbd4441aa5a"}
+  ],
+  "python_source_sha256": "3339f134599139b2abcd1855ccc48170caa124e01d40a97cc52eb5180530dcd3",
+  "combined_hash_algorithm": "SHA256(sorted basename UTF-8 + NUL + raw Python bytes)",
+  "file_hashes_note": "LF bytes as packaged (git archive); a Windows checkout with core.autocrlf=true has CRLF in the working tree",
+  "builds": [
+    {"blender": "4.2.0", "matrix_entries": 23, "passed": true},
+    {"blender": "4.2.23", "matrix_entries": 23, "passed": true},
+    {"blender": "4.3.2", "matrix_entries": 23, "passed": true},
+    {"blender": "4.4.3", "matrix_entries": 23, "passed": true},
+    {"blender": "4.5.16", "matrix_entries": 23, "passed": true},
+    {"blender": "5.0.1", "matrix_entries": 23, "passed": true},
+    {"blender": "5.1.2", "matrix_entries": 23, "passed": true},
+    {"blender": "5.2.4", "matrix_entries": 23, "passed": true},
+    {"blender": "5.3.0", "matrix_entries": 23, "passed": true},
+    {"blender": "5.3.0 (installed, isolated profile)", "matrix_entries": 23, "passed": true}
+  ],
+  "benchmarks": {
+    "baseline_archive_sha256": "369fb55c5eb153f6c805d552da7bf3b3c068b8ee046aba416d3acdc75335fa61",
+    "builds": ["4.2.23", "5.3.0"],
+    "comparison": "tests/better_item/results/1.7.9/comparison.json",
+    "cold_first_read_1500_seconds": {
+      "4.2.23": {"GEOMETRY": [0.733, 0.247], "VOLUME": [1.059, 0.551]},
+      "5.3.0": {"GEOMETRY": [1.014, 0.254], "VOLUME": [1.443, 0.654]}
+    },
+    "editmode_normal_idle_tick_ms_130562_vertices": {
+      "4.2.23": [35.9, 0.041],
+      "5.3.0": [46.6, 0.060]
+    },
+    "pairs_are": "[1.7.8, 1.7.9] medians"
+  },
+  "open_issues": [
+    "Linked-edit anchor key omits the resolved reference: after collapsing to zero, switching to another orientation Frame and typing a value reuses the previous frame's ratio (1.7.8 refused with BI-T008). Reproduced; see tests/better_item/results/1.7.9/extra/"
+  ],
+  "pending": [
+    "Decide and fix the anchor key issue before publishing",
+    "Manual mouse checklist in docs/better_item/release-1.7.9.md",
+    "Merge release/1.7.9 into main and publish (owner decision)"
+  ],
+  "excluded": [
+    "Animation",
+    "Edit Mode product implementation",
+    "Schema migration/refactor",
+    "1.8.x candidates"
+  ]
+}

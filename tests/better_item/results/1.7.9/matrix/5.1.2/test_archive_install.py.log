@@ -1,0 +1,6 @@
+Info: Added User Repository "Better Item Compatibility"
+STATUS Installed "better_item"
+{"blender": "5.1.2", "passed": true, "archive_install": true, "declared_minimum": [4, 2, 0], "repository": "installed", "operator_result": ["FINISHED"], "module_loaded": true}
+Blender 5.1.2 (hash ec6e62d40fa9 built 2026-05-19 01:37:34)
+
+Blender quit

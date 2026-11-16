@@ -1,6 +1,6 @@
 {
-  "addon_version": "1.7.8",
-  "addon_zip_sha256": "369fb55c5eb153f6c805d552da7bf3b3c068b8ee046aba416d3acdc75335fa61",
+  "addon_version": "1.7.9",
+  "addon_zip_sha256": "beb561ad96f7d2b6ccb56cbf52d047b828b9aea51f97bb6494d53b73c63f6bdb",
   "source_commit": null,
   "tests": [
     {
@@ -86,10 +86,14 @@
     {
       "script": "test_better_item_operator177.py",
       "mode": "gui_sync"
+    },
+    {
+      "script": "test_better_item_gestures179.py",
+      "mode": "background"
     }
   ],
-  "baseline_source_commit": "e8f5ad69f42cb8e8aad308956c34bb352e8300d6",
-  "python_source_sha256": "b236c0497d851dc34daa73e22b8a8a4420874282caf6844b2af2003e895198db",
+  "baseline_source_commit": "97a676d6e320742fa83185f62296c9d1730116d5",
+  "python_source_sha256": "3339f134599139b2abcd1855ccc48170caa124e01d40a97cc52eb5180530dcd3",
   "studies": [
     {
       "script": "benchmark_cache_invalidation.py",
@@ -97,6 +101,10 @@
     },
     {
       "script": "test_editmode_foundations.py",
+      "mode": "gui_sync"
+    },
+    {
+      "script": "benchmark_editmode_normal179.py",
       "mode": "gui_sync"
     }
   ],

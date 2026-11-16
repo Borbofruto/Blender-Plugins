@@ -1,0 +1,11 @@
+{
+  "passed": true,
+  "live_batches": 96,
+  "reference_updates": 192,
+  "point_bases": 4,
+  "paths": 2,
+  "anchor_modes": 3,
+  "parented_and_mirrored": true,
+  "stable_order": true,
+  "independent_cube_center_oracle": true
+}

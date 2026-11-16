@@ -1,0 +1,5 @@
+Info: Added User Repository "Better Item Compatibility"
+{"blender": "4.4.3", "passed": true, "archive_install": true, "declared_minimum": [4, 2, 0], "repository": "installed", "operator_result": ["FINISHED"], "module_loaded": true}
+Blender 4.4.3 (hash 802179c51ccc built 2025-04-29 15:39:58)
+
+Blender quit

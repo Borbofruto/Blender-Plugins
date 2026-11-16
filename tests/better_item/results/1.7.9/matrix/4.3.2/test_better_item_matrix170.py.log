@@ -1,0 +1,4 @@
+170 MATRIX PASSED {"endpoint_batches": 256, "offset_batches": 140, "bases": ["ORIGINS", "BOUNDS_CENTER", "SURFACE", "VOLUME", "GEOMETRY"], "endpoint_paths": 2, "anchor_patterns": 4, "units": [1, 0.001], "parented_and_mirrored": true, "axis_masks": 7}
+Blender 4.3.2 (hash 32f5fdce0a0a built 2024-12-17 03:35:23)
+
+Blender quit
