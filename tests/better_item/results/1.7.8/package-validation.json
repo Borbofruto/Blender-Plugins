@@ -1,0 +1,17 @@
+{
+  "passed": true,
+  "zip_source_byte_parity": true,
+  "ast_modules": 15,
+  "manifest": true,
+  "archive": {
+    "path": "addons/better_item.zip",
+    "sha256": "369fb55c5eb153f6c805d552da7bf3b3c068b8ee046aba416d3acdc75335fa61",
+    "bytes": 97606
+  },
+  "native_extension_validate": {
+    "4.2.23": 0,
+    "5.3.0": 0
+  },
+  "stable_zip_source_parity": true,
+  "local_links_checked": 22
+}

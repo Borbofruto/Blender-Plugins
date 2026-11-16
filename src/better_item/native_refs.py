@@ -289,8 +289,9 @@ def sync():
                     if frame.native_enabled and not frame.native_suspended and frame.native_name and named(scene,frame.native_name) is None:
                         frame.native_enabled=False
                         frame.native_name=''
-                names=_source_names(scene)
-                if 'NORMAL' in names and ctx.mode!='OBJECT':_refresh_normal(ctx)
+                # Object Mode uses object axes directly; no selection-normal
+                # sample is consumed, so do not scan every object's settings.
+                if ctx.mode!='OBJECT' and 'NORMAL' in _source_names(scene):_refresh_normal(ctx)
                 for frame in scene.better_item.frames:
                     if not frame.native_enabled:continue
                     try:publish(ctx,frame)

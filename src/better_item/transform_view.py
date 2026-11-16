@@ -41,15 +41,18 @@ def invalidate_geometry(_scene,depsgraph):
     updated_data=set()
     updated_trees=set()
     for update in depsgraph.updates:
-        if isinstance(update.id.original,bpy.types.NodeTree):updated_trees.add(update.id.original.as_pointer())
+        if isinstance(update.id.original,bpy.types.GeometryNodeTree):updated_trees.add(update.id.original.as_pointer())
         if not update.is_updated_geometry:continue
         original=update.id.original
         if isinstance(original,bpy.types.Object):updated_objects.add(original.as_pointer())
         else:updated_data.add(original.as_pointer())
+    # Placement and Live also consume this revision, even when neither vertex
+    # nor projection arrays are cached. Advance it before the empty-cache exit.
+    if updated_objects or updated_data or updated_trees:_geometry_revision+=1
+    if not _geometry_cache and not _dimension_cache:return
     if updated_trees:
         for obj in bpy.data.objects:
             if any(mod.type=='NODES' and mod.node_group and _tree_matches(mod.node_group,updated_trees) for mod in obj.modifiers):updated_objects.add(obj.as_pointer())
-    if updated_objects or updated_data or updated_trees:_geometry_revision+=1
     def changed(key):return key[1] in updated_objects or key[2] in updated_data
     for key in list(_geometry_cache):
         if changed(key):del _geometry_cache[key]

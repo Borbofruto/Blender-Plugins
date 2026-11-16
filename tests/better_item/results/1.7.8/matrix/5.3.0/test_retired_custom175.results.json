@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "checks": [
+    "No discovery/cache/search registration; no custom source in new choices; old files explicitly unavailable without pose changes",
+    "Native Frame export and G operation in exported axes remain functional",
+    "Deletion through native Blender UI is observed without recreating orientation",
+    "Repeated registration lifecycle without orphan handlers"
+  ],
+  "draw_errors": []
+}

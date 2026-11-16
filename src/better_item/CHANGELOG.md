@@ -1,5 +1,13 @@
 # Better Item — changelog
 
+## 1.7.8
+
+### Performance
+- Preserve spacing-inspection entries after transform-only updates to unrelated objects. Entries track numeric target/anchor identities; geometry and unknown updates still invalidate conservatively. Application never reuses display-cache validation.
+- Skip the scene-wide selection-normal source scan in Object Mode, preserving native Frame export and selection Normal refresh in Edit Mode.
+- Limit node-tree matching to GeometryNodeTree and skip object traversal when vertex/projection caches are empty, while still advancing the geometry revision used by Placement and Live.
+- Add a reproducible opt-in cache benchmark and dependency-freshness regressions. No mathematical contracts, persistent schema, UI workflow or supported minimum changed.
+
 ## 1.7.7
 
 ### Fixed

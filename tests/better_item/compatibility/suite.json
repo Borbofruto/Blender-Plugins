@@ -1,8 +1,12 @@
 {
-  "addon_version": "1.7.7",
-  "addon_zip_sha256": "b6e0d7cdc6bd6e55ecfab57494bb5003f934548793e00d422254340fe0fe2c1b",
+  "addon_version": "1.7.8",
+  "addon_zip_sha256": "369fb55c5eb153f6c805d552da7bf3b3c068b8ee046aba416d3acdc75335fa61",
   "source_commit": null,
   "tests": [
+    {
+      "script": "test_cache_invalidation.py",
+      "mode": "gui_sync"
+    },
     {
       "script": "test_better_item_173.py",
       "mode": "background"
@@ -84,9 +88,13 @@
       "mode": "gui_sync"
     }
   ],
-  "baseline_source_commit": "e08009e00a26e059297b003f873e19ebc4ae0c58",
-  "python_source_sha256": "d7d8621d83a9b7d42c92519fc7c4ab4790e96a70a71a298821f76b10ef827451",
+  "baseline_source_commit": "e8f5ad69f42cb8e8aad308956c34bb352e8300d6",
+  "python_source_sha256": "b236c0497d851dc34daa73e22b8a8a4420874282caf6844b2af2003e895198db",
   "studies": [
+    {
+      "script": "benchmark_cache_invalidation.py",
+      "mode": "gui_sync"
+    },
     {
       "script": "test_editmode_foundations.py",
       "mode": "gui_sync"

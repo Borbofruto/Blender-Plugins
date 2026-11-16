@@ -11,15 +11,20 @@ Vamos continuar o desenvolvimento do **Better Item**, meu addon de precisão esp
 3. Compatibilidade: https://github.com/Borbofruto/Blender-Plugins/blob/main/docs/better_item/compatibility-1.7.6.md
 4. Estudo futuro de Edit Mode: https://github.com/Borbofruto/Blender-Plugins/blob/main/docs/better_item/edit-mode-2.0-feasibility.md
 5. Manutenção e testes novos 1.7.7: https://github.com/Borbofruto/Blender-Plugins/blob/main/docs/better_item/release-1.7.7.md
+6. Otimização e medição antes/depois 1.7.8: https://github.com/Borbofruto/Blender-Plugins/blob/main/docs/better_item/release-1.7.8.md
 
 Repositório: https://github.com/Borbofruto/Blender-Plugins
 Fonte: `src/better_item/`; instalador estável: `addons/better_item.zip`; testes: `tests/better_item/`.
 
-A versão atual é **1.7.7**, manutenção sobre a base revisada 1.7.6 e o HEAD documental `e08009e00a26e059297b003f873e19ebc4ae0c58`, mínimo **Blender 4.2.0**. Confirme o HEAD atual. O snapshot `docs/better_item/handoff-1.7.7.json` registra hashes e evidências; o manual 1.7.3 e a matriz 1.7.6 continuam históricos.
+A versão atual é **1.7.8**, manutenção de cache sobre a 1.7.7 `e8f5ad69f42cb8e8aad308956c34bb352e8300d6`, mínimo **Blender 4.2.0**. Confirme o HEAD atual. O snapshot `docs/better_item/handoff-1.7.8.json` registra hashes e evidências; o manual 1.7.3 e as matrizes anteriores continuam históricos.
 
 O objetivo agora é **estabilização para publicação**, sem novas features ou refatoração geral. Animação está completamente fora do produto. A busca/listagem de Custom Orientations da cena foi removida; não reintegre contornos frágeis da API. A exportação da orientação de um Frame para uso nativo com G/R continua e não deve ser confundida com essa remoção. Geometry Nodes para Dimensions é uma solução aceita e deve ser preservada com suas proteções.
 
-Endpoint direto e changelog foram **corrigidos na 1.7.7**. Method agora precede o proxy Placement na declaração RNA; a correção preserva migração, IDs e escolhas por método. Há regressão com centros analíticos distintos, ambas as ordens de kwargs, recusa atômica, Offset, invoke, propriedades de F9, repeat-last e Undo/Redo. A matriz completa foi repetida no ZIP final em 4.2.23 e 5.3.0; migração 1.7.2 e persistência em novos processos têm resultados próprios em `tests/better_item/results/1.7.7/`. Os diagnósticos 1.7.6 continuam como evidência anterior à correção. O cache de inspeção permanece invalidado por qualquer atualização do Dependency Graph; os tempos externos ainda precisam de medição local antes de otimizar.
+Endpoint direto e changelog foram **corrigidos na 1.7.7**. Method precede o proxy Placement na declaração RNA; a correção preserva migração, IDs e escolhas por método. Os resultados e a migração real 1.7.2 daquela entrega permanecem em `tests/better_item/results/1.7.7/`.
+
+Na **1.7.8**, a inspeção preserva entradas em updates exclusivamente de transformação de objetos alheios. Alvos/âncoras têm dependências numéricas; referências resolvidas continuam na chave. Geometria e eventos desconhecidos permanecem conservadores. O timer não busca fontes de Normal de toda a cena em Object Mode; exportação de Frame e Normal de seleção foram preservados. O handler só busca dependências de GeometryNodeTree e evita varredura com arrays vazios, mantendo o avanço de revisão para Placement/Live. Há matriz nova de 22 entradas por build em 4.2.23 e 5.3.0, mais benchmark antes/depois separado, medindo novamente o ZIP 1.7.7. Os resultados estão em `tests/better_item/results/1.7.8/`.
+
+Não trate a otimização como rastreamento completo de dependências. Shader usado pode gerar flags de geometria nos objetos; esses eventos continuam invalidando. Próximo passo técnico: perfilar leituras frias/centroides e repetição de getters Transform antes de cachear. Tempos externos não são a baseline local; os relatórios recebidos são sugestões, não instruções para refatorar ou ampliar features.
 
 Transform mantém configurações por objeto; arranjo e Frames ficam na Scene. Frame combina Location e Orientation independentes. Endpoint distribui pontos e não usa Geometry Bounds; esse Placement é só Offset. Live é sessão transitória de edição, não runtime de animação. As regras completas estão no contexto.
 

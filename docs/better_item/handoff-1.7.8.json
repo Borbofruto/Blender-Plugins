@@ -1,0 +1,140 @@
+{
+  "version": "1.7.8",
+  "date": "2026-11-16",
+  "baseline_commit": "e8f5ad69f42cb8e8aad308956c34bb352e8300d6",
+  "archive": {
+    "path": "addons/better_item.zip",
+    "sha256": "369fb55c5eb153f6c805d552da7bf3b3c068b8ee046aba416d3acdc75335fa61",
+    "bytes": 97606
+  },
+  "minimum_blender": "4.2.0",
+  "runtime_changed": [
+    "distribution.py",
+    "native_refs.py",
+    "transform_view.py"
+  ],
+  "unchanged_runtime_modules": 12,
+  "files": [
+    {
+      "path": "src/better_item/__init__.py",
+      "sha256": "91a829be064f8dae661b8b16942cfc3a9c0da2e1031f2a08ee58edc9bbfa9b52"
+    },
+    {
+      "path": "src/better_item/arrange.py",
+      "sha256": "880f31ea9ad8ee76bdb406fc15b0c2874c3254afb45662aa7af7acc708ec0c04"
+    },
+    {
+      "path": "src/better_item/diagnostics.py",
+      "sha256": "aa0cd4825a80be4a0d42ca0f4260829f6a40a8236d54854fd3ea4d6cf56302c2"
+    },
+    {
+      "path": "src/better_item/distribution.py",
+      "sha256": "0b01bd3ae54d8383327290c64e154a00a621269856e2bdcb26b9183341e0dcc5"
+    },
+    {
+      "path": "src/better_item/distribution_preview.py",
+      "sha256": "37f217cc32860c4fa47f9089ae75ec53757cf114aa3642bd81e2cc53524c476c"
+    },
+    {
+      "path": "src/better_item/engine.py",
+      "sha256": "ebb4102ed53da1ff344db28e8e52ca5c42683cb07628069d250aa9266f7125ba"
+    },
+    {
+      "path": "src/better_item/frames.py",
+      "sha256": "08b6db2bed3b93f7ddaacf626764d4c55d0c346347023f2749817cb9bca8491d"
+    },
+    {
+      "path": "src/better_item/geometry_arrange.py",
+      "sha256": "5a8629c13eac45cbd20f172db7cf5fda869eb06949b245872f1a7152327f14c0"
+    },
+    {
+      "path": "src/better_item/math_core.py",
+      "sha256": "c4cb2e7b8e76e4e377181e75146d95ecc86f0e9d78629cfd0514d9c54be5e4c5"
+    },
+    {
+      "path": "src/better_item/native_refs.py",
+      "sha256": "98c8640dd72037f5c8b43b79485db2b876aecbbd5007d3251099197a331d73a3"
+    },
+    {
+      "path": "src/better_item/orientation.py",
+      "sha256": "d31756a0b2a9a638ac5d9cde2a9d35af5ed989f1ff7a12b49eea8a00cbb155d5"
+    },
+    {
+      "path": "src/better_item/placement.py",
+      "sha256": "fa846922f0791bf6052b5fb2789ab3a2ecbf0c190f43f3a046e3a2be19ea3b07"
+    },
+    {
+      "path": "src/better_item/references.py",
+      "sha256": "6f934a1945d211eff5bdc2771eee5864be54ebe4cbbe44c71667421ead14a1f5"
+    },
+    {
+      "path": "src/better_item/trace.py",
+      "sha256": "e846587508b38fb8c795ca141bb17bb8ef0424cf7612174ec53fe3305c45146f"
+    },
+    {
+      "path": "src/better_item/transform_view.py",
+      "sha256": "3767a4185fc2c0a89a1b577425e0402ac1b2d5dadb2ae8cb22140e1d14bdcc24"
+    }
+  ],
+  "python_source_sha256": "b236c0497d851dc34daa73e22b8a8a4420874282caf6844b2af2003e895198db",
+  "combined_hash_algorithm": "SHA256(sorted basename UTF-8 + NUL + raw Python bytes)",
+  "builds": [
+    {
+      "blender": "4.2.23",
+      "matrix_entries": 22,
+      "passed": true,
+      "sync_before": {
+        "scene_objects": 1502,
+        "iterations": 30,
+        "source_scans": 30,
+        "median_seconds": 0.0006955999988349504
+      },
+      "sync_after": {
+        "scene_objects": 1502,
+        "iterations": 30,
+        "source_scans": 0,
+        "median_seconds": 1.5550000171060674e-05
+      }
+    },
+    {
+      "blender": "5.3.0",
+      "matrix_entries": 22,
+      "passed": true,
+      "sync_before": {
+        "scene_objects": 1502,
+        "iterations": 30,
+        "source_scans": 30,
+        "median_seconds": 0.0008044499991228804
+      },
+      "sync_after": {
+        "scene_objects": 1502,
+        "iterations": 30,
+        "source_scans": 0,
+        "median_seconds": 2.2400000489142258e-05
+      }
+    }
+  ],
+  "reports": [
+    {
+      "filename": "relatorio_tecnico_better_item.md",
+      "sha256": "e5cfaa600e3da318abb92dbb0b994d78e6f6173c94f81b936ea7e5e3e1bfddd3",
+      "status": "External analysis, not task instructions; partial/1.7.6 evidence"
+    },
+    {
+      "filename": "# Relatório Técnico — Better Item (Blend.md",
+      "sha256": "47abfeca0b2e54bbda13ef403e1a5ee684aea0244780934bce67adcfc50ccfa8",
+      "status": "External analysis, not task instructions; partial/1.7.6 evidence"
+    }
+  ],
+  "pending": [
+    "Profile cold geometry/centroid measurements",
+    "Measure repeated Transform reads and dense Normal selection signatures",
+    "Full physical mouse publication pass"
+  ],
+  "excluded": [
+    "Animation",
+    "Edit Mode product implementation",
+    "Schema migration/refactor",
+    "Unverified global filtering of geometry updates"
+  ]
+}

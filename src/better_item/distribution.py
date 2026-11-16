@@ -22,7 +22,8 @@ POINT_MODES=[('MANUAL','Manual','World-space coordinates','EDITMODE_HLT'),
 
 
 # Small scalar-result cache shared by panel drawing and the live field getter.
-# Evaluation updates clear it; reference values and selection are part of the key.
+# Each entry also records numeric object identities for transform invalidation.
+# Geometry/unknown updates still clear it; resolved references are in the key.
 _inspection_cache=OrderedDict()
 
 
@@ -33,7 +34,19 @@ def clear_inspection(*_unused):
 
 @persistent
 def invalidate_inspection(_scene,depsgraph):
-    if any(True for _ in depsgraph.updates):clear_inspection()
+    if not _inspection_cache:return
+    transformed=set()
+    for update in depsgraph.updates:
+        original=update.id.original
+        if isinstance(original,bpy.types.Object) and update.is_updated_transform and not update.is_updated_geometry:
+            transformed.add(original.as_pointer())
+        else:
+            # Preserve conservative invalidation for geometry, data/topology,
+            # node trees, collection membership and unclassified updates.
+            clear_inspection()
+            return
+    for key,(_result,dependencies) in list(_inspection_cache.items()):
+        if transformed.intersection(dependencies):del _inspection_cache[key]
 
 
 
@@ -288,23 +301,30 @@ def _cached_inspection(context,objects):
     try:
         if s.distribution_method=='ENDPOINT':
             start,first=_start(context);end,last=point(context,s.distribution_end)
+            anchors=(first,last)
             source=(tuple(start),first.as_pointer() if first else 0,tuple(end),last.as_pointer() if last else 0)
             orientation=tuple(v for row in references.axes(context,s,context.active_object,True) for v in row) if s.endpoint_path=='AXIS' else ()
         else:
             axes,origin,obj=arrange.reference_frame(context,'REFERENCE')
+            anchors=(obj,)
             source=(tuple(origin),obj.as_pointer() if obj else 0)
             orientation=tuple(float(v) for v in axes.flat)
         from . import transform_view
+        identities=tuple((obj.as_pointer(),obj.name) for obj in objects)
         key=(context.scene.as_pointer(),context.view_layer.as_pointer(),context.evaluated_depsgraph_get().as_pointer(),transform_view._geometry_revision,context.mode,
             context.active_object.as_pointer() if context.active_object else 0,
-            tuple((obj.as_pointer(),obj.name) for obj in objects),
+            identities,
             s.distribution_method,s.distribution_mode,s.endpoint_path,tuple(s.axes),
             s.spacing,s.distribution_last_sign,s.minimum_distance_mm,source,orientation)
     except BetterItemError:return 'UNAVAILABLE',None
     if key in _inspection_cache:
-        _inspection_cache.move_to_end(key);return _inspection_cache[key]
+        _inspection_cache.move_to_end(key);return _inspection_cache[key][0]
     result=_inspect_spacing(context,objects)
-    _inspection_cache[key]=result
+    # Build the dependency set only on a miss; warm reads already traverse the
+    # identities once for the key and must not duplicate that O(n) work.
+    dependencies=frozenset(pointer for pointer,_name in identities)
+    dependencies=dependencies.union(obj.as_pointer() for obj in anchors if obj is not None)
+    _inspection_cache[key]=(result,dependencies)
     while len(_inspection_cache)>4:_inspection_cache.popitem(last=False)
     return result
 

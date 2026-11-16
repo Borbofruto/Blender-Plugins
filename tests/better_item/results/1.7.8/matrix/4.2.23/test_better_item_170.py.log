@@ -1,0 +1,8 @@
+TBBmalloc: skip allocation functions replacement in ucrtbase.dll: unknown prologue for function _msize
+Blender 4.2.23 LTS (hash d0cbe84903e8 built 2026-07-21 01:34:46)
+Info: Total files 0 | Changed 0 | Failed 0
+Info: Saved "distribution170.blend"
+170 CONTRACTS PASSED {"point_endpoint_and_retired_interval_rejection": true, "all_bases_oblique_reversed_segment": 8, "selected_anchors_and_cursor": true, "independent_frame_components_and_override": true, "reference_axis_projection": true, "surface_volume_oracle_and_open_volume_rejection": true, "retired_basis_and_dependency_rejections": true, "offset_centers_and_measured_spacing": true, "preview_initial_order_cancel_confirm": true, "frame_context_capture": true, "persistence": true}
+Read blend: "C:\Users\gabri\Nova pasta\Documents\ChatGPT\Mixer - Modified Blender 2\matrix178-final\results\4.2.23\tmp51v030ko\distribution170.blend"
+
+Blender quit

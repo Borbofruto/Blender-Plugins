@@ -1,23 +1,23 @@
 # Better Item — contexto atual e passagem de trabalho
 
-Atualizado em **16/11/2026**, após a manutenção **1.7.7**. Leia este arquivo **antes** do manual histórico. Ele consolida os contratos atuais; não autoriza novas funcionalidades por si só. A correção Endpoint e o changelog já foram tratados. Resultados novos e limitações: [release-1.7.7.md](release-1.7.7.md).
+Atualizado em **16/11/2026**, após a manutenção **1.7.8**. Leia este arquivo **antes** do manual histórico. Ele consolida os contratos atuais; não autoriza novas funcionalidades por si só. Endpoint e changelog foram corrigidos na 1.7.7. A primeira otimização de cache foi medida e validada na 1.7.8; não representa seletividade completa de dependências. Resultados e limites: [release-1.7.8.md](release-1.7.8.md).
 
 ## 1. Estado exato a assumir
 
 - Repositório: [Borbofruto/Blender-Plugins](https://github.com/Borbofruto/Blender-Plugins).
-- Versão atual: **1.7.7**, manutenção sobre o HEAD documental `e08009e00a26e059297b003f873e19ebc4ae0c58` e a base revisada 1.7.6 `a664cbf1b671db2bbb5ae521af05d65898b55960`. Confirme o HEAD real antes de trabalhar. O snapshot [handoff-1.7.7.json](handoff-1.7.7.json) identifica o artefato e os resultados desta entrega.
+- Versão atual: **1.7.8**, manutenção de cache sobre a 1.7.7 `e8f5ad69f42cb8e8aad308956c34bb352e8300d6`. Confirme o HEAD real antes de trabalhar. O snapshot [handoff-1.7.8.json](handoff-1.7.8.json) identifica o artefato e os resultados desta entrega. A base revisada 1.7.6 e a correção Endpoint 1.7.7 permanecem documentadas historicamente.
 - Fonte editável: `src/better_item/`. Instalador estável: `addons/better_item.zip`.
-- SHA256 desse ZIP: `b6e0d7cdc6bd6e55ecfab57494bb5003f934548793e00d422254340fe0fe2c1b`.
-- Dos 15 módulos Python, somente `__init__.py` mudou: Method foi declarado antes do proxy RNA Placement. Os outros 14 módulos, incluindo migração, planejamento, caches e solvers, permanecem byte a byte iguais à 1.7.6. Não houve refatoração.
-- Mínimo do manifesto: **Blender 4.2.0**, preservado. A 1.7.6 havia mudado versão, mínimo e documentação sem adaptar os algoritmos; a 1.7.7 contém a correção pequena do operador e organização do changelog.
-- A correção e a organização do changelog estão implementadas, com novas regressões e evidência separada em `tests/better_item/results/1.7.7/`. O cache continua sem otimização.
+- SHA256 desse ZIP: `369fb55c5eb153f6c805d552da7bf3b3c068b8ee046aba416d3acdc75335fa61`.
+- Dos 15 módulos Python, três mudaram desde a 1.7.7: `distribution.py`, `native_refs.py` e `transform_view.py`. Os outros 12 são byte a byte iguais à 1.7.7. Não houve refatoração geral, migração nova ou alteração de solver.
+- Mínimo do manifesto: **Blender 4.2.0**, preservado. A 1.7.6 havia mudado mínimo/documentação; a 1.7.7 corrigiu o operador e o changelog; a 1.7.8 trata invalidação e trabalho desnecessário de polling.
+- Resultados novos estão separados em `tests/better_item/results/1.7.8/`: matriz final e benchmark antes/depois. A baseline 1.7.7 foi medida novamente com o mesmo script, sem reaproveitar tempos históricos. As demais versões continuam com sua proveniência original.
 
 ### Ordem de leitura e autoridade
 
 1. Solicitação atual de Gabriel e instruções do workspace.
 2. Este contexto: contratos atuais, pendências e limites da evidência.
 3. [Manual de engenharia](CONTINUIDADE-IA.md), com 25 seções, ou [capítulos gerados](continuidade/README.md). Sua base continua explicitamente **1.7.3**; detalhes históricos não anulam atualizações deste contexto.
-4. [Manutenção e testes novos 1.7.7](release-1.7.7.md), [compatibilidade histórica 1.7.6](compatibility-1.7.6.md), [estudo Edit Mode 2.0](edit-mode-2.0-feasibility.md), README do pacote e código no commit efetivamente usado.
+4. [Cache e testes novos 1.7.8](release-1.7.8.md), [correção Endpoint 1.7.7](release-1.7.7.md), [compatibilidade histórica 1.7.6](compatibility-1.7.6.md), [estudo Edit Mode 2.0](edit-mode-2.0-feasibility.md), README do pacote e código no commit efetivamente usado.
 5. Relatórios antigos como evidência de suas respectivas versões, não como requisitos atuais.
 
 O manual histórico explica arquitetura, matemática, casos já resolvidos, bootstrap e estratégia de testes. Ele NÃO deve ser substituído apenas por este resumo. As divergências conhecidas estão explicitadas na seção 9 abaixo. Nunca faça uma atualização global de números de versão em relatórios históricos para aparentar validação atual.
@@ -100,7 +100,7 @@ Gabriel prefere entender responsabilidades, fluxo de dados, trade-offs e limites
 | `math_core.py` | Matemática pura, vínculos e erros; testes puros não validam estado avaliado do Blender. |
 | `engine.py` | Aplicação em canais/matrizes, hierarquias, travas/drivers, precisão, verificação e rollback. |
 | `arrange.py` | Alinhamento e caminhos de distribuição/compatibilidade legados. |
-| `distribution.py` | Planejamento atual, fontes Start/End, aplicação e inspeção de espaçamento; cache escalar amplo. |
+| `distribution.py` | Planejamento atual, fontes Start/End, aplicação e inspeção. Cache escalar com dependências numéricas para updates só de transformação; geometria e eventos desconhecidos continuam conservadores. |
 | `placement.py` | Representantes avaliados/limites; enums e armazenamento por método. Cuidado com proxy RNA do operador. |
 | `geometry_arrange.py` | Planejar/verificar intervalos projetados. Considerar orçamento de posição de ambos os objetos adjacentes. |
 | `distribution_preview.py` | Sessão Live, captura de contexto/alvos e observação transitória. |
@@ -114,7 +114,7 @@ Planejar primeiro, validar plano, aplicar e conferir resultado avaliado. Em falh
 - Ler malha avaliada com `evaluated_get`, `to_mesh` e liberação em `finally`; extração bulk por `foreach_get` e projeção NumPy. Não executar loops Python de vértices densos a cada redraw.
 - Instâncias não realizadas não equivalem automaticamente à malha final; existe recusa explícita. Não inventar avaliador de GeometrySet para contornar escopo sem necessidade.
 - O estágio GN próprio de Dimensions usa identificação/integridade e copy-on-write. Se o modificador deixar de ser final, não duplicar nem reordenar a pilha silenciosamente. O manual descreve o caso e a proteção introduzida.
-- O cache de **geometria/Dimensions** e o cache de **inspeção de espaçamento** são coisas diferentes. O primeiro possui invalidação de dependências de geometria; o segundo é um cache escalar pequeno, compartilhado por draw/getter, invalidado amplamente. Não anunciar um como otimização do outro.
+- O cache de **geometria/Dimensions** e o cache de **inspeção de espaçamento** são coisas diferentes. O primeiro possui invalidação de dependências de geometria; o segundo é escalar e compartilhado por draw/getter. Na 1.7.8 ele preserva entradas após transformações alheias, mas continua amplo para geometria e eventos não classificados. Não anunciar um como otimização do outro.
 - Getters e draw devem evitar escrita persistente e operações de cena. Migração precisa ocorrer em contexto permitido, não disfarçada como leitura.
 - Não reter wrappers de Custom Orientation, Object removido, BMesh ou outros dados RNA ao atravessar Undo, reload ou callbacks. Reobter com identidade validada; armazenar cópias numéricas quando apropriado.
 
@@ -138,11 +138,15 @@ Cobertura acrescentada: as quatro bases válidas via chamada direta, ambas as or
 
 O título agora precede as entradas, ordenadas de 1.7.7 para trás. A entrada 1.7.4 foi reconstruída a partir de `release-1.7.4.md` e informa a remoção da capacidade na 1.7.5. Nenhuma capacidade retirada foi reintegrada. A versão continua centralizada no manifesto, sem `bl_info` duplicado. Fontes e ZIP foram conferidos byte a byte.
 
-### C. Confirmado por código — invalidação ampla da inspeção
+### C. Primeira rodada medida e implementada na 1.7.8 — cache e polling
 
-`distribution.invalidate_inspection` executa `clear_inspection()` se houver qualquer atualização no Dependency Graph. Evita dados obsoletos, mas atualizações não relacionadas também descartam resultado. O revisor externo mediu 0,3–0,5 s/600 objetos e 1,2–1,7 s/1500 em alguns modos; **esses tempos não foram reproduzidos localmente nesta revisão**.
+O comportamento anterior foi medido novamente no ZIP 1.7.7. Com 1.500 objetos, mover um Empty sem dependência causava três inspeções em três atualizações. A 1.7.8 usa identidades numéricas de alvos/âncoras para preservar entradas em lotes exclusivamente de transformação de objetos alheios, sem flags geométricas. Updates de geometria e eventos desconhecidos continuam invalidando conservadoramente. A chave continua incluindo referências resolvidas e revisão geométrica; aplicar uma operação nunca usa a inspeção como validação.
 
-Investigar com contadores/perfil e cenas representativas antes de impor limite de objetos. Qualquer seletividade precisa acompanhar modificadores, shape keys, Geometry Nodes e fontes indiretas, cursor, seleção, Undo e Live. Uma aplicação nunca deve confiar numa validação em cache antiga.
+Medição nova de Volume/1.500: 822,59→2,18 ms na 4.2.23 e 1.041,32→3,06 ms na 5.3.0 para update do Empty + leitura, com zero inspeções completas posteriores. Não é ganho equivalente numa leitura fria. Os tempos do revisor externo continuam sendo de outro ambiente/cenário, não a baseline desta comparação.
+
+O timer nativo não busca mais fontes de todos os objetos em Object Mode; publicação de Frame e Normal em Edit Mode foram preservados/testados. A invalidação de arrays só busca dependências de GeometryNodeTree e evita varrer objetos quando esses caches estão vazios, avançando antes a revisão consumida por Placement/Live. Nenhum wrapper RNA novo é retido.
+
+**Pendente:** perfilar custo frio de geometria/centroides e repetição dos getters Transform; medir Normal densa separadamente. Shader usado pode provocar flags de geometria nos objetos, e nesses casos a invalidação permanece. Não eliminar essas flags, criar cache com chave só de depsgraph/revisão, impor limite de objetos ou prometer invalidação seletiva completa sem nova evidência. [Medições e triagem dos relatórios](release-1.7.8.md).
 
 ### D. Validação humana e publicação
 
@@ -160,7 +164,9 @@ Há testes automatizados com GUI real e Undo/Redo no Windows, preservados na mat
 
 ## 6. Compatibilidade atual e o que foi realmente testado
 
-**Execução nova 1.7.7:** matriz completa de 21 entradas por build, Windows x64, Blender **4.2.23 e 5.3.0**, usando o mesmo ZIP final. São 20 entradas existentes (incluindo probe e instalação) mais a regressão nova do operador. Migração e persistência em processos novos foram executadas à parte. [Relatório e limites](release-1.7.7.md). Não foram repetidas nesta entrega a 4.2.0 inicial nem as demais builds da tabela abaixo; ela preserva exclusivamente a proveniência histórica 1.7.6.
+**Execução nova 1.7.8:** matriz completa **22/22 em 4.2.23 e 22/22 em 5.3.0**, Windows x64, mesmo ZIP final. Acrescenta a regressão de invalidação às 21 entradas anteriores, com GUI real, Undo e referências/Normal. Benchmark opt-in foi executado separadamente e em sequência nos dois ZIPs, nas duas builds. [Relatório](release-1.7.8.md). A 4.2.0 inicial e as demais builds históricas não foram repetidas nesta entrega.
+
+**Registro histórico 1.7.7:** matriz completa de 21 entradas por build em 4.2.23 e 5.3.0. Migração 1.7.2 e persistência em novos processos tiveram execução própria naquela entrega. [Relatório e limites](release-1.7.7.md). A tabela abaixo preserva exclusivamente a proveniência histórica 1.7.6.
 
 Relatório autoritativo e resultados: [compatibility-1.7.6.md](compatibility-1.7.6.md), `tests/better_item/results/1.7.6/` e [ferramentas de reprodução](../../tests/better_item/compatibility/README.md).
 
@@ -209,7 +215,7 @@ Chamada mínima de script:
 
 ### Ambiente local anterior — verificar disponibilidade
 
-O checkout e os resultados novos desta sessão estão em `C:/Users/gabri/Nova pasta/Documents/ChatGPT/Mixer - Modified Blender 2/Blender-Plugins/` e nos workspaces irmãos `matrix177-final-lf/` e `matrix177-extra-lf/`. Os caminhos 1.7.6 abaixo são baselines históricos, não a fonte atual para editar.
+O checkout atual está em `C:/Users/gabri/Nova pasta/Documents/ChatGPT/Mixer - Modified Blender 2/Blender-Plugins/`. Workspaces irmãos: `matrix178-final/` (matriz), `matrix178-benchmark/` (benchmark novo) e `cache-baseline-final/` (medição nova do runtime 1.7.7). Os workspaces 1.7.6/1.7.7 permanecem históricos; não são a fonte atual para editar.
 
 - Fonte publicada congelada: `C:/Users/gabri/Documents/Codex/better-item-176/publish176/src/better_item/`.
 - ZIP final: `C:/Users/gabri/Documents/Codex/better-item-176/publish176/addons/better_item.zip`.
@@ -264,12 +270,12 @@ Em entrega de runtime: conferir manifesto/bl_info/README/changelog; pacote sem b
 
 Ferramenta usada em sessões anteriores: conector GitHub para ler árvore/blobs e publicar commit com base tree e atualização protegida do ref. Git convencional também é adequado em checkout correto. Sempre conferir HEAD e arquivos alterados; não sobrescrever mudanças concorrentes. Só publicar o escopo autorizado. Este trabalho de documentação não autoriza editar o runtime como parte oculta da preparação.
 
-### Primeiro trabalho recomendado à próxima IA, após a 1.7.7
+### Primeiro trabalho recomendado à próxima IA, após a 1.7.8
 
 1. Confirmar HEAD, versão, fonte/ZIP e ler os documentos nesta ordem.
-2. Ler o relatório 1.7.7 e seus resultados novos; Endpoint direto e changelog estão corrigidos, não são mais pendências abertas.
+2. Ler os relatórios 1.7.7/1.7.8 e seus resultados. Endpoint direto/changelog e a primeira otimização estão implementados; não reabrir como se não houvesse evidência.
 3. Concluir a passada humana de publicação com mouse, F9, larguras, mensagens e troca de fontes; automação GUI não a substitui.
-4. Medir a invalidação ampla da inspeção antes de propor otimização, mantendo o escopo congelado e todas as dependências relevantes.
+4. Perfilar leituras frias/centroides e getters Transform, e medir o que ainda causa invalidação geométrica. Não confundir a seletividade parcial já medida com um rastreador completo de dependências.
 5. Manter separadas discussão de UI, Normal/constraints e futura 2.0. Novas alterações dependem do pedido atual de Gabriel.
 
 Uma mensagem pronta está em [MENSAGEM-NOVA-CONVERSA.md](MENSAGEM-NOVA-CONVERSA.md). Não é necessário transferir o histórico inteiro da conversa, mas a próxima IA precisa realmente conseguir abrir os documentos e o repositório; se não conseguir, deve declarar a falta de acesso antes de afirmar que revisou.
