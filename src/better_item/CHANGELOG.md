@@ -1,3 +1,10 @@
+## 1.7.6
+
+- Lower the manifest minimum to Blender 4.2.0 after testing current Object Mode capabilities on the initial and final 4.2 patches and intermediate release lines.
+- No runtime Python or mathematical algorithm changes. Native installer checks cover the lower minimum; historical 1.7.5 evidence remains versioned separately.
+- Adapt native-animation cache fixtures to public pre/post Action-slot APIs. This is test maintenance and adds no animation feature.
+- Record an independent BMesh feasibility study for a future Edit Mode 2.0. No Edit Mode target UI or mesh editing runtime is added here.
+
 ## 1.7.5
 
 - Remove direct Custom Orientation references and the scene-list discovery workaround. No exception-text parsing or search-name cache remains.

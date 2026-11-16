@@ -1,6 +1,6 @@
 {
-  "addon_version": "1.7.5",
-  "addon_zip_sha256": "c88daf4651a80380d3ac5495186340977da3a5c5f86240df189651e79c9a380d",
+  "addon_version": "1.7.6",
+  "addon_zip_sha256": "a4182db99196e502768cae288781546d6c89619f3c7172cfbf78abc8fcadd382",
   "source_commit": null,
   "tests": [
     {
@@ -80,6 +80,15 @@
       "mode": "gui_sync"
     }
   ],
-  "baseline_source_commit": "0bedd9404746f712c9c27349628eee0fd2eac415",
-  "python_source_sha256": "37848ddc104c3c10dfcedb8758b2e16e9d40c5811feb1568b85ab11603aa3b5f"
+  "baseline_source_commit": "d0bd9b0fd3f43c23884fcb816329db6183efff2c",
+  "python_source_sha256": "37848ddc104c3c10dfcedb8758b2e16e9d40c5811feb1568b85ab11603aa3b5f",
+  "studies": [
+    {
+      "script": "test_editmode_foundations.py",
+      "mode": "gui_sync"
+    }
+  ],
+  "auxiliary_tests": [
+    "test_cross_version_state.py"
+  ]
 }

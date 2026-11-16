@@ -38,12 +38,15 @@ source.animation_data_clear()
 control=bpy.data.objects.new('Driver controller',None);ctx.scene.collection.objects.link(control)
 for frame,value in ((1,1.),(2,3.)):
  control['stretch']=value;control.keyframe_insert(data_path='["stretch"]',frame=frame)
-for layer in control.animation_data.action.layers:
- for strip in layer.strips:
-  if strip.type=='KEYFRAME':
-   bag=strip.channelbag(control.animation_data.action_slot)
-   for curve in bag.fcurves:
-    for key in curve.keyframe_points:key.interpolation='LINEAR'
+action=control.animation_data.action
+if hasattr(action,'layers'):
+ curves=[]
+ for layer in action.layers:
+  for strip in layer.strips:
+   if strip.type=='KEYFRAME':curves.extend(strip.channelbag(control.animation_data.action_slot).fcurves)
+else:curves=action.fcurves
+for curve in curves:
+ for key in curve.keyframe_points:key.interpolation='LINEAR'
 curve=source.driver_add('location',0);variable=curve.driver.variables.new();variable.name='stretch';variable.type='SINGLE_PROP';variable.targets[0].id=control;variable.targets[0].data_path='["stretch"]';curve.driver.expression='stretch'
 for frame,subframe,expect in ((1,0,4),(1,.5,6),(2,0,8),(1,0,4)):
  ctx.scene.frame_set(frame,subframe=subframe)

@@ -16,7 +16,7 @@ with zipfile.ZipFile(archive) as z:
  for f in z.infolist():assert (dest/f.filename).resolve().is_relative_to(dest.resolve())
  z.extractall(dest)
 (work/'tests').mkdir(exist_ok=True)
-for entry in suite['tests']:
+for entry in suite['tests']+suite.get('studies',[])+[{'script':name} for name in suite.get('auxiliary_tests',[])]:
  name=entry['script'];assert Path(name).name==name
  source=repo/'tests/better_item'/name
  text=source.read_text(encoding='utf-8-sig')

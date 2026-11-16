@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "blender": "4.3.2",
+  "checks": [
+    "Multi-object Edit Mode, active face, selection history and custom ID layers",
+    "Foreign-axis transform under rotated, nonuniform and mirrored object matrices; untouched vertices preserved",
+    "Native orientation from active face and full transformed normal",
+    "Topology experiment: duplicate geometry inherits custom IDs; reference policy is required",
+    "Native Edit Mode Undo/Redo with BMesh handles reacquired",
+    "Custom mesh data survives save/reopen"
+  ],
+  "duplicated_geometry_inherits_ids": true,
+  "study_only_no_addon_import": true
+}

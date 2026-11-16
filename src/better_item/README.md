@@ -1,6 +1,6 @@
-# Better Item 1.7.5
+# Better Item 1.7.6
 
-A live Transform panel with declared Blender 5.0+ compatibility. Executed builds, test coverage and remaining limits are recorded in the [compatibility report](https://github.com/Borbofruto/Blender-Plugins/blob/main/docs/better_item/compatibility-1.7.5.md). GPL-3.0-or-later. Author: Gabriel Webber do Nascimento.
+A live Transform panel with declared Blender 4.2+ compatibility. Executed builds, test coverage and remaining limits are recorded in the [compatibility report](https://github.com/Borbofruto/Blender-Plugins/blob/main/docs/better_item/compatibility-1.7.6.md). GPL-3.0-or-later. Author: Gabriel Webber do Nascimento.
 
 ## Installation
 
@@ -292,7 +292,7 @@ Executed on Blender 5.2.3 LTS / Windows:
 
 Existing suites include 1,500 locked-parent cases, 1,200 Parent Inverse cancellations, 842 mm sweep moves, arrangements, reference parity/migration, cache, signed-scale rotation and preservation of retired authoring data.
 
-Tests and machine-readable results are in [the repository](https://github.com/Borbofruto/Blender-Plugins/tree/main/tests/better_item), outside the installable ZIP. Historical delivery records are in CHANGELOG.md. The declared Blender 5.0 minimum does not imply support for every scene or future Blender release. Consult the compatibility report for exact builds and executed coverage.
+Tests and machine-readable results are in [the repository](https://github.com/Borbofruto/Blender-Plugins/tree/main/tests/better_item), outside the installable ZIP. Historical delivery records are in CHANGELOG.md. The declared Blender 4.2 minimum does not imply support for every scene or future Blender release. Consult the compatibility report for exact builds and executed coverage.
 
 1.7.1 corrects transverse Offset movement and zero-spacing direction, and replaces the sidebar preview transaction buttons with a Live checkbox. See the [1.7.1 correction report](https://github.com/Borbofruto/Blender-Plugins/blob/main/docs/better_item/release-1.7.1.md).
 
@@ -309,3 +309,7 @@ The [1.7.3 report](https://github.com/Borbofruto/Blender-Plugins/blob/main/docs/
 ## Removed custom-orientation references
 
 The 1.7.4 scene-discovery workaround and the Custom Orientation input were removed in 1.7.5. Existing files retain their saved source without modifying targets, but show Custom Orientation (Removed) and INFO setup guidance until the user selects Object, Frame or a supported default orientation. The retired choice is never offered for new references. Frame export to a native Blender orientation remains available for G/R through public operators, including native deletion detection. No exception message is parsed and no native orientation is deleted merely because a saved reference was retired. Historical release reports and the 1.7.3 handoff document describe their respective versions.
+
+## Blender 4.2 baseline and future Edit Mode
+
+The 1.7.6 minimum is Blender 4.2.0. The extension runtime Python is unchanged from 1.7.5; support expansion is backed by actual portable-build tests, native ZIP installation and an upward 4.2.0-to-5.3 file migration fixture. See the compatibility report for exact builds, artifacts and limitations. The separate [Edit Mode feasibility study](https://github.com/Borbofruto/Blender-Plugins/blob/main/docs/better_item/edit-mode-2.0-feasibility.md) establishes public BMesh foundations for a future 2.0; Edit Mode targets are not implemented in this installer.

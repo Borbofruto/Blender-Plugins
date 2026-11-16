@@ -4,17 +4,17 @@ Install individual extension ZIPs from [`addons/`](addons) using Blender's **Ins
 
 Each addon uses a stable installer filename. Updates replace that file; earlier contents remain available in Git history.
 
-## Better Item 1.7.5
+## Better Item 1.7.6
 
-[Download ZIP](https://github.com/Borbofruto/Blender-Plugins/raw/refs/heads/main/addons/better_item.zip) | [Manual](src/better_item/README.md) | [Release report](docs/better_item/release-1.7.5.md) | [Review and limitations](docs/better_item/review-1.6.1.md) | [Source](src/better_item) | [Tests](tests/better_item)
+[Download ZIP](https://github.com/Borbofruto/Blender-Plugins/raw/refs/heads/main/addons/better_item.zip) | [Manual](src/better_item/README.md) | [Release report](docs/better_item/release-1.7.6.md) | [Review and limitations](docs/better_item/review-1.6.1.md) | [Source](src/better_item) | [Tests](tests/better_item)
 
 [AI maintainer handoff — Portuguese](docs/better_item/continuidade/README.md) | [Full engineering manual](docs/better_item/CONTINUIDADE-IA.md) | [Audited source snapshot](docs/better_item/handoff-1.7.3.json)
 
-A spatial-precision Transform, Reference Frames and Align/Distribute addon for Blender 5.0+, tested on official portable builds 5.0.1, 5.1.2, 5.2.4 and 5.3.0 (Windows x64). Compact English XYZ fields support proportional links, physical projected Dimensions, origin alignment and signed distribution.
+A spatial-precision Transform, Reference Frames and Align/Distribute addon for Blender 4.2+, with current-core evidence from Blender 4.2.0 through 5.3.0 (Windows x64). Compact English XYZ fields support proportional links, physical projected Dimensions, origin alignment and signed distribution.
 
 ### Distribution by references, points and occupied geometry
 
-1.7.5 removes the direct Custom Orientation source and its exception-text discovery workaround. Frame export to native orientations for G/R is retained. Existing saved custom sources are explicitly marked removed without moving objects. See the [compatibility matrix](docs/better_item/compatibility-1.7.5.md) for tested builds, installation eligibility and limits.
+1.7.6 lowers the declared minimum to Blender 4.2.0 after native installation and current-feature regression testing. Runtime Python remains identical to 1.7.5; no spatial capability was removed. The separate [Edit Mode 2.0 feasibility study](docs/better_item/edit-mode-2.0-feasibility.md) confirms public BMesh foundations without shipping Edit Mode targets yet.
 
 - Explicit Offset / Endpoint. Between Points uses Start-to-End direction; Reference Axis projects End onto one chosen reference axis.
 - Start inherits shared Location or uses an override. End accepts world coordinates, Object, Frame Location, cursor, Global or active object. The distributor does not move endpoint objects; users may move them as Live inputs.
@@ -22,7 +22,7 @@ A spatial-precision Transform, Reference Frames and Align/Distribute addon for B
 - Inspect actual spacing or Mixed. Live captures targets and Active Object without movement, follows cursor / Object / Frame references even after selecting an Empty, and stops when disabled. It is transient editing, not animation. Offset preserves unselected coordinates and zero Geometry Bounds gap keeps the last nonzero direction. This is not a permanent relationship or animation runtime.
 - Contextual Frame sources are explicit Capture actions; native Bounding Box Center uses origins. The old single-reference Individual Origins choice is retired while legacy saved data remains readable.
 
-The current [compatibility report](docs/better_item/compatibility-1.7.5.md) records 19 API/regression entry points plus one archive-install check per build, including an 8,064-combination current-scope stress grid. Blender 4.5.16 was also tested diagnostically, but is outside the unchanged 5.0 package minimum. Earlier reports remain historical evidence: [1.7.3](docs/better_item/release-1.7.3.md), [1.7.0](docs/better_item/release-1.7.0.md).
+The [compatibility report](docs/better_item/compatibility-1.7.6.md) distinguishes final-archive, candidate and identical-code baseline evidence. It includes complete final-ZIP matrices on 4.2.0 and 5.3.0, an upward .blend migration fixture and the independent BMesh study. Earlier reports remain historical evidence.
 
 The sidebar retains Location before Orientation, the Gimbal category icon and indented dependent fields. Frames store independent Manual or linked Location/Orientation and can publish axes to Blender's native custom orientations for G/R. Transform edits the active object; alignment/distribution works on the selection.
 
@@ -87,5 +87,6 @@ blender --background --factory-startup --command extension build --source-dir sr
 Autor original: **Adam Dominec**, projeto [Export Paper Model](https://extensions.blender.org/add-ons/export-paper-model/).
 
 Os avisos de autoria originais e o manifesto foram preservados. Licença **GPL-3.0-or-later**, conforme o manifesto do add-on; o texto da GPL v3 está em [LICENSE](LICENSE).
+
 
 

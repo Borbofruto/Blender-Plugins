@@ -1,7 +1,7 @@
 """Run isolated Blender processes against a frozen add-on package."""
 import argparse,json,os,subprocess,sys,time,shutil,hashlib
 from pathlib import Path
-parser=argparse.ArgumentParser();parser.add_argument('--exe',required=True);parser.add_argument('--version',required=True);parser.add_argument('--only',nargs='*');args=parser.parse_args()
+parser=argparse.ArgumentParser();parser.add_argument('--exe',required=True);parser.add_argument('--version',required=True);parser.add_argument('--only',nargs='*');parser.add_argument('--studies',action='store_true');args=parser.parse_args()
 root=Path(__file__).resolve().parent;out=root/'results'/args.version;out.mkdir(parents=True,exist_ok=True)
 suite=json.loads((root/'suite.json').read_text(encoding='utf-8'));shutil.copytree(root/'source/better_item',out/'better_item',dirs_exist_ok=True)
 for f in (root/'tests').glob('*.py'):shutil.copyfile(f,out/f.name)
@@ -16,6 +16,7 @@ info=subprocess.run([args.exe,'--version'],capture_output=True,env=env,encoding=
 summary={'requested_version':args.version,'executable':args.exe,'addon_version':suite['addon_version'],'addon_zip_sha256':suite['addon_zip_sha256'],'started_utc':time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime()),'tests':[]}
 startup=subprocess.STARTUPINFO();startup.dwFlags|=subprocess.STARTF_USESHOWWINDOW;startup.wShowWindow=0
 entries=([{'script':'api_probe.py','mode':'background'}] if probe.exists() else [])+suite['tests']
+if args.studies:entries+=suite.get('studies',[])
 for entry in entries:
  name=entry['script'];mode=entry['mode']
  if args.only and name not in args.only:continue
