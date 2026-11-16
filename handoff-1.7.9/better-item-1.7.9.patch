@@ -1,0 +1,747 @@
+From 45c7c7ad55fc8e394b31634907a84a79faa40f5d Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Mon, 16 Nov 2026 13:36:43 -0300
+Subject: [PATCH] Fix Better Item 1.7.9 linked gestures, cold inspection cost
+ and Normal fingerprint
+
+- Keep linked Location/Rotation/Scale/Dimensions ratios exact across a drag and through zero.
+- Resolve unrealized-instance parents once per evaluated state (cold reads were quadratic).
+- Reuse the Edit Mode Normal selection fingerprint until a depsgraph event or 2 s safety interval.
+- Add test_better_item_gestures179.py and release notes; clarify position_roundoff docstring.
+
+Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_016GDf8pw2Q2TWHEiHJ6uQ1S
+---
+ docs/better_item/release-1.7.9.md             |  66 +++++
+ src/better_item/CHANGELOG.md                  |  13 +
+ src/better_item/README.md                     |   6 +-
+ src/better_item/blender_manifest.toml         |   2 +-
+ src/better_item/engine.py                     |   8 +-
+ src/better_item/geometry_arrange.py           |   5 +-
+ src/better_item/math_core.py                  |  33 +++
+ src/better_item/native_refs.py                |  43 ++-
+ src/better_item/transform_view.py             |  49 +++-
+ .../test_better_item_gestures179.py           | 262 ++++++++++++++++++
+ 10 files changed, 462 insertions(+), 25 deletions(-)
+ create mode 100644 docs/better_item/release-1.7.9.md
+ create mode 100644 tests/better_item/test_better_item_gestures179.py
+
+diff --git a/docs/better_item/release-1.7.9.md b/docs/better_item/release-1.7.9.md
+new file mode 100644
+index 0000000..051e908
+--- /dev/null
++++ b/docs/better_item/release-1.7.9.md
+@@ -0,0 +1,66 @@
++# Better Item 1.7.9 — gestos lineares, leitura fria e fingerprint de Normal
++
++Manutenção sobre `97a676d` (1.7.8), em 16/11/2026. Mínimo preservado: Blender **4.2.0**. Sem funcionalidade nova, alteração de schema, de contrato matemático ou de layout de UI. Esta branch (`release/1.7.9`) não substitui a `main`.
++
++## Triagem dos dois relatórios externos contra o código 1.7.8
++
++Cada ponto foi tratado como hipótese e medido em Blender 4.2.23 e 5.3.0 (pip `bpy`, Linux). Notas e comparações com concorrentes não foram avaliadas como prova.
++
++| Ponto | Resultado |
++| --- | --- |
++| `native_refs.sync` varrendo objetos; `NodeTree` de shader; inspeção perdida após mover objeto alheio | Já corrigido na 1.7.8 e confirmado: 0 resultados velhos em 12 cenários × 3 bases |
++| Getters repetidos do painel Transform (4× por grupo) | **Não procede como problema**: `values()` custa 0,002–0,056 ms; um redesenho completo estimado em 0,4 ms (cadeia de 2 pais com escala não uniforme). Cache por depsgraph seria arriscado (cursor, Frames manuais) |
++| `set_dimensions` oblíquo com 2× `to_mesh` por tick | **Não procede**: 1 leitura de geometria e 1 `to_mesh` por tick (4,2 ms com 41 mil vértices) |
++| Deriva e falha em eixos linkados durante o arrasto | **Reproduzido e corrigido** (abaixo) |
++| Leitura fria cara | **Reproduzido, causa encontrada e corrigida** (abaixo) |
++| Assinatura de Normal em seleção densa | **Reproduzido e corrigido** (abaixo) |
++| `context` vs `bpy.context` | Não reproduzido como defeito: dentro de `temp_override` os dois coincidem. Sem alteração |
++| `as_pointer()` vs `session_uid` | Não reproduzido e não testado especificamente (reutilização de endereço após exclusão). Os caches continuam sendo limpos em atualizações não classificadas. Sem alteração |
++| Docstring de `position_roundoff` | Corrigido (somente texto) |
++| `placement` usando `_coordinates`/`_geometry_key` privados | Verdadeiro (1 uso), sem efeito em runtime. Fica para uma refatoração futura, fora do escopo |
++| `ruff format`, Session, migration.py, camadas | Fora de uma versão de correção: reescreve todas as linhas e invalida as verificações por hash |
++| Pie menu, Frame selecionável por gizmo, New Frame com origem, largura dinâmica do texto, modo simples | Funcionalidade/UX: 1.8.x |
++
++## Corrigido
++
++### Edições linkadas contínuas (Location, Rotation, Scale, Dimensions)
++
++Reproduzido na 1.7.8 com Location linkado, Reference e Default:
++
++- Arrasto de X de 1 a 5 em 400 passos, com Y/X = 2 e Z/X = 3: Z terminava em **14,999916** (razão 2,999983). Cada passo relê o valor do armazenamento float32 e multiplica de novo.
++- Valor passando por 0: todos os eixos linkados viravam 0 e **todos os passos seguintes falhavam com BI-T008**. Em Rotation linkada, os outros eixos ficavam em 0 para sempre.
++
++Correção: enquanto os canais estão exatamente como a edição linkada anterior os deixou, o vetor de antes do gesto continua sendo a fonte da razão. Qualquer mudança externa, troca de links, outro objeto ou limpeza de caches descarta essa memória (máximo de 16 entradas). Quando não há continuidade, BI-T008 continua valendo como antes.
++
++Resultado nas duas builds: 400 passos terminam em (5, 10, 15) exatos; 0,5 → 0 → −0,05 → −1 produz (−1, −2, −3).
++
++### Leitura fria da inspeção: custo quadrático
++
++O perfil mostrou que 65% da leitura fria de 1.500 objetos estava na verificação BI-M005, que percorria **todas** as instâncias do depsgraph para cada objeto medido (2,25 milhões de iterações). Agora os pais de instância são levantados uma vez por estado avaliado.
++
++| Linux, 5.3.0, 1.500 objetos | 1.7.8 | 1.7.9 |
++| --- | ---: | ---: |
++| Geometry Bounds, primeira inspeção | 1,59 s | 0,12 s |
++| Volume, primeira inspeção | 1,98 s | 0,42 s |
++| Geometry Bounds, 600 objetos | 0,15 s | 0,045 s |
++| Volume, 600 objetos | 0,26 s | 0,14 s |
++
++O custo também dependia dos objetos não selecionados da cena: 300 selecionados com 5.000 outros custavam 0,62 s; agora 0,023 s. O cache de geometria permanece com 8 entradas, porque ampliá-lo não trouxe ganho consistente.
++
++### Assinatura de Normal em Edit Mode
++
++Com a orientação Normal em uso, o timer de 0,2 s percorria todos os vértices, arestas e faces em Python a cada tick: 5,8 ms com 10 mil vértices, 29 ms com 41 mil, **103 ms com 164 mil** (52% de um núcleo). Agora o fingerprint de elementos é reutilizado até haver evento do depsgraph (seleção por operador emite evento de shading, sem flag de geometria), mudança do conjunto de objetos ou 2 s de intervalo de segurança. Tick ocioso com 164 mil vértices: 0,008 ms; uma passada completa a cada 2 s permanece como rede de proteção para scripts que alterem seleção sem evento.
++
++Verificado: troca de um vértice por outro com a mesma contagem continua detectada.
++
++## Validação executada
++
++- `test_better_item_gestures179.py` (novo): deriva, zero, mudança externa, limite de âncoras, instanciadores adicionados/removidos e fingerprint de Normal. Passa em 4.2.23 e 5.3.0; o caso de deriva **falha na 1.7.8**.
++- Suítes legadas (reg, g1, o1, e2, ui2, x2, l2, q2, q5, p6, b1, new152, m2, n2, p10, q8, q9, q10): saída idêntica entre 1.7.8 e 1.7.9 nas duas builds, exceto o caminho impresso. m2 e p10 terminam com traceback, idêntico na 1.7.8; a causa não foi investigada nesta rodada.
++- Frescor de cache: 0 resultados velhos em 12 cenários × 3 bases.
++
++## Não executado
++
++- Matriz Windows x64 de 22 testes e as demais builds portáteis (4.2.0, 4.3, 4.4, 4.5, 5.0, 5.1, 5.2): exigem o runner da suíte no PC.
++- Passada manual de mouse/F9, Undo/Redo, GPU e a matriz do instalador. `tests/better_item/compatibility/suite.json` ainda fixa o SHA do instalador 1.7.8; o ZIP 1.7.9 não foi gerado nesta branch.
++- Arrasto físico no painel (o teste chama o setter da propriedade, como o painel faz a cada passo).
+diff --git a/src/better_item/CHANGELOG.md b/src/better_item/CHANGELOG.md
+index ba4ca9c..45960a9 100644
+--- a/src/better_item/CHANGELOG.md
++++ b/src/better_item/CHANGELOG.md
+@@ -1,5 +1,18 @@
+ # Better Item — changelog
+ 
++## 1.7.9
++
++### Fixed
++- Linked Location, Rotation, Scale and Dimensions edits no longer accumulate float32 read-back error across a drag (a 400-tick Location drag lost about 6e-6 of the ratio), and no longer collapse every linked axis when the dragged value reaches zero, which previously made every later tick fail with BI-T008. While the channels are exactly as the previous linked edit left them, the vector from before the gesture remains the ratio source; any outside change, link change or cache reset discards it.
++
++### Performance
++- Find objects that emit unrealized instances once per evaluated state instead of scanning every instance for each measured object. First Geometry Bounds / Volume inspections were quadratic in selection size.
++- In Edit Mode with a Normal source, reuse the per-element selection fingerprint until a depsgraph event, an object-set change or a 2 s safety interval; idle timer ticks no longer walk every vertex, edge and face in Python.
++
++### Documentation
++- Clarify that `position_roundoff` returns one object's budget and that a gap sums both endpoints.
++- No saved schema, mathematical contract, UI layout or supported minimum changed.
++
+ ## 1.7.8
+ 
+ ### Performance
+diff --git a/src/better_item/README.md b/src/better_item/README.md
+index 266f834..cbfae7a 100644
+--- a/src/better_item/README.md
++++ b/src/better_item/README.md
+@@ -1,4 +1,4 @@
+-# Better Item 1.7.8
++# Better Item 1.7.9
+ 
+ A live Transform panel with declared Blender 4.2+ compatibility. Executed builds, test coverage and remaining limits are recorded in the [compatibility report](https://github.com/Borbofruto/Blender-Plugins/blob/main/docs/better_item/compatibility-1.7.6.md). GPL-3.0-or-later. Author: Gabriel Webber do Nascimento.
+ 
+@@ -6,6 +6,8 @@ A live Transform panel with declared Blender 4.2+ compatibility. Executed builds
+ 
+ 1.7.8 retains spacing inspection results across unrelated transform-only object updates, avoids Object Mode selection-normal source scans, and narrows geometry-tree invalidation work. Geometry updates and unclassified events still invalidate conservatively; applying an operation always plans and validates independently. Measured before/after results and remaining costs are recorded in the [cache maintenance report](https://github.com/Borbofruto/Blender-Plugins/blob/main/docs/better_item/release-1.7.8.md).
+ 
++1.7.9 keeps linked Location, Rotation, Scale and Dimensions edits exact across a continuous drag, including through zero; removes a quadratic scan from the first (cold) spacing inspection; and stops re-walking every selected element in Edit Mode on each Normal-orientation refresh. No mathematical contract, saved schema, UI workflow or supported minimum changed. Measurements and limits are in the [1.7.9 report](https://github.com/Borbofruto/Blender-Plugins/blob/main/docs/better_item/release-1.7.9.md).
++
+ ## Installation
+ 
+ Download the Better Item extension ZIP from the repository's `addons` directory. In Blender use **Edit > Preferences > Add-ons > Install from Disk**, choose that ZIP and enable Better Item. Open **N > Better Item** in Object Mode. If Blender still has an older module loaded after an update, restart it. The repository ZIP is not the extension package.
+@@ -230,7 +232,7 @@ Unsupported geometry, moving endpoint dependencies, native locks/drivers/constra
+ | BI-T005 | Singular parent transform |
+ | BI-T006 | Evaluated position did not retain the target; residual is reported |
+ | BI-T007 | Coordinate exceeds the numeric range |
+-| BI-T008 | Proportional denominator is zero or unresolved within Location rounding uncertainty |
++| BI-T008 | Proportional denominator is zero or unresolved within Location rounding uncertainty. A linked edit that continues the previous edit of the same channels keeps its original ratio and is not refused when it passes through zero |
+ | BI-T009 | A moving reference prevents the requested numeric readback |
+ | BI-T010 | Singular zero/negative Dimensions edit |
+ | BI-T011 | Rotation unexpectedly changes evaluated Scale |
+diff --git a/src/better_item/blender_manifest.toml b/src/better_item/blender_manifest.toml
+index 1211924..2ebe01a 100644
+--- a/src/better_item/blender_manifest.toml
++++ b/src/better_item/blender_manifest.toml
+@@ -1,7 +1,7 @@
+ schema_version = "1.0.0"
+ id = "better_item"
+ name = "Better Item"
+-version = "1.7.8"
++version = "1.7.9"
+ tagline = "Reference transforms and geometry-aware alignment tools"
+ maintainer = "Gabriel Webber do Nascimento"
+ website = "https://github.com/Borbofruto/Blender-Plugins"
+diff --git a/src/better_item/engine.py b/src/better_item/engine.py
+index c30df85..8727f7d 100644
+--- a/src/better_item/engine.py
++++ b/src/better_item/engine.py
+@@ -4,7 +4,7 @@ import math
+ import bpy
+ import numpy as np
+ from mathutils import Vector,Matrix
+-from .math_core import BetterItemError,linked_values,different
++from .math_core import BetterItemError,linked_values,different,link_base,link_remember
+ 
+ GROUP_LINK={'LOCATION':'link_location','ROTATION':'link_rotation','SCALE':'link_scale','DIMENSIONS':'link_dimensions'}
+ 
+@@ -36,7 +36,10 @@ def edit_scale_component(obj,axis,value):
+     editable(obj)
+     bpy.context.view_layer.update()
+     before=tuple(obj.scale)
+-    desired=linked_values(before,axis,value,obj.better_item.link_scale)
++    links=obj.better_item.link_scale
++    key=(obj.as_pointer(),'SCALE',tuple(links))
++    base=link_base(key,before)
++    desired=linked_values(base,axis,value,links)
+     for i,locked in enumerate(obj.lock_scale):
+         if locked and different(before[i],desired[i]):
+             raise BetterItemError('Axis %s is locked on "%s". The linked edit was cancelled.' % ('XYZ'[i],obj.name))
+@@ -46,6 +49,7 @@ def edit_scale_component(obj,axis,value):
+         bpy.context.view_layer.update()
+         if not _native_matches(obj.scale,desired):
+             raise BetterItemError('Blender did not retain the requested Scale. Check drivers and constraints on "%s".' % obj.name)
++        link_remember(key,axis,links,base,tuple(obj.scale))
+     except Exception as exc:
+         obj.scale=before
+         bpy.context.view_layer.update()
+diff --git a/src/better_item/geometry_arrange.py b/src/better_item/geometry_arrange.py
+index a870bc7..ead0e71 100644
+--- a/src/better_item/geometry_arrange.py
++++ b/src/better_item/geometry_arrange.py
+@@ -18,9 +18,10 @@ def _bounds(obj,basis):
+ 
+ 
+ def position_roundoff(obj,target,direction):
+-    """Project the existing native parent/delta/world evaluation budget.
++    """Project one object's native parent/delta/world evaluation budget.
+ 
+-    Stored translations round independently; a gap needs both endpoint budgets.
++    Stored translations round independently, so a gap between two objects needs
++    the budgets of both endpoints: callers add this value for each of them.
+     This is a storage-error allowance, not a tolerance relative to scene size.
+     """
+     return float(np.abs(direction) @ engine._world_roundoff(obj,target))
+diff --git a/src/better_item/math_core.py b/src/better_item/math_core.py
+index 945b981..c5b7768 100644
+--- a/src/better_item/math_core.py
++++ b/src/better_item/math_core.py
+@@ -56,6 +56,39 @@ def linked_values(before,axis,value,links,zero_angle_as_turn=False,*,denominator
+     return vector3(result)
+ 
+ 
++_LINK_ANCHOR_ENTRIES=16
++_link_anchors={}
++
++
++def link_base(key,before):
++    """Return the vector a linked edit should scale from.
++
++    Dragging a linked field sends one edit per tick, and each tick reads the
++    previous result back from float32 storage. While nothing else has changed
++    the channels, the vector before the gesture stays authoritative: it keeps
++    the ratio exact and survives passing through zero. Any outside change to the
++    values makes the stored read-back differ, and the current values are used.
++    """
++    before=tuple(before)
++    anchor=_link_anchors.get(key)
++    return anchor[0] if anchor is not None and anchor[1]==before else before
++
++
++def link_remember(key,axis,links,base,after):
++    """Remember a successful linked edit for the next tick of the same gesture."""
++    if links[axis] and sum(bool(v) for v in links)>1:
++        _link_anchors.pop(key,None)
++        _link_anchors[key]=(tuple(base),tuple(after))
++        while len(_link_anchors)>_LINK_ANCHOR_ENTRIES:
++            _link_anchors.pop(next(iter(_link_anchors)))
++    else:
++        _link_anchors.pop(key,None)
++
++
++def clear_link_anchors():
++    _link_anchors.clear()
++
++
+ def _inputs(origins,axes,reference,key):
+     if len(axes)!=3 or not any(axes):
+         raise BetterItemError('[BI-A001] Select at least one axis: X, Y or Z.')
+diff --git a/src/better_item/native_refs.py b/src/better_item/native_refs.py
+index efa5c88..3691d3d 100644
+--- a/src/better_item/native_refs.py
++++ b/src/better_item/native_refs.py
+@@ -7,6 +7,7 @@ operator in a real View3D context. No helper objects or target transforms.
+ """
+ from contextlib import contextmanager
+ import math
++import time
+ import uuid
+ import bpy
+ import numpy as np
+@@ -25,6 +26,10 @@ _normal_cache={}
+ _needs_migration=True
+ _normal_signatures={}
+ _normal_revisions={}
++_normal_elements={}
++_normal_dirty=set()
++# Safety net if a script edits a selection without any depsgraph event.
++_NORMAL_RECHECK_SECONDS=2.
+ 
+ 
+ def clear_cache():
+@@ -33,12 +38,17 @@ def clear_cache():
+     _normal_cache.clear()
+     _normal_signatures.clear()
+     _normal_revisions.clear()
++    _normal_elements.clear()
++    _normal_dirty.clear()
+ 
+ 
+ @persistent
+ def invalidate_normal(scene,depsgraph):
++    if not len(depsgraph.updates):return
++    key=scene.as_pointer()
++    # Element selection changes arrive as updates without a geometry flag.
++    _normal_dirty.add(key)
+     if any(update.is_updated_geometry for update in depsgraph.updates):
+-        key=scene.as_pointer()
+         _normal_revisions[key]=_normal_revisions.get(key,0)+1
+ 
+ 
+@@ -206,8 +216,9 @@ def _source_names(scene):
+     return names
+ 
+ 
+-def _normal_signature(context):
+-    selected=[]
++def _selection_states(context):
++    """Per-element selection of every object in the current edit session."""
++    states=[]
+     for obj in context.objects_in_mode_unique_data:
+         state=()
+         if obj.type=='MESH':
+@@ -220,14 +231,31 @@ def _normal_signature(context):
+         elif obj.type in {'CURVE','SURFACE'}:
+             state=tuple(tuple((p.select_control_point,p.select_left_handle,p.select_right_handle) for p in spline.bezier_points)
+                 +tuple(p.select for p in spline.points) for spline in obj.data.splines)
+-        selected.append((obj.as_pointer(),tuple(v for row in obj.matrix_world for v in row),state))
++        states.append((obj.as_pointer(),state))
++    return tuple(sorted(states))
++
++
++def _normal_signature(context,fresh=True):
++    """Selection fingerprint. Walking every element is O(vertices) in Python, so
++    an unchanged fingerprint is reused until a depsgraph event arrives (or a
++    short safety interval passes) unless `fresh` forces an exact walk."""
++    key=context.scene.as_pointer()
++    pointers=tuple(sorted(obj.as_pointer() for obj in context.objects_in_mode_unique_data))
++    cached=_normal_elements.get(key)
++    if (fresh or cached is None or key in _normal_dirty or cached[0]!=pointers
++            or time.monotonic()-cached[2]>_NORMAL_RECHECK_SECONDS):
++        elements=_selection_states(context)
++        _normal_elements[key]=(pointers,elements,time.monotonic())
++        _normal_dirty.discard(key)
++    else:elements=cached[1]
++    matrices=tuple(sorted((obj.as_pointer(),tuple(v for row in obj.matrix_world for v in row)) for obj in context.objects_in_mode_unique_data))
+     return (context.mode,context.active_object.as_pointer() if context.active_object else 0,
+-        tuple(sorted(selected)),_normal_revisions.get(context.scene.as_pointer(),0),tuple(context.tool_settings.mesh_select_mode))
++        matrices,elements,_normal_revisions.get(key,0),tuple(context.tool_settings.mesh_select_mode))
+ 
+ 
+ def _refresh_normal(context):
+     key=context.scene.as_pointer()
+-    signature=_normal_signature(context)
++    signature=_normal_signature(context,fresh=False)
+     if _normal_signatures.get(key)==signature:return
+     _normal_signatures[key]=signature
+     _normal_cache.pop(key,None)
+@@ -266,9 +294,10 @@ def sync():
+             distribution.migrate()
+             _needs_migration=False
+         live_scenes={scene.as_pointer() for scene in bpy.data.scenes}
+-        for cache in (_normal_cache,_normal_signatures,_normal_revisions):
++        for cache in (_normal_cache,_normal_signatures,_normal_revisions,_normal_elements):
+             for key in list(cache):
+                 if key not in live_scenes:del cache[key]
++        _normal_dirty.intersection_update(live_scenes)
+         windows=list(context.window_manager.windows)
+         if context.window in windows:windows.remove(context.window);windows.insert(0,context.window)
+         visited=set()
+diff --git a/src/better_item/transform_view.py b/src/better_item/transform_view.py
+index 28ed977..231ec57 100644
+--- a/src/better_item/transform_view.py
++++ b/src/better_item/transform_view.py
+@@ -6,12 +6,16 @@ import numpy as np
+ from collections import OrderedDict
+ from mathutils import Matrix, Euler
+ from . import engine, frames
+-from .math_core import BetterItemError, linked_values
++from .math_core import BetterItemError, linked_values, link_base, link_remember, clear_link_anchors
+ from bpy.app.handlers import persistent
+ 
+ _dimension_cache=OrderedDict()
+ _geometry_cache=OrderedDict()
+ _geometry_revision=0
++# Advances on every depsgraph update batch, geometry or not. Keys the instancer
++# lookup, which depends on object instances rather than on vertex data.
++_update_serial=0
++_instancers=(None,frozenset())
+ _GEOMETRY_CACHE_ENTRIES=8
+ _GEOMETRY_CACHE_BYTES=64*1024*1024
+ _DIMENSION_CACHE_ENTRIES=32
+@@ -23,10 +27,12 @@ def has_surface_geometry(obj):
+ 
+ @persistent
+ def clear_cache(_scene=None,_depsgraph=None):
+-    global _geometry_revision
++    global _geometry_revision,_update_serial
+     _geometry_revision+=1
++    _update_serial+=1
+     _dimension_cache.clear()
+     _geometry_cache.clear()
++    clear_link_anchors()
+ 
+ 
+ @persistent
+@@ -36,7 +42,8 @@ def invalidate_geometry(_scene,depsgraph):
+     Transform-only updates are handled by the projection key. Translation is
+     intentionally absent from that key because it cannot change extents.
+     """
+-    global _geometry_revision
++    global _geometry_revision,_update_serial
++    if len(depsgraph.updates):_update_serial+=1
+     updated_objects=set()
+     updated_data=set()
+     updated_trees=set()
+@@ -73,14 +80,27 @@ def _geometry_key(obj,depsgraph):
+     return (depsgraph.as_pointer(),obj.as_pointer(),obj.data.as_pointer() if obj.data else 0)
+ 
+ 
++def _instancer_pointers(depsgraph):
++    """Originals that currently emit instances, scanned once per evaluated state.
++
++    Scanning every instance for each measured object made a cold read
++    quadratic in the number of objects.
++    """
++    global _instancers
++    token=(depsgraph.as_pointer(),_update_serial)
++    if _instancers[0]!=token:
++        _instancers=(token,frozenset(instance.parent.original.as_pointer()
++            for instance in depsgraph.object_instances if instance.is_instance and instance.parent))
++    return _instancers[1]
++
++
+ def _coordinates(obj,depsgraph,key):
+     if not has_surface_geometry(obj):
+         raise BetterItemError('Dimensions is unavailable for object type %s.'%obj.type)
+     if key in _geometry_cache:
+         _geometry_cache.move_to_end(key)
+         return _geometry_cache[key]
+-    if any(instance.is_instance and instance.parent and instance.parent.original==obj
+-           for instance in depsgraph.object_instances):
++    if obj.as_pointer() in _instancer_pointers(depsgraph):
+         raise BetterItemError('[BI-M005] Dimensions cannot measure unrealized Geometry Nodes instances. Use Realize Instances upstream before measuring or editing Dimensions.')
+     evaluated=obj.evaluated_get(depsgraph)
+     try:mesh=evaluated.to_mesh()
+@@ -431,12 +451,15 @@ def edit_component(context,obj,group,axis,value):
+         before=values(context,obj,group)
+         denominator_tolerance=0.
+     links=getattr(obj.better_item,engine.GROUP_LINK[group])
+-    desired=linked_values(before,axis,value,links,zero_angle_as_turn=group=='ROTATION',denominator_tolerance=denominator_tolerance)
++    key=(obj.as_pointer(),group,tuple(links))
++    base=link_base(key,before)
++    desired=linked_values(base,axis,value,links,zero_angle_as_turn=group=='ROTATION',denominator_tolerance=denominator_tolerance)
+     if (before==desired if group=='LOCATION' else not any(engine.different(a,b) for a,b in zip(before,desired))):return
+-    if group=='LOCATION':
+-        return frames.set_position(context,obj,desired)
+-    if group=='ROTATION':return set_rotation(context,obj,desired)
+-    return set_dimensions(context,obj,desired)
++    if group=='LOCATION':frames.set_position(context,obj,desired)
++    elif group=='ROTATION':set_rotation(context,obj,desired)
++    else:set_dimensions(context,obj,desired)
++    after=frames.position_values(context,obj)[0] if group=='LOCATION' else values(context,obj,group)
++    link_remember(key,axis,links,base,after)
+ 
+ 
+ def _edit_default(obj,group,axis,value):
+@@ -445,7 +468,10 @@ def _edit_default(obj,group,axis,value):
+     if group=='SCALE':return engine.edit_scale_component(obj,axis,value)
+     attribute={'LOCATION':'location','ROTATION':'rotation_euler','DIMENSIONS':'dimensions'}[group]
+     before=tuple(getattr(obj,attribute))
+-    desired=linked_values(before,axis,value,getattr(obj.better_item,engine.GROUP_LINK[group]),zero_angle_as_turn=group=='ROTATION')
++    links=getattr(obj.better_item,engine.GROUP_LINK[group])
++    key=(obj.as_pointer(),'DEFAULT-'+group,tuple(links))
++    base=link_base(key,before)
++    desired=linked_values(base,axis,value,links,zero_angle_as_turn=group=='ROTATION')
+     if group=='DIMENSIONS':desired=_dimension_targets(before,desired)
+     locks=obj.lock_location if group=='LOCATION' else obj.lock_rotation if group=='ROTATION' else obj.lock_scale
+     if group!='DIMENSIONS' and any(locked and engine.different(old,new) for locked,old,new in zip(locks,before,desired)):
+@@ -465,6 +491,7 @@ def _edit_default(obj,group,axis,value):
+         actual=tuple(getattr(obj,attribute))
+         if not (_dimensions_match(actual,desired) if group=='DIMENSIONS' else engine._native_matches(actual,desired)):
+             raise BetterItemError('Blender did not retain the requested default/local channel values.')
++        link_remember(key,axis,links,base,actual)
+     except Exception:
+         _restore(obj,previous)
+         raise
+diff --git a/tests/better_item/test_better_item_gestures179.py b/tests/better_item/test_better_item_gestures179.py
+new file mode 100644
+index 0000000..1c20463
+--- /dev/null
++++ b/tests/better_item/test_better_item_gestures179.py
+@@ -0,0 +1,262 @@
++"""Linked-edit gestures, instancer lookup and Normal selection fingerprint (1.7.9).
++
++Each case was reproduced against 1.7.8 first:
++- a 400-tick linked drag lost ~6e-6 of the ratio through float32 read-back;
++- crossing zero collapsed every linked axis and every later tick raised BI-T008;
++- Normal selection fingerprints walked every element on every 0.2 s tick.
++
++Headless-safe: no Undo, no mouse. Counters and exact oracles, no timings.
++"""
++import sys
++import math
++from pathlib import Path
++
++sys.dont_write_bytecode = True
++sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'src'))
++import bpy
++import bmesh
++
++try:
++    import addon_utils
++    addon_utils.enable('better_item')
++except Exception:
++    pass
++import better_item
++if not hasattr(bpy.types.Object, 'better_item'):
++    better_item.register()
++from better_item import transform_view as tv, native_refs, engine, math_core
++from better_item.math_core import BetterItemError
++
++ctx = bpy.context
++results = {}
++
++
++def reset():
++    bpy.ops.wm.read_factory_settings(use_empty=True)
++    if not hasattr(bpy.types.Object, 'better_item'):
++        better_item.register()
++    tv.clear_cache()
++
++
++def empty(location=(1, 2, 3)):
++    obj = bpy.data.objects.new('o', None)
++    ctx.scene.collection.objects.link(obj)
++    obj.location = location
++    ctx.view_layer.update()
++    ctx.view_layer.objects.active = obj
++    obj.select_set(True)
++    return obj
++
++
++def edit(obj, group, axis, value):
++    try:
++        tv.edit_component(ctx, obj, group, axis, value)
++        return None
++    except BetterItemError as exc:
++        return str(exc)
++
++
++def current(obj, group):
++    return tuple(tv.values(ctx, obj, group))
++
++
++def linked(obj, group, space):
++    obj.better_item.transform_space = space
++    setattr(obj.better_item, engine.GROUP_LINK[group], (True, True, True))
++
++
++def drag_ratio():
++    for space in ('REFERENCE', 'DEFAULT'):
++        reset()
++        obj = empty()
++        linked(obj, 'LOCATION', space)
++        for k in range(1, 401):
++            assert edit(obj, 'LOCATION', 0, 1 + 4 * k / 400) is None
++        x, y, z = current(obj, 'LOCATION')
++        assert abs(y / x - 2) < 1e-9 and abs(z / x - 3) < 1e-9, (space, x, y, z)
++    reset()
++    obj = empty()
++    obj.scale = (1, 2, 3)
++    linked(obj, 'SCALE', 'DEFAULT')
++    for k in range(1, 401):
++        assert edit(obj, 'SCALE', 0, 1 + 4 * k / 400) is None
++    x, y, z = tuple(obj.scale)
++    assert abs(y / x - 2) < 1e-9 and abs(z / x - 3) < 1e-9, (x, y, z)
++    results['drag_ratio'] = 'Location (Reference and Default) and Scale keep exact ratios over a 400-tick drag'
++
++
++def cross_zero():
++    reset()
++    obj = empty()
++    linked(obj, 'LOCATION', 'REFERENCE')
++    for value in (.5, .05, 0., -.05, -.5, -1.):
++        assert edit(obj, 'LOCATION', 0, value) is None, value
++    assert current(obj, 'LOCATION') == (-1., -2., -3.), current(obj, 'LOCATION')
++    reset()
++    obj = empty(location=(0, 0, 0))
++    obj.rotation_euler = tuple(math.radians(v) for v in (10, 20, 30))
++    ctx.view_layer.update()
++    linked(obj, 'ROTATION', 'REFERENCE')
++    for degrees in (5, 0, -2, -5):
++        assert edit(obj, 'ROTATION', 0, math.radians(degrees)) is None, degrees
++    got = tuple(round(math.degrees(v), 6) for v in current(obj, 'ROTATION'))
++    assert got == (-5., -10., -15.), got
++    reset()
++    obj = empty()
++    obj.scale = (1, 2, 3)
++    linked(obj, 'SCALE', 'DEFAULT')
++    for value in (.5, 0., -.5):
++        assert edit(obj, 'SCALE', 0, value) is None, value
++    assert tuple(obj.scale) == (-.5, -1., -1.5), tuple(obj.scale)
++    results['cross_zero'] = 'Location, Rotation and Scale continue through zero with the original ratio'
++
++
++def outside_changes_win():
++    reset()
++    obj = empty()
++    linked(obj, 'LOCATION', 'DEFAULT')
++    assert edit(obj, 'LOCATION', 0, 0.) is None
++    assert tuple(obj.location) == (0., 0., 0.)
++    obj.location = (0., 0., 7.)
++    ctx.view_layer.update()
++    message = edit(obj, 'LOCATION', 0, 2.)
++    assert message and 'BI-T008' in message, message
++    assert tuple(obj.location) == (0., 0., 7.), tuple(obj.location)
++    reset()
++    obj = empty()
++    linked(obj, 'LOCATION', 'DEFAULT')
++    assert edit(obj, 'LOCATION', 0, 2.) is None
++    obj.location = (5., 5., 5.)
++    ctx.view_layer.update()
++    assert edit(obj, 'LOCATION', 0, 10.) is None
++    assert tuple(obj.location) == (10., 10., 10.), tuple(obj.location)
++    obj.better_item.link_location = (True, False, False)
++    assert edit(obj, 'LOCATION', 0, 3.) is None
++    assert tuple(obj.location) == (3., 10., 10.), tuple(obj.location)
++    results['outside_changes_win'] = 'a value changed outside the gesture, or a link change, discards the remembered ratio'
++
++
++def anchors_bounded():
++    reset()
++    objects = []
++    for index in range(math_core._LINK_ANCHOR_ENTRIES + 6):
++        obj = bpy.data.objects.new('a%d' % index, None)
++        ctx.scene.collection.objects.link(obj)
++        obj.location = (1, 2, 3)
++        obj.better_item.transform_space = 'DEFAULT'
++        obj.better_item.link_location = (True, True, True)
++        objects.append(obj)
++        ctx.view_layer.update()
++        assert edit(obj, 'LOCATION', 0, 2.) is None
++    assert len(math_core._link_anchors) <= math_core._LINK_ANCHOR_ENTRIES
++    tv.clear_cache()
++    assert not math_core._link_anchors
++    results['anchors_bounded'] = 'anchor store is bounded and cleared with the transform caches'
++
++
++def instancers():
++    reset()
++    mesh = bpy.data.meshes.new('m')
++    builder = bmesh.new()
++    bmesh.ops.create_cube(builder, size=2)
++    builder.to_mesh(mesh)
++    builder.free()
++    obj = bpy.data.objects.new('c', mesh)
++    ctx.scene.collection.objects.link(obj)
++    ctx.view_layer.update()
++    plain = bpy.data.objects.new('p', mesh)
++    ctx.scene.collection.objects.link(plain)
++    group = bpy.data.node_groups.new('Unrealized', 'GeometryNodeTree')
++    group.interface.new_socket(name='Geometry', in_out='INPUT', socket_type='NodeSocketGeometry')
++    group.interface.new_socket(name='Geometry', in_out='OUTPUT', socket_type='NodeSocketGeometry')
++    source = group.nodes.new('NodeGroupInput')
++    sink = group.nodes.new('NodeGroupOutput')
++    instance = group.nodes.new('GeometryNodeGeometryToInstance')
++    group.links.new(source.outputs['Geometry'], instance.inputs['Geometry'])
++    group.links.new(instance.outputs['Instances'], sink.inputs['Geometry'])
++    ctx.view_layer.update()
++    assert tv.dimensions(plain, ((1, 0, 0), (0, 1, 0), (0, 0, 1)))
++    modifier = obj.modifiers.new('Instances', 'NODES')
++    modifier.node_group = group
++    ctx.view_layer.update()
++    try:
++        tv.values(ctx, obj, 'DIMENSIONS')
++        raise AssertionError('instances were measured')
++    except BetterItemError as exc:
++        assert 'BI-M005' in str(exc), exc
++    # The cached instancer set must follow the evaluated scene both ways.
++    assert tv.dimensions(plain, ((1, 0, 0), (0, 1, 0), (0, 0, 1)))
++    obj.modifiers.remove(modifier)
++    ctx.view_layer.update()
++    assert tv.values(ctx, obj, 'DIMENSIONS') and obj.name in ctx.scene.objects
++    results['instancers'] = 'unrealized instances are refused and the lookup follows modifier add/remove'
++
++
++def normal_fingerprint():
++    reset()
++    mesh = bpy.data.meshes.new('d')
++    builder = bmesh.new()
++    bmesh.ops.create_icosphere(builder, subdivisions=3, radius=1)
++    builder.to_mesh(mesh)
++    builder.free()
++    obj = bpy.data.objects.new('d', mesh)
++    ctx.scene.collection.objects.link(obj)
++    ctx.view_layer.objects.active = obj
++    obj.select_set(True)
++    try:
++        bpy.ops.object.mode_set(mode='EDIT')
++    except RuntimeError:
++        results['normal_fingerprint'] = 'skipped: Edit Mode unavailable'
++        return
++    walks = {'count': 0}
++    original = native_refs._selection_states
++
++    def counted(context):
++        walks['count'] += 1
++        return original(context)
++
++    native_refs._selection_states = counted
++    try:
++        bpy.ops.mesh.select_all(action='DESELECT')
++        ctx.view_layer.update()
++        first = native_refs._normal_signature(ctx, fresh=False)
++        base = walks['count']
++        for _ in range(25):
++            assert native_refs._normal_signature(ctx, fresh=False) == first
++        assert walks['count'] == base, 'idle ticks walked every element'
++        editing = bmesh.from_edit_mesh(mesh)
++        editing.verts.ensure_lookup_table()
++        editing.verts[0].select_set(True)
++        editing.select_flush(True)
++        bmesh.update_edit_mesh(mesh, loop_triangles=False, destructive=False)
++        ctx.view_layer.update()
++        second = native_refs._normal_signature(ctx, fresh=False)
++        assert second != first and walks['count'] == base + 1
++        # Same selected-element count, different element: still detected.
++        editing.verts[0].select_set(False)
++        editing.verts[5].select_set(True)
++        editing.select_flush(True)
++        bmesh.update_edit_mesh(mesh, loop_triangles=False, destructive=False)
++        ctx.view_layer.update()
++        third = native_refs._normal_signature(ctx, fresh=False)
++        assert third != second
++        # Safety net: an edit with no event is still found after the interval.
++        editing.verts[5].select_set(False)
++        editing.verts[7].select_set(True)
++        editing.select_flush(True)
++        native_refs._normal_dirty.clear()
++        stamp = native_refs._normal_elements[ctx.scene.as_pointer()]
++        native_refs._normal_elements[ctx.scene.as_pointer()] = (stamp[0], stamp[1], stamp[2] - 10.)
++        fourth = native_refs._normal_signature(ctx, fresh=False)
++        assert fourth != third
++    finally:
++        native_refs._selection_states = original
++        bpy.ops.object.mode_set(mode='OBJECT')
++    results['normal_fingerprint'] = 'idle ticks reuse the fingerprint; events, equal-count swaps and the safety interval are detected'
++
++
++for case in (drag_ratio, cross_zero, outside_changes_win, anchors_bounded, instancers, normal_fingerprint):
++    case()
++for name, text in results.items():
++    print('OK', name, '-', text)
++print('BETTER_ITEM_GESTURES179_OK')
+-- 
+2.43.0
+
