@@ -437,6 +437,19 @@ def set_dimensions(context,obj,desired):
         raise
 
 
+def _link_reference(context,obj,group):
+    """Numeric identity of the resolved reference the values are read in.
+
+    A remembered linked ratio is only valid in the same reference. Switching
+    Frame/orientation, or a reference that moves with the target, changes this
+    tuple, so the edit falls back to the current values (and BI-T008 at zero).
+    """
+    axes=tuple(float(v) for row in frames.object_axes(context,obj) for v in row)
+    origin=tuple(float(v) for v in frames.object_origin(context,obj)) if group=='LOCATION' else ()
+    order=obj.better_item.view_rotation_order if group=='ROTATION' else ''
+    return axes,origin,order
+
+
 def edit_component(context,obj,group,axis,value):
     engine.editable(obj)
     context.view_layer.update()
@@ -451,7 +464,7 @@ def edit_component(context,obj,group,axis,value):
         before=values(context,obj,group)
         denominator_tolerance=0.
     links=getattr(obj.better_item,engine.GROUP_LINK[group])
-    key=(obj.as_pointer(),group,tuple(links))
+    key=(obj.as_pointer(),group,tuple(links),_link_reference(context,obj,group))
     base=link_base(key,before)
     desired=linked_values(base,axis,value,links,zero_angle_as_turn=group=='ROTATION',denominator_tolerance=denominator_tolerance)
     if (before==desired if group=='LOCATION' else not any(engine.different(a,b) for a,b in zip(before,desired))):return

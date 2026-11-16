@@ -136,6 +136,43 @@ def outside_changes_win():
     results['outside_changes_win'] = 'a value changed outside the gesture, or a link change, discards the remembered ratio'
 
 
+def reference_switch():
+    from mathutils import Matrix, Vector
+    from better_item import frames
+    reset()
+    obj = empty()
+    s = obj.better_item
+    s.transform_space = 'REFERENCE'
+    s.reference_mode = 'INDIVIDUAL'
+    s.pivot_mode = 'GLOBAL'
+    s.use_reference_pivot = False
+    s.orientation = 'GLOBAL'
+    s.link_location = (True, True, False)
+    for value in (.5, 0.):
+        assert edit(obj, 'LOCATION', 0, value) is None, value
+    assert tuple(obj.location) == (0., 0., 3.), tuple(obj.location)
+    frame = frames.create(ctx, 'Rz90', Vector(), Matrix.Rotation(math.radians(90), 3, 'Z'))
+    s.orientation = 'SAVED'
+    s.orientation_frame = frame.uid
+    ctx.view_layer.update()
+    assert current(obj, 'LOCATION') == (0., 0., 3.), current(obj, 'LOCATION')
+    # The ratio was measured in Global; it must not be reused in another reference.
+    message = edit(obj, 'LOCATION', 0, 1.)
+    assert message and 'BI-T008' in message, message
+    assert tuple(obj.location) == (0., 0., 3.), tuple(obj.location)
+    # A fixed Frame reference keeps the gesture continuity through zero.
+    # The stored Frame rotation is float32, so frame coordinates are inexact.
+    obj.location = (-2., 1., 3.)
+    ctx.view_layer.update()
+    x0, y0, z0 = current(obj, 'LOCATION')
+    assert abs(x0 - 1) < 1e-6 and abs(y0 - 2) < 1e-6, (x0, y0)
+    for value in (.5, 0., -1.):
+        assert edit(obj, 'LOCATION', 0, value) is None, value
+    x, y, z = current(obj, 'LOCATION')
+    assert abs(x + 1) < 1e-6 and abs(y / x - y0 / x0) < 1e-6 and abs(z - z0) < 1e-6, (x, y, z)
+    results['reference_switch'] = 'a ratio remembered in one reference is not reused after switching orientation; a fixed Frame still crosses zero'
+
+
 def anchors_bounded():
     reset()
     objects = []
@@ -255,7 +292,7 @@ def normal_fingerprint():
     results['normal_fingerprint'] = 'idle ticks reuse the fingerprint; events, equal-count swaps and the safety interval are detected'
 
 
-for case in (drag_ratio, cross_zero, outside_changes_win, anchors_bounded, instancers, normal_fingerprint):
+for case in (drag_ratio, cross_zero, outside_changes_win, reference_switch, anchors_bounded, instancers, normal_fingerprint):
     case()
 for name, text in results.items():
     print('OK', name, '-', text)

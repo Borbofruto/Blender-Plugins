@@ -10,10 +10,10 @@ PASS group9 {'coordinate_unit_cases': 8, 'expected_precision_rejections': 0, 'am
 PASS group10 {'array_mirror_shape_key_cases': 3}
 Info: Saved "roundtrip.blend"
 PASS group11 {'undo_redo_creation': True, 'copy_on_write': True, 'blend_roundtrip': True}
-WARN (asset_system.asset_catalog_service): C:\Users\blender\git\blender-v440\blender.git\source\blender\asset_system\intern\asset_catalog.cc:312 load_from_disk: path not found: C:\work\better-item-matrix-1.7.9\results\4.4.3\tmpur8oe1i_\
-WARN (asset_system.asset_catalog_service): C:\Users\blender\git\blender-v440\blender.git\source\blender\asset_system\intern\asset_catalog.cc:312 load_from_disk: path not found: C:\work\better-item-matrix-1.7.9\results\4.4.3\tmpur8oe1i_\
+WARN (asset_system.asset_catalog_service): C:\Users\blender\git\blender-v440\blender.git\source\blender\asset_system\intern\asset_catalog.cc:312 load_from_disk: path not found: C:\work\better-item-matrix-1.7.9-fix\results\4.4.3\tmpz5lckbed\
+WARN (asset_system.asset_catalog_service): C:\Users\blender\git\blender-v440\blender.git\source\blender\asset_system\intern\asset_catalog.cc:312 load_from_disk: path not found: C:\work\better-item-matrix-1.7.9-fix\results\4.4.3\tmpz5lckbed\
 157 ELEVEN-GROUP STRESS PASSED
-Read blend: "C:\work\better-item-matrix-1.7.9\results\4.4.3\tmpur8oe1i_\roundtrip.blend"
+Read blend: "C:\work\better-item-matrix-1.7.9-fix\results\4.4.3\tmpz5lckbed\roundtrip.blend"
 Saved session recovery to "C:\Users\gabri\AppData\Local\Temp\quit.blend"
 
 Blender quit

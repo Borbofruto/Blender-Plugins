@@ -3,7 +3,7 @@
 ## 1.7.9
 
 ### Fixed
-- Linked Location, Rotation, Scale and Dimensions edits no longer accumulate float32 read-back error across a drag (a 400-tick Location drag lost about 6e-6 of the ratio), and no longer collapse every linked axis when the dragged value reaches zero, which previously made every later tick fail with BI-T008. While the channels are exactly as the previous linked edit left them, the vector from before the gesture remains the ratio source; any outside change, link change or cache reset discards it.
+- Linked Location, Rotation, Scale and Dimensions edits no longer accumulate float32 read-back error across a drag (a 400-tick Location drag lost about 6e-6 of the ratio), and no longer collapse every linked axis when the dragged value reaches zero, which previously made every later tick fail with BI-T008. While the channels are exactly as the previous linked edit left them, the vector from before the gesture remains the ratio source; any outside change, link change, change of the resolved reference (Frame, orientation, pivot, rotation order) or cache reset discards it.
 
 ### Performance
 - Find objects that emit unrealized instances once per evaluated state instead of scanning every instance for each measured object. First Geometry Bounds / Volume inspections were quadratic in selection size.

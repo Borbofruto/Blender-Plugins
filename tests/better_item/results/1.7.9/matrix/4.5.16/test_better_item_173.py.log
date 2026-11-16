@@ -1,6 +1,6 @@
 Info: Saved as "test_better_item_173.blend"
 173 PASSED {"passed": true, "checks": ["separate saved placements and native labels", "short Endpoint permits overlap without resizing", "legacy Geometry Endpoint migration notice", "object sources, changed selection, stable order and stop", "cursor and captured Active identity; selected anchor editable", "Frame/manual inputs, recovery and target edit guard", "Offset reference observer preserves transverse axes", "frame change and render end Live", "per-method choices persist across reopen", "unregister keeps poses and removes observer/guards"]}
 Blender 4.5.16 LTS (hash 3f6797307da5 built 2026-11-10 01:34:06)
-Read blend: "C:\work\better-item-matrix-1.7.9\results\4.5.16\test_better_item_173.blend"
+Read blend: "C:\work\better-item-matrix-1.7.9-fix\results\4.5.16\test_better_item_173.blend"
 
 Blender quit

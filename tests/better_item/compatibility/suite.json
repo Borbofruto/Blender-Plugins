@@ -1,6 +1,6 @@
 {
   "addon_version": "1.7.9",
-  "addon_zip_sha256": "beb561ad96f7d2b6ccb56cbf52d047b828b9aea51f97bb6494d53b73c63f6bdb",
+  "addon_zip_sha256": "c053f3663cff7b9a954656c15b3d2de8d66885fb3b7657dba04dae9410de288f",
   "source_commit": null,
   "tests": [
     {
@@ -93,7 +93,7 @@
     }
   ],
   "baseline_source_commit": "97a676d6e320742fa83185f62296c9d1730116d5",
-  "python_source_sha256": "3339f134599139b2abcd1855ccc48170caa124e01d40a97cc52eb5180530dcd3",
+  "python_source_sha256": "d1644391d679e3aa8e2315c654879edbfc2413f7b4ad0fa12292661f0d53c88b",
   "studies": [
     {
       "script": "benchmark_cache_invalidation.py",

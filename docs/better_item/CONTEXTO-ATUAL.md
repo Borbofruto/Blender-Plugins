@@ -7,11 +7,11 @@ Atualizado em **16/11/2026**, após a manutenção **1.7.9** (branch local `rele
 - Repositório: [Borbofruto/Blender-Plugins](https://github.com/Borbofruto/Blender-Plugins).
 - Versão atual: **1.7.9**, manutenção sobre a 1.7.8 `97a676d6e320742fa83185f62296c9d1730116d5`. Enquanto a branch não for mesclada, a `main` continua em 1.7.8. Confirme o HEAD real antes de trabalhar. O snapshot [handoff-1.7.9.json](handoff-1.7.9.json) identifica o artefato e os resultados desta entrega; [handoff-1.7.8.json](handoff-1.7.8.json) é histórico.
 - Fonte editável: `src/better_item/`. Instalador estável: `addons/better_item.zip`.
-- SHA256 desse ZIP: `beb561ad96f7d2b6ccb56cbf52d047b828b9aea51f97bb6494d53b73c63f6bdb` (1.7.8: `369fb55c…`).
+- SHA256 desse ZIP: `c053f3663cff7b9a954656c15b3d2de8d66885fb3b7657dba04dae9410de288f` (1.7.8: `369fb55c…`).
 - Dos 15 módulos Python, cinco mudaram desde a 1.7.8: `engine.py`, `math_core.py`, `native_refs.py`, `transform_view.py` e `geometry_arrange.py` (só docstring). Os outros 10 são byte a byte iguais à 1.7.8. Não houve refatoração geral, migração nova ou alteração de solver.
 - Mínimo do manifesto: **Blender 4.2.0**, preservado.
 - Resultados novos em `tests/better_item/results/1.7.9/`: matriz de 23 entradas em 9 builds portáteis mais o 5.3 instalado, e benchmark antes/depois contra o ZIP 1.7.8 medido novamente. As demais versões continuam com sua proveniência original.
-- **Problema aberto, reproduzido na validação 1.7.9:** a âncora das edições linkadas não inclui a referência de orientação na chave. Depois de colapsar em zero, trocar para outro Frame e digitar um valor usa a razão do referencial anterior; a 1.7.8 recusava com BI-T008. Detalhes e reprodução em [release-1.7.9.md](release-1.7.9.md).
+- **Encontrado e corrigido na validação 1.7.9:** a âncora das edições linkadas não incluía a referência resolvida na chave. Depois de colapsar em zero, trocar de Frame e digitar um valor reaproveitava a razão do referencial anterior. Agora a chave inclui eixos, origem e ordem Euler da referência; caso `reference_switch` no teste novo. Detalhes em [release-1.7.9.md](release-1.7.9.md).
 
 ### Ordem de leitura e autoridade
 
@@ -285,8 +285,8 @@ Ferramenta usada em sessões anteriores: conector GitHub para ler árvore/blobs 
 ### Primeiro trabalho recomendado à próxima IA, após a 1.7.9
 
 1. Confirmar se `release/1.7.9` foi mesclada e qual é o HEAD; ler [release-1.7.9.md](release-1.7.9.md).
-2. Decidir com Gabriel a correção da âncora linkada sem referência na chave (problema aberto acima) antes de publicar.
-3. Executar o checklist manual de mouse da 1.7.9.
+2. Executar o checklist manual de mouse da 1.7.9.
+3. Merge e publicação dependem da decisão de Gabriel.
 4. Candidatos 1.8.x continuam separados e dependem do pedido dela.
 
 ### Recomendação anterior, após a 1.7.8 (histórico)

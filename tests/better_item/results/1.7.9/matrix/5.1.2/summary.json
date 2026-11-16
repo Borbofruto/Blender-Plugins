@@ -1,9 +1,9 @@
 {
   "requested_version": "5.1.2",
-  "executable": "C:\\work\\better-item-matrix-1.7.9\\portable\\blender-5.1.2-windows-x64\\blender.exe",
+  "executable": "C:\\work\\better-item-matrix-1.7.9-fix\\portable\\blender-5.1.2-windows-x64\\blender.exe",
   "addon_version": "1.7.9",
-  "addon_zip_sha256": "beb561ad96f7d2b6ccb56cbf52d047b828b9aea51f97bb6494d53b73c63f6bdb",
-  "started_utc": "2026-11-16T17:05:39Z",
+  "addon_zip_sha256": "c053f3663cff7b9a954656c15b3d2de8d66885fb3b7657dba04dae9410de288f",
+  "started_utc": "2026-11-16T17:33:34Z",
   "tests": [
     {
       "script": "api_probe.py",
@@ -11,7 +11,7 @@
       "passed": true,
       "exit_code": 0,
       "timeout": false,
-      "seconds": 4.096,
+      "seconds": 4.059,
       "result": {
         "passed": true,
         "blender": "5.1.2",
@@ -196,7 +196,7 @@
       "passed": true,
       "exit_code": 0,
       "timeout": false,
-      "seconds": 4.846,
+      "seconds": 2.65,
       "result": {
         "passed": true,
         "blender": "5.1.2",
@@ -228,7 +228,7 @@
       "passed": true,
       "exit_code": 0,
       "timeout": false,
-      "seconds": 0.732,
+      "seconds": 0.719,
       "result": {
         "passed": true,
         "checks": [
@@ -251,7 +251,7 @@
       "passed": true,
       "exit_code": 0,
       "timeout": false,
-      "seconds": 1.19,
+      "seconds": 1.194,
       "result": {
         "passed": true,
         "live_batches": 96,
@@ -270,7 +270,7 @@
       "passed": true,
       "exit_code": 0,
       "timeout": false,
-      "seconds": 1.918,
+      "seconds": 1.939,
       "result": {
         "endpoint_batches": 256,
         "offset_batches": 140,
@@ -297,7 +297,7 @@
       "passed": true,
       "exit_code": 0,
       "timeout": false,
-      "seconds": 1.354,
+      "seconds": 1.346,
       "result": {
         "geometry_combinations": 168,
         "rotation_batches": 72,
@@ -318,7 +318,7 @@
       "passed": true,
       "exit_code": 0,
       "timeout": false,
-      "seconds": 0.753,
+      "seconds": 0.776,
       "result": {
         "key_geometry": 4,
         "projected_bounds": 10,
@@ -334,7 +334,7 @@
       "passed": true,
       "exit_code": 0,
       "timeout": false,
-      "seconds": 0.754,
+      "seconds": 0.774,
       "result": {
         "point_endpoint_and_retired_interval_rejection": true,
         "all_bases_oblique_reversed_segment": 8,
@@ -355,7 +355,7 @@
       "passed": true,
       "exit_code": 0,
       "timeout": false,
-      "seconds": 1.434,
+      "seconds": 1.47,
       "result": {
         "object_info_dependency_bases": 3,
         "centroid_cache_checks": 24,
@@ -365,7 +365,7 @@
         "point_spacing_precision_rollback": true,
         "contextual_start_preview_guard": true,
         "geometry_offset_200": {
-          "seconds_plan_apply_verify": 0.12828989996341988,
+          "seconds_plan_apply_verify": 0.1287550000124611,
           "maximum_gap_error_blender_units": 0.0
         },
         "preview_deleted_target_cancel": true
@@ -377,7 +377,7 @@
       "passed": true,
       "exit_code": 0,
       "timeout": false,
-      "seconds": 2.158,
+      "seconds": 2.173,
       "result": {
         "passed": true,
         "cases": [
@@ -644,7 +644,7 @@
       "passed": true,
       "exit_code": 0,
       "timeout": false,
-      "seconds": 0.645,
+      "seconds": 0.661,
       "result": {
         "passed": true,
         "symmetric_geometry_dependency_rejected": true,
@@ -682,7 +682,7 @@
       "passed": true,
       "exit_code": 0,
       "timeout": false,
-      "seconds": 0.788,
+      "seconds": 0.774,
       "result": {
         "passed": true,
         "transverse_cases": 30,
@@ -698,7 +698,7 @@
       "passed": true,
       "exit_code": 0,
       "timeout": false,
-      "seconds": 0.744,
+      "seconds": 0.753,
       "result": null
     },
     {
@@ -707,7 +707,7 @@
       "passed": true,
       "exit_code": 0,
       "timeout": false,
-      "seconds": 7.409,
+      "seconds": 7.405,
       "result": {
         "passed": true,
         "phases": [
@@ -780,7 +780,7 @@
       "passed": true,
       "exit_code": 0,
       "timeout": false,
-      "seconds": 4.194,
+      "seconds": 4.173,
       "result": {
         "passed": true,
         "checks": [
@@ -798,7 +798,7 @@
       "passed": true,
       "exit_code": 0,
       "timeout": false,
-      "seconds": 0.598,
+      "seconds": 0.588,
       "result": {
         "passed": true,
         "retired_sources_preserved_and_reported": true
@@ -810,7 +810,7 @@
       "passed": true,
       "exit_code": 0,
       "timeout": false,
-      "seconds": 2.382,
+      "seconds": 2.394,
       "result": {
         "native_preview_undo_redo": true,
         "invalid_preview_retains_last_valid": true,
@@ -826,45 +826,45 @@
       "passed": true,
       "exit_code": 0,
       "timeout": false,
-      "seconds": 5.071,
+      "seconds": 5.062,
       "result": {
         "passed": true,
         "timings": [
           {
             "count": 600,
             "basis": "ORIGINS",
-            "cold_seconds": 0.009814400051254779,
-            "cached_seconds": 0.0004219199996441603
+            "cold_seconds": 0.009507000038865954,
+            "cached_seconds": 0.00042895999504253266
           },
           {
             "count": 600,
             "basis": "GEOMETRY",
-            "cold_seconds": 0.08579050004482269,
-            "cached_seconds": 0.0004254199913702905
+            "cold_seconds": 0.08684569998877123,
+            "cached_seconds": 0.0004280199995264411
           },
           {
             "count": 600,
             "basis": "VOLUME",
-            "cold_seconds": 0.22853890003170818,
-            "cached_seconds": 0.00042399999219924214
+            "cold_seconds": 0.2278230999945663,
+            "cached_seconds": 0.0004254200030118227
           },
           {
             "count": 1500,
             "basis": "ORIGINS",
-            "cold_seconds": 0.024239499995019287,
-            "cached_seconds": 0.0009347599931061268
+            "cold_seconds": 0.02404039999237284,
+            "cached_seconds": 0.0009425200056284666
           },
           {
             "count": 1500,
             "basis": "GEOMETRY",
-            "cold_seconds": 0.21915860002627596,
-            "cached_seconds": 0.001019019994419068
+            "cold_seconds": 0.2143419999629259,
+            "cached_seconds": 0.0009789800038561224
           },
           {
             "count": 1500,
             "basis": "VOLUME",
-            "cold_seconds": 0.5684224999858998,
-            "cached_seconds": 0.0009561600047163666
+            "cold_seconds": 0.5666448000119999,
+            "cached_seconds": 0.0009772000019438564
           }
         ],
         "shared_draw_getter_measurement": true,
@@ -899,7 +899,7 @@
       "passed": true,
       "exit_code": 0,
       "timeout": false,
-      "seconds": 2.425,
+      "seconds": 2.41,
       "result": null
     },
     {
@@ -931,7 +931,7 @@
       "passed": true,
       "exit_code": 0,
       "timeout": false,
-      "seconds": 13.398,
+      "seconds": 13.439,
       "result": {
         "groups": {
           "group1": {
@@ -999,11 +999,11 @@
       "passed": true,
       "exit_code": 0,
       "timeout": false,
-      "seconds": 2.465,
+      "seconds": 2.458,
       "result": {
         "passed": true,
         "blender": "5.1.2",
-        "module": "C:\\work\\better-item-matrix-1.7.9\\results\\5.1.2\\better_item\\__init__.py",
+        "module": "C:\\work\\better-item-matrix-1.7.9-fix\\results\\5.1.2\\better_item\\__init__.py",
         "cases": [
           {
             "method": "ENDPOINT",
@@ -1167,10 +1167,10 @@
       "passed": true,
       "exit_code": 0,
       "timeout": false,
-      "seconds": 1.312,
+      "seconds": 1.363,
       "result": null
     }
   ],
   "passed": true,
-  "finished_utc": "2026-11-16T17:06:40Z"
+  "finished_utc": "2026-11-16T17:34:34Z"
 }

@@ -1,9 +1,9 @@
 {
   "requested_version": "4.3.2",
-  "executable": "C:\\work\\better-item-matrix-1.7.9\\portable\\blender-4.3.2-windows-x64\\blender.exe",
+  "executable": "C:\\work\\better-item-matrix-1.7.9-fix\\portable\\blender-4.3.2-windows-x64\\blender.exe",
   "addon_version": "1.7.9",
-  "addon_zip_sha256": "beb561ad96f7d2b6ccb56cbf52d047b828b9aea51f97bb6494d53b73c63f6bdb",
-  "started_utc": "2026-11-16T16:59:29Z",
+  "addon_zip_sha256": "c053f3663cff7b9a954656c15b3d2de8d66885fb3b7657dba04dae9410de288f",
+  "started_utc": "2026-11-16T17:28:03Z",
   "tests": [
     {
       "script": "api_probe.py",
@@ -11,7 +11,7 @@
       "passed": true,
       "exit_code": 0,
       "timeout": false,
-      "seconds": 4.307,
+      "seconds": 3.936,
       "result": {
         "passed": true,
         "blender": "4.3.2",
@@ -196,7 +196,7 @@
       "passed": true,
       "exit_code": 0,
       "timeout": false,
-      "seconds": 7.742,
+      "seconds": 2.753,
       "result": {
         "passed": true,
         "blender": "4.3.2",
@@ -228,7 +228,7 @@
       "passed": true,
       "exit_code": 0,
       "timeout": false,
-      "seconds": 0.947,
+      "seconds": 0.929,
       "result": {
         "passed": true,
         "checks": [
@@ -251,7 +251,7 @@
       "passed": true,
       "exit_code": 0,
       "timeout": false,
-      "seconds": 1.486,
+      "seconds": 1.449,
       "result": {
         "passed": true,
         "live_batches": 96,
@@ -270,7 +270,7 @@
       "passed": true,
       "exit_code": 0,
       "timeout": false,
-      "seconds": 2.395,
+      "seconds": 2.286,
       "result": {
         "endpoint_batches": 256,
         "offset_batches": 140,
@@ -297,7 +297,7 @@
       "passed": true,
       "exit_code": 0,
       "timeout": false,
-      "seconds": 1.767,
+      "seconds": 1.72,
       "result": {
         "geometry_combinations": 168,
         "rotation_batches": 72,
@@ -318,7 +318,7 @@
       "passed": true,
       "exit_code": 0,
       "timeout": false,
-      "seconds": 1.013,
+      "seconds": 0.967,
       "result": {
         "key_geometry": 4,
         "projected_bounds": 10,
@@ -334,7 +334,7 @@
       "passed": true,
       "exit_code": 0,
       "timeout": false,
-      "seconds": 0.986,
+      "seconds": 1.026,
       "result": {
         "point_endpoint_and_retired_interval_rejection": true,
         "all_bases_oblique_reversed_segment": 8,
@@ -355,7 +355,7 @@
       "passed": true,
       "exit_code": 0,
       "timeout": false,
-      "seconds": 1.855,
+      "seconds": 1.834,
       "result": {
         "object_info_dependency_bases": 3,
         "centroid_cache_checks": 24,
@@ -365,7 +365,7 @@
         "point_spacing_precision_rollback": true,
         "contextual_start_preview_guard": true,
         "geometry_offset_200": {
-          "seconds_plan_apply_verify": 0.13252809998812154,
+          "seconds_plan_apply_verify": 0.13423450000118464,
           "maximum_gap_error_blender_units": 0.0
         },
         "preview_deleted_target_cancel": true
@@ -377,7 +377,7 @@
       "passed": true,
       "exit_code": 0,
       "timeout": false,
-      "seconds": 2.571,
+      "seconds": 2.524,
       "result": {
         "passed": true,
         "cases": [
@@ -644,7 +644,7 @@
       "passed": true,
       "exit_code": 0,
       "timeout": false,
-      "seconds": 0.908,
+      "seconds": 0.882,
       "result": {
         "passed": true,
         "symmetric_geometry_dependency_rejected": true,
@@ -682,7 +682,7 @@
       "passed": true,
       "exit_code": 0,
       "timeout": false,
-      "seconds": 1.013,
+      "seconds": 0.998,
       "result": {
         "passed": true,
         "transverse_cases": 30,
@@ -698,7 +698,7 @@
       "passed": true,
       "exit_code": 0,
       "timeout": false,
-      "seconds": 1.097,
+      "seconds": 1.07,
       "result": null
     },
     {
@@ -707,7 +707,7 @@
       "passed": true,
       "exit_code": 0,
       "timeout": false,
-      "seconds": 7.431,
+      "seconds": 7.398,
       "result": {
         "passed": true,
         "phases": [
@@ -780,7 +780,7 @@
       "passed": true,
       "exit_code": 0,
       "timeout": false,
-      "seconds": 4.258,
+      "seconds": 4.316,
       "result": {
         "passed": true,
         "checks": [
@@ -798,7 +798,7 @@
       "passed": true,
       "exit_code": 0,
       "timeout": false,
-      "seconds": 0.676,
+      "seconds": 0.686,
       "result": {
         "passed": true,
         "retired_sources_preserved_and_reported": true
@@ -810,7 +810,7 @@
       "passed": true,
       "exit_code": 0,
       "timeout": false,
-      "seconds": 2.376,
+      "seconds": 2.411,
       "result": {
         "native_preview_undo_redo": true,
         "invalid_preview_retains_last_valid": true,
@@ -826,45 +826,45 @@
       "passed": true,
       "exit_code": 0,
       "timeout": false,
-      "seconds": 5.104,
+      "seconds": 5.091,
       "result": {
         "passed": true,
         "timings": [
           {
             "count": 600,
             "basis": "ORIGINS",
-            "cold_seconds": 0.011484200018458068,
-            "cached_seconds": 0.00034069999819621446
+            "cold_seconds": 0.011835400015115738,
+            "cached_seconds": 0.0003475999925285578
           },
           {
             "count": 600,
             "basis": "GEOMETRY",
-            "cold_seconds": 0.09531060000881553,
-            "cached_seconds": 0.00036187999648973346
+            "cold_seconds": 0.09745719999773428,
+            "cached_seconds": 0.0003557399963028729
           },
           {
             "count": 600,
             "basis": "VOLUME",
-            "cold_seconds": 0.21943629998713732,
-            "cached_seconds": 0.00035083999391645194
+            "cold_seconds": 0.2182903999928385,
+            "cached_seconds": 0.00035494000185281037
           },
           {
             "count": 1500,
             "basis": "ORIGINS",
-            "cold_seconds": 0.027546699973754585,
-            "cached_seconds": 0.0007531800074502826
+            "cold_seconds": 0.028512299992144108,
+            "cached_seconds": 0.0007734199985861778
           },
           {
             "count": 1500,
             "basis": "GEOMETRY",
-            "cold_seconds": 0.24088669999036938,
-            "cached_seconds": 0.0008280200068838895
+            "cold_seconds": 0.24424470000667498,
+            "cached_seconds": 0.0009911999921314418
           },
           {
             "count": 1500,
             "basis": "VOLUME",
-            "cold_seconds": 0.5381060999934562,
-            "cached_seconds": 0.0007747999974526465
+            "cold_seconds": 0.5357105000293814,
+            "cached_seconds": 0.0008118800004012882
           }
         ],
         "shared_draw_getter_measurement": true,
@@ -899,7 +899,7 @@
       "passed": true,
       "exit_code": 0,
       "timeout": false,
-      "seconds": 2.446,
+      "seconds": 2.418,
       "result": null
     },
     {
@@ -908,7 +908,7 @@
       "passed": true,
       "exit_code": 0,
       "timeout": false,
-      "seconds": 1.191,
+      "seconds": 1.179,
       "result": {
         "blender": "4.3.2",
         "passed": true,
@@ -931,7 +931,7 @@
       "passed": true,
       "exit_code": 0,
       "timeout": false,
-      "seconds": 13.709,
+      "seconds": 13.593,
       "result": {
         "groups": {
           "group1": {
@@ -999,11 +999,11 @@
       "passed": true,
       "exit_code": 0,
       "timeout": false,
-      "seconds": 2.594,
+      "seconds": 2.454,
       "result": {
         "passed": true,
         "blender": "4.3.2",
-        "module": "C:\\work\\better-item-matrix-1.7.9\\results\\4.3.2\\better_item\\__init__.py",
+        "module": "C:\\work\\better-item-matrix-1.7.9-fix\\results\\4.3.2\\better_item\\__init__.py",
         "cases": [
           {
             "method": "ENDPOINT",
@@ -1167,10 +1167,10 @@
       "passed": true,
       "exit_code": 0,
       "timeout": false,
-      "seconds": 1.409,
+      "seconds": 1.429,
       "result": null
     }
   ],
   "passed": true,
-  "finished_utc": "2026-11-16T17:00:38Z"
+  "finished_utc": "2026-11-16T17:29:06Z"
 }

@@ -2,7 +2,7 @@ Info: Saved "test_better_item_171.blend"
 Info: Saved "test_better_item_171.blend"
 171 PASSED {'passed': True, 'transverse_cases': 30, 'zero_direction_sequences': 3, 'checkbox_no_initial_mutation': True, 'checkbox_disable_keeps_result': True, 'direction_persistence': True}
 Blender 4.3.2 (hash 32f5fdce0a0a built 2024-12-17 03:35:23)
-Read blend: "C:\work\better-item-matrix-1.7.9\results\4.3.2\test_better_item_171.blend"
-Read blend: "C:\work\better-item-matrix-1.7.9\results\4.3.2\test_better_item_171.blend"
+Read blend: "C:\work\better-item-matrix-1.7.9-fix\results\4.3.2\test_better_item_171.blend"
+Read blend: "C:\work\better-item-matrix-1.7.9-fix\results\4.3.2\test_better_item_171.blend"
 
 Blender quit

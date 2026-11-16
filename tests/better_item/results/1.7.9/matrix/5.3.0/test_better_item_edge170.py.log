@@ -1,4 +1,4 @@
-170 EDGE PASSED {"object_info_dependency_bases": 3, "centroid_cache_checks": 24, "deleted_frame_choices_reset": true, "native_bbox_semantics": true, "invalid_capture_is_non_destructive": true, "point_spacing_precision_rollback": true, "contextual_start_preview_guard": true, "geometry_offset_200": {"seconds_plan_apply_verify": 0.14627550001023337, "maximum_gap_error_blender_units": 0.0}, "preview_deleted_target_cancel": true}
+170 EDGE PASSED {"object_info_dependency_bases": 3, "centroid_cache_checks": 24, "deleted_frame_choices_reset": true, "native_bbox_semantics": true, "invalid_capture_is_non_destructive": true, "point_spacing_precision_rollback": true, "contextual_start_preview_guard": true, "geometry_offset_200": {"seconds_plan_apply_verify": 0.1449791999766603, "maximum_gap_error_blender_units": 0.0}, "preview_deleted_target_cancel": true}
 Blender 5.3.0 (hash 02f0899d78e3 built 2026-11-10 01:33:43)
 
 Blender quit

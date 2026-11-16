@@ -1,7 +1,7 @@
 {
   "passed": true,
   "blender": "5.3.0",
-  "module": "C:\\work\\better-item-matrix-1.7.9\\results\\installed-5.3\\better_item\\__init__.py",
+  "module": "C:\\work\\better-item-matrix-1.7.9-fix\\results\\installed-5.3\\better_item\\__init__.py",
   "cases": [
     {
       "method": "ENDPOINT",

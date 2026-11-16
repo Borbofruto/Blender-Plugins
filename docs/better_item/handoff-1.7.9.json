@@ -6,8 +6,8 @@
   "baseline_commit": "97a676d6e320742fa83185f62296c9d1730116d5",
   "archive": {
     "path": "addons/better_item.zip",
-    "sha256": "beb561ad96f7d2b6ccb56cbf52d047b828b9aea51f97bb6494d53b73c63f6bdb",
-    "bytes": 99349
+    "sha256": "c053f3663cff7b9a954656c15b3d2de8d66885fb3b7657dba04dae9410de288f",
+    "bytes": 99588
   },
   "minimum_blender": "4.2.0",
   "runtime_changed": [
@@ -33,9 +33,9 @@
     {"path": "src/better_item/placement.py", "sha256": "fa846922f0791bf6052b5fb2789ab3a2ecbf0c190f43f3a046e3a2be19ea3b07"},
     {"path": "src/better_item/references.py", "sha256": "6f934a1945d211eff5bdc2771eee5864be54ebe4cbbe44c71667421ead14a1f5"},
     {"path": "src/better_item/trace.py", "sha256": "e846587508b38fb8c795ca141bb17bb8ef0424cf7612174ec53fe3305c45146f"},
-    {"path": "src/better_item/transform_view.py", "sha256": "36530298b42513f34f6a7f8b9796942b8c1fb5f566bb256393d3efbd4441aa5a"}
+    {"path": "src/better_item/transform_view.py", "sha256": "c7d7e4adf64c508bfc4878c5c488a1bf02fc8fcb0da6dbf2f54a89f2c3430369"}
   ],
-  "python_source_sha256": "3339f134599139b2abcd1855ccc48170caa124e01d40a97cc52eb5180530dcd3",
+  "python_source_sha256": "d1644391d679e3aa8e2315c654879edbfc2413f7b4ad0fa12292661f0d53c88b",
   "combined_hash_algorithm": "SHA256(sorted basename UTF-8 + NUL + raw Python bytes)",
   "file_hashes_note": "LF bytes as packaged (git archive); a Windows checkout with core.autocrlf=true has CRLF in the working tree",
   "builds": [
@@ -62,13 +62,15 @@
       "4.2.23": [35.9, 0.041],
       "5.3.0": [46.6, 0.060]
     },
-    "pairs_are": "[1.7.8, 1.7.9] medians"
+    "pairs_are": "[1.7.8, 1.7.9] medians",
+    "measured_1.7.9_archive_sha256": "beb561ad96f7d2b6ccb56cbf52d047b828b9aea51f97bb6494d53b73c63f6bdb",
+    "note": "1.7.9 side measured before the anchor-key fix; the fix only changes transform_view.edit_component, which the benchmarks do not exercise"
   },
-  "open_issues": [
-    "Linked-edit anchor key omits the resolved reference: after collapsing to zero, switching to another orientation Frame and typing a value reuses the previous frame's ratio (1.7.8 refused with BI-T008). Reproduced; see tests/better_item/results/1.7.9/extra/"
+  "fixed_during_validation": [
+    "Linked-edit anchor key omitted the resolved reference: after collapsing to zero, switching orientation Frame and typing a value reused the previous frame's ratio. Key now includes reference axes, origin (Location) and Euler order (Rotation); covered by reference_switch in test_better_item_gestures179.py"
   ],
+  "open_issues": [],
   "pending": [
-    "Decide and fix the anchor key issue before publishing",
     "Manual mouse checklist in docs/better_item/release-1.7.9.md",
     "Merge release/1.7.9 into main and publish (owner decision)"
   ],

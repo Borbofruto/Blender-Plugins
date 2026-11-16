@@ -7,7 +7,7 @@
   "point_spacing_precision_rollback": true,
   "contextual_start_preview_guard": true,
   "geometry_offset_200": {
-    "seconds_plan_apply_verify": 0.15042120002908632,
+    "seconds_plan_apply_verify": 0.1562514000106603,
     "maximum_gap_error_blender_units": 0.0
   },
   "preview_deleted_target_cancel": true

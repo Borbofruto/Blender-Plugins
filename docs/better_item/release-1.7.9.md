@@ -30,7 +30,7 @@ Reproduzido na 1.7.8 com Location linkado, Reference e Default:
 - Arrasto de X de 1 a 5 em 400 passos, com Y/X = 2 e Z/X = 3: Z terminava em **14,999916** (razão 2,999983). Cada passo relê o valor do armazenamento float32 e multiplica de novo.
 - Valor passando por 0: todos os eixos linkados viravam 0 e **todos os passos seguintes falhavam com BI-T008**. Em Rotation linkada, os outros eixos ficavam em 0 para sempre.
 
-Correção: enquanto os canais estão exatamente como a edição linkada anterior os deixou, o vetor de antes do gesto continua sendo a fonte da razão. Qualquer mudança externa, troca de links, outro objeto ou limpeza de caches descarta essa memória (máximo de 16 entradas). Quando não há continuidade, BI-T008 continua valendo como antes.
+Correção: enquanto os canais estão exatamente como a edição linkada anterior os deixou, na mesma referência resolvida, o vetor de antes do gesto continua sendo a fonte da razão. Qualquer mudança externa, troca de links, troca de referência, outro objeto ou limpeza de caches descarta essa memória (máximo de 16 entradas). Quando não há continuidade, BI-T008 continua valendo como antes.
 
 Resultado nas duas builds: 400 passos terminam em (5, 10, 15) exatos; 0,5 → 0 → −0,05 → −1 produz (−1, −2, −3).
 
@@ -57,7 +57,7 @@ Verificado: troca de um vértice por outro com a mesma contagem continua detecta
 
 ### Executada no PC Windows x64 da Gabriel, 16/11/2026
 
-Instalador: `addons/better_item.zip`, 99.349 bytes, SHA256 `beb561ad96f7d2b6ccb56cbf52d047b828b9aea51f97bb6494d53b73c63f6bdb`, gerado com `blender --command extension build` (5.3.0) a partir de `git archive` da branch (finais de linha LF, como o ZIP 1.7.8; os 10 módulos inalterados têm o mesmo hash da 1.7.8). `extension validate`: sucesso. `python_source_sha256`: `3339f134599139b2abcd1855ccc48170caa124e01d40a97cc52eb5180530dcd3`.
+Instalador: `addons/better_item.zip`, 99.588 bytes, SHA256 `c053f3663cff7b9a954656c15b3d2de8d66885fb3b7657dba04dae9410de288f`, gerado com `blender --command extension build` (5.3.0) a partir de `git archive` da branch (finais de linha LF, como o ZIP 1.7.8; os 10 módulos inalterados têm o mesmo hash da 1.7.8). `extension validate`: sucesso. `python_source_sha256`: `d1644391d679e3aa8e2315c654879edbfc2413f7b4ad0fa12292661f0d53c88b`.
 
 **Matriz padrão, 23 entradas** (API probe, 21 anteriores e `test_better_item_gestures179.py` em `background`), portáteis oficiais conferidos com o SHA256 oficial, perfis isolados, uma extração por vez:
 
@@ -67,9 +67,9 @@ Instalador: `addons/better_item.zip`, 99.349 bytes, SHA256 `beb561ad96f7d2b6ccb5
 | 5.0.1, 5.1.2, 5.2.4, 5.3.0 | 23/23 em cada |
 | 5.3.0 instalado (perfil isolado, `--factory-startup`) | 23/23 |
 
-Total: 230 execuções, 0 falhas. Os seis casos do teste novo rodaram em todas as builds (nenhum `skipped`). O teste novo, rodado contra o ZIP 1.7.8 no 5.3.0, **falha** no caso de deriva: `(5, 10, 14,99998951)`.
+Total: 230 execuções, 0 falhas, com o ZIP final (após a correção da chave linkada descrita abaixo). Os sete casos do teste novo rodaram em todas as builds (nenhum `skipped`). O teste novo, rodado contra o ZIP 1.7.8 no 5.3.0, **falha** no caso de deriva: `(5, 10, 14,99998951)`. A matriz também havia passado 230/230 no ZIP anterior à correção (`beb561ad…`, commit `dd012cf`).
 
-**Benchmark** (`benchmark_cache_invalidation.py`, mesmo script nos dois ZIPs, processos novos e em sequência, sem outros testes). Foi acrescentado o cenário `cold_first_read`, que limpa todos os caches de runtime antes de cada amostra (mediana de 3); o `cold_seconds` antigo só limpava a inspeção da distribuição.
+**Benchmark** (`benchmark_cache_invalidation.py`, mesmo script nos dois ZIPs, processos novos e em sequência, sem outros testes). O lado 1.7.9 foi medido no ZIP anterior à correção da chave linkada; ela altera só `transform_view.edit_component`, que os benchmarks não executam. Foi acrescentado o cenário `cold_first_read`, que limpa todos os caches de runtime antes de cada amostra (mediana de 3); o `cold_seconds` antigo só limpava a inspeção da distribuição.
 
 | Primeira leitura (mediana) | 4.2.23: 1.7.8 | 4.2.23: 1.7.9 | 5.3.0: 1.7.8 | 5.3.0: 1.7.9 |
 | --- | ---: | ---: | ---: | ---: |
@@ -91,14 +91,14 @@ Edição de shader usado (invalida a inspeção) segue o mesmo ganho: Geometry/1
 
 A troca de vértice com a mesma contagem foi detectada nas duas versões (amostra de Normal diferente). Uma varredura completa a cada 2 s continua existindo como rede de proteção. São medições sintéticas, sem limite de aprovação; não são promessa de FPS.
 
-### Problema encontrado na validação, não corrigido
+### Problema encontrado na validação e corrigido
 
-**A âncora das edições linkadas não leva em conta a referência de orientação.** A chave é (objeto, grupo, links). Reprodução (`tests/better_item/results/1.7.9/extra/`): Location linkada em X/Y, Reference/Global, arrastar X até 0, o que dá `(0, 0, 3)`. Trocar a Orientation do objeto para um Frame girado 90° em Z com a mesma origem; a leitura continua `(0, 0, 3)`, então a âncora casa. Digitar X = 1:
+**A âncora das edições linkadas não levava em conta a referência.** No patch original, a chave era (objeto, grupo, links). Reprodução (`tests/better_item/results/1.7.9/extra/`): Location linkada em X/Y, Reference/Global, arrastar X até 0, o que dá `(0, 0, 3)`. Trocar a Orientation do objeto para um Frame girado 90° em Z com a mesma origem; a leitura continua `(0, 0, 3)`, então a âncora casava. Digitar X = 1:
 
 - 1.7.8: recusa com BI-T008.
-- 1.7.9: aceita e usa a razão medida em Global; o objeto vai para world `(-2, 1, 3)`.
+- 1.7.9 antes da correção: aceitava com a razão medida em Global; o objeto ia para world `(-2, 1, 3)`.
 
-Só acontece quando a leitura no referencial novo coincide exatamente com a anterior (na prática, depois de colapsar em zero). Correção provável: incluir a identidade da referência resolvida na chave. Aguarda decisão.
+Correção (`transform_view._link_reference`): a chave passa a incluir os números da referência resolvida antes da edição: eixos (todos os grupos), origem (Location) e ordem Euler (Rotation). Trocar Frame, orientação ou pivô, ou usar uma referência que se move junto com o alvo, muda a chave; a edição volta a partir dos valores atuais, como na 1.7.8. Com referência fixa, a continuidade do gesto continua valendo. O modo Default não muda (seus valores são os canais nativos). Novo caso `reference_switch` em `test_better_item_gestures179.py`: falha no pacote anterior à correção, na asserção de BI-T008, e passa depois dela.
 
 ### Executada antes, em Linux com `bpy` do pip (relatório da sessão que gerou o patch, não repetido aqui)
 

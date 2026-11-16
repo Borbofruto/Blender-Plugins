@@ -4,38 +4,38 @@
     {
       "count": 600,
       "basis": "ORIGINS",
-      "cold_seconds": 0.009755900013260543,
-      "cached_seconds": 0.0004010200034826994
+      "cold_seconds": 0.009847900015302002,
+      "cached_seconds": 0.00038745999336242676
     },
     {
       "count": 600,
       "basis": "GEOMETRY",
-      "cold_seconds": 0.10189719998743385,
-      "cached_seconds": 0.0004057799931615591
+      "cold_seconds": 0.10082920000422746,
+      "cached_seconds": 0.00040623999666422606
     },
     {
       "count": 600,
       "basis": "VOLUME",
-      "cold_seconds": 0.2592177999904379,
-      "cached_seconds": 0.00040171999717131257
+      "cold_seconds": 0.2577113000443205,
+      "cached_seconds": 0.0003897799993865192
     },
     {
       "count": 1500,
       "basis": "ORIGINS",
-      "cold_seconds": 0.02315319998888299,
-      "cached_seconds": 0.0008860199945047498
+      "cold_seconds": 0.022997799969743937,
+      "cached_seconds": 0.0008530999999493361
     },
     {
       "count": 1500,
       "basis": "GEOMETRY",
-      "cold_seconds": 0.252175800036639,
-      "cached_seconds": 0.0009101599920541048
+      "cold_seconds": 0.24812900001415983,
+      "cached_seconds": 0.0008894399972632528
     },
     {
       "count": 1500,
       "basis": "VOLUME",
-      "cold_seconds": 0.6442530999775045,
-      "cached_seconds": 0.0009582599974237383
+      "cold_seconds": 0.6361144999973476,
+      "cached_seconds": 0.0008850799989886582
     }
   ],
   "shared_draw_getter_measurement": true,
