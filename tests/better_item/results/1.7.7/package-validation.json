@@ -1,0 +1,18 @@
+{
+  "passed": true,
+  "zip_integrity": true,
+  "zip_source_byte_parity": true,
+  "native_extension_validate": [
+    "4.2.23",
+    "5.3.0"
+  ],
+  "ast_files": 15,
+  "metadata": true,
+  "changelog": true,
+  "checksums": true,
+  "archive": {
+    "path": "addons/better_item.zip",
+    "sha256": "b6e0d7cdc6bd6e55ecfab57494bb5003f934548793e00d422254340fe0fe2c1b",
+    "bytes": 96651
+  }
+}

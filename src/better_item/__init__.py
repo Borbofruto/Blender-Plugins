@@ -276,8 +276,10 @@ class BETTERITEM_OT_distribute(bpy.types.Operator):
     minimum_mm:bpy.props.FloatProperty(name='Minimum Distance (mm)',default=.00001,min=.00000001,precision=8)
     offset_placement:bpy.props.IntProperty(default=0,options={'HIDDEN'})
     endpoint_placement:bpy.props.IntProperty(default=0,options={'HIDDEN'})
-    distribution_mode:bpy.props.EnumProperty(items=placement.items,get=placement.operator_read,set=placement.operator_write)
+    # Blender assigns Python operator keywords in RNA declaration order.
+    # The placement proxy must see the requested method before its setter runs.
     method:bpy.props.EnumProperty(items=distribution.METHODS,default='OFFSET')
+    distribution_mode:bpy.props.EnumProperty(items=placement.items,get=placement.operator_read,set=placement.operator_write)
     path:bpy.props.EnumProperty(items=distribution.PATHS,default='SEGMENT')
     modern:bpy.props.BoolProperty(default=False,options={'HIDDEN'})
     show_solver:bpy.props.BoolProperty(name='Solver Settings',default=False,options={'SKIP_SAVE'})

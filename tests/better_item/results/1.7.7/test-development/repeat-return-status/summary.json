@@ -1,0 +1,20 @@
+{
+  "requested_version": "4.2.23",
+  "executable": "C:/Users/gabri/Documents/Codex/better-item-compatibility/portable/blender-4.2.23-windows-x64/blender.exe",
+  "addon_version": "1.7.7",
+  "addon_zip_sha256": "6a512c272ee390d607a180f65e963d7398f29109b6e80b20c54c80fe422726f3",
+  "started_utc": "2026-11-16T14:13:11Z",
+  "tests": [
+    {
+      "script": "test_better_item_operator177.py",
+      "mode": "gui_sync",
+      "passed": false,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 25.503,
+      "result": null
+    }
+  ],
+  "passed": false,
+  "finished_utc": "2026-11-16T14:13:36Z"
+}

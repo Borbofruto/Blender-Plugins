@@ -6,7 +6,7 @@
 
 Base: Better Item 1.7.3, commit `0421e9df30b13e4cf062d9ffcd5b30759c5b2ca9`.
 
-Gerado de CONTINUIDADE-IA.md, SHA-256 `e2f4f2a643dfa3fb1edb364d29cbfda1b70e157af8f732cb94c781a9439573e9`. Não editar este capítulo isoladamente; altere o manual integral e execute `gerar.py`.
+Gerado de CONTINUIDADE-IA.md, SHA-256 `46d83821b94189792d618f2d5a55c65689771e776c53e0a9267451b76a6d73dd`. Não editar este capítulo isoladamente; altere o manual integral e execute `gerar.py`.
 
 <a id="s01"></a>
 ## 1. Como assumir o projeto

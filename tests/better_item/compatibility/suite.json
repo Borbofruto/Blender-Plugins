@@ -1,6 +1,6 @@
 {
-  "addon_version": "1.7.6",
-  "addon_zip_sha256": "a4182db99196e502768cae288781546d6c89619f3c7172cfbf78abc8fcadd382",
+  "addon_version": "1.7.7",
+  "addon_zip_sha256": "b6e0d7cdc6bd6e55ecfab57494bb5003f934548793e00d422254340fe0fe2c1b",
   "source_commit": null,
   "tests": [
     {
@@ -78,10 +78,14 @@
     {
       "script": "test_better_item_stress157.py",
       "mode": "gui_sync"
+    },
+    {
+      "script": "test_better_item_operator177.py",
+      "mode": "gui_sync"
     }
   ],
-  "baseline_source_commit": "d0bd9b0fd3f43c23884fcb816329db6183efff2c",
-  "python_source_sha256": "37848ddc104c3c10dfcedb8758b2e16e9d40c5811feb1568b85ab11603aa3b5f",
+  "baseline_source_commit": "e08009e00a26e059297b003f873e19ebc4ae0c58",
+  "python_source_sha256": "d7d8621d83a9b7d42c92519fc7c4ab4790e96a70a71a298821f76b10ef827451",
   "studies": [
     {
       "script": "test_editmode_foundations.py",
@@ -89,6 +93,7 @@
     }
   ],
   "auxiliary_tests": [
-    "test_cross_version_state.py"
+    "test_cross_version_state.py",
+    "test_better_item_placement177_persistence.py"
   ]
 }

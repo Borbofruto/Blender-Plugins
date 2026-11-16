@@ -10,15 +10,16 @@ Vamos continuar o desenvolvimento do **Better Item**, meu addon de precisão esp
 2. Manual técnico/histórico completo: https://github.com/Borbofruto/Blender-Plugins/blob/main/docs/better_item/CONTINUIDADE-IA.md — base histórica 1.7.3; o contexto atual prevalece nas diferenças.
 3. Compatibilidade: https://github.com/Borbofruto/Blender-Plugins/blob/main/docs/better_item/compatibility-1.7.6.md
 4. Estudo futuro de Edit Mode: https://github.com/Borbofruto/Blender-Plugins/blob/main/docs/better_item/edit-mode-2.0-feasibility.md
+5. Manutenção e testes novos 1.7.7: https://github.com/Borbofruto/Blender-Plugins/blob/main/docs/better_item/release-1.7.7.md
 
 Repositório: https://github.com/Borbofruto/Blender-Plugins
 Fonte: `src/better_item/`; instalador estável: `addons/better_item.zip`; testes: `tests/better_item/`.
 
-A base revisada é **1.7.6**, commit `a664cbf1b671db2bbb5ae521af05d65898b55960`, mínimo **Blender 4.2.0**. Confirme o HEAD atual: documentação pode ter sido atualizada depois sem mudar o runtime. O snapshot `docs/better_item/handoff-1.7.6.json` registra hashes e evidências.
+A versão atual é **1.7.7**, manutenção sobre a base revisada 1.7.6 e o HEAD documental `e08009e00a26e059297b003f873e19ebc4ae0c58`, mínimo **Blender 4.2.0**. Confirme o HEAD atual. O snapshot `docs/better_item/handoff-1.7.7.json` registra hashes e evidências; o manual 1.7.3 e a matriz 1.7.6 continuam históricos.
 
 O objetivo agora é **estabilização para publicação**, sem novas features ou refatoração geral. Animação está completamente fora do produto. A busca/listagem de Custom Orientations da cena foi removida; não reintegre contornos frágeis da API. A exportação da orientação de um Frame para uso nativo com G/R continua e não deve ser confundida com essa remoção. Geometry Nodes para Dimensions é uma solução aceita e deve ser preservada com suas proteções.
 
-Última revisão confirmou dois problemas ainda **sem correção**: chamadas Python diretas de Endpoint ignoram `distribution_mode` e executam Origins retornando sucesso; o changelog está fora de ordem e sem a entrada 1.7.4. Há script diagnóstico e resultados em `docs/better_item/continuidade/evidencias-1.7.6/`, reproduzidos em 4.2.23 e 5.3.0. Não basta trocar a ordem dos kwargs. O cache de inspeção de espaçamento também é invalidado por qualquer atualização do Dependency Graph; os tempos externos ainda precisam de medição local antes de otimizar.
+Endpoint direto e changelog foram **corrigidos na 1.7.7**. Method agora precede o proxy Placement na declaração RNA; a correção preserva migração, IDs e escolhas por método. Há regressão com centros analíticos distintos, ambas as ordens de kwargs, recusa atômica, Offset, invoke, propriedades de F9, repeat-last e Undo/Redo. A matriz completa foi repetida no ZIP final em 4.2.23 e 5.3.0; migração 1.7.2 e persistência em novos processos têm resultados próprios em `tests/better_item/results/1.7.7/`. Os diagnósticos 1.7.6 continuam como evidência anterior à correção. O cache de inspeção permanece invalidado por qualquer atualização do Dependency Graph; os tempos externos ainda precisam de medição local antes de otimizar.
 
 Transform mantém configurações por objeto; arranjo e Frames ficam na Scene. Frame combina Location e Orientation independentes. Endpoint distribui pontos e não usa Geometry Bounds; esse Placement é só Offset. Live é sessão transitória de edição, não runtime de animação. As regras completas estão no contexto.
 

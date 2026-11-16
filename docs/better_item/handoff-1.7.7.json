@@ -1,0 +1,120 @@
+{
+  "version": "1.7.7",
+  "date": "2026-11-16",
+  "baseline_head": "e08009e00a26e059297b003f873e19ebc4ae0c58",
+  "minimum_blender": "4.2.0",
+  "archive": {
+    "path": "addons/better_item.zip",
+    "sha256": "b6e0d7cdc6bd6e55ecfab57494bb5003f934548793e00d422254340fe0fe2c1b",
+    "bytes": 96651
+  },
+  "runtime_changed": [
+    "__init__.py"
+  ],
+  "runtime_unchanged_count": 14,
+  "python_source_sha256": "d7d8621d83a9b7d42c92519fc7c4ab4790e96a70a71a298821f76b10ef827451",
+  "combined_hash_algorithm": "SHA256(sorted basename UTF-8 + NUL + raw Python bytes)",
+  "files": [
+    {
+      "path": "src/better_item/__init__.py",
+      "sha256": "91a829be064f8dae661b8b16942cfc3a9c0da2e1031f2a08ee58edc9bbfa9b52"
+    },
+    {
+      "path": "src/better_item/arrange.py",
+      "sha256": "880f31ea9ad8ee76bdb406fc15b0c2874c3254afb45662aa7af7acc708ec0c04"
+    },
+    {
+      "path": "src/better_item/diagnostics.py",
+      "sha256": "aa0cd4825a80be4a0d42ca0f4260829f6a40a8236d54854fd3ea4d6cf56302c2"
+    },
+    {
+      "path": "src/better_item/distribution.py",
+      "sha256": "59316699c60c850cd2602761bdcfe97dcec1dc08ddc73c5b2c1bf6ba7fa42c74"
+    },
+    {
+      "path": "src/better_item/distribution_preview.py",
+      "sha256": "37f217cc32860c4fa47f9089ae75ec53757cf114aa3642bd81e2cc53524c476c"
+    },
+    {
+      "path": "src/better_item/engine.py",
+      "sha256": "ebb4102ed53da1ff344db28e8e52ca5c42683cb07628069d250aa9266f7125ba"
+    },
+    {
+      "path": "src/better_item/frames.py",
+      "sha256": "08b6db2bed3b93f7ddaacf626764d4c55d0c346347023f2749817cb9bca8491d"
+    },
+    {
+      "path": "src/better_item/geometry_arrange.py",
+      "sha256": "5a8629c13eac45cbd20f172db7cf5fda869eb06949b245872f1a7152327f14c0"
+    },
+    {
+      "path": "src/better_item/math_core.py",
+      "sha256": "c4cb2e7b8e76e4e377181e75146d95ecc86f0e9d78629cfd0514d9c54be5e4c5"
+    },
+    {
+      "path": "src/better_item/native_refs.py",
+      "sha256": "245af3deb8656e0c76ca438ffef48c653a0a62bc6954dcc10ba5ad87d2c89afd"
+    },
+    {
+      "path": "src/better_item/orientation.py",
+      "sha256": "d31756a0b2a9a638ac5d9cde2a9d35af5ed989f1ff7a12b49eea8a00cbb155d5"
+    },
+    {
+      "path": "src/better_item/placement.py",
+      "sha256": "fa846922f0791bf6052b5fb2789ab3a2ecbf0c190f43f3a046e3a2be19ea3b07"
+    },
+    {
+      "path": "src/better_item/references.py",
+      "sha256": "6f934a1945d211eff5bdc2771eee5864be54ebe4cbbe44c71667421ead14a1f5"
+    },
+    {
+      "path": "src/better_item/trace.py",
+      "sha256": "e846587508b38fb8c795ca141bb17bb8ef0424cf7612174ec53fe3305c45146f"
+    },
+    {
+      "path": "src/better_item/transform_view.py",
+      "sha256": "6af45855850b253e24918a55e1ebb02c9ffd722d94d3eaada86ad13b66d623ef"
+    }
+  ],
+  "builds": [
+    {
+      "blender": "4.2.23",
+      "matrix_passed": true,
+      "entries": 21,
+      "new_operator_passed": true,
+      "legacy_migration_passed": true,
+      "fresh_persistence_passed": true,
+      "baseline_176_expected_failure": true
+    },
+    {
+      "blender": "5.3.0",
+      "matrix_passed": true,
+      "entries": 21,
+      "new_operator_passed": true,
+      "legacy_migration_passed": true,
+      "fresh_persistence_passed": true,
+      "baseline_176_expected_failure": true
+    }
+  ],
+  "validation": {
+    "zip_integrity": true,
+    "zip_source_byte_parity": true,
+    "native_extension_validate": [
+      "4.2.23",
+      "5.3.0"
+    ],
+    "ast_files": 15,
+    "metadata": true,
+    "changelog": true,
+    "checksums": true
+  },
+  "pending": [
+    "Full physical mouse/F9 publication pass",
+    "Measure broad inspection-cache invalidation before optimizing"
+  ],
+  "not_repeated": [
+    "Blender 4.2.0 initial",
+    "Other historical compatibility builds",
+    "Edit Mode study"
+  ]
+}

@@ -1,0 +1,5 @@
+00:00.500  blend            | Read blend: "C:\Users\gabri\Nova pasta\Documents\ChatGPT\Mixer - Modified Blender 2\matrix177-final-lf\results\5.3.0\test_better_item_173.blend"
+177 FRESH PLACEMENT PERSISTENCE PASSED {"passed": true, "blender": "5.3.0", "fixture": "test_better_item_173.blend", "endpoint": "VOLUME", "offset": "GEOMETRY", "live": false, "fresh_process": true}
+Blender 5.3.0 (hash 02f0899d78e3 built 2026-11-10 01:33:43)
+
+Blender quit

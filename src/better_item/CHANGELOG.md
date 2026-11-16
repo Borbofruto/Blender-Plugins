@@ -1,3 +1,12 @@
+# Better Item — changelog
+
+## 1.7.7
+
+### Fixed
+- Direct Python Endpoint calls honor the requested Placement in either keyword order. Declare Method before its dependent RNA Placement proxy, preserving saved enum IDs, per-method choices, migration and the native invoke/F9 flow.
+- Invalid Endpoint Geometry Bounds arguments reject without moving objects instead of silently executing Origins.
+- Restore the missing 1.7.4 history and place the changelog title before the version entries.
+
 ## 1.7.6
 
 - Lower the manifest minimum to Blender 4.2.0 after testing current Object Mode capabilities on the initial and final 4.2 patches and intermediate release lines.
@@ -12,7 +21,12 @@
 - Keep Frame export to native orientations through public Blender operators and native deletion detection.
 - Start a portable-build compatibility matrix; exact executed builds and limitations are reported separately.
 
-# Better Item — changelog
+## 1.7.4
+
+### Changed
+- Add a searchable scene Custom Orientation source picker to Transform, Align and Distribute and the Frame editor, preserving existing source names.
+- Refresh the disposable index after native creation, renaming and deletion, with informational guidance for missing sources.
+- This release used a fragile exception-text discovery workaround. Direct Custom Orientation sources and discovery were removed in 1.7.5; Frame export to native orientations remains supported. See the historical 1.7.4 release report for its finite validation and limitations.
 
 ## 1.7.3
 

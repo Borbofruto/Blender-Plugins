@@ -1,0 +1,18 @@
+Traceback (most recent call last):
+  File "C:\Users\gabri\Nova pasta\Documents\ChatGPT\Mixer - Modified Blender 2\matrix177-baseline\results\5.3.0\launch_test_better_item_operator177.py", line 6, in run
+    with bpy.context.temp_override(area=area,region=region):runpy.run_path('C:\\Users\\gabri\\Nova pasta\\Documents\\ChatGPT\\Mixer - Modified Blender 2\\matrix177-baseline\\results\\5.3.0\\test_better_item_operator177.py',run_name="__main__")
+                                                            ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen runpy>", line 287, in run_path
+  File "<frozen runpy>", line 98, in _run_module_code
+  File "<frozen runpy>", line 88, in _run_code
+  File "C:\Users\gabri\Nova pasta\Documents\ChatGPT\Mixer - Modified Blender 2\matrix177-baseline\results\5.3.0\test_better_item_operator177.py", line 91, in <module>
+    assert_endpoint(objects, shifts, basis)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\gabri\Nova pasta\Documents\ChatGPT\Mixer - Modified Blender 2\matrix177-baseline\results\5.3.0\test_better_item_operator177.py", line 78, in assert_endpoint
+    assert np.allclose(positions(objects), expected, rtol=0, atol=8e-6), (basis, positions(objects), expected)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ('BOUNDS_CENTER', array([[ 0.,  0.,  0.],
+       [15.,  0.,  0.],
+       [30.,  0.,  0.]]), array([[-3., -3., -2.],
+       [11., -4., -1.],
+       [25., -5.,  0.]]))

@@ -1,6 +1,6 @@
 # Better Item — manual de continuidade para desenvolvimento assistido por IA
 
-> **Antes de usar este manual:** leia [CONTEXTO-ATUAL.md](CONTEXTO-ATUAL.md). Este documento preserva a base histórica 1.7.3; mínimo de Blender, Custom Orientation e pendências posteriores foram atualizados no contexto 1.7.6. As instruções atuais do usuário prevalecem.
+> **Antes de usar este manual:** leia [CONTEXTO-ATUAL.md](CONTEXTO-ATUAL.md) e [a manutenção 1.7.7](release-1.7.7.md). Este documento preserva a base histórica 1.7.3; mínimo de Blender, Custom Orientation e pendências posteriores foram atualizados no contexto atual. Endpoint direto e changelog estão corrigidos na 1.7.7. As instruções atuais do usuário prevalecem.
 
 **Estado de referência:** Better Item **1.7.3**.  
 **Commit de implementação auditado:** `0421e9df30b13e4cf062d9ffcd5b30759c5b2ca9`.  

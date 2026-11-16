@@ -1,23 +1,23 @@
 # Better Item — contexto atual e passagem de trabalho
 
-Atualizado em **16/11/2026**. Leia este arquivo **antes** do manual histórico. Ele consolida as decisões posteriores à 1.7.3 e a revisão da 1.7.6. Não altera o runtime nem autoriza novas funcionalidades por si só.
+Atualizado em **16/11/2026**, após a manutenção **1.7.7**. Leia este arquivo **antes** do manual histórico. Ele consolida os contratos atuais; não autoriza novas funcionalidades por si só. A correção Endpoint e o changelog já foram tratados. Resultados novos e limitações: [release-1.7.7.md](release-1.7.7.md).
 
 ## 1. Estado exato a assumir
 
 - Repositório: [Borbofruto/Blender-Plugins](https://github.com/Borbofruto/Blender-Plugins).
-- Base de código revisada: commit `a664cbf1b671db2bbb5ae521af05d65898b55960`, versão **1.7.6**. Confirme o HEAD real antes de trabalhar: um commit posterior de documentação não implica mudança do produto.
+- Versão atual: **1.7.7**, manutenção sobre o HEAD documental `e08009e00a26e059297b003f873e19ebc4ae0c58` e a base revisada 1.7.6 `a664cbf1b671db2bbb5ae521af05d65898b55960`. Confirme o HEAD real antes de trabalhar. O snapshot [handoff-1.7.7.json](handoff-1.7.7.json) identifica o artefato e os resultados desta entrega.
 - Fonte editável: `src/better_item/`. Instalador estável: `addons/better_item.zip`.
-- SHA256 desse ZIP: `a4182db99196e502768cae288781546d6c89619f3c7172cfbf78abc8fcadd382`.
-- Os 15 arquivos Python são byte a byte iguais aos da 1.7.5. O hash combinado registrado pela matriz é `37848ddc104c3c10dfcedb8758b2e16e9d40c5811feb1568b85ab11603aa3b5f`; o inventário individual está no [snapshot atual](handoff-1.7.6.json).
-- Mínimo do manifesto: **Blender 4.2.0**. A versão 1.7.6 mudou versão, mínimo e documentação, sem adaptar os algoritmos Python.
-- A última atividade foi revisão técnica e reprodução de um bug. **As correções descritas abaixo ainda não foram implementadas.** Esta passagem é documentação, não uma versão 1.7.7.
+- SHA256 desse ZIP: `b6e0d7cdc6bd6e55ecfab57494bb5003f934548793e00d422254340fe0fe2c1b`.
+- Dos 15 módulos Python, somente `__init__.py` mudou: Method foi declarado antes do proxy RNA Placement. Os outros 14 módulos, incluindo migração, planejamento, caches e solvers, permanecem byte a byte iguais à 1.7.6. Não houve refatoração.
+- Mínimo do manifesto: **Blender 4.2.0**, preservado. A 1.7.6 havia mudado versão, mínimo e documentação sem adaptar os algoritmos; a 1.7.7 contém a correção pequena do operador e organização do changelog.
+- A correção e a organização do changelog estão implementadas, com novas regressões e evidência separada em `tests/better_item/results/1.7.7/`. O cache continua sem otimização.
 
 ### Ordem de leitura e autoridade
 
 1. Solicitação atual de Gabriel e instruções do workspace.
 2. Este contexto: contratos atuais, pendências e limites da evidência.
 3. [Manual de engenharia](CONTINUIDADE-IA.md), com 25 seções, ou [capítulos gerados](continuidade/README.md). Sua base continua explicitamente **1.7.3**; detalhes históricos não anulam atualizações deste contexto.
-4. [Compatibilidade 1.7.6](compatibility-1.7.6.md), [estudo Edit Mode 2.0](edit-mode-2.0-feasibility.md), README do pacote e código no commit efetivamente usado.
+4. [Manutenção e testes novos 1.7.7](release-1.7.7.md), [compatibilidade histórica 1.7.6](compatibility-1.7.6.md), [estudo Edit Mode 2.0](edit-mode-2.0-feasibility.md), README do pacote e código no commit efetivamente usado.
 5. Relatórios antigos como evidência de suas respectivas versões, não como requisitos atuais.
 
 O manual histórico explica arquitetura, matemática, casos já resolvidos, bootstrap e estratégia de testes. Ele NÃO deve ser substituído apenas por este resumo. As divergências conhecidas estão explicitadas na seção 9 abaixo. Nunca faça uma atualização global de números de versão em relatórios históricos para aparentar validação atual.
@@ -92,7 +92,7 @@ Gabriel prefere entender responsabilidades, fluxo de dados, trade-offs e limites
 
 | Módulo | Responsabilidade / ponto de atenção |
 |---|---|
-| `__init__.py` | Classes RNA, operadores, UI e registro/remoção de handlers. Bug atual no recebimento dos argumentos do operador de distribuição. |
+| `__init__.py` | Classes RNA, operadores, UI e registro/remoção de handlers. Na 1.7.7, Method precede Placement na declaração RNA para preservar kwargs diretos. |
 | `references.py` | Resolver referências e desenhar seletor compartilhado; separar estado persistente de contexto avaliado. |
 | `frames.py` | Frames, fontes independentes, ciclos, persistência, aplicação e indicadores visuais. Setas não são manipuladores interativos. |
 | `native_refs.py` | Pivôs/orientações nativos e publicação/sincronização de orientação de Frame. A descoberta Custom removida não deve voltar. |
@@ -120,7 +120,9 @@ Planejar primeiro, validar plano, aplicar e conferir resultado avaliado. Em falh
 
 ## 5. Pendências atuais: estado e próximo passo
 
-### A. Confirmado e ainda sem correção — parâmetros Python do Endpoint
+### A. Corrigido na 1.7.7 — parâmetros Python do Endpoint
+
+O diagnóstico abaixo documenta a **1.7.6**. Nesta continuação a falha foi novamente reproduzida, inclusive pela regressão nova contra o ZIP antigo. A instrumentação mostrou o setter de Placement executando com Method ainda OFFSET, independentemente da ordem dos kwargs. A correção declara Method antes de seu enum dependente; preserva campos, IDs e migração. Chamadas válidas são verificadas geometricamente e Geometry inválido é recusado na conversão RNA sem mover objetos. Invoke, propriedades de F9, repeat-last e Undo/Redo têm verificações automatizadas; gestos físicos de F9 ainda fazem parte da passada manual pendente. Veja os resultados novos no relatório 1.7.7.
 
 Reprodução em Windows, Blender **4.2.23 LTS e 5.3.0**, fonte publicada 1.7.6. Foram 11 chamadas por build, total 22, com registro dos valores efetivamente recebidos em execute e das posições finais.
 
@@ -130,11 +132,11 @@ O operador tem enum proxy com get/set em `placement.operator_read/operator_write
 
 Material reproduzível e resultados: [evidências desta revisão](continuidade/evidencias-1.7.6/README.md). Script é diagnóstico que captura o comportamento atual, NÃO uma regressão verde que prova o comportamento correto. A futura correção precisa de assertions de equivalência entre pedido e resultado.
 
-Ao corrigir: cobrir as quatro bases válidas via chamada direta, ambas as ordens de kwargs, GEOMETRY inválido sem mover objetos, Offset, invoke do painel, F9/redo e memória de Placement por método. Usar geometrias com origem deslocada: cubos centrados na origem não distinguem Origins de centroides. Preservar migração e IDs dos enums salvos.
+Cobertura acrescentada: as quatro bases válidas via chamada direta, ambas as ordens de kwargs e os dois caminhos Endpoint; Geometry inválido sem mover objetos; os cinco Placements Offset; invoke, propriedades de F9, repeat-last e Undo/Redo. O tetraedro deslocado tem centros de bounds, superfície e volume distintos com oráculo analítico independente. Migração real 1.7.2→1.7.7 e persistência de escolhas em processo novo foram verificadas separadamente.
 
-### B. Confirmado e ainda sem correção — changelog
+### B. Corrigido na 1.7.7 — changelog
 
-`src/better_item/CHANGELOG.md` começa com 1.7.6/1.7.5 antes do título e não contém entrada 1.7.4. Corrigir ordem e reconstruir a entrada a partir de `release-1.7.4.md`, identificando que a capacidade foi removida na versão seguinte. Não reintegrá-la. Conferir versão de manifesto, `bl_info`, primeiro bloco e paridade do ZIP quando houver entrega.
+O título agora precede as entradas, ordenadas de 1.7.7 para trás. A entrada 1.7.4 foi reconstruída a partir de `release-1.7.4.md` e informa a remoção da capacidade na 1.7.5. Nenhuma capacidade retirada foi reintegrada. A versão continua centralizada no manifesto, sem `bl_info` duplicado. Fontes e ZIP foram conferidos byte a byte.
 
 ### C. Confirmado por código — invalidação ampla da inspeção
 
@@ -157,6 +159,8 @@ Há testes automatizados com GUI real e Undo/Redo no Windows, preservados na mat
 - Riscos antigos sobre timers, múltiplas cenas e contexto continuam pistas de investigação; não os anunciar como bugs atuais sem reprodução. Ver seção 23 do manual histórico e priorizar os itens confirmados acima.
 
 ## 6. Compatibilidade atual e o que foi realmente testado
+
+**Execução nova 1.7.7:** matriz completa de 21 entradas por build, Windows x64, Blender **4.2.23 e 5.3.0**, usando o mesmo ZIP final. São 20 entradas existentes (incluindo probe e instalação) mais a regressão nova do operador. Migração e persistência em processos novos foram executadas à parte. [Relatório e limites](release-1.7.7.md). Não foram repetidas nesta entrega a 4.2.0 inicial nem as demais builds da tabela abaixo; ela preserva exclusivamente a proveniência histórica 1.7.6.
 
 Relatório autoritativo e resultados: [compatibility-1.7.6.md](compatibility-1.7.6.md), `tests/better_item/results/1.7.6/` e [ferramentas de reprodução](../../tests/better_item/compatibility/README.md).
 
@@ -203,7 +207,9 @@ Chamada mínima de script:
 - Refusos legítimos (ordem empatada, volume inválido, Gimbal singular, canais bloqueados, precisão insuficiente etc.) não são falhas da suíte. Verificar diagnóstico e ausência de efeito parcial.
 - Não atribuir mensagens de shutdown como “not freed memory blocks” automaticamente ao addon. Reproduzir com controle sem addon antes de concluir.
 
-### Ambiente local existente — verificar disponibilidade
+### Ambiente local anterior — verificar disponibilidade
+
+O checkout e os resultados novos desta sessão estão em `C:/Users/gabri/Nova pasta/Documents/ChatGPT/Mixer - Modified Blender 2/Blender-Plugins/` e nos workspaces irmãos `matrix177-final-lf/` e `matrix177-extra-lf/`. Os caminhos 1.7.6 abaixo são baselines históricos, não a fonte atual para editar.
 
 - Fonte publicada congelada: `C:/Users/gabri/Documents/Codex/better-item-176/publish176/src/better_item/`.
 - ZIP final: `C:/Users/gabri/Documents/Codex/better-item-176/publish176/addons/better_item.zip`.
@@ -258,12 +264,12 @@ Em entrega de runtime: conferir manifesto/bl_info/README/changelog; pacote sem b
 
 Ferramenta usada em sessões anteriores: conector GitHub para ler árvore/blobs e publicar commit com base tree e atualização protegida do ref. Git convencional também é adequado em checkout correto. Sempre conferir HEAD e arquivos alterados; não sobrescrever mudanças concorrentes. Só publicar o escopo autorizado. Este trabalho de documentação não autoriza editar o runtime como parte oculta da preparação.
 
-### Primeiro trabalho recomendado à próxima IA
+### Primeiro trabalho recomendado à próxima IA, após a 1.7.7
 
 1. Confirmar HEAD, versão, fonte/ZIP e ler os documentos nesta ordem.
-2. Reproduzir o bug direto de Endpoint no ambiente disponível, sem confundir script diagnóstico com teste de aceitação.
-3. Apresentar diagnóstico e menor correção, preservando UI/invoke/F9/Placement/migração. Observar o pedido atual de Gabriel para definir se a execução está autorizada.
-4. Tratar changelog e validações de entrega junto de uma correção de manutenção, sem inventar uma versão de features.
-5. Investigar desempenho apenas com evidência, mantendo escopo congelado. Separar depois discussão de UI, teste humano e futura 2.0.
+2. Ler o relatório 1.7.7 e seus resultados novos; Endpoint direto e changelog estão corrigidos, não são mais pendências abertas.
+3. Concluir a passada humana de publicação com mouse, F9, larguras, mensagens e troca de fontes; automação GUI não a substitui.
+4. Medir a invalidação ampla da inspeção antes de propor otimização, mantendo o escopo congelado e todas as dependências relevantes.
+5. Manter separadas discussão de UI, Normal/constraints e futura 2.0. Novas alterações dependem do pedido atual de Gabriel.
 
 Uma mensagem pronta está em [MENSAGEM-NOVA-CONVERSA.md](MENSAGEM-NOVA-CONVERSA.md). Não é necessário transferir o histórico inteiro da conversa, mas a próxima IA precisa realmente conseguir abrir os documentos e o repositório; se não conseguir, deve declarar a falta de acesso antes de afirmar que revisou.

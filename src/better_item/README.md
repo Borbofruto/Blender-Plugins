@@ -1,6 +1,8 @@
-# Better Item 1.7.6
+# Better Item 1.7.7
 
 A live Transform panel with declared Blender 4.2+ compatibility. Executed builds, test coverage and remaining limits are recorded in the [compatibility report](https://github.com/Borbofruto/Blender-Plugins/blob/main/docs/better_item/compatibility-1.7.6.md). GPL-3.0-or-later. Author: Gabriel Webber do Nascimento.
+
+1.7.7 fixes direct Python Endpoint Placement arguments and repairs the changelog. Current execution results, including the new operator regression, are recorded separately in the [1.7.7 maintenance report](https://github.com/Borbofruto/Blender-Plugins/blob/main/docs/better_item/release-1.7.7.md). The compatibility report above preserves the provenance of the earlier 1.7.6 matrix.
 
 ## Installation
 
