@@ -1,0 +1,85 @@
+{
+  "addon_version": "1.7.5",
+  "addon_zip_sha256": "c88daf4651a80380d3ac5495186340977da3a5c5f86240df189651e79c9a380d",
+  "source_commit": null,
+  "tests": [
+    {
+      "script": "test_better_item_173.py",
+      "mode": "background"
+    },
+    {
+      "script": "test_better_item_live173.py",
+      "mode": "background"
+    },
+    {
+      "script": "test_better_item_matrix170.py",
+      "mode": "background"
+    },
+    {
+      "script": "test_better_item_matrix160.py",
+      "mode": "background"
+    },
+    {
+      "script": "test_better_item_features160.py",
+      "mode": "background"
+    },
+    {
+      "script": "test_better_item_170.py",
+      "mode": "background"
+    },
+    {
+      "script": "test_better_item_edge170.py",
+      "mode": "background"
+    },
+    {
+      "script": "test_better_item_precision172.py",
+      "mode": "background"
+    },
+    {
+      "script": "test_better_item_collapse172.py",
+      "mode": "background"
+    },
+    {
+      "script": "test_better_item_171.py",
+      "mode": "background"
+    },
+    {
+      "script": "test_better_item_regressions.py",
+      "mode": "background"
+    },
+    {
+      "script": "test_better_item_gui173.py",
+      "mode": "gui_async"
+    },
+    {
+      "script": "test_retired_custom175.py",
+      "mode": "gui_async"
+    },
+    {
+      "script": "test_retired_custom175_persistence.py",
+      "mode": "background"
+    },
+    {
+      "script": "test_better_item_preview170.py",
+      "mode": "gui_sync"
+    },
+    {
+      "script": "test_better_item_inspection172.py",
+      "mode": "gui_sync"
+    },
+    {
+      "script": "test_better_item_cache154.py",
+      "mode": "gui_sync"
+    },
+    {
+      "script": "test_archive_install.py",
+      "mode": "background"
+    },
+    {
+      "script": "test_better_item_stress157.py",
+      "mode": "gui_sync"
+    }
+  ],
+  "baseline_source_commit": "0bedd9404746f712c9c27349628eee0fd2eac415",
+  "python_source_sha256": "37848ddc104c3c10dfcedb8758b2e16e9d40c5811feb1568b85ab11603aa3b5f"
+}

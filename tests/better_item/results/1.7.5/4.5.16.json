@@ -1,0 +1,970 @@
+{
+  "requested_version": "4.5.16-verified",
+  "executable": "portable/blender-4.5.16-windows-x64/blender.exe",
+  "addon_version": "1.7.5",
+  "addon_zip_sha256": "c88daf4651a80380d3ac5495186340977da3a5c5f86240df189651e79c9a380d",
+  "started_utc": "2026-11-16T12:03:24Z",
+  "tests": [
+    {
+      "script": "api_probe.py",
+      "mode": "background",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 5.196,
+      "result": {
+        "passed": true,
+        "blender": "4.5.16 LTS",
+        "version": [
+          4,
+          5,
+          16
+        ],
+        "build_hash": "3f6797307da5",
+        "python": "3.11.15 (main, Aug 12 2026, 16:53:25) [MSC v.1929 64 bit (AMD64)]",
+        "numpy": "1.26.4",
+        "platform": "Windows-10-10.0.26100-SP0",
+        "scene_orientation_attributes": [
+          "transform_orientation_slots"
+        ],
+        "slot_type_enum": [
+          "GLOBAL",
+          "LOCAL",
+          "NORMAL",
+          "GIMBAL",
+          "VIEW",
+          "CURSOR",
+          "PARENT"
+        ],
+        "slot_type_functions": [],
+        "capabilities": {
+          "NodesModifier.persistent_uid": true,
+          "NodeTree.interface": true,
+          "Object.to_mesh": true,
+          "Object.to_mesh_clear": true,
+          "UILayout.prop_search": true,
+          "UILayout.panel": true,
+          "Context.temp_override": true,
+          "Scene.transform_orientations": false
+        },
+        "registered": true,
+        "custom_discovery_removed": true,
+        "modifier_api": {
+          "GeometryNodeInputPosition": {
+            "inputs": [],
+            "outputs": [
+              [
+                "Position",
+                "Position",
+                "NodeSocketVector"
+              ]
+            ]
+          },
+          "ShaderNodeVectorMath": {
+            "inputs": [
+              [
+                "Vector",
+                "Vector",
+                "NodeSocketVector"
+              ],
+              [
+                "Vector",
+                "Vector_001",
+                "NodeSocketVector"
+              ],
+              [
+                "Vector",
+                "Vector_002",
+                "NodeSocketVector"
+              ],
+              [
+                "Scale",
+                "Scale",
+                "NodeSocketFloat"
+              ]
+            ],
+            "outputs": [
+              [
+                "Vector",
+                "Vector",
+                "NodeSocketVector"
+              ],
+              [
+                "Value",
+                "Value",
+                "NodeSocketFloat"
+              ]
+            ]
+          },
+          "ShaderNodeCombineXYZ": {
+            "inputs": [
+              [
+                "X",
+                "X",
+                "NodeSocketFloat"
+              ],
+              [
+                "Y",
+                "Y",
+                "NodeSocketFloat"
+              ],
+              [
+                "Z",
+                "Z",
+                "NodeSocketFloat"
+              ]
+            ],
+            "outputs": [
+              [
+                "Vector",
+                "Vector",
+                "NodeSocketVector"
+              ]
+            ]
+          },
+          "GeometryNodeSetPosition": {
+            "inputs": [
+              [
+                "Geometry",
+                "Geometry",
+                "NodeSocketGeometry"
+              ],
+              [
+                "Selection",
+                "Selection",
+                "NodeSocketBool"
+              ],
+              [
+                "Position",
+                "Position",
+                "NodeSocketVector"
+              ],
+              [
+                "Offset",
+                "Offset",
+                "NodeSocketVectorTranslation"
+              ]
+            ],
+            "outputs": [
+              [
+                "Geometry",
+                "Geometry",
+                "NodeSocketGeometry"
+              ]
+            ]
+          },
+          "NodeGroupInput": {
+            "inputs": [],
+            "outputs": [
+              [
+                "Geometry",
+                "Socket_0",
+                "NodeSocketGeometry"
+              ],
+              [
+                "",
+                "__extend__",
+                "NodeSocketVirtual"
+              ]
+            ]
+          },
+          "NodeGroupOutput": {
+            "inputs": [
+              [
+                "Geometry",
+                "Socket_1",
+                "NodeSocketGeometry"
+              ],
+              [
+                "",
+                "__extend__",
+                "NodeSocketVirtual"
+              ]
+            ],
+            "outputs": []
+          }
+        },
+        "modifier_input_properties": false,
+        "modifier_uid": 668223759,
+        "timer_registered": true,
+        "unregistered": true
+      }
+    },
+    {
+      "script": "test_better_item_173.py",
+      "mode": "background",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 1.036,
+      "result": {
+        "passed": true,
+        "checks": [
+          "separate saved placements and native labels",
+          "short Endpoint permits overlap without resizing",
+          "legacy Geometry Endpoint migration notice",
+          "object sources, changed selection, stable order and stop",
+          "cursor and captured Active identity; selected anchor editable",
+          "Frame/manual inputs, recovery and target edit guard",
+          "Offset reference observer preserves transverse axes",
+          "frame change and render end Live",
+          "per-method choices persist across reopen",
+          "unregister keeps poses and removes observer/guards"
+        ]
+      }
+    },
+    {
+      "script": "test_better_item_live173.py",
+      "mode": "background",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 1.471,
+      "result": {
+        "passed": true,
+        "live_batches": 96,
+        "reference_updates": 192,
+        "point_bases": 4,
+        "paths": 2,
+        "anchor_modes": 3,
+        "parented_and_mirrored": true,
+        "stable_order": true,
+        "independent_cube_center_oracle": true
+      }
+    },
+    {
+      "script": "test_better_item_matrix170.py",
+      "mode": "background",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 2.102,
+      "result": {
+        "endpoint_batches": 256,
+        "offset_batches": 140,
+        "bases": [
+          "ORIGINS",
+          "BOUNDS_CENTER",
+          "SURFACE",
+          "VOLUME",
+          "GEOMETRY"
+        ],
+        "endpoint_paths": 2,
+        "anchor_patterns": 4,
+        "units": [
+          1,
+          0.001
+        ],
+        "parented_and_mirrored": true,
+        "axis_masks": 7
+      }
+    },
+    {
+      "script": "test_better_item_matrix160.py",
+      "mode": "background",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 1.62,
+      "result": {
+        "geometry_combinations": 168,
+        "rotation_batches": 72,
+        "rotation_targets_checked": 288,
+        "geometry_axes_masks": 7,
+        "unit_scales": [
+          1,
+          0.001
+        ],
+        "zero_and_positive_gaps": true,
+        "oblique_and_rotated_references": true,
+        "shared_meshes_and_parented_targets": true
+      }
+    },
+    {
+      "script": "test_better_item_features160.py",
+      "mode": "background",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 1.195,
+      "result": {
+        "key_geometry": 4,
+        "projected_bounds": 10,
+        "geometry_rollback": 3,
+        "orientation": 8,
+        "ux": "INFO pending, WARNING domain failures, ERROR unexpected; no red pending; solver collapsed; independent frame components",
+        "persistence": true
+      }
+    },
+    {
+      "script": "test_better_item_170.py",
+      "mode": "background",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 1.077,
+      "result": {
+        "point_endpoint_and_retired_interval_rejection": true,
+        "all_bases_oblique_reversed_segment": 8,
+        "selected_anchors_and_cursor": true,
+        "independent_frame_components_and_override": true,
+        "reference_axis_projection": true,
+        "surface_volume_oracle_and_open_volume_rejection": true,
+        "retired_basis_and_dependency_rejections": true,
+        "offset_centers_and_measured_spacing": true,
+        "preview_initial_order_cancel_confirm": true,
+        "frame_context_capture": true,
+        "persistence": true
+      }
+    },
+    {
+      "script": "test_better_item_edge170.py",
+      "mode": "background",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 1.876,
+      "result": {
+        "object_info_dependency_bases": 3,
+        "centroid_cache_checks": 24,
+        "deleted_frame_choices_reset": true,
+        "native_bbox_semantics": true,
+        "invalid_capture_is_non_destructive": true,
+        "point_spacing_precision_rollback": true,
+        "contextual_start_preview_guard": true,
+        "geometry_offset_200": {
+          "seconds_plan_apply_verify": 0.14258579999932408,
+          "maximum_gap_error_blender_units": 0.0
+        },
+        "preview_deleted_target_cancel": true
+      }
+    },
+    {
+      "script": "test_better_item_precision172.py",
+      "mode": "background",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 2.575,
+      "result": {
+        "passed": true,
+        "cases": [
+          {
+            "method": "OFFSET",
+            "basis": "GEOMETRY",
+            "count": 200,
+            "offset": 100,
+            "spacing": 0.05,
+            "seed": 0,
+            "inspection_state": "UNIFORM",
+            "accepted": true,
+            "max_gap_error": 1.8310546874997224e-05,
+            "expected_gap": 0.05
+          },
+          {
+            "method": "OFFSET",
+            "basis": "GEOMETRY",
+            "count": 200,
+            "offset": 100,
+            "spacing": 0.05,
+            "seed": 1,
+            "inspection_state": "UNIFORM",
+            "accepted": true,
+            "max_gap_error": 1.8310546874997224e-05,
+            "expected_gap": 0.05
+          },
+          {
+            "method": "OFFSET",
+            "basis": "GEOMETRY",
+            "count": 200,
+            "offset": 100,
+            "spacing": 0.05,
+            "seed": 2,
+            "inspection_state": "UNIFORM",
+            "accepted": true,
+            "max_gap_error": 1.8310546874997224e-05,
+            "expected_gap": 0.05
+          },
+          {
+            "method": "OFFSET",
+            "basis": "GEOMETRY",
+            "count": 200,
+            "offset": 100,
+            "spacing": 0.2,
+            "seed": 0,
+            "inspection_state": "UNIFORM",
+            "accepted": true,
+            "max_gap_error": 4.88281250000111e-05,
+            "expected_gap": 0.2
+          },
+          {
+            "method": "OFFSET",
+            "basis": "GEOMETRY",
+            "count": 200,
+            "offset": 100,
+            "spacing": 0.2,
+            "seed": 1,
+            "inspection_state": "UNIFORM",
+            "accepted": true,
+            "max_gap_error": 4.88281250000111e-05,
+            "expected_gap": 0.2
+          },
+          {
+            "method": "OFFSET",
+            "basis": "GEOMETRY",
+            "count": 200,
+            "offset": 100,
+            "spacing": 0.2,
+            "seed": 2,
+            "inspection_state": "UNIFORM",
+            "accepted": true,
+            "max_gap_error": 4.88281250000111e-05,
+            "expected_gap": 0.2
+          },
+          {
+            "method": "OFFSET",
+            "basis": "GEOMETRY",
+            "count": 200,
+            "offset": 100,
+            "spacing": 1.0,
+            "seed": 0,
+            "inspection_state": "UNIFORM",
+            "accepted": true,
+            "max_gap_error": 0.0,
+            "expected_gap": 1.0
+          },
+          {
+            "method": "OFFSET",
+            "basis": "GEOMETRY",
+            "count": 200,
+            "offset": 100,
+            "spacing": 1.0,
+            "seed": 1,
+            "inspection_state": "UNIFORM",
+            "accepted": true,
+            "max_gap_error": 0.0,
+            "expected_gap": 1.0
+          },
+          {
+            "method": "OFFSET",
+            "basis": "GEOMETRY",
+            "count": 200,
+            "offset": 100,
+            "spacing": 1.0,
+            "seed": 2,
+            "inspection_state": "UNIFORM",
+            "accepted": true,
+            "max_gap_error": 0.0,
+            "expected_gap": 1.0
+          },
+          {
+            "method": "ENDPOINT",
+            "basis": "ORIGINS",
+            "count": 12,
+            "offset": 300,
+            "spacing": 0.2,
+            "seed": 0,
+            "inspection_state": "UNIFORM",
+            "accepted": true,
+            "max_gap_error": 2.6800464317133788e-05,
+            "expected_gap": 6.763790543968886
+          },
+          {
+            "method": "ENDPOINT",
+            "basis": "ORIGINS",
+            "count": 12,
+            "offset": 300,
+            "spacing": 0.2,
+            "seed": 1,
+            "inspection_state": "UNIFORM",
+            "accepted": true,
+            "max_gap_error": 2.6800464317133788e-05,
+            "expected_gap": 6.763790543968886
+          },
+          {
+            "method": "ENDPOINT",
+            "basis": "ORIGINS",
+            "count": 12,
+            "offset": 300,
+            "spacing": 0.2,
+            "seed": 2,
+            "inspection_state": "UNIFORM",
+            "accepted": true,
+            "max_gap_error": 2.6800464317133788e-05,
+            "expected_gap": 6.763790543968886
+          },
+          {
+            "method": "ENDPOINT",
+            "basis": "ORIGINS",
+            "count": 12,
+            "offset": 300,
+            "spacing": 0.2,
+            "seed": 3,
+            "inspection_state": "UNIFORM",
+            "accepted": true,
+            "max_gap_error": 2.6800464317133788e-05,
+            "expected_gap": 6.763790543968886
+          },
+          {
+            "method": "ENDPOINT",
+            "basis": "ORIGINS",
+            "count": 12,
+            "offset": 1000,
+            "spacing": 0.2,
+            "seed": 0,
+            "inspection_state": "UNIFORM",
+            "accepted": true,
+            "max_gap_error": 8.538799035839872e-05,
+            "expected_gap": 6.763790543968886
+          },
+          {
+            "method": "ENDPOINT",
+            "basis": "ORIGINS",
+            "count": 12,
+            "offset": 1000,
+            "spacing": 0.2,
+            "seed": 1,
+            "inspection_state": "UNIFORM",
+            "accepted": true,
+            "max_gap_error": 8.538799035839872e-05,
+            "expected_gap": 6.763790543968886
+          },
+          {
+            "method": "ENDPOINT",
+            "basis": "ORIGINS",
+            "count": 12,
+            "offset": 1000,
+            "spacing": 0.2,
+            "seed": 2,
+            "inspection_state": "UNIFORM",
+            "accepted": true,
+            "max_gap_error": 8.538799035839872e-05,
+            "expected_gap": 6.763790543968886
+          },
+          {
+            "method": "ENDPOINT",
+            "basis": "ORIGINS",
+            "count": 12,
+            "offset": 1000,
+            "spacing": 0.2,
+            "seed": 3,
+            "inspection_state": "UNIFORM",
+            "accepted": true,
+            "max_gap_error": 8.538799035839872e-05,
+            "expected_gap": 6.763790543968886
+          },
+          {
+            "method": "ENDPOINT",
+            "basis": "ORIGINS",
+            "count": 4,
+            "offset": 5000,
+            "spacing": 0.2,
+            "seed": 0,
+            "inspection_state": "UNIFORM",
+            "accepted": true,
+            "max_gap_error": 0.00031218607477967453,
+            "expected_gap": 32.01899848228027
+          },
+          {
+            "method": "ENDPOINT",
+            "basis": "ORIGINS",
+            "count": 4,
+            "offset": 5000,
+            "spacing": 0.2,
+            "seed": 1,
+            "inspection_state": "UNIFORM",
+            "accepted": true,
+            "max_gap_error": 0.00031218607477967453,
+            "expected_gap": 32.01899848228027
+          },
+          {
+            "method": "ENDPOINT",
+            "basis": "ORIGINS",
+            "count": 4,
+            "offset": 5000,
+            "spacing": 0.2,
+            "seed": 2,
+            "inspection_state": "UNIFORM",
+            "accepted": true,
+            "max_gap_error": 0.00031218607477967453,
+            "expected_gap": 32.01899848228027
+          },
+          {
+            "method": "ENDPOINT",
+            "basis": "ORIGINS",
+            "count": 4,
+            "offset": 5000,
+            "spacing": 0.2,
+            "seed": 3,
+            "inspection_state": "UNIFORM",
+            "accepted": true,
+            "max_gap_error": 0.00031218607477967453,
+            "expected_gap": 32.01899848228027
+          }
+        ],
+        "accepted": 21,
+        "rejected": 0
+      }
+    },
+    {
+      "script": "test_better_item_collapse172.py",
+      "mode": "background",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 1.007,
+      "result": {
+        "passed": true,
+        "symmetric_geometry_dependency_rejected": true,
+        "atomic_rejections": [
+          [
+            "OFFSET",
+            0.2,
+            0,
+            "[BI-G002]"
+          ],
+          [
+            "OFFSET",
+            0,
+            0,
+            "[BI-G002]"
+          ],
+          [
+            "ENDPOINT",
+            0,
+            128,
+            "[BI-E003]"
+          ],
+          [
+            "ENDPOINT",
+            0,
+            4,
+            "[BI-E001]"
+          ]
+        ]
+      }
+    },
+    {
+      "script": "test_better_item_171.py",
+      "mode": "background",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 1.133,
+      "result": {
+        "passed": true,
+        "transverse_cases": 30,
+        "zero_direction_sequences": 3,
+        "checkbox_no_initial_mutation": true,
+        "checkbox_disable_keeps_result": true,
+        "direction_persistence": true
+      }
+    },
+    {
+      "script": "test_better_item_regressions.py",
+      "mode": "background",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 0.904,
+      "result": null
+    },
+    {
+      "script": "test_better_item_gui173.py",
+      "mode": "gui_async",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 30.215,
+      "result": {
+        "passed": true,
+        "phases": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "before": {
+          "Captured Start": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "Piece 1": [
+            6.0,
+            -1.0,
+            2.0
+          ],
+          "Piece 2": [
+            12.0,
+            -2.0,
+            4.0
+          ],
+          "Piece 3": [
+            18.0,
+            -3.0,
+            6.0
+          ]
+        },
+        "after": {
+          "Captured Start": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "Piece 1": [
+            7.0,
+            3.0,
+            0.0
+          ],
+          "Piece 2": [
+            14.0,
+            6.0,
+            0.0
+          ],
+          "Piece 3": [
+            21.0,
+            9.0,
+            0.0
+          ]
+        },
+        "draw_errors": [],
+        "checks": [
+          "actual timer follows cursor",
+          "actual timer follows Empty with targets deselected",
+          "captured Active identity stable",
+          "zero retains negative Offset direction",
+          "Endpoint restores point basis",
+          "disable stops following",
+          "native invoke and F9 placements",
+          "native Undo/Redo"
+        ]
+      }
+    },
+    {
+      "script": "test_retired_custom175.py",
+      "mode": "gui_async",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 4.943,
+      "result": {
+        "passed": true,
+        "checks": [
+          "No discovery/cache/search registration; no custom source in new choices; old files explicitly unavailable without pose changes",
+          "Native Frame export and G operation in exported axes remain functional",
+          "Deletion through native Blender UI is observed without recreating orientation",
+          "Repeated registration lifecycle without orphan handlers"
+        ],
+        "draw_errors": []
+      }
+    },
+    {
+      "script": "test_retired_custom175_persistence.py",
+      "mode": "background",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 0.818,
+      "result": {
+        "passed": true,
+        "retired_sources_preserved_and_reported": true
+      }
+    },
+    {
+      "script": "test_better_item_preview170.py",
+      "mode": "gui_sync",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 2.624,
+      "result": {
+        "native_preview_undo_redo": true,
+        "invalid_preview_retains_last_valid": true,
+        "selection_changes_keep_capture": true,
+        "cancel_restores_session_start": true,
+        "transform_selection_capture": true,
+        "empty_anchor_bases": 4
+      }
+    },
+    {
+      "script": "test_better_item_inspection172.py",
+      "mode": "gui_sync",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 6.955,
+      "result": {
+        "passed": true,
+        "timings": [
+          {
+            "count": 600,
+            "basis": "ORIGINS",
+            "cold_seconds": 0.009799200000088604,
+            "cached_seconds": 0.00039739999992889353
+          },
+          {
+            "count": 600,
+            "basis": "GEOMETRY",
+            "cold_seconds": 0.2624409000000014,
+            "cached_seconds": 0.00041442000001552516
+          },
+          {
+            "count": 600,
+            "basis": "VOLUME",
+            "cold_seconds": 0.3441795999997339,
+            "cached_seconds": 0.00037854000001971146
+          },
+          {
+            "count": 1500,
+            "basis": "ORIGINS",
+            "cold_seconds": 0.023304999999709253,
+            "cached_seconds": 0.0008643200000733487
+          },
+          {
+            "count": 1500,
+            "basis": "GEOMETRY",
+            "cold_seconds": 0.6504985999999917,
+            "cached_seconds": 0.0009017599999424419
+          },
+          {
+            "count": 1500,
+            "basis": "VOLUME",
+            "cold_seconds": 0.8850077999995847,
+            "cached_seconds": 0.000925219999953697
+          }
+        ],
+        "shared_draw_getter_measurement": true,
+        "invalidation_checks": [
+          "target Location",
+          "target Rotation",
+          "target Scale",
+          "spacing sign",
+          "axis mask",
+          "placement basis",
+          "shape key",
+          "modifier creation",
+          "modifier viewport state",
+          "mesh data",
+          "frame evaluation",
+          "saved Location Frame",
+          "manual Frame value without depsgraph update",
+          "Endpoint method and source",
+          "manual Endpoint value",
+          "cursor Endpoint",
+          "active object",
+          "external Geometry Nodes dependency",
+          "unselected reference geometry",
+          "Undo/Redo clears inspection"
+        ],
+        "bounded_cache_and_unregister": true
+      }
+    },
+    {
+      "script": "test_better_item_cache154.py",
+      "mode": "gui_sync",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 2.697,
+      "result": null
+    },
+    {
+      "script": "test_archive_install.py",
+      "mode": "background",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 1.163,
+      "result": {
+        "blender": "4.5.16 LTS",
+        "passed": true,
+        "archive_install": false,
+        "declared_minimum": [
+          5,
+          0,
+          0
+        ],
+        "repository": "installed",
+        "operator_result": [
+          "FINISHED"
+        ],
+        "module_loaded": false,
+        "expected_manifest_rejection": true
+      }
+    },
+    {
+      "script": "test_better_item_stress157.py",
+      "mode": "gui_sync",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 13.015,
+      "result": {
+        "groups": {
+          "group1": {
+            "cases": 8064,
+            "accepted": 5408,
+            "coded_atomic_rejections": 2656,
+            "rejection_codes": {
+              "[BI-T009]": 1760,
+              "[BI-V001]": 896
+            }
+          },
+          "group2": {
+            "actual_native_rotation_comparisons": 192,
+            "single_axis_gimbal_direction_comparisons": 54
+          },
+          "group3": {
+            "parent_types": 4,
+            "collapsed_child_cases": 3,
+            "deep_signed_delta_chain": true
+          },
+          "group4": {
+            "extreme_signed_scale_cases": 16
+          },
+          "group5": {
+            "float64_truth_from_stored_vertices": 3
+          },
+          "group6": {
+            "chained_edits": 1000,
+            "max_ratio_drift": 1.4916061719105755e-07,
+            "linked_lock_rollback": true
+          },
+          "group7": {
+            "angle_zero_turn_crossing_cases": 5,
+            "gimbal_lock_rejected": true
+          },
+          "group8": {
+            "chain_lengths": [
+              2,
+              20,
+              100
+            ],
+            "cycle_rename_removal_cases": 3
+          },
+          "group9": {
+            "coordinate_unit_cases": 8,
+            "expected_precision_rejections": 0,
+            "ambiguity_and_collapse": true,
+            "selected_parent_child_operations": 2
+          },
+          "group10": {
+            "array_mirror_shape_key_cases": 3
+          },
+          "group11": {
+            "undo_redo_creation": true,
+            "copy_on_write": true,
+            "blend_roundtrip": true
+          }
+        },
+        "errors": {}
+      }
+    }
+  ],
+  "passed": true,
+  "finished_utc": "2026-11-16T12:04:48Z",
+  "fixture_correction": "Public grease_pencils_v3 collection on 4.5; grease_pencils on 5.x; add-on unchanged",
+  "public_summary_note": "19 API/regression entry points plus one archive-install assertion; 4.5 expects no activation under the 5.0 manifest minimum"
+}

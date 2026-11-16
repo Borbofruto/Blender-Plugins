@@ -44,7 +44,7 @@ def group1():
         ctx.scene.transform_orientation_slots[0].custom_orientation.matrix=Euler((.1,.2,.3)).to_matrix()
     s=o.better_item;success=rejections=0;reasons={}
     for mode,parent_case,storage,mirror,pivot,kind in itertools.product(
-            ('GLOBAL','REFERENCE','SAVED','GIMBAL','NORMAL','CURSOR','VIEW','NATIVE'),range(3),(*orders,'QUATERNION','AXIS_ANGLE'),(False,True),
+            ('GLOBAL','REFERENCE','SAVED','GIMBAL','NORMAL','CURSOR','VIEW'),range(3),(*orders,'QUATERNION','AXIS_ANGLE'),(False,True),
             ('GLOBAL','OBJECT','FRAME','CURSOR','BOUNDING_BOX_CENTER','MEDIAN_POINT','ACTIVE_ELEMENT','INDIVIDUAL_ORIGINS'),('LOCATION','ROTATION','DIMENSIONS')):
         for modifier in list(o.modifiers):
             group=modifier.node_group if modifier.type=='NODES' else None

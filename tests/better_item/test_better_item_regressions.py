@@ -104,7 +104,7 @@ near(b.location,before)
 # Unsupported Dimensions is a domain error and scalar getters never traceback.
 types=[('Empty',None),('Camera',bpy.data.cameras.new('Camera')),('Light',bpy.data.lights.new('Light','POINT')),
     ('Armature',bpy.data.armatures.new('Armature')),('Lattice',bpy.data.lattices.new('Lattice')),
-    ('Grease',bpy.data.grease_pencils.new('Grease'))]
+    ('Grease',getattr(bpy.data,'grease_pencils_v3',bpy.data.grease_pencils).new('Grease'))]
 for name,data in types:
     item=bpy.data.objects.new(name,data);ctx.scene.collection.objects.link(item)
     assert not transform_view.has_surface_geometry(item)

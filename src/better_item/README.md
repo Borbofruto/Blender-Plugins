@@ -1,6 +1,6 @@
-# Better Item 1.7.4
+# Better Item 1.7.5
 
-A live Transform panel with declared Blender 5.0+ compatibility. Runtime validation for this release used Blender 5.2.3 LTS on Windows; Blender 5.0 and 5.2.4 were not executed. GPL-3.0-or-later. Author: Gabriel Webber do Nascimento.
+A live Transform panel with declared Blender 5.0+ compatibility. Executed builds, test coverage and remaining limits are recorded in the [compatibility report](https://github.com/Borbofruto/Blender-Plugins/blob/main/docs/better_item/compatibility-1.7.5.md). GPL-3.0-or-later. Author: Gabriel Webber do Nascimento.
 
 ## Installation
 
@@ -10,7 +10,7 @@ Download the Better Item extension ZIP from the repository's `addons` directory.
 
 The panel keeps Blender's familiar **Location**, **Rotation**, **Scale** and **Dimensions** names and compact stacked XYZ fields. There are no separate native/incremental panels and no Apply buttons for object transformations. Drag a number or enter a value: the active object updates immediately.
 
-- **Reference > Individual > Orientation** lists Global, Frame, Object, Normal, Gimbal, View, 3D Cursor and Custom Orientation. Default entries use Blender's familiar icons. Custom Orientation... opens a searchable list of custom orientations in the current scene. The list refreshes after native creation, rename or deletion (normally within the existing 0.2-second observer interval). With no entries, the panel explains how to finish setup. Sources remain stored by name; renamed or deleted sources require choosing an existing orientation. If scene discovery is unavailable in a Blender version, exact-name entry remains available with an informational message. There is no capture-from-viewport control.
+- **Reference > Individual > Orientation** lists Global, Frame, Object, Normal, Gimbal, View and 3D Cursor. Default entries use Blender icons. Direct native Custom Orientation references were removed in 1.7.5: no scene-list discovery or exception-text parsing remains. Named Frames and Object sources provide reusable orientations.
 - **Reference > Individual > Location** offers Global, Frame, Object and 3D Cursor. Selection-based Location choices in Transform are explicit Capture actions: they create an independent saved Frame. Alignment/distribution can capture selection context at operation start. Individual Origins is no longer offered as a single reference point.
 - **Location** is the object's world origin expressed in the chosen axes, relative to the chosen origin.
 - **Rotation** is the object's orientation relative to the chosen axes. The display supports the six Euler orders, independently of the object's underlying rotation storage mode.
@@ -98,7 +98,7 @@ Frames, names, manual values, separate object pointers, component chains and con
 
 Frame Location offers stable Manual, Global, Object, Frame and 3D Cursor sources. Selection-dependent Median Point, Bounding Box Center and Active Element are Capture actions that store a Manual point. In Mesh Edit Mode those actions capture selected elements. Individual Origins is not offered as a single frame Location; legacy sources can be applied manually.
 
-Transform/Arrangement Orientation lists native axes directly, except Local, which is intentionally excluded from this reference readout. In the Frame editor, Normal/Gimbal/View choices are Capture actions rather than continuing context links. A Custom Orientation... choice accepts a native custom orientation name by explicit name. Changing the viewport's dropdown later does not change that stored source. In Object Mode, Normal follows the native object's axes, matching Blender. Edit-mode Normal is sampled only when its relevant inputs change. View requires an open 3D Viewport.
+Transform/Arrangement Orientation lists native axes directly, except Local, which is intentionally excluded from this reference readout. In the Frame editor, Normal/Gimbal/View choices are Capture actions rather than continuing context links. In Object Mode, Normal follows the native object's axes, matching Blender. Edit-mode Normal is sampled only when its relevant inputs change. View requires an open 3D Viewport.
 
 Old Local and Viewport orientation shortcuts are migrated to a fixed saved frame at load. Old Viewport Pivot choices become the concrete native pivot selected at migration time. Legacy RNA IDs remain readable for .blend/script compatibility, but these retired shortcuts are not presented in the addon UI.
 
@@ -190,7 +190,7 @@ Unsupported geometry, moving endpoint dependencies, native locks/drivers/constra
 |---|---|
 | BI-F001 | Circular frame dependency |
 | BI-F002 | Missing component source, active object or required selection |
-| BI-F003 | Missing native custom orientation |
+| BI-F003 | Retired custom-orientation reference: choose Object or Frame |
 | BI-F004 | Missing viewport context or failed native orientation operation |
 | BI-F005 | Singular or ill-conditioned reference axes / Gimbal lock |
 | BI-A001 | No arrangement axis selected |
@@ -292,7 +292,7 @@ Executed on Blender 5.2.3 LTS / Windows:
 
 Existing suites include 1,500 locked-parent cases, 1,200 Parent Inverse cancellations, 842 mm sweep moves, arrangements, reference parity/migration, cache, signed-scale rotation and preservation of retired authoring data.
 
-Tests and machine-readable results are in [the repository](https://github.com/Borbofruto/Blender-Plugins/tree/main/tests/better_item), outside the installable ZIP. Historical delivery records are in CHANGELOG.md. The declared Blender 5.0 minimum is not a runtime-tested compatibility guarantee for every version; only 5.2.3 was available for this delivery.
+Tests and machine-readable results are in [the repository](https://github.com/Borbofruto/Blender-Plugins/tree/main/tests/better_item), outside the installable ZIP. Historical delivery records are in CHANGELOG.md. The declared Blender 5.0 minimum does not imply support for every scene or future Blender release. Consult the compatibility report for exact builds and executed coverage.
 
 1.7.1 corrects transverse Offset movement and zero-spacing direction, and replaces the sidebar preview transaction buttons with a Live checkbox. See the [1.7.1 correction report](https://github.com/Borbofruto/Blender-Plugins/blob/main/docs/better_item/release-1.7.1.md).
 
@@ -306,8 +306,6 @@ See the [1.7.2 correction report](https://github.com/Borbofruto/Blender-Plugins/
 
 The [1.7.3 report](https://github.com/Borbofruto/Blender-Plugins/blob/main/docs/better_item/release-1.7.3.md) records the current point-only Endpoint contract, independent Placement choices, reference-driven Live behavior, migration and finite validation. Earlier reports describe historical behavior; the retired Endpoint geometric-fit solver is no longer offered. Transform settings remain per object, while arrangement settings and Frames belong to the scene.
 
-## Custom Orientation discovery compatibility
+## Removed custom-orientation references
 
-Blender 5.2 exposes custom orientations through orientation slots, without a public scene collection. Static RNA enum_items contains only defaults. The list adapter reads the complete dynamic identifiers from a rejected empty slot assignment, validates candidate names against the scene and restores any temporary slot selection. It never stores native orientation wrappers across callbacks. This depends on Blender exception formatting; ambiguous names containing the literal separator `', '` or changed formatting can require the explicit-name fallback. No Python expression is evaluated. This is a tested compatibility workaround, not a guaranteed public enumeration API. The disposable scene search index may be serialized by Blender; it is cleared after load/Undo and rebuilt from the actual native orientations. It is never the source of truth. Existing string references are preserved.
-
-The [1.7.4 correction report](https://github.com/Borbofruto/Blender-Plugins/blob/main/docs/better_item/release-1.7.4.md) adds scene discovery and setup guidance for Custom Orientation. The 1.7.3 engineering handoff remains an explicitly versioned historical baseline.
+The 1.7.4 scene-discovery workaround and the Custom Orientation input were removed in 1.7.5. Existing files retain their saved source without modifying targets, but show Custom Orientation (Removed) and INFO setup guidance until the user selects Object, Frame or a supported default orientation. The retired choice is never offered for new references. Frame export to a native Blender orientation remains available for G/R through public operators, including native deletion detection. No exception message is parsed and no native orientation is deleted merely because a saved reference was retired. Historical release reports and the 1.7.3 handoff document describe their respective versions.

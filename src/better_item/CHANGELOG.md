@@ -1,3 +1,10 @@
+## 1.7.5
+
+- Remove direct Custom Orientation references and the scene-list discovery workaround. No exception-text parsing or search-name cache remains.
+- Existing custom-reference selections are explicitly marked removed and require choosing Object or Frame. No target or unrelated native orientation is modified.
+- Keep Frame export to native orientations through public Blender operators and native deletion detection.
+- Start a portable-build compatibility matrix; exact executed builds and limitations are reported separately.
+
 # Better Item — changelog
 
 ## 1.7.3

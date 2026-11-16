@@ -51,8 +51,7 @@ _ORIENTATION_CHOICES=[
     ('NORMAL','Normal','Native selection normal','ORIENTATION_NORMAL'),
     ('GIMBAL','Gimbal','Native Gimbal axes','ORIENTATION_GIMBAL'),
     ('VIEW','View','Current view axes','ORIENTATION_VIEW'),
-    ('CURSOR','3D Cursor','3D Cursor axes','ORIENTATION_CURSOR'),
-    ('NATIVE','Custom Orientation...','Choose a named custom transform orientation','EMPTY_AXIS')]
+    ('CURSOR','3D Cursor','3D Cursor axes','ORIENTATION_CURSOR')]
 
 
 def _choices(kind,frame=False,arrangement=False):
@@ -85,17 +84,24 @@ def _visible(settings,kind,arrangement=False,frame=False):
 
 def choice_property(kind,arrangement=False,frame=False):
     choices=_choices(kind,frame,arrangement)
+    # Old files must show their unavailable source honestly, never as Global.
+    # The retired choice exists only while that saved source is selected.
+    if kind=='axes':choices=choices+[('NATIVE','Custom Orientation (Removed)','Choose Object or Frame instead','INFO')]
     names=[item[0] for item in choices]
     items=[]
     custom={'MANUAL','FRAME','SAVED','OBJECT','REFERENCE','NATIVE'}
     for title,is_custom in (('Better Item',True),('Default',False)):
         items.append(('',title,''))
         items.extend((*item,i) for i,item in enumerate(choices) if (item[0] in custom)==is_custom)
+    current_items=[item for item in items if item[0]!='NATIVE']
+    def enum_items(self,context):
+        return items if _visible(self,kind,arrangement,frame)=='NATIVE' else current_items
     def get(self):
         mode=_visible(self,kind,arrangement,frame)
         return names.index(mode) if mode in names else 0
     def set_value(self,value):
         mode=names[value]
+        if mode=='NATIVE':return
         if 'reference_capture_error' in self:del self['reference_capture_error']
         if arrangement and not frame and hasattr(self,'distribution_legacy_range'):
             self['distribution_schema']=1;self.distribution_legacy_range=False
@@ -121,8 +127,7 @@ def choice_property(kind,arrangement=False,frame=False):
                 elif mode=='MANUAL':self.rotation_mode='MANUAL'
                 elif mode=='PARENT':self.rotation_mode='PARENT'
                 else:
-                    if mode!='NATIVE':self.native_source=mode
-                    elif self.native_source in native_refs.BUILTINS:self.native_source=''
+                    self.native_source=mode
                     self.rotation_mode='NATIVE'
         else:
             f=_FIELDS[arrangement]
@@ -139,9 +144,8 @@ def choice_property(kind,arrangement=False,frame=False):
                 setattr(self,f['origin'],'CURSOR' if mode=='CURSOR' else 'PIVOT')
             else:
                 if kind=='origin' and arrangement and mode=='FRAME':mode='SAVED'
-                if kind=='axes' and mode=='NATIVE' and self.reference_native in native_refs.BUILTINS:self.reference_native=''
                 setattr(self,f[kind],mode)
-    return bpy.props.EnumProperty(name='Orientation' if kind=='axes' else 'Location',items=items,get=get,set=set_value,options=set())
+    return bpy.props.EnumProperty(name='Orientation' if kind=='axes' else 'Location',items=enum_items if kind=='axes' else items,get=get,set=set_value,options=set())
 
 
 def axes(context,settings,active,arrangement=False):
@@ -256,20 +260,7 @@ def draw_component(layout,settings,kind,arrangement=False,frame=False):
         row.prop(settings,name,text='')
         if not frame:row.operator('better_item.new_frame',text='',icon='ADD').target=('ALIGN_' if arrangement else '')+('AXES' if kind=='axes' else 'ORIGIN')
     elif mode=='NATIVE':
-        scene=bpy.context.scene
-        name='native_source' if frame else 'reference_native'
-        names,failed=native_refs.discovery_status(scene)
-        row=_source_row(layout,'Name')
-        if failed:
-            row.prop(settings,name,text='')
-            layout.label(text='List unavailable; enter the exact name.',icon='INFO')
-        else:
-            row.prop_search(settings,name,scene,'better_item_orientation_names',text='')
-            if names is None:layout.label(text='Loading scene orientations...',icon='INFO')
-            elif not names:
-                layout.label(text='No custom orientations yet.',icon='INFO')
-                layout.label(text='Create one in Blender to select it here.')
-
+        layout.label(text='Choose Object or Frame instead.',icon='INFO')
 
 
     if mode=='INDIVIDUAL_ORIGINS':layout.label(text='Single reference: active origin.')

@@ -524,7 +524,7 @@ def _clear_runtime(_unused):
     distribution.migrate()
 
 
-classes=(native_refs.BetterItemOrientationName,frames.BetterItemFrame,trace.BetterItemTrace,distribution.BetterItemPointReference,BetterItemObjectSettings,BetterItemSceneSettings,BETTERITEM_OT_link_group,
+classes=(frames.BetterItemFrame,trace.BetterItemTrace,distribution.BetterItemPointReference,BetterItemObjectSettings,BetterItemSceneSettings,BETTERITEM_OT_link_group,
          BETTERITEM_OT_clear_error,BETTERITEM_OT_clear_arrange_error,BETTERITEM_OT_align,BETTERITEM_OT_distribute,BETTERITEM_OT_align_orientation,
          BETTERITEM_PT_transform,BETTERITEM_PT_alignment,distribution_preview.BETTERITEM_OT_distribution_preview)+frames.classes+(native_refs.BETTERITEM_OT_native_frame,)
 
@@ -537,8 +537,6 @@ def register():
             bpy.types.Object.better_item=bpy.props.PointerProperty(type=BetterItemObjectSettings)
         if not hasattr(bpy.types.Scene,'better_item'):
             bpy.types.Scene.better_item=bpy.props.PointerProperty(type=BetterItemSceneSettings)
-        if not hasattr(bpy.types.Scene,'better_item_orientation_names'):
-            bpy.types.Scene.better_item_orientation_names=bpy.props.CollectionProperty(type=native_refs.BetterItemOrientationName)
         for handlers in (bpy.app.handlers.load_post,bpy.app.handlers.undo_post,bpy.app.handlers.redo_post):
             if _clear_runtime not in handlers:handlers.append(_clear_runtime)
         if distribution.invalidate_inspection not in bpy.app.handlers.depsgraph_update_post:
@@ -589,7 +587,6 @@ def unregister():
     transform_view.clear_cache()
     if native_refs.invalidate_normal in bpy.app.handlers.depsgraph_update_post:
         bpy.app.handlers.depsgraph_update_post.remove(native_refs.invalidate_normal)
-    if hasattr(bpy.types.Scene,'better_item_orientation_names'):del bpy.types.Scene.better_item_orientation_names
     for owner in (bpy.types.Scene,bpy.types.Object):
         if hasattr(owner,'better_item'):del owner.better_item
     for cls in reversed(classes):
