@@ -4,9 +4,9 @@ Install individual extension ZIPs from [`addons/`](addons) using Blender's **Ins
 
 Each addon uses a stable installer filename. Updates replace that file; earlier contents remain available in Git history.
 
-## Better Item 1.7.3
+## Better Item 1.7.4
 
-[Download ZIP](https://github.com/Borbofruto/Blender-Plugins/raw/refs/heads/main/addons/better_item.zip) | [Manual](src/better_item/README.md) | [Release report](docs/better_item/release-1.7.3.md) | [Review and limitations](docs/better_item/review-1.6.1.md) | [Source](src/better_item) | [Tests](tests/better_item)
+[Download ZIP](https://github.com/Borbofruto/Blender-Plugins/raw/refs/heads/main/addons/better_item.zip) | [Manual](src/better_item/README.md) | [Release report](docs/better_item/release-1.7.4.md) | [Review and limitations](docs/better_item/review-1.6.1.md) | [Source](src/better_item) | [Tests](tests/better_item)
 
 [AI maintainer handoff — Portuguese](docs/better_item/continuidade/README.md) | [Full engineering manual](docs/better_item/CONTINUIDADE-IA.md) | [Audited source snapshot](docs/better_item/handoff-1.7.3.json)
 
@@ -14,7 +14,7 @@ A spatial-precision Transform, Reference Frames and Align/Distribute addon for B
 
 ### Distribution by references, points and occupied geometry
 
-1.7.3 makes Endpoint point-only and Live follow spatial references while enabled. Each method remembers Placement; the existing precision and inspection-cache corrections remain.
+1.7.4 adds a scene-aware Custom Orientation picker and informative setup guidance to the shared reference UI. Existing Endpoint, Offset and Live behavior is retained. See the correction report for the Blender API compatibility limitation and executed tests.
 
 - Explicit Offset / Endpoint. Between Points uses Start-to-End direction; Reference Axis projects End onto one chosen reference axis.
 - Start inherits shared Location or uses an override. End accepts world coordinates, Object, Frame Location, cursor, Global or active object. The distributor does not move endpoint objects; users may move them as Live inputs.
@@ -87,3 +87,4 @@ blender --background --factory-startup --command extension build --source-dir sr
 Autor original: **Adam Dominec**, projeto [Export Paper Model](https://extensions.blender.org/add-ons/export-paper-model/).
 
 Os avisos de autoria originais e o manifesto foram preservados. Licença **GPL-3.0-or-later**, conforme o manifesto do add-on; o texto da GPL v3 está em [LICENSE](LICENSE).
+

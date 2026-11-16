@@ -1,4 +1,4 @@
-# Better Item 1.7.3
+# Better Item 1.7.4
 
 A live Transform panel with declared Blender 5.0+ compatibility. Runtime validation for this release used Blender 5.2.3 LTS on Windows; Blender 5.0 and 5.2.4 were not executed. GPL-3.0-or-later. Author: Gabriel Webber do Nascimento.
 
@@ -10,7 +10,7 @@ Download the Better Item extension ZIP from the repository's `addons` directory.
 
 The panel keeps Blender's familiar **Location**, **Rotation**, **Scale** and **Dimensions** names and compact stacked XYZ fields. There are no separate native/incremental panels and no Apply buttons for object transformations. Drag a number or enter a value: the active object updates immediately.
 
-- **Reference > Individual > Orientation** lists Global, Frame, Object, Normal, Gimbal, View, 3D Cursor and Custom Orientation. Default entries use Blender's familiar icons. Custom Orientation... explicitly opens a named source field; enter the existing custom orientation name. There is no capture-from-viewport control.
+- **Reference > Individual > Orientation** lists Global, Frame, Object, Normal, Gimbal, View, 3D Cursor and Custom Orientation. Default entries use Blender's familiar icons. Custom Orientation... opens a searchable list of custom orientations in the current scene. The list refreshes after native creation, rename or deletion (normally within the existing 0.2-second observer interval). With no entries, the panel explains how to finish setup. Sources remain stored by name; renamed or deleted sources require choosing an existing orientation. If scene discovery is unavailable in a Blender version, exact-name entry remains available with an informational message. There is no capture-from-viewport control.
 - **Reference > Individual > Location** offers Global, Frame, Object and 3D Cursor. Selection-based Location choices in Transform are explicit Capture actions: they create an independent saved Frame. Alignment/distribution can capture selection context at operation start. Individual Origins is no longer offered as a single reference point.
 - **Location** is the object's world origin expressed in the chosen axes, relative to the chosen origin.
 - **Rotation** is the object's orientation relative to the chosen axes. The display supports the six Euler orders, independently of the object's underlying rotation storage mode.
@@ -305,3 +305,9 @@ Current spacing uses a bounded scalar-result cache shared by the panel and Live 
 See the [1.7.2 correction report](https://github.com/Borbofruto/Blender-Plugins/blob/main/docs/better_item/release-1.7.2.md) for before/after cases, large-selection timings and runtime evidence. No features or animation support were added.
 
 The [1.7.3 report](https://github.com/Borbofruto/Blender-Plugins/blob/main/docs/better_item/release-1.7.3.md) records the current point-only Endpoint contract, independent Placement choices, reference-driven Live behavior, migration and finite validation. Earlier reports describe historical behavior; the retired Endpoint geometric-fit solver is no longer offered. Transform settings remain per object, while arrangement settings and Frames belong to the scene.
+
+## Custom Orientation discovery compatibility
+
+Blender 5.2 exposes custom orientations through orientation slots, without a public scene collection. Static RNA enum_items contains only defaults. The list adapter reads the complete dynamic identifiers from a rejected empty slot assignment, validates candidate names against the scene and restores any temporary slot selection. It never stores native orientation wrappers across callbacks. This depends on Blender exception formatting; ambiguous names containing the literal separator `', '` or changed formatting can require the explicit-name fallback. No Python expression is evaluated. This is a tested compatibility workaround, not a guaranteed public enumeration API. The disposable scene search index may be serialized by Blender; it is cleared after load/Undo and rebuilt from the actual native orientations. It is never the source of truth. Existing string references are preserved.
+
+The [1.7.4 correction report](https://github.com/Borbofruto/Blender-Plugins/blob/main/docs/better_item/release-1.7.4.md) adds scene discovery and setup guidance for Custom Orientation. The 1.7.3 engineering handoff remains an explicitly versioned historical baseline.

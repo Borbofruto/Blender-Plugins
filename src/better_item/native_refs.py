@@ -22,6 +22,8 @@ PIVOTS=[('BOUNDING_BOX_CENTER','Bounding Box Center','Center of selected bounds'
     ('ACTIVE_ELEMENT','Active Element','Active element of the current selection')]
 _syncing=False
 _custom_cache={}
+_orientation_names={}
+_discovery_failed=set()
 _normal_cache={}
 _needs_migration=True
 _normal_signatures={}
@@ -32,6 +34,10 @@ def clear_cache():
     global _needs_migration
     _needs_migration=True
     _custom_cache.clear()
+    _orientation_names.clear()
+    _discovery_failed.clear()
+    if hasattr(bpy.types.Scene,'better_item_orientation_names'):
+        for scene in bpy.data.scenes:scene.better_item_orientation_names.clear()
     _normal_cache.clear()
     _normal_signatures.clear()
     _normal_revisions.clear()
@@ -57,6 +63,59 @@ def view_context(context):
                 with context.temp_override(window=window,screen=window.screen,area=area,region=region):yield bpy.context
                 return
     raise BetterItemError('[BI-F004] Open a 3D Viewport for this reference operation.')
+
+
+class BetterItemOrientationName(bpy.types.PropertyGroup):
+    """Rebuildable search index; actual references remain saved name strings."""
+
+
+def discover_names(scene):
+    """Read RNA's context-dependent enum without changing the active slot.
+
+    Blender exposes no collection of custom orientations and enum_items omits
+    the dynamic entries. A rejected empty identifier reports the complete enum.
+    This compatibility adapter deliberately depends on that exception format;
+    Names are copied as raw text (RNA does not escape quotes/backslashes).
+    Every candidate is checked against the scene before it enters the picker.
+    If Blender changes it, retain manual name entry instead of an empty list.
+    """
+    slot=scene.transform_orientation_slots[0]
+    try:slot.type=''
+    except TypeError as exc:
+        payload=str(exc).rsplit(' not found in ',1)
+        if len(payload)!=2:return None
+        payload=payload[1]
+        if not payload.startswith("('") or not payload.endswith("')"):return None
+        values=payload[2:-2].split("', '")
+        defaults={item.identifier for item in slot.bl_rna.properties['type'].enum_items}
+        names=tuple(name for name in values if name not in defaults)
+        # Exception text is not an escaping protocol. Ambiguous unusual names
+        # fall back to explicit name entry, never select a guessed orientation.
+        if any(named(scene,name) is None for name in names):return None
+        return names
+    return None
+
+
+def refresh_names(scene):
+    key=scene.as_pointer();names=discover_names(scene)
+    failed=names is None
+    changed=failed!=(key in _discovery_failed)
+    if failed:
+        _discovery_failed.add(key)
+        return changed
+    _discovery_failed.discard(key)
+    entries=scene.better_item_orientation_names
+    if _orientation_names.get(key)!=names or tuple(item.name for item in entries)!=names:
+        _orientation_names[key]=names
+        entries.clear()
+        for name in names:entries.add().name=name
+        changed=True
+    return changed
+
+
+def discovery_status(scene):
+    key=scene.as_pointer()
+    return _orientation_names.get(key),key in _discovery_failed
 
 
 def named(scene,name):
@@ -120,7 +179,9 @@ def orientation(context,name,obj=None,stack=()):
     if name not in BUILTINS:
         slot=context.scene.transform_orientation_slots[0]
         matrix=slot.custom_orientation.matrix if slot.type==name and slot.custom_orientation else _custom_cache.get((context.scene.as_pointer(),name))
-        if matrix is None:raise ReferencePending('[BI-F003] Choose an existing custom orientation and wait for its reference to refresh.')
+        if matrix is None:
+            if not name:raise ReferencePending('[BI-F003] Choose a custom orientation for Orientation.')
+            raise ReferencePending('[BI-F003] Custom orientation "%s" is unavailable in this scene. Choose an existing orientation.'%name)
         return checked(matrix)
     if name=='GLOBAL':return Matrix.Identity(3)
     if name=='CURSOR':return checked(context.scene.cursor.matrix.to_3x3())
@@ -278,10 +339,13 @@ def sync():
         live_names={(scene.as_pointer(),name) for scene in bpy.data.scenes for name in _source_names(scene)}
         for key in list(_custom_cache):
             if key not in live_names:del _custom_cache[key]
-        for cache in (_normal_cache,_normal_signatures,_normal_revisions):
+        for cache in (_normal_cache,_normal_signatures,_normal_revisions,_orientation_names):
             for key in list(cache):
                 if key not in live_scenes:del cache[key]
+        _discovery_failed.intersection_update(live_scenes)
         windows=list(context.window_manager.windows)
+        for scene in bpy.data.scenes:
+            if refresh_names(scene):_redraw_scene(scene,windows)
         if context.window in windows:windows.remove(context.window);windows.insert(0,context.window)
         visited=set()
         for window in windows:

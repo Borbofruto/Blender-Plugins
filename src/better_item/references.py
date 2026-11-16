@@ -256,7 +256,20 @@ def draw_component(layout,settings,kind,arrangement=False,frame=False):
         row.prop(settings,name,text='')
         if not frame:row.operator('better_item.new_frame',text='',icon='ADD').target=('ALIGN_' if arrangement else '')+('AXES' if kind=='axes' else 'ORIGIN')
     elif mode=='NATIVE':
-        _source_row(layout,'Name').prop(settings,'native_source' if frame else 'reference_native',text='')
+        scene=bpy.context.scene
+        name='native_source' if frame else 'reference_native'
+        names,failed=native_refs.discovery_status(scene)
+        row=_source_row(layout,'Name')
+        if failed:
+            row.prop(settings,name,text='')
+            layout.label(text='List unavailable; enter the exact name.',icon='INFO')
+        else:
+            row.prop_search(settings,name,scene,'better_item_orientation_names',text='')
+            if names is None:layout.label(text='Loading scene orientations...',icon='INFO')
+            elif not names:
+                layout.label(text='No custom orientations yet.',icon='INFO')
+                layout.label(text='Create one in Blender to select it here.')
+
 
 
     if mode=='INDIVIDUAL_ORIGINS':layout.label(text='Single reference: active origin.')

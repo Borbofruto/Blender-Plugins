@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "checks": [
+    "Empty scene: INFO setup state, all three consumers",
+    "Native creation discovered by real timer, Unicode/quotes, scene isolation, active slot preserved",
+    "Object / Scene / Frame sources resolve same matrix without changing viewport choice",
+    "External rename removes old option; saved missing name gets setup guidance, no silent reassignment",
+    "External deletion clears scene list; published Better Item Frame discoverable",
+    "Discovery adapter failure preserves saved source and exposes manual fallback",
+    "Register/unregister lifecycle and rebuild"
+  ],
+  "raw_enum": "bpy_struct: item.attr = val: enum \"\" not found in ('GLOBAL', 'LOCAL', 'NORMAL', 'GIMBAL', 'VIEW', 'CURSOR', 'PARENT', 'A \"quoted\" orient', 'B 'apostrophe' \\ path', 'C: rota\u00e7\u00e3o \u6f22\u5b57')",
+  "draw_errors": []
+}
