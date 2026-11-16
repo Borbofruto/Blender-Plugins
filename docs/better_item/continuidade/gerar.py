@@ -21,11 +21,13 @@ for first,last,name,title in parts:
     end=sections[last].start() if last<25 else len(text)
     body=text[start:end].strip().replace('](handoff-1.7.3.json)','](../handoff-1.7.3.json)')
     header=f'# {title}\n\n[Índice](README.md) · [Manual integral](../CONTINUIDADE-IA.md)\n\n'
+    header+='> Leia primeiro [Contexto atual](../CONTEXTO-ATUAL.md). Este capítulo é histórico; não representa sozinho o estado vigente.\n\n'
     header+=f"Base: Better Item {snapshot['runtime_version']}, commit `{snapshot['baseline_commit']}`.\n\n"
     header+=f'Gerado de CONTINUIDADE-IA.md, SHA-256 `{digest}`. Não editar este capítulo isoladamente; altere o manual integral e execute `gerar.py`.\n\n'
     out=folder/name;out.write_text(header+body+'\n',encoding='utf-8',newline='\n')
     rows.append((first,last,name,title,len(body.split())))
 index='# Better Item — continuidade para outra IA\n\n'
+index+='**Comece pelo [Contexto atual](../CONTEXTO-ATUAL.md) e pela [mensagem de passagem](../MENSAGEM-NOVA-CONVERSA.md).** O manual e os capítulos abaixo preservam a base histórica 1.7.3.\n\n'
 index+='Comece pelo [manual integral](../CONTINUIDADE-IA.md), ou use os capítulos abaixo para leitura gradual. A fonte de edição é o manual integral; os capítulos são gerados, não versões independentes.\n\n'
 index+=f"Base auditada: **{snapshot['runtime_version']}**, commit `{snapshot['baseline_commit']}`. Documentação não altera a versão nem o instalador do add-on.\n\n"
 index+='| Parte | Conteúdo | Seções | Palavras aproximadas |\n|---|---|---|---:|\n'

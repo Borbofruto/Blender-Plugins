@@ -1,5 +1,7 @@
 # Better Item — continuidade para outra IA
 
+**Comece pelo [Contexto atual](../CONTEXTO-ATUAL.md) e pela [mensagem de passagem](../MENSAGEM-NOVA-CONVERSA.md).** O manual e os capítulos abaixo preservam a base histórica 1.7.3.
+
 Comece pelo [manual integral](../CONTINUIDADE-IA.md), ou use os capítulos abaixo para leitura gradual. A fonte de edição é o manual integral; os capítulos são gerados, não versões independentes.
 
 Base auditada: **1.7.3**, commit `0421e9df30b13e4cf062d9ffcd5b30759c5b2ca9`. Documentação não altera a versão nem o instalador do add-on.

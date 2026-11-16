@@ -2,9 +2,11 @@
 
 [Índice](README.md) · [Manual integral](../CONTINUIDADE-IA.md)
 
+> Leia primeiro [Contexto atual](../CONTEXTO-ATUAL.md). Este capítulo é histórico; não representa sozinho o estado vigente.
+
 Base: Better Item 1.7.3, commit `0421e9df30b13e4cf062d9ffcd5b30759c5b2ca9`.
 
-Gerado de CONTINUIDADE-IA.md, SHA-256 `7720acf82a9b59d748d078f386f316efa945aea1aa383e258ac58eacb3a2be8b`. Não editar este capítulo isoladamente; altere o manual integral e execute `gerar.py`.
+Gerado de CONTINUIDADE-IA.md, SHA-256 `e2f4f2a643dfa3fb1edb364d29cbfda1b70e157af8f732cb94c781a9439573e9`. Não editar este capítulo isoladamente; altere o manual integral e execute `gerar.py`.
 
 <a id="s07"></a>
 ## 7. Modelo matemático dos referenciais

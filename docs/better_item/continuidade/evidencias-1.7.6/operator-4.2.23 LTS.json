@@ -1,0 +1,335 @@
+{
+  "blender": "4.2.23 LTS",
+  "archive_sha256": "a4182db99196e502768cae288781546d6c89619f3c7172cfbf78abc8fcadd382",
+  "results": [
+    {
+      "requested": "ORIGINS",
+      "order": "method_first",
+      "status": [
+        "FINISHED"
+      ],
+      "effective": {
+        "method": "ENDPOINT",
+        "basis": "ORIGINS",
+        "offset": 0,
+        "endpoint": 0
+      },
+      "positions": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          15.0,
+          0.0,
+          0.0
+        ],
+        [
+          30.0,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "requested": "ORIGINS",
+      "order": "basis_first",
+      "status": [
+        "FINISHED"
+      ],
+      "effective": {
+        "method": "ENDPOINT",
+        "basis": "ORIGINS",
+        "offset": 0,
+        "endpoint": 0
+      },
+      "positions": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          15.0,
+          0.0,
+          0.0
+        ],
+        [
+          30.0,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "requested": "BOUNDS_CENTER",
+      "order": "method_first",
+      "status": [
+        "FINISHED"
+      ],
+      "effective": {
+        "method": "ENDPOINT",
+        "basis": "ORIGINS",
+        "offset": 0,
+        "endpoint": 0
+      },
+      "positions": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          15.0,
+          0.0,
+          0.0
+        ],
+        [
+          30.0,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "requested": "BOUNDS_CENTER",
+      "order": "basis_first",
+      "status": [
+        "FINISHED"
+      ],
+      "effective": {
+        "method": "ENDPOINT",
+        "basis": "ORIGINS",
+        "offset": 0,
+        "endpoint": 0
+      },
+      "positions": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          15.0,
+          0.0,
+          0.0
+        ],
+        [
+          30.0,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "requested": "SURFACE",
+      "order": "method_first",
+      "status": [
+        "FINISHED"
+      ],
+      "effective": {
+        "method": "ENDPOINT",
+        "basis": "ORIGINS",
+        "offset": 0,
+        "endpoint": 0
+      },
+      "positions": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          15.0,
+          0.0,
+          0.0
+        ],
+        [
+          30.0,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "requested": "SURFACE",
+      "order": "basis_first",
+      "status": [
+        "FINISHED"
+      ],
+      "effective": {
+        "method": "ENDPOINT",
+        "basis": "ORIGINS",
+        "offset": 0,
+        "endpoint": 0
+      },
+      "positions": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          15.0,
+          0.0,
+          0.0
+        ],
+        [
+          30.0,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "requested": "VOLUME",
+      "order": "method_first",
+      "status": [
+        "FINISHED"
+      ],
+      "effective": {
+        "method": "ENDPOINT",
+        "basis": "ORIGINS",
+        "offset": 0,
+        "endpoint": 0
+      },
+      "positions": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          15.0,
+          0.0,
+          0.0
+        ],
+        [
+          30.0,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "requested": "VOLUME",
+      "order": "basis_first",
+      "status": [
+        "FINISHED"
+      ],
+      "effective": {
+        "method": "ENDPOINT",
+        "basis": "ORIGINS",
+        "offset": 0,
+        "endpoint": 0
+      },
+      "positions": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          15.0,
+          0.0,
+          0.0
+        ],
+        [
+          30.0,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "requested": "GEOMETRY",
+      "order": "method_first",
+      "status": [
+        "FINISHED"
+      ],
+      "effective": {
+        "method": "ENDPOINT",
+        "basis": "ORIGINS",
+        "offset": 0,
+        "endpoint": 0
+      },
+      "positions": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          15.0,
+          0.0,
+          0.0
+        ],
+        [
+          30.0,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "requested": "GEOMETRY",
+      "order": "basis_first",
+      "status": [
+        "FINISHED"
+      ],
+      "effective": {
+        "method": "ENDPOINT",
+        "basis": "ORIGINS",
+        "offset": 0,
+        "endpoint": 0
+      },
+      "positions": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          15.0,
+          0.0,
+          0.0
+        ],
+        [
+          30.0,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "requested": "explicit hidden endpoint=4",
+      "status": [
+        "FINISHED"
+      ],
+      "effective": {
+        "method": "ENDPOINT",
+        "basis": "VOLUME",
+        "offset": 0,
+        "endpoint": 4
+      },
+      "positions": [
+        [
+          -1.0,
+          0.0,
+          0.0
+        ],
+        [
+          13.0,
+          0.0,
+          0.0
+        ],
+        [
+          27.0,
+          0.0,
+          0.0
+        ]
+      ]
+    }
+  ]
+}

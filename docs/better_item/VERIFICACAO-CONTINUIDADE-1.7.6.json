@@ -1,0 +1,16 @@
+{
+  "passed": true,
+  "date": "2026-11-16",
+  "scope": "Documentation-only; source inventory hashes verified, examples syntax and links checked. No runtime regression suite rerun in this documentation task. Previous 22 diagnostic calls are retained as evidence of an unfixed bug.",
+  "checks": {
+    "local_links": 40,
+    "repository_paths": 4,
+    "external_links_not_fetched": 76,
+    "python_syntax": 2,
+    "json_syntax": 5
+  },
+  "historical_manual_base": "1.7.3",
+  "current_handoff_version": "1.7.6",
+  "runtime_or_installer_modified": false,
+  "manual_sha256": "e2f4f2a643dfa3fb1edb364d29cbfda1b70e157af8f732cb94c781a9439573e9"
+}

@@ -1,0 +1,151 @@
+{
+  "kind": "current_handoff",
+  "date": "2026-11-16",
+  "runtime_version": "1.7.6",
+  "baseline_commit": "a664cbf1b671db2bbb5ae521af05d65898b55960",
+  "minimum_blender": "4.2.0",
+  "runtime_python_combined_sha256": "37848ddc104c3c10dfcedb8758b2e16e9d40c5811feb1568b85ab11603aa3b5f",
+  "installer": {
+    "path": "addons/better_item.zip",
+    "sha256": "a4182db99196e502768cae288781546d6c89619f3c7172cfbf78abc8fcadd382"
+  },
+  "runtime_files": [
+    {
+      "path": "src/better_item/__init__.py",
+      "sha256": "71ba26358d0ef8fc0ea9fa6116b779400578ab61a8e9f62b927570e6e532f280",
+      "git_blob_sha": "497eecc0ceec51905c5c4959d4446142be58273c"
+    },
+    {
+      "path": "src/better_item/arrange.py",
+      "sha256": "880f31ea9ad8ee76bdb406fc15b0c2874c3254afb45662aa7af7acc708ec0c04",
+      "git_blob_sha": "751a7475f0fdd0726c1e279c2392565ca167bbef"
+    },
+    {
+      "path": "src/better_item/blender_manifest.toml",
+      "sha256": "9a1ce104cfe89938be2b60d6451e421cbff1c3fdfc90942ebf661d7163c826ae",
+      "git_blob_sha": "827eae1038ad0e3ef82336759929a5ac58dc9967"
+    },
+    {
+      "path": "src/better_item/CHANGELOG.md",
+      "sha256": "ffb7d2054f1f398df3e3af8832c3ec93b241a29b812546cdd58d8d223f5882fe",
+      "git_blob_sha": "a13f64642a4e948ebbb8ef4481c69fb4ad3e9f40"
+    },
+    {
+      "path": "src/better_item/diagnostics.py",
+      "sha256": "aa0cd4825a80be4a0d42ca0f4260829f6a40a8236d54854fd3ea4d6cf56302c2",
+      "git_blob_sha": "7c0e0f1752a944caab2d43fd78b4c4317d9b850b"
+    },
+    {
+      "path": "src/better_item/distribution.py",
+      "sha256": "59316699c60c850cd2602761bdcfe97dcec1dc08ddc73c5b2c1bf6ba7fa42c74",
+      "git_blob_sha": "56c6a3083a7c5cf95345038a61fbde06011d146f"
+    },
+    {
+      "path": "src/better_item/distribution_preview.py",
+      "sha256": "37f217cc32860c4fa47f9089ae75ec53757cf114aa3642bd81e2cc53524c476c",
+      "git_blob_sha": "03ffdcfdbd6798e439431c0a370cbb55289f8c5e"
+    },
+    {
+      "path": "src/better_item/engine.py",
+      "sha256": "ebb4102ed53da1ff344db28e8e52ca5c42683cb07628069d250aa9266f7125ba",
+      "git_blob_sha": "c30df854d36407504bfec81d2aa84fa300c33447"
+    },
+    {
+      "path": "src/better_item/frames.py",
+      "sha256": "08b6db2bed3b93f7ddaacf626764d4c55d0c346347023f2749817cb9bca8491d",
+      "git_blob_sha": "dd69451be3ad112fef0d6c15cf7a22967c15608a"
+    },
+    {
+      "path": "src/better_item/geometry_arrange.py",
+      "sha256": "5a8629c13eac45cbd20f172db7cf5fda869eb06949b245872f1a7152327f14c0",
+      "git_blob_sha": "a870bc7dbb15fcc3a96b35cc643370f27741a712"
+    },
+    {
+      "path": "src/better_item/LICENSE",
+      "sha256": "605e9047a563c5c8396ffb18232aa4304ec56586aee537c45064c6fb425e44ad",
+      "git_blob_sha": "e62ec04cdeece724caeeeeaeb6ae1f6af1bb6b9a"
+    },
+    {
+      "path": "src/better_item/math_core.py",
+      "sha256": "c4cb2e7b8e76e4e377181e75146d95ecc86f0e9d78629cfd0514d9c54be5e4c5",
+      "git_blob_sha": "945b9817f98b5e2668b5a425e525115a97fcaf6a"
+    },
+    {
+      "path": "src/better_item/native_refs.py",
+      "sha256": "245af3deb8656e0c76ca438ffef48c653a0a62bc6954dcc10ba5ad87d2c89afd",
+      "git_blob_sha": "4744d09b8592890c3c0c1704733c2ced296630a8"
+    },
+    {
+      "path": "src/better_item/orientation.py",
+      "sha256": "d31756a0b2a9a638ac5d9cde2a9d35af5ed989f1ff7a12b49eea8a00cbb155d5",
+      "git_blob_sha": "c5a7c4f835724eaf68481f79bdf16bfed4d31189"
+    },
+    {
+      "path": "src/better_item/placement.py",
+      "sha256": "fa846922f0791bf6052b5fb2789ab3a2ecbf0c190f43f3a046e3a2be19ea3b07",
+      "git_blob_sha": "5f588098c137d3506a08cb5a2f70f219250200ec"
+    },
+    {
+      "path": "src/better_item/README.md",
+      "sha256": "af3bf2a2d2e31185483e46a5b3df5da3a9157120650ab98331841e0e0ca21f51",
+      "git_blob_sha": "39d5646cb85808a8120479bbc5557c6e3d1fc226"
+    },
+    {
+      "path": "src/better_item/references.py",
+      "sha256": "6f934a1945d211eff5bdc2771eee5864be54ebe4cbbe44c71667421ead14a1f5",
+      "git_blob_sha": "7653f1b11639f5a79dad2e463671f4452ed3b174"
+    },
+    {
+      "path": "src/better_item/trace.py",
+      "sha256": "e846587508b38fb8c795ca141bb17bb8ef0424cf7612174ec53fe3305c45146f",
+      "git_blob_sha": "af859f142c1d34e15d5a3e3f9b5675b781b71194"
+    },
+    {
+      "path": "src/better_item/transform_view.py",
+      "sha256": "6af45855850b253e24918a55e1ebb02c9ffd722d94d3eaada86ad13b66d623ef",
+      "git_blob_sha": "0901b78df6a55c39c393a0514db56b33a2ed0882"
+    }
+  ],
+  "read_first": "docs/better_item/CONTEXTO-ATUAL.md",
+  "historical_manual_base": "1.7.3",
+  "runtime_changed_in_documentation_task": false,
+  "open_issues": [
+    {
+      "id": "endpoint-python-kwargs",
+      "status": "reproduced_unfixed",
+      "builds": [
+        "4.2.23 LTS",
+        "5.3.0"
+      ],
+      "calls_per_build": 11,
+      "mismatched_basis_per_build": 8,
+      "evidence": "docs/better_item/continuidade/evidencias-1.7.6/"
+    },
+    {
+      "id": "changelog-order-and-missing-174",
+      "status": "confirmed_by_source_unfixed"
+    },
+    {
+      "id": "spacing-cache-broad-invalidation",
+      "status": "confirmed_by_source_timings_not_reproduced"
+    }
+  ],
+  "evidence_roots": [
+    "tests/better_item/results/1.7.6/",
+    "tests/better_item/results/1.7.5/"
+  ],
+  "do_not_restore": [
+    "relative_animation",
+    "direct_custom_orientation_scene_discovery"
+  ],
+  "retained": [
+    "frame_export_to_native_orientation",
+    "affine_GN_dimensions"
+  ],
+  "future_only": [
+    "Edit Mode 2.0",
+    "Normal optimization",
+    "constraint flexibility",
+    "new viewport interactions"
+  ]
+}
