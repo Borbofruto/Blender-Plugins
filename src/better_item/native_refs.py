@@ -7,6 +7,7 @@ operator in a real View3D context. No helper objects or target transforms.
 """
 from contextlib import contextmanager
 import math
+import time
 import uuid
 import bpy
 import numpy as np
@@ -25,6 +26,10 @@ _normal_cache={}
 _needs_migration=True
 _normal_signatures={}
 _normal_revisions={}
+_normal_elements={}
+_normal_dirty=set()
+# Safety net if a script edits a selection without any depsgraph event.
+_NORMAL_RECHECK_SECONDS=2.
 
 
 def clear_cache():
@@ -33,12 +38,17 @@ def clear_cache():
     _normal_cache.clear()
     _normal_signatures.clear()
     _normal_revisions.clear()
+    _normal_elements.clear()
+    _normal_dirty.clear()
 
 
 @persistent
 def invalidate_normal(scene,depsgraph):
+    if not len(depsgraph.updates):return
+    key=scene.as_pointer()
+    # Element selection changes arrive as updates without a geometry flag.
+    _normal_dirty.add(key)
     if any(update.is_updated_geometry for update in depsgraph.updates):
-        key=scene.as_pointer()
         _normal_revisions[key]=_normal_revisions.get(key,0)+1
 
 
@@ -206,8 +216,9 @@ def _source_names(scene):
     return names
 
 
-def _normal_signature(context):
-    selected=[]
+def _selection_states(context):
+    """Per-element selection of every object in the current edit session."""
+    states=[]
     for obj in context.objects_in_mode_unique_data:
         state=()
         if obj.type=='MESH':
@@ -220,14 +231,31 @@ def _normal_signature(context):
         elif obj.type in {'CURVE','SURFACE'}:
             state=tuple(tuple((p.select_control_point,p.select_left_handle,p.select_right_handle) for p in spline.bezier_points)
                 +tuple(p.select for p in spline.points) for spline in obj.data.splines)
-        selected.append((obj.as_pointer(),tuple(v for row in obj.matrix_world for v in row),state))
+        states.append((obj.as_pointer(),state))
+    return tuple(sorted(states))
+
+
+def _normal_signature(context,fresh=True):
+    """Selection fingerprint. Walking every element is O(vertices) in Python, so
+    an unchanged fingerprint is reused until a depsgraph event arrives (or a
+    short safety interval passes) unless `fresh` forces an exact walk."""
+    key=context.scene.as_pointer()
+    pointers=tuple(sorted(obj.as_pointer() for obj in context.objects_in_mode_unique_data))
+    cached=_normal_elements.get(key)
+    if (fresh or cached is None or key in _normal_dirty or cached[0]!=pointers
+            or time.monotonic()-cached[2]>_NORMAL_RECHECK_SECONDS):
+        elements=_selection_states(context)
+        _normal_elements[key]=(pointers,elements,time.monotonic())
+        _normal_dirty.discard(key)
+    else:elements=cached[1]
+    matrices=tuple(sorted((obj.as_pointer(),tuple(v for row in obj.matrix_world for v in row)) for obj in context.objects_in_mode_unique_data))
     return (context.mode,context.active_object.as_pointer() if context.active_object else 0,
-        tuple(sorted(selected)),_normal_revisions.get(context.scene.as_pointer(),0),tuple(context.tool_settings.mesh_select_mode))
+        matrices,elements,_normal_revisions.get(key,0),tuple(context.tool_settings.mesh_select_mode))
 
 
 def _refresh_normal(context):
     key=context.scene.as_pointer()
-    signature=_normal_signature(context)
+    signature=_normal_signature(context,fresh=False)
     if _normal_signatures.get(key)==signature:return
     _normal_signatures[key]=signature
     _normal_cache.pop(key,None)
@@ -266,9 +294,10 @@ def sync():
             distribution.migrate()
             _needs_migration=False
         live_scenes={scene.as_pointer() for scene in bpy.data.scenes}
-        for cache in (_normal_cache,_normal_signatures,_normal_revisions):
+        for cache in (_normal_cache,_normal_signatures,_normal_revisions,_normal_elements):
             for key in list(cache):
                 if key not in live_scenes:del cache[key]
+        _normal_dirty.intersection_update(live_scenes)
         windows=list(context.window_manager.windows)
         if context.window in windows:windows.remove(context.window);windows.insert(0,context.window)
         visited=set()

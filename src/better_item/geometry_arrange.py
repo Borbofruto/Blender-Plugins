@@ -18,9 +18,10 @@ def _bounds(obj,basis):
 
 
 def position_roundoff(obj,target,direction):
-    """Project the existing native parent/delta/world evaluation budget.
+    """Project one object's native parent/delta/world evaluation budget.
 
-    Stored translations round independently; a gap needs both endpoint budgets.
+    Stored translations round independently, so a gap between two objects needs
+    the budgets of both endpoints: callers add this value for each of them.
     This is a storage-error allowance, not a tolerance relative to scene size.
     """
     return float(np.abs(direction) @ engine._world_roundoff(obj,target))

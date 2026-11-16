@@ -6,12 +6,16 @@ import numpy as np
 from collections import OrderedDict
 from mathutils import Matrix, Euler
 from . import engine, frames
-from .math_core import BetterItemError, linked_values
+from .math_core import BetterItemError, linked_values, link_base, link_remember, clear_link_anchors
 from bpy.app.handlers import persistent
 
 _dimension_cache=OrderedDict()
 _geometry_cache=OrderedDict()
 _geometry_revision=0
+# Advances on every depsgraph update batch, geometry or not. Keys the instancer
+# lookup, which depends on object instances rather than on vertex data.
+_update_serial=0
+_instancers=(None,frozenset())
 _GEOMETRY_CACHE_ENTRIES=8
 _GEOMETRY_CACHE_BYTES=64*1024*1024
 _DIMENSION_CACHE_ENTRIES=32
@@ -23,10 +27,12 @@ def has_surface_geometry(obj):
 
 @persistent
 def clear_cache(_scene=None,_depsgraph=None):
-    global _geometry_revision
+    global _geometry_revision,_update_serial
     _geometry_revision+=1
+    _update_serial+=1
     _dimension_cache.clear()
     _geometry_cache.clear()
+    clear_link_anchors()
 
 
 @persistent
@@ -36,7 +42,8 @@ def invalidate_geometry(_scene,depsgraph):
     Transform-only updates are handled by the projection key. Translation is
     intentionally absent from that key because it cannot change extents.
     """
-    global _geometry_revision
+    global _geometry_revision,_update_serial
+    if len(depsgraph.updates):_update_serial+=1
     updated_objects=set()
     updated_data=set()
     updated_trees=set()
@@ -73,14 +80,27 @@ def _geometry_key(obj,depsgraph):
     return (depsgraph.as_pointer(),obj.as_pointer(),obj.data.as_pointer() if obj.data else 0)
 
 
+def _instancer_pointers(depsgraph):
+    """Originals that currently emit instances, scanned once per evaluated state.
+
+    Scanning every instance for each measured object made a cold read
+    quadratic in the number of objects.
+    """
+    global _instancers
+    token=(depsgraph.as_pointer(),_update_serial)
+    if _instancers[0]!=token:
+        _instancers=(token,frozenset(instance.parent.original.as_pointer()
+            for instance in depsgraph.object_instances if instance.is_instance and instance.parent))
+    return _instancers[1]
+
+
 def _coordinates(obj,depsgraph,key):
     if not has_surface_geometry(obj):
         raise BetterItemError('Dimensions is unavailable for object type %s.'%obj.type)
     if key in _geometry_cache:
         _geometry_cache.move_to_end(key)
         return _geometry_cache[key]
-    if any(instance.is_instance and instance.parent and instance.parent.original==obj
-           for instance in depsgraph.object_instances):
+    if obj.as_pointer() in _instancer_pointers(depsgraph):
         raise BetterItemError('[BI-M005] Dimensions cannot measure unrealized Geometry Nodes instances. Use Realize Instances upstream before measuring or editing Dimensions.')
     evaluated=obj.evaluated_get(depsgraph)
     try:mesh=evaluated.to_mesh()
@@ -431,12 +451,15 @@ def edit_component(context,obj,group,axis,value):
         before=values(context,obj,group)
         denominator_tolerance=0.
     links=getattr(obj.better_item,engine.GROUP_LINK[group])
-    desired=linked_values(before,axis,value,links,zero_angle_as_turn=group=='ROTATION',denominator_tolerance=denominator_tolerance)
+    key=(obj.as_pointer(),group,tuple(links))
+    base=link_base(key,before)
+    desired=linked_values(base,axis,value,links,zero_angle_as_turn=group=='ROTATION',denominator_tolerance=denominator_tolerance)
     if (before==desired if group=='LOCATION' else not any(engine.different(a,b) for a,b in zip(before,desired))):return
-    if group=='LOCATION':
-        return frames.set_position(context,obj,desired)
-    if group=='ROTATION':return set_rotation(context,obj,desired)
-    return set_dimensions(context,obj,desired)
+    if group=='LOCATION':frames.set_position(context,obj,desired)
+    elif group=='ROTATION':set_rotation(context,obj,desired)
+    else:set_dimensions(context,obj,desired)
+    after=frames.position_values(context,obj)[0] if group=='LOCATION' else values(context,obj,group)
+    link_remember(key,axis,links,base,after)
 
 
 def _edit_default(obj,group,axis,value):
@@ -445,7 +468,10 @@ def _edit_default(obj,group,axis,value):
     if group=='SCALE':return engine.edit_scale_component(obj,axis,value)
     attribute={'LOCATION':'location','ROTATION':'rotation_euler','DIMENSIONS':'dimensions'}[group]
     before=tuple(getattr(obj,attribute))
-    desired=linked_values(before,axis,value,getattr(obj.better_item,engine.GROUP_LINK[group]),zero_angle_as_turn=group=='ROTATION')
+    links=getattr(obj.better_item,engine.GROUP_LINK[group])
+    key=(obj.as_pointer(),'DEFAULT-'+group,tuple(links))
+    base=link_base(key,before)
+    desired=linked_values(base,axis,value,links,zero_angle_as_turn=group=='ROTATION')
     if group=='DIMENSIONS':desired=_dimension_targets(before,desired)
     locks=obj.lock_location if group=='LOCATION' else obj.lock_rotation if group=='ROTATION' else obj.lock_scale
     if group!='DIMENSIONS' and any(locked and engine.different(old,new) for locked,old,new in zip(locks,before,desired)):
@@ -465,6 +491,7 @@ def _edit_default(obj,group,axis,value):
         actual=tuple(getattr(obj,attribute))
         if not (_dimensions_match(actual,desired) if group=='DIMENSIONS' else engine._native_matches(actual,desired)):
             raise BetterItemError('Blender did not retain the requested default/local channel values.')
+        link_remember(key,axis,links,base,actual)
     except Exception:
         _restore(obj,previous)
         raise
