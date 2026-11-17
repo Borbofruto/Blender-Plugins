@@ -1,0 +1,11 @@
+{
+  "passed": true,
+  "blender": "4.2.0",
+  "addon_imported": false,
+  "steps": [
+    "secondary window created; primary override exited",
+    "secondary close returned; override exited",
+    "primary override valid after close",
+    "finished"
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "requested_version": "5.3.0",
+  "executable": "C:/Users/gabri/Documents/Codex/better-item-compatibility/portable/blender-5.3.0-windows-x64/blender.exe",
+  "started_utc": "2026-11-17T13:40:48Z",
+  "tests": [
+    {
+      "script": "probe_patch_readiness179.py",
+      "mode": "gui_async",
+      "passed": false,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 4.503,
+      "result": {
+        "passed": false,
+        "purpose": "diagnostic reproduction; failures expected on current stable",
+        "blender": "5.3.0",
+        "source": "D:\\Codex-BetterItem-Patch-Readiness179\\workspace-v2\\results\\5.3.0\\better_item\\__init__.py",
+        "volume": {
+          "references_valid": true,
+          "cause": "[BI-P003] \"Plane\" needs closed, consistently oriented geometry for Volume Centroid. Repair the mesh or choose Surface Centroid.",
+          "labels": [
+            "Distribution",
+            "Placement:",
+            "Complete references to measure spacing.",
+            "Sign sets direction."
+          ],
+          "unchanged_targets": true,
+          "drawing": "Python label capture, not screenshot or mouse"
+        },
+        "timer_registered_before": true,
+        "close_operator_returned": true,
+        "closed_wrapper_invalid": false,
+        "timer_registered_after": true,
+        "observer_issue": {
+          "message": "TypeError: Window not found",
+          "attempts": 1,
+          "retry_at": 97546.5676816
+        },
+        "syncing_after": false,
+        "window_failure_reproduced": false,
+        "volume_guidance_reproduced": true
+      }
+    }
+  ],
+  "passed": false,
+  "addon_version": "1.7.9",
+  "addon_zip_sha256": "6a01eb809165347e94668d259a492b922b69f0c368657cae48599a2f57a9f029",
+  "finished_utc": "2026-11-17T13:40:52Z"
+}

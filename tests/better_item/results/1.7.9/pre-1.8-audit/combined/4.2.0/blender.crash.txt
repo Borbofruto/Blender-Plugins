@@ -1,0 +1,378 @@
+# Blender 4.2.0, Commit date: 2024-07-16 06:20, Hash a51f293548ad
+bpy.ops.object.select_all(action='SELECT')  # Operator
+bpy.ops.object.delete(use_global=False)  # Operator
+bpy.ops.mesh.primitive_plane_add(enter_editmode=False, align='WORLD', location=(3, 0, 0), scale=(1, 1, 1))  # Operator
+bpy.ops.mesh.primitive_plane_add(enter_editmode=False, align='WORLD', location=(8, 0, 0), scale=(1, 1, 1))  # Operator
+
+# backtrace
+Exception Record:
+
+ExceptionCode         : EXCEPTION_ACCESS_VIOLATION
+Exception Address     : 0x00007FF65B3165F4
+Exception Module      : blender.exe
+Exception Flags       : 0x00000000
+Exception Parameters  : 0x2
+	Parameters[0] : 0x0000000000000000
+	Parameters[1] : 0x000001EF006C6182
+
+
+Stack trace:
+blender.exe         :0x00007FF65B3165F0  BKE_workspace_active_screen_get
+blender.exe         :0x00007FF65BBFA770  bpy_rna_context_temp_override_enter
+python311.dll       :0x00007FFDEE24AB20  PyCFunction_GetFlags
+python311.dll       :0x00007FFDEE327BE0  PyOS_URandomNonblock
+python311.dll       :0x00007FFDEE329EE0  PyEval_EvalFrameDefault
+python311.dll       :0x00007FFDEE329EE0  PyEval_EvalFrameDefault
+python311.dll       :0x00007FFDEE204F90  PyFunction_Vectorcall
+python311.dll       :0x00007FFDEE204630  PyBytes_Repeat
+python311.dll       :0x00007FFDEE2050F0  PyObject_CallObject
+blender.exe         :0x00007FF65BBF42B0  py_timer_execute
+blender.exe         :0x00007FF65DBB6F70  BLI_timer_execute
+blender.exe         :0x00007FF65B70A900  wm_event_do_notifiers
+blender.exe         :0x00007FF65B6EBDB0  WM_main
+blender.exe         :0x00007FF65B0A8160  main
+blender.exe         :0x00007FF65DAB2FD4  __scrt_common_main_seh
+KERNEL32.DLL        :0x00007FFEDE00CDE0  BaseThreadInitThunk
+ntdll.dll           :0x00007FFEDEF7EE20  RtlUserThreadStart
+
+
+Threads:
+Thread : 00008eec
+ntdll.dll           :0x00007FFEDF065880  NtWaitForWorkViaWorkerFactory
+ntdll.dll           :0x00007FFEDEF23300  TpCallbackMayRunLong
+KERNEL32.DLL        :0x00007FFEDE00CDE0  BaseThreadInitThunk
+ntdll.dll           :0x00007FFEDEF7EE20  RtlUserThreadStart
+
+
+Thread : 00005b30
+ntdll.dll           :0x00007FFEDF065880  NtWaitForWorkViaWorkerFactory
+ntdll.dll           :0x00007FFEDEF23300  TpCallbackMayRunLong
+KERNEL32.DLL        :0x00007FFEDE00CDE0  BaseThreadInitThunk
+ntdll.dll           :0x00007FFEDEF7EE20  RtlUserThreadStart
+
+
+Thread : 00000c48
+ntdll.dll           :0x00007FFEDF065880  NtWaitForWorkViaWorkerFactory
+ntdll.dll           :0x00007FFEDEF23300  TpCallbackMayRunLong
+KERNEL32.DLL        :0x00007FFEDE00CDE0  BaseThreadInitThunk
+ntdll.dll           :0x00007FFEDEF7EE20  RtlUserThreadStart
+
+
+Thread : 00005740
+ntdll.dll           :0x00007FFEDF065820  ZwWaitForAlertByThreadId
+ntdll.dll           :0x00007FFEDEF595E0  RtlSleepConditionVariableSRW
+KERNELBASE.dll      :0x00007FFEDC7A2A20  SleepConditionVariableSRW
+MSVCP140.dll        :0x00007FFE204B2820  std::_Winerror_message
+MSVCP140.dll        :0x00007FFE204B2BB0  Cnd_wait
+OpenImageIO_Util.dll:0x00007FFE0C21C790  OpenImageIO_v2_5::paropt::operator=
+OpenImageIO_Util.dll:0x00007FFE0C21A080  OpenImageIO_v2_5::Sysutil::usleep
+ucrtbase.dll        :0x00007FFEDC64CBE0  wcsrchr
+KERNEL32.DLL        :0x00007FFEDE00CDE0  BaseThreadInitThunk
+ntdll.dll           :0x00007FFEDEF7EE20  RtlUserThreadStart
+
+
+Thread : 000039fc
+ntdll.dll           :0x00007FFEDF061C30  NtWaitForSingleObject
+KERNELBASE.dll      :0x00007FFEDC79BDF0  WaitForSingleObjectEx
+IlmThread.dll       :0x00007FFEA32049C0  IlmThread_3_2::Semaphore::wait
+IlmThread.dll       :0x00007FFEA32037A0  IlmThread_3_2::ThreadPool::setThreadProvider
+IlmThread.dll       :0x00007FFEA3201290  IlmThread_3_2::supportsThreads
+ucrtbase.dll        :0x00007FFEDC64CBE0  wcsrchr
+KERNEL32.DLL        :0x00007FFEDE00CDE0  BaseThreadInitThunk
+ntdll.dll           :0x00007FFEDEF7EE20  RtlUserThreadStart
+
+
+Thread : 00007bdc
+ntdll.dll           :0x00007FFEDF061C30  NtWaitForSingleObject
+KERNELBASE.dll      :0x00007FFEDC79BDF0  WaitForSingleObjectEx
+IlmThread.dll       :0x00007FFEA32049C0  IlmThread_3_2::Semaphore::wait
+IlmThread.dll       :0x00007FFEA32037A0  IlmThread_3_2::ThreadPool::setThreadProvider
+IlmThread.dll       :0x00007FFEA3201290  IlmThread_3_2::supportsThreads
+ucrtbase.dll        :0x00007FFEDC64CBE0  wcsrchr
+KERNEL32.DLL        :0x00007FFEDE00CDE0  BaseThreadInitThunk
+ntdll.dll           :0x00007FFEDEF7EE20  RtlUserThreadStart
+
+
+Thread : 00008ec0
+win32u.dll          :0x00007FFEDC10AEF0  NtUserMsgWaitForMultipleObjectsEx
+shcore.dll          :0x00007FFEDDE3ACF0  Ordinal247
+shcore.dll          :0x00007FFEDDE3ACF0  Ordinal247
+shcore.dll          :0x00007FFEDDE55240  Ordinal264
+shcore.dll          :0x00007FFEDDE47A10  SHSetValueW
+shcore.dll          :0x00007FFEDDE47A10  SHSetValueW
+ntdll.dll           :0x00007FFEDEFBDB10  RtlIsNormalizedString
+ntdll.dll           :0x00007FFEDEF23300  TpCallbackMayRunLong
+KERNEL32.DLL        :0x00007FFEDE00CDE0  BaseThreadInitThunk
+ntdll.dll           :0x00007FFEDEF7EE20  RtlUserThreadStart
+
+
+Thread : 000059c4
+win32u.dll          :0x00007FFEDC10AEF0  NtUserMsgWaitForMultipleObjectsEx
+shcore.dll          :0x00007FFEDDE3ACF0  Ordinal247
+shcore.dll          :0x00007FFEDDE3ACF0  Ordinal247
+shcore.dll          :0x00007FFEDDE55240  Ordinal264
+shcore.dll          :0x00007FFEDDE47A10  SHSetValueW
+shcore.dll          :0x00007FFEDDE47A10  SHSetValueW
+ntdll.dll           :0x00007FFEDEFBDB10  RtlIsNormalizedString
+ntdll.dll           :0x00007FFEDEF23300  TpCallbackMayRunLong
+KERNEL32.DLL        :0x00007FFEDE00CDE0  BaseThreadInitThunk
+ntdll.dll           :0x00007FFEDEF7EE20  RtlUserThreadStart
+
+
+Thread : 0000729c
+ntdll.dll           :0x00007FFEDF062700  ZwWaitForMultipleObjects
+KERNELBASE.dll      :0x00007FFEDC7A2650  WaitForMultipleObjectsEx
+CRYPT32.dll         :0x00007FFEDC3AB210  I_CryptWalkAllLruCacheEntries
+KERNEL32.DLL        :0x00007FFEDE00CDE0  BaseThreadInitThunk
+ntdll.dll           :0x00007FFEDEF7EE20  RtlUserThreadStart
+
+
+Thread : 00005078
+ntdll.dll           :0x00007FFEDF062700  ZwWaitForMultipleObjects
+KERNELBASE.dll      :0x00007FFEDC7A2650  WaitForMultipleObjectsEx
+KERNELBASE.dll      :0x00007FFEDC7A2630  WaitForMultipleObjects
+nvoglv64.dll        :0x00007FFDEAF9F180  DrvPresentBuffers
+nvoglv64.dll        :0x00007FFDEAF9F180  DrvPresentBuffers
+KERNEL32.DLL        :0x00007FFEDE00CDE0  BaseThreadInitThunk
+ntdll.dll           :0x00007FFEDEF7EE20  RtlUserThreadStart
+
+
+Thread : 00008f84
+ntdll.dll           :0x00007FFEDF061C30  NtWaitForSingleObject
+KERNELBASE.dll      :0x00007FFEDC79BDF0  WaitForSingleObjectEx
+nvoglv64.dll        :0x00007FFDEAF6D6A0  DrvValidateVersion
+nvoglv64.dll        :0x00007FFDEACFD18A  Symbols not available
+
+
+Thread : 000021b8
+win32u.dll          :0x00007FFEDC10AEF0  NtUserMsgWaitForMultipleObjectsEx
+nvoglv64.dll        :0x00007FFDEAF6D6A0  DrvValidateVersion
+KERNEL32.DLL        :0x00007FFEDE00CDE0  BaseThreadInitThunk
+ntdll.dll           :0x00007FFEDEF7EE20  RtlUserThreadStart
+
+
+Thread : 000084a4
+ntdll.dll           :0x00007FFEDF062700  ZwWaitForMultipleObjects
+KERNELBASE.dll      :0x00007FFEDC7A2650  WaitForMultipleObjectsEx
+combase.dll         :0x00007FFEDE477BF0  CoRegisterInitializeSpy
+combase.dll         :0x00007FFEDE471010  RoParameterizedTypeExtraGetTypeSignature
+combase.dll         :0x00007FFEDE471010  RoParameterizedTypeExtraGetTypeSignature
+KERNEL32.DLL        :0x00007FFEDE00CDE0  BaseThreadInitThunk
+ntdll.dll           :0x00007FFEDEF7EE20  RtlUserThreadStart
+
+
+Thread : 000065f4
+win32u.dll          :0x00007FFEDC10AEF0  NtUserMsgWaitForMultipleObjectsEx
+directmanipulation.dll:0x00007FFEA40611A4  Symbols not available
+
+
+Thread : 00008f90
+win32u.dll          :0x00007FFEDC10AEF0  NtUserMsgWaitForMultipleObjectsEx
+shcore.dll          :0x00007FFEDDE3ACF0  Ordinal247
+shcore.dll          :0x00007FFEDDE3ACF0  Ordinal247
+shcore.dll          :0x00007FFEDDE55240  Ordinal264
+shcore.dll          :0x00007FFEDDE47A10  SHSetValueW
+shcore.dll          :0x00007FFEDDE47A10  SHSetValueW
+KERNEL32.DLL        :0x00007FFEDE00CDE0  BaseThreadInitThunk
+ntdll.dll           :0x00007FFEDEF7EE20  RtlUserThreadStart
+
+
+Thread : 000041b4
+ntdll.dll           :0x00007FFEDF065880  NtWaitForWorkViaWorkerFactory
+ntdll.dll           :0x00007FFEDEF23300  TpCallbackMayRunLong
+KERNEL32.DLL        :0x00007FFEDE00CDE0  BaseThreadInitThunk
+ntdll.dll           :0x00007FFEDEF7EE20  RtlUserThreadStart
+
+
+Thread : 00008a10
+ntdll.dll           :0x00007FFEDF061C30  NtWaitForSingleObject
+KERNELBASE.dll      :0x00007FFEDC79BDF0  WaitForSingleObjectEx
+tbb.dll             :0x00007FFE7E2CD800  tbb::thread_bound_filter::try_process_item
+tbb.dll             :0x00007FFE7E2CD800  tbb::thread_bound_filter::try_process_item
+ucrtbase.dll        :0x00007FFEDC64CBE0  wcsrchr
+KERNEL32.DLL        :0x00007FFEDE00CDE0  BaseThreadInitThunk
+ntdll.dll           :0x00007FFEDEF7EE20  RtlUserThreadStart
+
+
+Loaded Modules :
+0x00007FF65B020000 4.2.0.0              blender.exe D:\Codex-BetterItem-179-Portable\blender-4.2.0-windows-x64\blender.pdb 
+0x00007FFEDEF00000 10.0.26100.9549      ntdll.dll  
+0x00007FFEDDFE0000 10.0.26100.9549      KERNEL32.DLL  
+0x00007FFEDC780000 10.0.26100.9549      KERNELBASE.dll  
+0x00007FFED8830000 10.0.26100.9549      apphelp.dll  
+0x00007FFEDD6D0000 10.0.26100.9549      USER32.dll  
+0x00007FFEDC100000 10.0.26100.9549      win32u.dll  
+0x00007FFEB0BA0000                      blender_cpu_check.dll  
+0x00007FFEDE2A0000 10.0.26100.8328      GDI32.dll  
+0x00007FFE7E2C0000                      tbb.dll  
+0x00007FFEDC130000 10.0.26100.9549      gdi32full.dll  
+0x00007FFE4FBB0000                      tbbmalloc.dll  
+0x00007FFEDC260000 10.0.26100.9444      msvcp_win.dll  
+0x00007FFEDC620000 10.0.26100.9444      ucrtbase.dll  
+0x00007FFEDDA80000 10.0.26100.9549      ADVAPI32.dll  
+0x00007FFEDDB40000 7.0.26100.9444       msvcrt.dll  
+0x00007FFEDE0B0000 10.0.26100.9549      sechost.dll  
+0x00007FFEDEC90000 10.0.26100.9549      RPCRT4.dll  
+0x00007FFEDCF20000 10.0.26100.9549      SHELL32.dll  
+0x00007FFED4720000 10.0.26100.1150      VERSION.dll  
+0x00007FFE83B00000 14.29.30139.0        VCRUNTIME140.dll  
+0x00007FFEDCC20000 10.0.26100.9549      ole32.dll  
+0x00007FFE204A0000 14.29.30139.0        MSVCP140.dll  
+0x00007FFEDE360000 10.0.26100.9549      combase.dll  
+0x00007FFEB0B50000 14.29.30139.0        VCRUNTIME140_1.dll  
+0x00007FFEDEC10000 10.0.26100.9549      SHLWAPI.dll  
+0x00007FFEDE170000 10.0.26100.9549      WS2_32.dll  
+0x00007FFED9280000 10.0.26100.9549      dbghelp.dll  
+0x00007FFEDDF00000 10.0.26100.9549      OLEAUT32.dll  
+0x00007FFEDDE00000 10.0.26100.9549      shcore.dll  
+0x00007FFDACC60000 4.3.2.0              embree4.dll  
+0x00007FFEDCEE0000 10.0.26100.9278      IMM32.dll  
+0x00007FFDFC000000 7.2.0.8              sycl7.dll  
+0x00007FFDEE750000                      OpenImageIO.dll  
+0x00007FFE0C1B0000                      OpenImageIO_Util.dll  
+0x00007FFD748F0000                      cycles_kernel_oneapi_aot.dll  
+0x00007FFDA6DD0000                      oslcomp.dll  
+0x00007FFE58000000                      oslquery.dll  
+0x00007FFDFF3E0000 2.28.2.0             SDL2.dll  
+0x00007FFDA3690000                      oslexec.dll  
+0x00007FFEDE780000 10.0.26100.9549      SETUPAPI.dll  
+0x00007FFDFA410000                      OpenColorIO_2_3.dll  
+0x00007FFE3F450000                      boost_python311-vc142-mt-x64-1_82.dll  
+0x00007FFE57AA0000 2.3.0.0              OpenImageDenoise.dll  
+0x00007FFE20460000 1.38.8.0             MaterialXFormat.dll  
+0x00007FFDFE900000 1.38.8.0             MaterialXCore.dll  
+0x00007FFD9CBA0000                      usd_ms.dll  
+0x00007FFDFE6B0000 60.16.100.0          avformat-60.dll  
+0x00007FFE808A0000 60.3.100.0           avdevice-60.dll  
+0x00007FFE0D960000 7.5.100.0            swscale-7.dll  
+0x00007FFD71420000 60.31.102.0          avcodec-60.dll  
+0x00007FFDABB90000 58.29.100.0          avutil-58.dll  
+0x00007FFDFBE70000 1.23.1.0             OpenAL32.dll  
+0x00007FFDFA240000 1.2.2.0              sndfile.dll  
+0x00007FFE0D4E0000                      Iex.dll  
+0x00007FFDA1F00000 11.0.0.0             openvdb.dll  
+0x00007FFDF97D0000                      OpenEXR.dll  
+0x00007FFE0D480000                      Imath.dll  
+0x00007FFE096A0000                      boost_locale-vc142-mt-x64-1_82.dll  
+0x00007FFDFA190000                      epoxy-0.dll  
+0x00007FFDEE100000 3.11.7150.1013       python311.dll  
+0x00007FFDFA070000                      gmp-10.dll  
+0x00007FFED9520000 10.0.26100.9549      dxgi.dll  
+0x00007FFEADCF0000                      tbbmalloc_proxy.dll  
+0x00007FFEDBC50000 10.0.26100.9549      CFGMGR32.dll  
+0x00007FFEB2EA0000 6.10.26100.9549      COMCTL32.dll  
+0x00007FFED97C0000 10.0.26100.9549      dwmapi.dll  
+0x00007FFEAB210000                      libgmpxx.dll  
+0x00007FFE80570000 7.7.0.8              pi_win_proxy_loader.dll  
+0x00007FFDF9590000                      OpenEXRCore.dll  
+0x00007FFE802E0000                      boost_thread-vc142-mt-x64-1_82.dll  
+0x00007FFEBFB40000 10.0.26100.1         dbgeng.dll  
+0x00007FFED6390000 10.0.26100.9549      WINMM.dll  
+0x00007FFEA60C0000                      oslnoise.dll  
+0x00007FFED87E0000 10.0.26100.7705      Secur32.dll  
+0x00007FFEBA2F0000 10.0.26100.1150      AVICAP32.dll  
+0x00007FFEBA540000 10.0.26100.9278      OPENGL32.dll  
+0x00007FFD6E750000 2.3.0.0              OpenImageDenoise_core.dll  
+0x00007FFDFF350000 1.38.8.0             MaterialXRender.dll  
+0x00007FFE0BF80000 1.38.8.0             MaterialXGenGlsl.dll  
+0x00007FFDFA010000 1.38.8.0             MaterialXGenMsl.dll  
+0x00007FFDF94E0000 1.38.8.0             MaterialXGenShader.dll  
+0x00007FFE7F5E0000 4.12.100.0           swresample-4.dll  
+0x00007FFEDBFE0000 10.0.26100.9549      bcrypt.dll  
+0x00007FFEA3200000                      IlmThread.dll  
+0x00007FFEDBF50000 10.0.26100.3912      powrprof.dll  
+0x00007FFEC1330000 10.0.26100.1         dbgmodel.dll  
+0x00007FFEC3930000 10.0.26100.9549      XmlLite.dll  
+0x00007FFE989F0000 10.0.26100.1150      MSVFW32.dll  
+0x00007FFEBA4A0000 10.0.26100.9549      GLU32.dll  
+0x00007FFEDB060000 10.0.26100.9549      SSPICLI.DLL  
+0x00007FFED9230000 10.0.26100.9549      dxcore.dll  
+0x00007FFDF9410000                      pi_level_zero.dll  
+0x00007FFE4A780000 1.24.0.0             ze_loader.dll  
+0x00007FFEDBF30000 10.0.26100.8972      UMPDC.dll  
+0x00007FFEDADA0000 10.0.26100.9278      kernel.appcore.dll  
+0x00007FFED9B20000 10.0.26100.9549      windows.storage.dll  
+0x00007FFEDC010000 10.0.26100.9549      profapi.dll  
+0x00007FFED8BC0000 10.0.26100.9549      uxtheme.dll  
+0x00007FFEDC4A0000 10.0.26100.9549      bcryptPrimitives.dll  
+0x00007FFEDB670000 10.0.26100.9444      CRYPTBASE.DLL  
+0x00007FFEDCE20000 2001.12.10941.16384  clbcatq.dll  
+0x00007FFECADF0000 10.0.26100.9549      MMDevApi.dll  
+0x00007FFEDBC10000 10.0.26100.9549      DEVOBJ.dll  
+0x00007FFEC1450000 10.0.26100.9549      AUDIOSES.DLL  
+0x00007FFED8FA0000 10.0.26100.8115      resourcepolicyclient.dll  
+0x00007FFEDD8B0000 10.0.26100.9549      MSCTF.dll  
+0x00007FFED9660000 7.0.26100.9549       PROPSYS.dll  
+0x00007FFEB9EC0000 10.0.26100.9549      windows.staterepositorycore.dll  
+0x00007FFDEA540000 32.0.16.2114         nvoglv64.dll  
+0x00007FFED8800000 10.0.26100.9549      WTSAPI32.dll  
+0x00007FFEDC310000 10.0.26100.9549      CRYPT32.dll  
+0x00007FFEDB7C0000 10.0.26100.9444      msasn1.dll  
+0x00007FFED43C0000 10.0.26100.9549      cryptnet.dll  
+0x00007FFEDB730000 10.0.26100.9549      wldp.dll  
+0x00007FFED41C0000 10.0.26100.9549      drvstore.dll  
+0x00007FFEDAED0000 10.0.26100.7019      ntmarta.dll  
+0x00007FFEDCB90000 10.0.26100.9549      WINTRUST.dll  
+0x00007FFEDDDD0000 10.0.26100.4202      imagehlp.dll  
+0x00007FFEDB650000 10.0.26100.9444      CRYPTSP.dll  
+0x00007FFEDAD00000 10.0.26100.7705      rsaenh.dll  
+0x00007FFECB8D0000 32.0.16.2114         nvgpucomp64.dll  
+0x00007FFEDBCE0000 10.0.26100.9549      WINSTA.dll  
+0x00007FFEA6180000 10.0.26100.9549      dataexchange.dll  
+0x00007FFECAB90000 10.0.26100.9549      twinapi.appcore.dll  
+0x00007FFEA53B0000 10.0.26100.9549      textinputframework.dll  
+0x00007FFED8510000 10.0.26100.9549      CoreMessaging.dll  
+0x00007FFED4CD0000 10.0.26100.9549      CoreUIComponents.dll  
+0x00007FFED57B0000 10.0.26100.9549      wintypes.dll  
+0x00007FFEA14C0000 10.0.26100.9549      explorerframe.dll  
+0x00007FFEA4020000 10.0.26100.9549      directmanipulation.dll  
+0x00007FFEB7B70000 11.0.26100.9549      urlmon.dll  
+0x00007FFEB6FB0000 11.0.26100.9549      iertutil.dll  
+0x00007FFEC2220000 10.0.26100.1150      srvcli.dll  
+0x00007FFEDA670000 10.0.26100.1882      netutils.dll  
+0x00007FFEC1290000 10.0.26100.9278      virtdisk.dll  
+0x00007FFEBF210000 10.0.26100.9278      NetworkExplorer.dll  
+0x00007FFED6A80000 10.0.26100.9549      policymanager.dll  
+0x00007FFEDE2D0000 10.0.26100.9549      coml2.dll  
+0x00007FFEA20A0000 10.0.26100.1         LINKINFO.dll  
+0x00007FFEAB080000 10.0.26100.9549      Windows.System.Launcher.dll  
+0x00007FFEB7730000 10.0.26100.7019      MPR.dll  
+0x00007FFEBECF0000 10.0.26100.9278      p9np.dll  
+0x00007FFEBECD0000 10.0.26100.1         drprov.dll  
+0x00007FFEBECA0000 10.0.26100.9549      ntlanman.dll  
+0x00007FFEBEC70000 10.0.26100.1         davclnt.dll  
+0x00007FFEBC2C0000 10.0.26100.9444      Windows.StateRepositoryPS.dll  
+0x00007FFEB9E40000 10.0.26100.9444      windows.staterepositoryclient.dll  
+0x00007FFEBD6B0000 10.0.26100.9549      zipfldr.dll  
+0x00007FFE80400000 3.8.8.0              archiveint.dll  
+0x00007FFED27D0000 10.0.26100.7019      wkscli.dll  
+0x00007FFEBF360000 10.0.26100.1         cscapi.dll  
+0x00007FFE9F030000 10.0.26100.9549      Windows.Storage.Search.dll  
+0x00007FFEB9750000 72.1.0.4             icu.dll  
+0x00007FFE9F180000 7.0.26100.9549       StructuredQuery.dll  
+0x000001F04A5C0000 3.11.7150.1013       python3.DLL  
+0x00007FFE7EF90000 3.11.7150.1013       _socket.pyd  
+0x00007FFEDA800000 10.0.26100.9278      IPHLPAPI.DLL  
+0x00007FFE9C9D0000 3.11.7150.1013       select.pyd  
+0x00007FFDEDE30000                      _multiarray_umath.cp311-win_amd64.pyd  
+0x00007FFE7E7C0000                      _multiarray_tests.cp311-win_amd64.pyd  
+0x00007FFE54830000 3.11.7150.1013       _ctypes.pyd  
+0x00007FFE9B090000                      libffi-8.dll  
+0x00007FFDF88B0000                      _umath_linalg.cp311-win_amd64.pyd  
+0x00007FFE7BD70000                      _pocketfft_internal.cp311-win_amd64.pyd  
+0x00007FFDF8D60000                      mtrand.cp311-win_amd64.pyd  
+0x00007FFE52B40000                      bit_generator.cp311-win_amd64.pyd  
+0x00007FFE52540000                      _common.cp311-win_amd64.pyd  
+0x00007FFE97A50000 3.11.7150.1013       _hashlib.pyd  
+0x00007FFDEA000000 3.1.5.0              libcrypto-3.dll  
+0x00007FFE18910000                      _bounded_integers.cp311-win_amd64.pyd  
+0x00007FFE7B800000                      _mt19937.cp311-win_amd64.pyd  
+0x00007FFE7A6C0000                      _philox.cp311-win_amd64.pyd  
+0x00007FFE58C20000                      _pcg64.cp311-win_amd64.pyd  
+0x00007FFE96BD0000                      _sfc64.cp311-win_amd64.pyd  
+0x00007FFDEDD80000                      _generator.cp311-win_amd64.pyd  
+0x00007FFE96BA0000 3.11.7150.1013       _uuid.pyd  
+
+# Python backtrace
+  File "D:\Codex-BetterItem-Patch-Readiness179\workspace-v2\results\4.2.0\probe_patch_readiness179.py", line 35 in migration_with_close
+  File "D:\Codex-BetterItem-Patch-Readiness179\workspace-v2\results\4.2.0\better_item\native_refs.py", line 380 in sync

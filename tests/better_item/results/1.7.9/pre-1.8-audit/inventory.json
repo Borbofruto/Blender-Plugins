@@ -1,0 +1,210 @@
+{
+  "purpose": "diagnostic reproduction, NOT release acceptance",
+  "base_commit": "18747c3469465be14ed62161bf7bf642dc8e9a6f",
+  "stable_zip_sha256": "6a01eb809165347e94668d259a492b922b69f0c368657cae48599a2f57a9f029",
+  "executed_blender_processes": 6,
+  "findings": {
+    "volume_guidance": "reproduced on 5.3.0, unchanged target positions",
+    "python_error_boundary": "ReferenceError escapes sync() in controlled synthetic invalid-wrapper test on both builds",
+    "real_window_combined": "4.2.0 native crash; 5.3.0 timer remains registered; ordinary user race NOT reproduced",
+    "no_addon_window_control": "passes both builds; does not alone establish cause of combined crash"
+  },
+  "files": [
+    {
+      "path": "scripts/probe_patch_readiness179.py",
+      "sha256": "8adf819ff97950638bc2e11f57a492a3e8eedcda855f7caa8608e4d2e32ba235",
+      "bytes": 4701,
+      "original_sha256": "8adf819ff97950638bc2e11f57a492a3e8eedcda855f7caa8608e4d2e32ba235",
+      "normalization": "CRLF to LF only"
+    },
+    {
+      "path": "scripts/probe_window_boundary179.py",
+      "sha256": "4cbc6b7c8b671f41a080839fa5cc51f24337a23ede3dacc27ffe46a0a47a42ad",
+      "bytes": 1862,
+      "original_sha256": "4cbc6b7c8b671f41a080839fa5cc51f24337a23ede3dacc27ffe46a0a47a42ad",
+      "normalization": "CRLF to LF only"
+    },
+    {
+      "path": "scripts/probe_blender_window_control179.py",
+      "sha256": "c11d93ed9245993fd9ec78a421755236d3525d12bd7becac8b0ef63b7d731392",
+      "bytes": 1553,
+      "original_sha256": "c11d93ed9245993fd9ec78a421755236d3525d12bd7becac8b0ef63b7d731392",
+      "normalization": "CRLF to LF only"
+    },
+    {
+      "path": "scripts/audit_patch_readiness179.py",
+      "sha256": "1e3dab2e0e66e269073ca81ef898d5a1aa54c2bc536582a4513392a96bdb8029",
+      "bytes": 2054,
+      "original_sha256": "1e3dab2e0e66e269073ca81ef898d5a1aa54c2bc536582a4513392a96bdb8029",
+      "normalization": "CRLF to LF only"
+    },
+    {
+      "path": "combined/4.2.0/probe_patch_readiness179.py.log",
+      "sha256": "88e00ec80f8ad4064a401211a343906ce5fcbd538c5c2be6b21fb146645b50e9",
+      "bytes": 316,
+      "original_sha256": "e4fdfc749b2b8afa0dd4c069d61e36a721955f4c76c07573934d834ce835feb4",
+      "normalization": "CRLF to LF only"
+    },
+    {
+      "path": "combined/4.2.0/summary.json",
+      "sha256": "3ed1067f3fb23f9b63322cb5ab1494b50e36c3e2888c2d54636f5e6369ff5982",
+      "bytes": 564,
+      "original_sha256": "b467fe1f6cacc457bf60206606517dce4c08ff11664cbea163e8985f1ee03b2a",
+      "normalization": "CRLF to LF only"
+    },
+    {
+      "path": "combined/4.2.0/blender-version.txt",
+      "sha256": "a3a6e5f9e863b53121256bbdb744ae5aaa0bbcfbf19600843cd827c15ad081bc",
+      "bytes": 1049,
+      "original_sha256": "fbc847f2cfc50c65826a6cf46d77ea7969c8575fd9035cf3094162bb76e094ff",
+      "normalization": "CRLF to LF only"
+    },
+    {
+      "path": "combined/5.3.0/probe_patch_readiness179.results.json",
+      "sha256": "910a188a8c8993c851eda388adedf8c5b6f7ad9e14170fcd3215aa2cab73b72f",
+      "bytes": 1026,
+      "original_sha256": "0a206ec02400374e51debea78d15f8877255aa0f1c4711b765322c71d62c6df2",
+      "normalization": "CRLF to LF only"
+    },
+    {
+      "path": "combined/5.3.0/probe_patch_readiness179.py.log",
+      "sha256": "587c15f00e44272c7468da86386c837fd3b88e629ca38cc68cbe6e26549ab6db",
+      "bytes": 1358,
+      "original_sha256": "04277f3047c72a087abb852ee48134699d8208238b7f6d7a1ccdc4759cb1598e",
+      "normalization": "CRLF to LF only"
+    },
+    {
+      "path": "combined/5.3.0/summary.json",
+      "sha256": "fc235e221563efdda9b7ce6082f2d45cb6757b2abe6ecb689c81cf6830576bdf",
+      "bytes": 1791,
+      "original_sha256": "bdde78a2fdac9c951178657aa3bd70b3bc69eabfb55b0c11dd38256a711b3da3",
+      "normalization": "CRLF to LF only"
+    },
+    {
+      "path": "combined/5.3.0/blender-version.txt",
+      "sha256": "aab18eb797d595db73c8a6b14f5b134b292b938506a4884a09d7a54e4e285641",
+      "bytes": 1348,
+      "original_sha256": "f3f0592525c9e0e3809c0ad6040328df509182f4476fb77f9e32787953c3fa0d",
+      "normalization": "CRLF to LF only"
+    },
+    {
+      "path": "combined/suite.json",
+      "sha256": "84cd078a3b7c7381b042bad255abcb04b817e08b3b8af46c8262d740fb6b0c4c",
+      "bytes": 3003,
+      "original_sha256": "bade340c51a5dc5adc360051df87265e5375162d852f92cf15f8fc11ac2781a7",
+      "normalization": "CRLF to LF only"
+    },
+    {
+      "path": "combined/workspace-inputs.json",
+      "sha256": "4235323d8601a3ea1f408d82c78e564e57319b3f50ddb3401dd6b1be2b9e5f5c",
+      "bytes": 4102,
+      "original_sha256": "4235323d8601a3ea1f408d82c78e564e57319b3f50ddb3401dd6b1be2b9e5f5c",
+      "normalization": "CRLF to LF only"
+    },
+    {
+      "path": "isolated/4.2.0/probe_window_boundary179.results.json",
+      "sha256": "a08d0b15b1d1bd6036e7dc21b4b4b662666adb9c936f39de1b677bf85c94232b",
+      "bytes": 1848,
+      "original_sha256": "84e6e17b949b93afb09cc164cb9fcf235e8fc72682ec1418d8a0dfb5035b25c1",
+      "normalization": "CRLF to LF only"
+    },
+    {
+      "path": "isolated/4.2.0/probe_window_boundary179.py.log",
+      "sha256": "42bda5a345510226f17c6269998b7e046eee89f2f7da93c15b2e7be4b2b47aa9",
+      "bytes": 2189,
+      "original_sha256": "3c7c900565b9869083db5d98ebebb16ca2c442ef41a77fccfffc6124b27a0ae0",
+      "normalization": "CRLF to LF only"
+    },
+    {
+      "path": "isolated/4.2.0/probe_blender_window_control179.results.json",
+      "sha256": "2023d0e5014489e6d393bf887a6c3cf2d9daf76030a6c763769c36ecb0516f70",
+      "bytes": 250,
+      "original_sha256": "a7db3ded4f44d0fd01a1f61b5567c8fa068b6cb0f15114e6e652edfcb71cf0bf",
+      "normalization": "CRLF to LF only"
+    },
+    {
+      "path": "isolated/4.2.0/probe_blender_window_control179.py.log",
+      "sha256": "13b672f685280ed222c9f5ab9d421b782c3d27180e7cf0f1453653aea4f2267b",
+      "bytes": 403,
+      "original_sha256": "8245a1267998d2dc5fb536b8ab4cd9cdfc5d2b45002f9ec56e1e4ca032b90573",
+      "normalization": "CRLF to LF only"
+    },
+    {
+      "path": "isolated/4.2.0/summary.json",
+      "sha256": "04a34c9b0f8e5416e00c45cdfe4616a3608fd67059dfc83df5001c9045db2d3f",
+      "bytes": 2992,
+      "original_sha256": "a2b2101ff04f6950b75bae7d64d4594f7d643058ca7d4324c0adee55b63ddb1b",
+      "normalization": "CRLF to LF only"
+    },
+    {
+      "path": "isolated/4.2.0/blender-version.txt",
+      "sha256": "a3a6e5f9e863b53121256bbdb744ae5aaa0bbcfbf19600843cd827c15ad081bc",
+      "bytes": 1049,
+      "original_sha256": "fbc847f2cfc50c65826a6cf46d77ea7969c8575fd9035cf3094162bb76e094ff",
+      "normalization": "CRLF to LF only"
+    },
+    {
+      "path": "isolated/5.3.0/probe_window_boundary179.results.json",
+      "sha256": "dc1d30194c6147786fa7c17396ad7e6e28cae49e1ca3890aa1f8877287c1765f",
+      "bytes": 1874,
+      "original_sha256": "ba0417c4af12a95ceeb0973a501bc8d4a7ca3d397c8320b8398433b3d6491a5c",
+      "normalization": "CRLF to LF only"
+    },
+    {
+      "path": "isolated/5.3.0/probe_window_boundary179.py.log",
+      "sha256": "6f07c6ed88c57b585421c4385e585903ea4ba5c14b4ce17c7a31f44f783c3779",
+      "bytes": 2142,
+      "original_sha256": "4e008149a869eb06b0daf7a10fce53e25161eb4fd581105772d33175242d4915",
+      "normalization": "CRLF to LF only"
+    },
+    {
+      "path": "isolated/5.3.0/probe_blender_window_control179.results.json",
+      "sha256": "7547ab483697160dd18415874315910b13a0f35cf912afc7140b9e8a62a161b0",
+      "bytes": 250,
+      "original_sha256": "86d34cf9bc800ff9b1904c17e10018768963ffb37c98f0b615186cfc4171f689",
+      "normalization": "CRLF to LF only"
+    },
+    {
+      "path": "isolated/5.3.0/probe_blender_window_control179.py.log",
+      "sha256": "8714bbc906e7de45a069d80b1f0b0b8ce88fe9491111066029ddc25cf026a618",
+      "bytes": 330,
+      "original_sha256": "b5ceb5aa0ba30bb6b5f78d6337bebbc0ac1b9a65c9c4e526ce0d3d95713815af",
+      "normalization": "CRLF to LF only"
+    },
+    {
+      "path": "isolated/5.3.0/summary.json",
+      "sha256": "30612a66195c8780da66c372c1b35ba8a77bf4e932ebf42a061b7971aa10d2c4",
+      "bytes": 3049,
+      "original_sha256": "b377c958586d0902169d90d94893b230afdbc74de06871f9b862c45123de14d4",
+      "normalization": "CRLF to LF only"
+    },
+    {
+      "path": "isolated/5.3.0/blender-version.txt",
+      "sha256": "aab18eb797d595db73c8a6b14f5b134b292b938506a4884a09d7a54e4e285641",
+      "bytes": 1348,
+      "original_sha256": "f3f0592525c9e0e3809c0ad6040328df509182f4476fb77f9e32787953c3fa0d",
+      "normalization": "CRLF to LF only"
+    },
+    {
+      "path": "isolated/suite.json",
+      "sha256": "a4224afcee204d53443def043dc4ea41683d6d80a4c2f3d7cf9cdedd01068ada",
+      "bytes": 3096,
+      "original_sha256": "98cb03d92f595f6057e8d98421a00a97de3cdf94f9e5e4083d5c88d85bdf9ccd",
+      "normalization": "CRLF to LF only"
+    },
+    {
+      "path": "isolated/workspace-inputs.json",
+      "sha256": "3940d8ff395de20e37b93c6c98d3b86e22892b8583115d0870baccc368714c23",
+      "bytes": 4218,
+      "original_sha256": "3940d8ff395de20e37b93c6c98d3b86e22892b8583115d0870baccc368714c23",
+      "normalization": "CRLF to LF only"
+    },
+    {
+      "path": "combined/4.2.0/blender.crash.txt",
+      "sha256": "5b41ec17be0bff717c146ef6b0ebdad910207432320417d387ee40e4e7d32d49",
+      "bytes": 19431,
+      "original_sha256": "5b41ec17be0bff717c146ef6b0ebdad910207432320417d387ee40e4e7d32d49",
+      "normalization": "CRLF to LF only"
+    }
+  ]
+}

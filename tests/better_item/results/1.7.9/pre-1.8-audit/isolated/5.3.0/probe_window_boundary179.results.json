@@ -1,0 +1,13 @@
+{
+  "passed": false,
+  "blender": "5.3.0",
+  "kind": "synthetic Window.scene ReferenceError plus controlled migration fault; no real window close",
+  "escaped_exception": "ReferenceError: Controlled invalid Window RNA wrapper",
+  "traceback": "Traceback (most recent call last):\n  File \"D:\\Codex-BetterItem-Patch-Readiness179\\workspace-v3\\results\\5.3.0\\better_item\\native_refs.py\", line 380, in sync\n    frames.migrate()\n    ~~~~~~~~~~~~~~^^\n  File \"D:\\Codex-BetterItem-Patch-Readiness179\\workspace-v3\\results\\5.3.0\\probe_window_boundary179.py\", line 19, in broken_migration\n    def broken_migration():raise RuntimeError('Controlled migration failure')\n                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: Controlled migration failure\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"D:\\Codex-BetterItem-Patch-Readiness179\\workspace-v3\\results\\5.3.0\\probe_window_boundary179.py\", line 27, in run\n    result['return_value']=nr.sync()\n                           ~~~~~~~^^\n  File \"D:\\Codex-BetterItem-Patch-Readiness179\\workspace-v3\\results\\5.3.0\\better_item\\native_refs.py\", line 418, in sync\n    for window in windows:_redraw_scene(window.scene,windows)\n                                        ^^^^^^^^^^^^\n  File \"D:\\Codex-BetterItem-Patch-Readiness179\\workspace-v3\\results\\5.3.0\\probe_window_boundary179.py\", line 18, in scene\n    def scene(self):raise ReferenceError('Controlled invalid Window RNA wrapper')\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nReferenceError: Controlled invalid Window RNA wrapper\n",
+  "syncing_after": false,
+  "observer_issue": {
+    "message": "RuntimeError: Controlled migration failure",
+    "attempts": 1,
+    "retry_at": 97629.9360512
+  }
+}

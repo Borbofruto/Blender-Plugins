@@ -1,0 +1,6 @@
+TBBmalloc: skip allocation functions replacement in ucrtbase.dll: unknown prologue for function _msize
+Error   : EXCEPTION_ACCESS_VIOLATION
+Address : 0x00007FF65B3165F4
+Module  : blender.exe
+Thread  : 00005804
+Writing: D:\Codex-BetterItem-Patch-Readiness179\workspace-v2\results\4.2.0\profile\temp\blender.crash.txt

@@ -300,6 +300,8 @@ Ferramenta usada em sessões anteriores: conector GitHub para ler árvore/blobs 
 
 ### Primeiro trabalho recomendado à próxima IA, após a 1.7.9
 
+**Atualização de 17/11/2026:** Gabriel pediu avaliar uma manutenção antes da 1.8. Leia primeiro [avaliação e critérios de fechamento](pre-1.8-maintenance-assessment.md). Há nova reprodução sintética da exceção que escapa do observador e um crash de sondagem combinada cuja causa ainda não foi isolada; não os confundir com falha cotidiana comprovada. O escopo de correção está proposto, sem implementação. O número técnico recomendado é **1.7.10**, pois os validadores de extensão rejeitam `1.7.9.1`. Os itens abaixo são a recomendação anterior; a alocação dos ajustes pontuais de UI pode mudar se a manutenção for aprovada.
+
 1. Confirmar o HEAD e o SHA do ZIP consolidado; ler [release-1.7.9.md](release-1.7.9.md).
 2. Executar o checklist manual de mouse da 1.7.9.
 3. Planejar 1.8.x em quatro frentes: diagnósticos, layout/clareza de estados, gestos de edição e responsividade das leituras. As correções objetivas e otimizações medidas da 1.7.9 já foram tratadas; não repeti-las como pendências.
