@@ -6,6 +6,7 @@ import traceback
 from .math_core import BetterItemError,ReferencePending
 
 _GUIDANCE={
+    'BI-F006':('Native orientation synchronization is paused.','Exported axes may be outdated. Automatic retry is pending; check Details if the problem persists.'),
     'BI-E003':('The distribution could not retain its planned positions.','Reduce large object/parent offsets or enlarge the endpoint interval. The operation was rolled back; precision details are available below.'),
     'BI-F005':('Choose a stable orientation.','The reference axes are too close to parallel. Change the source rotation or apply an independent Frame.'),
     'BI-T006':('That position could not be retained.','Reduce large object or parent offsets, or use a closer reference. The operation was rolled back.'),

@@ -1,5 +1,16 @@
 # Better Item — changelog
 
+## 1.7.9
+
+### Fixed
+- Keep native orientation synchronization registered after unexpected failures. Isolate failed Frames/scenes, expose paused export health and retry with bounded backoff without confusing failed reads with deliberate native deletion.
+- Clear transient synchronization health on Undo/load/unregister; preserve the existing suspension/recovery behavior for invalid sources.
+- Correct the repository homepage version and current report/snapshot links.
+
+### Maintenance
+- Verify installer hash, version, Python fingerprint and exact source inventory during matrix preparation and before each test process. Reject contaminated workspaces without deleting results or profiles.
+- Add a release consistency check for metadata, documentation and package/source parity. Version LF checkout rules for the Better Item package.
+
 ## 1.7.8
 
 ### Performance

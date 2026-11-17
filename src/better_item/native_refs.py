@@ -8,6 +8,7 @@ operator in a real View3D context. No helper objects or target transforms.
 from contextlib import contextmanager
 import math
 import uuid
+import time
 import bpy
 import numpy as np
 from bpy.app.handlers import persistent
@@ -25,6 +26,9 @@ _normal_cache={}
 _needs_migration=True
 _normal_signatures={}
 _normal_revisions={}
+_sync_errors={}
+_RETRY_MIN=1.0
+_RETRY_MAX=8.0
 
 
 def clear_cache():
@@ -33,6 +37,7 @@ def clear_cache():
     _normal_cache.clear()
     _normal_signatures.clear()
     _normal_revisions.clear()
+    _sync_errors.clear()
 
 
 @persistent
@@ -192,6 +197,7 @@ def publish(context,frame,select=False):
         if frame.native_suspended:frame.native_suspended=False
         desired=custom.name if select else previous
         if slot.type!=desired:slot.type=desired
+        _sync_errors.pop((context.scene.as_pointer(),frame.uid),None)
 
 
 def _source_names(scene):
@@ -248,17 +254,100 @@ def _refresh_normal(context):
 
 def _redraw_scene(scene,windows):
     for window in windows:
-        if window.scene==scene:
-            for area in window.screen.areas:
-                if area.type=='VIEW_3D':area.tag_redraw()
+        try:
+            screen=window.screen
+            if window.scene==scene and screen:
+                for area in screen.areas:
+                    if area.type=='VIEW_3D':area.tag_redraw()
+        except (ReferenceError,RuntimeError):
+            # A closed window must not make error reporting fail as well.
+            continue
+
+
+def sync_error(scene,frame=None):
+    """Transient health, separate from export intent and source suspension."""
+    pointer=scene.as_pointer()
+    keys=[(pointer,frame.uid)] if frame is not None else []
+    keys.extend(((pointer,''),(0,'')))
+    issue=next((_sync_errors[key] for key in keys if key in _sync_errors),None)
+    if issue is None:return None
+    error=BetterItemError('[BI-F006] '+issue['message'])
+    if frame is not None:error.subject=frame.name
+    return error
+
+
+def _retry_ready(key):
+    issue=_sync_errors.get(key)
+    return issue is None or time.monotonic()>=issue['retry_at']
+
+
+def _sync_failed(key,error):
+    # Keep copies of text/numbers only: no exception, Object or orientation RNA
+    # wrappers may survive Undo, reload or deletion through this health record.
+    message='%s: %s'%(type(error).__name__,error)
+    previous=_sync_errors.get(key)
+    attempts=previous['attempts']+1 if previous and previous['message']==message else 1
+    delay=min(_RETRY_MAX,_RETRY_MIN*2**min(attempts-1,3))
+    _sync_errors[key]={'message':message,'attempts':attempts,'retry_at':time.monotonic()+delay}
+    if previous is None or previous['message']!=message:
+        print('Better Item native sync paused [%s]: %s; automatic retry pending.'%(key,message))
+        return True
+    return False
+
+
+def _sync_frame(context,frame):
+    scene=context.scene
+    # An unknown read failure must not be mistaken for native deletion. Let
+    # the caller pause/retry this Frame without changing its export intent.
+    if not frame.native_suspended and frame.native_name and named(scene,frame.native_name) is None:
+        frame.native_enabled=False
+        frame.native_name=''
+        return
+    try:publish(context,frame)
+    except BetterItemError:
+        # Preserve the existing policy for an invalid source: remove our
+        # export, then recreate it only when the source becomes valid again.
+        remove_native(context,frame)
+        if not frame.native_suspended:frame.native_suspended=True
+
+
+def _sync_scene(context,scene,windows):
+    pointer=scene.as_pointer()
+    before=tuple((f.uid,f.native_enabled,f.native_suspended,f.native_name) for f in scene.better_item.frames)
+    valid={f.uid for f in scene.better_item.frames}
+    for key in list(_sync_errors):
+        if key[0]==pointer and key[1] and key[1] not in valid:del _sync_errors[key]
+    # Object Mode never consumes a selection-normal sample.
+    if context.mode!='OBJECT' and 'NORMAL' in _source_names(scene):_refresh_normal(context)
+    health_changed=False
+    for frame in scene.better_item.frames:
+        key=(pointer,frame.uid)
+        if not frame.native_enabled:
+            health_changed=bool(_sync_errors.pop(key,None)) or health_changed
+            continue
+        if not _retry_ready(key):continue
+        had_error=key in _sync_errors
+        try:
+            _sync_frame(context,frame)
+            _sync_errors.pop(key,None)
+            health_changed=had_error or health_changed
+        except Exception as exc:
+            # An unexpected failure of one Frame must not stop the other
+            # exports or unregister the Blender timer.
+            health_changed=_sync_failed(key,exc) or health_changed
+    after=tuple((f.uid,f.native_enabled,f.native_suspended,f.native_name) for f in scene.better_item.frames)
+    if before!=after or health_changed:_redraw_scene(scene,windows)
 
 
 def sync():
     global _syncing,_needs_migration
     if _syncing or not hasattr(bpy.types.Scene,'better_item'):return .2
+    if not _retry_ready((0,'')):return .2
     _syncing=True
+    windows=[]
     try:
         context=bpy.context
+        windows=list(context.window_manager.windows)
         from . import frames
         if _needs_migration:
             frames.migrate()
@@ -269,7 +358,8 @@ def sync():
         for cache in (_normal_cache,_normal_signatures,_normal_revisions):
             for key in list(cache):
                 if key not in live_scenes:del cache[key]
-        windows=list(context.window_manager.windows)
+        for key in list(_sync_errors):
+            if key[0] and key[0] not in live_scenes:del _sync_errors[key]
         if context.window in windows:windows.remove(context.window);windows.insert(0,context.window)
         visited=set()
         for window in windows:
@@ -280,27 +370,24 @@ def sync():
             region=next((r for r in area.regions if r.type=='WINDOW'),None)
             if region is None:continue
             visited.add(scene.as_pointer())
-            with context.temp_override(window=window,screen=window.screen,area=area,region=region):
-                ctx=bpy.context
-                before=tuple((f.uid,f.native_enabled,f.native_suspended,f.native_name) for f in scene.better_item.frames)
-                # Absence while valid is an external deletion, not a request
-                # to recreate. Suspended entries were removed by us instead.
-                for frame in scene.better_item.frames:
-                    if frame.native_enabled and not frame.native_suspended and frame.native_name and named(scene,frame.native_name) is None:
-                        frame.native_enabled=False
-                        frame.native_name=''
-                # Object Mode uses object axes directly; no selection-normal
-                # sample is consumed, so do not scan every object's settings.
-                if ctx.mode!='OBJECT' and 'NORMAL' in _source_names(scene):_refresh_normal(ctx)
-                for frame in scene.better_item.frames:
-                    if not frame.native_enabled:continue
-                    try:publish(ctx,frame)
-                    except (BetterItemError,RuntimeError,TypeError):
-                        try:remove_native(ctx,frame)
-                        except (BetterItemError,RuntimeError):pass
-                        if not frame.native_suspended:frame.native_suspended=True
-                after=tuple((f.uid,f.native_enabled,f.native_suspended,f.native_name) for f in scene.better_item.frames)
-                if before!=after:_redraw_scene(scene,windows)
+            key=(scene.as_pointer(),'')
+            if not _retry_ready(key):continue
+            had_error=key in _sync_errors
+            try:
+                with context.temp_override(window=window,screen=window.screen,area=area,region=region):
+                    _sync_scene(bpy.context,scene,windows)
+                _sync_errors.pop(key,None)
+                if had_error:_redraw_scene(scene,windows)
+            except Exception as exc:
+                if _sync_failed(key,exc):_redraw_scene(scene,windows)
+        recovered=bool(_sync_errors.pop((0,''),None))
+        if recovered:
+            for window in windows:_redraw_scene(window.scene,windows)
+    except Exception as exc:
+        # Registration/migration/window enumeration can fail before a Frame is
+        # available. Keep a visible observer-level diagnostic and bounded retry.
+        if _sync_failed((0,''),exc):
+            for window in windows:_redraw_scene(window.scene,windows)
     finally:_syncing=False
     return .2
 
@@ -320,6 +407,7 @@ class BETTERITEM_OT_native_frame(bpy.types.Operator):
                 remove_native(context,frame)
                 frame.native_enabled=False
                 frame.native_name=''
+                _sync_errors.pop((context.scene.as_pointer(),frame.uid),None)
             else:publish(context,frame,select=True)
         except (BetterItemError,RuntimeError) as exc:
             from . import diagnostics

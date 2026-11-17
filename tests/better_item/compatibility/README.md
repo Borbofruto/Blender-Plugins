@@ -1,6 +1,6 @@
 # Better Item compatibility matrix
 
-This matrix is pinned to the 1.7.8 installer SHA256 in suite.json. It uses actual official Blender portable builds, separate factory profiles, fresh processes for each entry point, and both background and GUI tests. It does not establish compatibility with every possible scene or future Blender version. New executions are stored under results/1.7.8 in the repository; earlier release results are historical evidence. The gui_sync entry test_better_item_operator177.py checks public Endpoint/Offset kwargs with independent analytic centers, rejection, invoke, repeat-last, Undo/Redo and per-method operator memory. The additional test_cache_invalidation.py checks selective transform invalidation, geometry-revision freshness, reference dependencies and native orientation behavior.
+This matrix is pinned to the 1.7.9 installer SHA256 in suite.json. It uses actual official Blender portable builds, separate factory profiles, fresh processes for each entry point, and both background and GUI tests. It does not establish compatibility with every possible scene or future Blender version. New executions are stored under results/1.7.9 in the repository; earlier release results are historical evidence. The new gui_async test_native_sync179.py checks real-timer failure isolation/recovery, bounded retry, native deletion, scene switching and transient-health cleanup. Existing operator/cache regressions remain in the suite.
 
 ## Reproduce on Windows
 
@@ -27,7 +27,7 @@ The reports distinguish successful runtime tests, legitimate solver refusals, ma
 
 ## Optional Edit Mode foundation study
 
-`run_matrix.py --exe PATH_TO_BLENDER --version VERSION --studies --only test_editmode_foundations.py` runs the independent GUI BMesh probe. It does not import Better Item and is not a shipped Edit Mode feature. The default runtime suite has 22 entry points (API probe, 19 earlier tests, the operator regression and the cache-invalidation regression). The probe is intentionally small; it does not certify dense-mesh performance, shape keys or a complete reference identity implementation.
+`run_matrix.py --exe PATH_TO_BLENDER --version VERSION --studies --only test_editmode_foundations.py` runs the independent GUI BMesh probe. It does not import Better Item and is not a shipped Edit Mode feature. The default runtime suite has 23 entry points (the 22 entries from 1.7.8 plus the native-sync regression). The probe is intentionally small; it does not certify dense-mesh performance, shape keys or a complete reference identity implementation.
 
 `prepare_matrix.py` also copies `test_cross_version_state.py` into the workspace tests directory. Run it with Blender 4.2.0 and `-- --write --fixture PATH/state.blend`, then with 5.3.0 and `-- --fixture PATH/state.blend`. Use `--background --factory-startup --python-exit-code 1 --python PATH_TO_SCRIPT` for both. This checks one representative upward migration, not universal backward file compatibility.
 
@@ -42,3 +42,13 @@ For a fresh-process Placement persistence check, first run `test_better_item_173
 After preparing the workspace, run `run_matrix.py --exe PATH_TO_BLENDER --version VERSION --studies --only benchmark_cache_invalidation.py`. It measures 600/1500 shared-mesh cubes in Origins, Geometry Bounds and Volume, unchanged reads, unrelated Empty transforms and edits to a material actually used by the objects. Three samples per event report the median, actual full-inspection counts and aggregated evaluated-ID flags. Thirty explicit calls measure sync separately in an actual GUI context; they are not measurements of timer scheduling or whole-viewport FPS. Timings have no pass/fail threshold. Do not run other test processes concurrently with a performance comparison.
 
 For before/after comparisons, prepare separate workspaces from each recorded commit and ZIP. The 1.7.8 baseline uses the immutable 1.7.7 archive plus the SAME benchmark script from 1.7.8; it is a new measurement of the old runtime, not reused historical timings. Results and the remaining shader/cold-read costs are in `results/1.7.8/` and `docs/better_item/release-1.7.8.md`.
+
+## Release and workspace integrity (1.7.9)
+
+Run `python tests/better_item/compatibility/check_release.py --repository PATH_TO_CHECKOUT` after packaging and updating current documentation/snapshot. It checks the root README and package README version, first changelog entry, release/snapshot links, suite fingerprints, checksums and exact ZIP/source bytes. It does not replace runtime tests or native extension validation.
+
+`prepare_matrix.py` now freezes test/tool input hashes in `workspace-inputs.json`. Preparing the SAME untouched package/tests again is supported. Different, edited or extra runtime/test files are rejected with a fresh-workspace instruction before overwriting source. Results and profiles are never recursively removed to make a workspace pass. Use a new workspace for each changed artifact/test set; do not copy the new runner into an older prepared workspace.
+
+Before launching Blender and before each test process, the runner verifies the installer hash/version/Python fingerprint, exact extracted/imported runtime inventory and bytes, and the prepared test/tool inputs. Extra output helper scripts are also rejected. These checks prevent accidental contamination; they are not a security boundary against someone deliberately rewriting the runner and its manifest. TEMP/TMP and Blender user directories are isolated inside each result profile.
+
+Run the pure-Python guard regressions separately with `python tests/better_item/compatibility/test_artifact_guards.py --workspace PATH_TO_WRITABLE_TEST_DIRECTORY`. They use checked temporary subdirectories, exercise positive/negative preparation/runner/release paths and do not launch Blender. Their JSON count is separate from the Blender matrix entry count.

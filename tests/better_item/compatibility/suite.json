@@ -1,8 +1,12 @@
 {
-  "addon_version": "1.7.8",
-  "addon_zip_sha256": "369fb55c5eb153f6c805d552da7bf3b3c068b8ee046aba416d3acdc75335fa61",
+  "addon_version": "1.7.9",
+  "addon_zip_sha256": "53778db311cee794c63d6040d3e3ba699c4784df8049942971faaf6c4616f090",
   "source_commit": null,
   "tests": [
+    {
+      "script": "test_native_sync179.py",
+      "mode": "gui_async"
+    },
     {
       "script": "test_cache_invalidation.py",
       "mode": "gui_sync"
@@ -88,8 +92,8 @@
       "mode": "gui_sync"
     }
   ],
-  "baseline_source_commit": "e8f5ad69f42cb8e8aad308956c34bb352e8300d6",
-  "python_source_sha256": "b236c0497d851dc34daa73e22b8a8a4420874282caf6844b2af2003e895198db",
+  "baseline_source_commit": "97a676d6e320742fa83185f62296c9d1730116d5",
+  "python_source_sha256": "6476976963936480775a97c5d3be488781b4f988c3c5f7b0cbfcfeb0c0631e29",
   "studies": [
     {
       "script": "benchmark_cache_invalidation.py",

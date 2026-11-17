@@ -4,17 +4,21 @@ Install individual extension ZIPs from [`addons/`](addons) using Blender's **Ins
 
 Each addon uses a stable installer filename. Updates replace that file; earlier contents remain available in Git history.
 
-## Better Item 1.7.6
+## Better Item 1.7.9
 
-[Download ZIP](https://github.com/Borbofruto/Blender-Plugins/raw/refs/heads/main/addons/better_item.zip) | [Manual](src/better_item/README.md) | [Release report](docs/better_item/release-1.7.6.md) | [Review and limitations](docs/better_item/review-1.6.1.md) | [Source](src/better_item) | [Tests](tests/better_item)
+[Download ZIP](https://github.com/Borbofruto/Blender-Plugins/raw/refs/heads/main/addons/better_item.zip) | [Manual](src/better_item/README.md) | [Release report](docs/better_item/release-1.7.9.md) | [Current scope and limitations](docs/better_item/CONTEXTO-ATUAL.md) | [Source](src/better_item) | [Tests](tests/better_item)
 
-[AI maintainer handoff — Portuguese](docs/better_item/continuidade/README.md) | [Full engineering manual](docs/better_item/CONTINUIDADE-IA.md) | [Audited source snapshot](docs/better_item/handoff-1.7.3.json)
+[Current maintainer context — Portuguese](docs/better_item/CONTEXTO-ATUAL.md) | [Historical engineering manual](docs/better_item/CONTINUIDADE-IA.md) | [Current source snapshot](docs/better_item/handoff-1.7.9.json)
 
-A spatial-precision Transform, Reference Frames and Align/Distribute addon for Blender 4.2+, with current-core evidence from Blender 4.2.0 through 5.3.0 (Windows x64). Compact English XYZ fields support proportional links, physical projected Dimensions, origin alignment and signed distribution.
+A spatial-precision Transform, Reference Frames and Align/Distribute addon for Blender 4.2+. The current 1.7.9 ZIP passed 23 matrix entries on Blender 4.2.0, 4.2.23 and 5.3.0 (Windows x64); earlier compatibility evidence is identified separately below. Compact English XYZ fields support proportional links, physical projected Dimensions, origin alignment and signed distribution.
 
 ### Distribution by references, points and occupied geometry
 
-1.7.6 lowers the declared minimum to Blender 4.2.0 after native installation and current-feature regression testing. Runtime Python remains identical to 1.7.5; no spatial capability was removed. The separate [Edit Mode 2.0 feasibility study](docs/better_item/edit-mode-2.0-feasibility.md) confirms public BMesh foundations without shipping Edit Mode targets yet.
+1.7.9 keeps native orientation synchronization alive after unexpected failures, isolates failed Frames and retries with bounded backoff. Paused export health is explicit, and native deletion remains respected. The existing matrix runner now rejects stale or edited source/test inputs; a release check verifies homepage/package metadata and exact ZIP/source parity. See the [maintenance report](docs/better_item/release-1.7.9.md).
+
+The [1.7.8 report](docs/better_item/release-1.7.8.md) records the earlier cache/polling optimizations and measured before/after results; cold geometry measurements remain a profiling target. The [1.7.7 report](docs/better_item/release-1.7.7.md) documents the direct Python Endpoint Placement fix and repaired changelog.
+
+The minimum has been Blender 4.2.0 since 1.7.6. That release left runtime Python identical to 1.7.5; subsequent maintenance changed the current runtime. The separate [Edit Mode 2.0 feasibility study](docs/better_item/edit-mode-2.0-feasibility.md) confirms public BMesh foundations without shipping Edit Mode targets yet.
 
 - Explicit Offset / Endpoint. Between Points uses Start-to-End direction; Reference Axis projects End onto one chosen reference axis.
 - Start inherits shared Location or uses an override. End accepts world coordinates, Object, Frame Location, cursor, Global or active object. The distributor does not move endpoint objects; users may move them as Live inputs.
@@ -22,7 +26,7 @@ A spatial-precision Transform, Reference Frames and Align/Distribute addon for B
 - Inspect actual spacing or Mixed. Live captures targets and Active Object without movement, follows cursor / Object / Frame references even after selecting an Empty, and stops when disabled. It is transient editing, not animation. Offset preserves unselected coordinates and zero Geometry Bounds gap keeps the last nonzero direction. This is not a permanent relationship or animation runtime.
 - Contextual Frame sources are explicit Capture actions; native Bounding Box Center uses origins. The old single-reference Individual Origins choice is retired while legacy saved data remains readable.
 
-The [compatibility report](docs/better_item/compatibility-1.7.6.md) distinguishes final-archive, candidate and identical-code baseline evidence. It includes complete final-ZIP matrices on 4.2.0 and 5.3.0, an upward .blend migration fixture and the independent BMesh study. Earlier reports remain historical evidence.
+The historical [1.7.6 compatibility report](docs/better_item/compatibility-1.7.6.md) distinguishes final-archive, candidate and identical-code baseline evidence. Its intermediate-version results and independent BMesh study describe that release. Current 1.7.9 execution evidence is in [results/1.7.9](tests/better_item/results/1.7.9/); the 1.7.8 performance comparison remains separately identified.
 
 The sidebar retains Location before Orientation, the Gimbal category icon and indented dependent fields. Frames store independent Manual or linked Location/Orientation and can publish axes to Blender's native custom orientations for G/R. Transform edits the active object; alignment/distribution works on the selection.
 

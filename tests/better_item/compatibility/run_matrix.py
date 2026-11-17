@@ -1,26 +1,60 @@
 """Run isolated Blender processes against a frozen add-on package."""
-import argparse,json,os,subprocess,sys,time,shutil,hashlib
+import argparse,json,os,subprocess,sys,time,shutil,hashlib,zipfile
 from pathlib import Path
+from artifact_checks import verify_suite_archive,verify_tree,verify_existing,verify_workspace_inputs
 parser=argparse.ArgumentParser();parser.add_argument('--exe',required=True);parser.add_argument('--version',required=True);parser.add_argument('--only',nargs='*');parser.add_argument('--studies',action='store_true');args=parser.parse_args()
-root=Path(__file__).resolve().parent;out=root/'results'/args.version;out.mkdir(parents=True,exist_ok=True)
-suite=json.loads((root/'suite.json').read_text(encoding='utf-8'));shutil.copytree(root/'source/better_item',out/'better_item',dirs_exist_ok=True)
+root=Path(__file__).resolve().parent
+if Path(args.version).name!=args.version or args.version in {'.','..'}:parser.error('Version must be a single directory name')
+out=root/'results'/args.version
+out.mkdir(parents=True,exist_ok=True)
+summary={'requested_version':args.version,'executable':args.exe,'started_utc':time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime()),'tests':[],'passed':False}
+(out/'summary.json').write_text(json.dumps(summary,indent=2),encoding='utf-8')
+def integrity_failed(error):
+ summary.update(passed=False,integrity_error=str(error),finished_utc=time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime()))
+ (out/'summary.json').write_text(json.dumps(summary,indent=2),encoding='utf-8')
+ parser.exit(2,'Integrity check failed: '+str(error)+'\n')
+try:
+ suite=json.loads((root/'suite.json').read_text(encoding='utf-8'))
+ summary.update(addon_version=suite['addon_version'],addon_zip_sha256=suite['addon_zip_sha256'])
+ verify_workspace_inputs(root)
+ frozen=verify_suite_archive(root/'source/better_item.zip',suite)
+ verify_tree(root/'source/better_item',frozen)
+ verify_existing(out/'better_item',frozen)
+except (ValueError,OSError,KeyError,zipfile.BadZipFile) as exc:integrity_failed(exc)
+entries=([{'script':'api_probe.py','mode':'background'}] if (root/'api_probe.py').exists() else [])+suite['tests']
+if args.studies:entries+=suite.get('studies',[])
+if args.only and set(args.only)-{entry['script'] for entry in entries}:parser.error('Unknown or disabled test in --only')
+if not entries:parser.error('No test entries selected')
+allowed_scripts={p.name for p in (root/'tests').glob('*.py')}|{'api_probe.py'}|{'launch_'+e['script'] for e in entries if e['mode']=='gui_sync'}
+if {p.name for p in out.glob('*.py')}-allowed_scripts:parser.error('Output test inventory contains stale scripts; use a fresh workspace')
+out.mkdir(parents=True,exist_ok=True)
+shutil.copytree(root/'source/better_item',out/'better_item',dirs_exist_ok=True)
 for f in (root/'tests').glob('*.py'):shutil.copyfile(f,out/f.name)
 probe=root/'api_probe.py'
 if probe.exists():shutil.copyfile(probe,out/probe.name)
 env=os.environ.copy()
 for kind in ('CONFIG','SCRIPTS','DATAFILES','EXTENSIONS'):
  path=out/'profile'/kind.lower();path.mkdir(parents=True,exist_ok=True);env['BLENDER_USER_'+kind]=str(path)
+temp=out/'profile/temp';temp.mkdir(parents=True,exist_ok=True)
+env['TEMP']=str(temp);env['TMP']=str(temp)
 env['PYTHONIOENCODING']='utf-8';env['PYTHONDONTWRITEBYTECODE']='1'
 info=subprocess.run([args.exe,'--version'],capture_output=True,env=env,encoding='utf-8',errors='replace',timeout=30)
 (out/'blender-version.txt').write_text(info.stdout+info.stderr,encoding='utf-8')
-summary={'requested_version':args.version,'executable':args.exe,'addon_version':suite['addon_version'],'addon_zip_sha256':suite['addon_zip_sha256'],'started_utc':time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime()),'tests':[]}
 startup=subprocess.STARTUPINFO();startup.dwFlags|=subprocess.STARTF_USESHOWWINDOW;startup.wShowWindow=0
-entries=([{'script':'api_probe.py','mode':'background'}] if probe.exists() else [])+suite['tests']
-if args.studies:entries+=suite.get('studies',[])
 for entry in entries:
  name=entry['script'];mode=entry['mode']
  if args.only and name not in args.only:continue
+ # Check the actual imported runtime before every process, not just a hash
+ # declared in the summary or a previous preparation step.
+ try:
+  verify_workspace_inputs(root)
+  verify_suite_archive(root/'source/better_item.zip',suite)
+  verify_tree(root/'source/better_item',frozen)
+  verify_tree(out/'better_item',frozen)
+ except (ValueError,OSError,KeyError,zipfile.BadZipFile) as exc:integrity_failed(exc)
  script=out/name
+ expected_script=root/'api_probe.py' if name=='api_probe.py' else root/'tests'/name
+ if script.read_bytes()!=expected_script.read_bytes():integrity_failed('Copied test script was changed: '+name)
  script.with_suffix('.results.json').unlink(missing_ok=True)
  (out/(name+'.failed')).unlink(missing_ok=True)
  cmd=[args.exe,'--factory-startup','--disable-autoexec','--threads','2','--python-exit-code','1']

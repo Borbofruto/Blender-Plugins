@@ -451,6 +451,10 @@ class BETTERITEM_PT_frames(bpy.types.Panel):
     def draw(self, context):
         layout=self.layout
         settings=context.scene.better_item
+        observer_error=native_refs.sync_error(context.scene)
+        if observer_error:
+            from . import diagnostics
+            diagnostics.draw(layout,observer_error,settings,configuration=True)
         layout.prop(settings,'show_frames')
         layout.operator('better_item.new_frame',text='New Frame',icon='ADD')
         layout.template_list('BETTERITEM_UL_frames','',settings,'frames',settings,'active_frame',rows=3)
@@ -484,8 +488,13 @@ class BETTERITEM_PT_frames(bpy.types.Panel):
         row=layout.row();row.enabled=rotation_valid
         row.operator('better_item.native_frame',text='Use Orientation in Viewport',icon='ORIENTATION_GLOBAL').action='PUBLISH'
         if frame.native_enabled:
-            layout.label(text='Exported: '+frame.native_name)
-            if frame.native_suspended:layout.label(text='Export paused. Check its source.',icon='INFO')
+            error=observer_error or native_refs.sync_error(context.scene,frame)
+            if error and not observer_error:
+                from . import diagnostics
+                diagnostics.draw(layout,error,frame,configuration=True)
+            elif not error:
+                layout.label(text='Exported: '+frame.native_name)
+                if frame.native_suspended:layout.label(text='Export paused. Check its source.',icon='INFO')
             layout.operator('better_item.native_frame',text='Remove Exported Orientation').action='REMOVE'
         layout.operator('better_item.frame',text='Use Frame for Active Object').action='USE'
         layout.operator('better_item.frame',text='Remove Frame',icon='X').action='REMOVE'

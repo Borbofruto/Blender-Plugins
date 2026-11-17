@@ -1,10 +1,12 @@
-# Better Item 1.7.8
+# Better Item 1.7.9
 
 A live Transform panel with declared Blender 4.2+ compatibility. Executed builds, test coverage and remaining limits are recorded in the [compatibility report](https://github.com/Borbofruto/Blender-Plugins/blob/main/docs/better_item/compatibility-1.7.6.md). GPL-3.0-or-later. Author: Gabriel Webber do Nascimento.
 
 1.7.7 fixes direct Python Endpoint Placement arguments and repairs the changelog. Current execution results, including the new operator regression, are recorded separately in the [1.7.7 maintenance report](https://github.com/Borbofruto/Blender-Plugins/blob/main/docs/better_item/release-1.7.7.md). The compatibility report above preserves the provenance of the earlier 1.7.6 matrix.
 
 1.7.8 retains spacing inspection results across unrelated transform-only object updates, avoids Object Mode selection-normal source scans, and narrows geometry-tree invalidation work. Geometry updates and unclassified events still invalidate conservatively; applying an operation always plans and validates independently. Measured before/after results and remaining costs are recorded in the [cache maintenance report](https://github.com/Borbofruto/Blender-Plugins/blob/main/docs/better_item/release-1.7.8.md).
+
+1.7.9 keeps the native orientation observer alive after unexpected failures, isolates failed Frames and retries with bounded backoff. A paused export shows BI-F006 instead of appearing healthy while its axes are outdated. Explicit native deletion is still respected; transient health is cleared on Undo/load/unregister. Release and runner integrity checks are documented in the [1.7.9 maintenance report](https://github.com/Borbofruto/Blender-Plugins/blob/main/docs/better_item/release-1.7.9.md).
 
 ## Installation
 
@@ -197,6 +199,7 @@ Unsupported geometry, moving endpoint dependencies, native locks/drivers/constra
 | BI-F003 | Retired custom-orientation reference: choose Object or Frame |
 | BI-F004 | Missing viewport context or failed native orientation operation |
 | BI-F005 | Singular or ill-conditioned reference axes / Gimbal lock |
+| BI-F006 | Native orientation synchronization paused after an unexpected failure; automatic retry pending |
 | BI-A001 | No arrangement axis selected |
 | BI-A002 | Missing or invalid orientation/origin reference |
 | BI-A003 | Too few selected target objects |
