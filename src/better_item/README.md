@@ -1,4 +1,4 @@
-# Better Item 1.7.9
+# Better Item 1.7.10
 
 A live Transform panel with declared Blender 4.2+ compatibility. Executed builds, test coverage and remaining limits are recorded in the [compatibility report](https://github.com/Borbofruto/Blender-Plugins/blob/main/docs/better_item/compatibility-1.7.6.md). GPL-3.0-or-later. Author: Gabriel Webber do Nascimento.
 
@@ -8,6 +8,8 @@ A live Transform panel with declared Blender 4.2+ compatibility. Executed builds
 
 1.7.9 keeps the native orientation observer alive after unexpected failures, isolates failed Frames and retries with bounded backoff. A paused export shows BI-F006 instead of appearing healthy while its axes are outdated. Explicit native deletion is still respected; transient health is cleared on Undo/load/unregister. Release and runner integrity checks are documented in the [1.7.9 maintenance report](https://github.com/Borbofruto/Blender-Plugins/blob/main/docs/better_item/release-1.7.9.md).
 1.7.9 keeps linked Location, Rotation, Scale and Dimensions edits exact across a continuous drag, including through zero; removes a quadratic scan from the first (cold) spacing inspection; and stops re-walking every selected element in Edit Mode on each Normal-orientation refresh. No mathematical contract, saved schema, UI workflow or supported minimum changed. Measurements and limits are in the [1.7.9 report](https://github.com/Borbofruto/Blender-Plugins/blob/main/docs/better_item/release-1.7.9.md).
+
+1.7.10 explains why spacing cannot be measured for an open mesh in Volume placement, shows Transform fields with the same precision as the native ones (Scale stays at 3 digits) and gives the paused orientation export its own title.
 
 ## Installation
 

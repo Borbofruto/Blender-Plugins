@@ -33,6 +33,7 @@ class Diagnostic(str):
         display=str(cause) if isinstance(cause,BetterItemError) else raw
         obj.pending=isinstance(cause,ReferencePending)
         code=display[1:display.index(']')] if display.startswith('[BI-') and ']' in display else ''
+        obj.heading='Orientation sync paused' if code=='BI-F006' and severity!='ERROR' else None
         body=re.sub(r'\[BI-[A-Z]\d{3}\]\s*','',display).strip()
         obj.summary,obj.action=_GUIDANCE.get(code,(body,''))
         if obj.pending:obj.summary,obj.action=body,''
@@ -47,7 +48,7 @@ def draw(layout,error,owner,*,clear_operator=None,width=34,configuration=False):
     box=layout.box();row=box.row(align=True)
     row.alert=message.severity=='ERROR'
     refusal=(getattr(message,'operation',None)+' not applied') if getattr(message,'operation',None) else 'Not applied'
-    row.label(text='Setup needed' if message.pending else 'Operation failed' if message.severity=='ERROR' else 'Reference unavailable' if configuration else refusal,
+    row.label(text=message.heading or ('Setup needed' if message.pending else 'Operation failed' if message.severity=='ERROR' else 'Reference unavailable' if configuration else refusal),
         icon='ERROR' if message.severity=='ERROR' else 'INFO')
     if clear_operator:row.operator(clear_operator,text='',icon='X')
     content=box.column(align=True)

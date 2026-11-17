@@ -294,6 +294,20 @@ def inspect_spacing(context,objects):
     return _cached_inspection(context,objects)
 
 
+# Codes whose cause is the measured geometry, not an incomplete reference.
+_UNMEASURABLE_GEOMETRY=('BI-P001','BI-P002','BI-P003','BI-G001','BI-M005')
+
+
+def _unmeasurable_geometry(error):
+    return str(error)[1:8] in _UNMEASURABLE_GEOMETRY
+
+
+def _inspection_message(error):
+    from .diagnostics import Diagnostic
+    message=Diagnostic(error)
+    return ' '.join(part for part in (message.summary,message.action) if part)
+
+
 def _cached_inspection(context,objects):
     """Reuse an inspection only for the same evaluated scene and references."""
     if not objects:return 'EMPTY',None
@@ -375,7 +389,17 @@ def _inspect_spacing(context,objects):
         # Do not call collapsed and positive intervals one uniform nonzero gap.
         if physical and any(np.sign(value)!=np.sign(first) for value in gaps):uniform=False
         return ('UNIFORM',sign*first) if uniform else ('MIXED',None)
-    except BetterItemError:return 'UNAVAILABLE',None
+    except BetterItemError as exc:
+        # Keep the explanation of unmeasurable geometry (for example an open
+        # mesh for Volume Centroid) instead of reporting incomplete references.
+        if _unmeasurable_geometry(exc):return 'INVALID',_inspection_message(exc)
+        return 'UNAVAILABLE',None
+
+
+def _draw_unmeasurable(box,message):
+    import textwrap
+    box.label(text='Spacing cannot be measured.',icon='INFO')
+    for line in textwrap.wrap(message or '',34):box.label(text=line)
 
 
 def draw(layout,context):
@@ -401,12 +425,14 @@ def draw(layout,context):
         box.label(text='References are not moved.')
         status,value=inspect_spacing(context,list(context.selected_objects))
         if status=='UNIFORM' and value is not None:box.label(text='Point interval: '+_display_mm(context,value))
+        elif status=='INVALID':_draw_unmeasurable(box,value)
         else:box.label(text='Spacing is derived from the endpoints.')
     else:
         status,value=inspect_spacing(context,list(context.selected_objects))
         if status=='UNIFORM':box.label(text='Current: '+_display_mm(context,value))
         elif status=='MIXED':
             box.label(text='Mixed spacing.',icon='INFO');box.label(text='Edit Spacing to make it uniform.')
+        elif status=='INVALID':_draw_unmeasurable(box,value)
         elif status=='UNAVAILABLE':box.label(text='Complete references to measure spacing.',icon='INFO')
         box.prop(settings,'spacing_view' if live else 'spacing',text='Spacing')
         box.label(text='Sign sets direction.'+(' Zero allows contact.' if settings.distribution_mode=='GEOMETRY' else ''))

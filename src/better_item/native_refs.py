@@ -291,6 +291,14 @@ def _redraw_scene(scene,windows):
             continue
 
 
+def _redraw_all(windows):
+    """Redraw each window's scene. An invalid window must not stop recovery reporting."""
+    for window in windows:
+        try:scene=window.scene
+        except (ReferenceError,RuntimeError):continue
+        if scene is not None:_redraw_scene(scene,windows)
+
+
 def sync_error(scene,frame=None):
     """Transient health, separate from export intent and source suspension."""
     pointer=scene.as_pointer()
@@ -410,12 +418,12 @@ def sync():
                 if _sync_failed(key,exc):_redraw_scene(scene,windows)
         recovered=bool(_sync_errors.pop((0,''),None))
         if recovered:
-            for window in windows:_redraw_scene(window.scene,windows)
+            _redraw_all(windows)
     except Exception as exc:
         # Registration/migration/window enumeration can fail before a Frame is
         # available. Keep a visible observer-level diagnostic and bounded retry.
         if _sync_failed((0,''),exc):
-            for window in windows:_redraw_scene(window.scene,windows)
+            _redraw_all(windows)
     finally:_syncing=False
     return .2
 

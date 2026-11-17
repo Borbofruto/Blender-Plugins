@@ -4,16 +4,17 @@ Install individual extension ZIPs from [`addons/`](addons) using Blender's **Ins
 
 Each addon uses a stable installer filename. Updates replace that file; earlier contents remain available in Git history.
 
-## Better Item 1.7.9
+## Better Item 1.7.10
 
-[Download ZIP](https://github.com/Borbofruto/Blender-Plugins/raw/refs/heads/main/addons/better_item.zip) | [Manual](src/better_item/README.md) | [Release report](docs/better_item/release-1.7.9.md) | [Changelog](src/better_item/CHANGELOG.md) | [Source](src/better_item) | [Tests](tests/better_item)
+[Download ZIP](https://github.com/Borbofruto/Blender-Plugins/raw/refs/heads/main/addons/better_item.zip) | [Manual](src/better_item/README.md) | [Release report](docs/better_item/release-1.7.10.md) | [Changelog](src/better_item/CHANGELOG.md) | [Source](src/better_item) | [Tests](tests/better_item)
 
-[Current context — Portuguese](docs/better_item/CONTEXTO-ATUAL.md) | [Full engineering manual](docs/better_item/CONTINUIDADE-IA.md) | [Release snapshot](docs/better_item/handoff-1.7.9.json)
+[Current context — Portuguese](docs/better_item/CONTEXTO-ATUAL.md) | [Full engineering manual](docs/better_item/CONTINUIDADE-IA.md) | [Release snapshot](docs/better_item/handoff-1.7.10.json)
 
 A spatial-precision Transform, Reference Frames and Align/Distribute addon for Blender 4.2+. Compact English XYZ fields support proportional links, physical projected Dimensions, origin alignment and signed distribution.
 
 ### What changed recently
 
+- **1.7.10:** correction release prepared by Claude (branch `claude/better-item-1.7.10-vc`): open-mesh Volume spacing now explains the refusal, Transform fields use native display precision, and the paused orientation export has its own title. Validated headlessly on Linux only; the Windows matrix and GUI entries are pending ([release report](docs/better_item/release-1.7.10.md)).
 - **1.7.9:** stable linked ratios through zero, faster cold spacing reads and idle Normal polling, plus native-orientation failure isolation and recovery. Link toggles and Default Euler-order changes discard the old ratio. The consolidated ZIP passed 24 matrix entries on Blender 4.2.0, 4.2.23 and 5.3.0 (Windows x64), plus 14 separate infrastructure checks. The [release report](docs/better_item/release-1.7.9.md) identifies the current artifact and keeps earlier branch measurements separate.
 - **1.7.8:** spacing inspection survives unrelated transform updates; lighter Object Mode polling ([report](docs/better_item/release-1.7.8.md)).
 - **1.7.7:** direct Endpoint operator arguments fixed ([report](docs/better_item/release-1.7.7.md)).

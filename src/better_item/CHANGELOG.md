@@ -1,5 +1,13 @@
 # Better Item — changelog
 
+## 1.7.10
+
+### Fixed
+- Spacing inspection: an open or inconsistently oriented mesh with Volume Centroid placement no longer shows "Complete references to measure spacing". The panel now reads "Spacing cannot be measured." followed by the BI-P003 explanation (Repair the mesh or choose Surface Centroid). Incomplete references keep the previous message. The solver, operator refusals and every other placement basis are unchanged.
+- Transform fields use the native display precision per group: Location, Rotation and Dimensions show 5 digits, Scale 3 (previously 3 for every group).
+- The paused native-orientation export (BI-F006) is titled "Orientation sync paused" instead of "Reference unavailable".
+- The orientation observer's recovery redraw no longer reads the scene of a window that was closed during the failure.
+
 ## 1.7.9
 
 ### Fixed
