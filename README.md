@@ -1,5 +1,7 @@
 # Blender Plugins
 
+> **Unmerged UI proposal:** this branch changes presentation only. The tracked ZIP remains the stable baseline. See [proposal and qualification](docs/better_item/ui-precision-proposal.md); the release version is undecided.
+
 Install individual extension ZIPs from [`addons/`](addons) using Blender's **Install from Disk**. Sources are in [`src/`](src), tests in [`tests/`](tests). The repository ZIP is not an addon installer.
 
 Each addon uses a stable installer filename. Updates replace that file; earlier contents remain available in Git history.

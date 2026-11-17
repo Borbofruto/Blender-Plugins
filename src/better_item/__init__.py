@@ -42,7 +42,8 @@ def _component(group,axis):
             _field_errors[obj.as_pointer()]=diagnostics.Diagnostic(exc)
         if bpy.context.area:
             bpy.context.area.tag_redraw()
-    args=dict(name='XYZ'[axis],get=read_value,set=write_value,precision=3,options=set())
+    precision=3 if group=='SCALE' else 5
+    args=dict(name='XYZ'[axis],get=read_value,set=write_value,precision=precision,options=set())
     if group in {'LOCATION','DIMENSIONS'}:
         args['unit']='LENGTH'
     elif group=='ROTATION':

@@ -1,0 +1,29 @@
+{
+  "passed": true,
+  "blender": "4.2.0",
+  "expectation": "proposal",
+  "scale_length": 0.0010000000474974513,
+  "native_precision": {
+    "LOCATION": 5,
+    "ROTATION": 5,
+    "SCALE": 3,
+    "DIMENSIONS": 5
+  },
+  "addon_precision": {
+    "LOCATION": 5,
+    "ROTATION": 5,
+    "SCALE": 3,
+    "DIMENSIONS": 5
+  },
+  "sync_title": "Orientation sync paused",
+  "draw_errors": [],
+  "cold_process": true,
+  "keyboard_input_tested": false,
+  "draw_count": 2,
+  "original_panel_draws": 2,
+  "runtime_python_sha256": "9962acf27ed3808014da16cdd04d4b11b650eb73dffaee0e327dd013e3008166",
+  "screenshot": "precision-cold.png",
+  "original_panel_screenshot": "original-panel.png",
+  "physical_location_mm": 12.345678915856029,
+  "dimensionless_scale": 1.2345678806304932
+}

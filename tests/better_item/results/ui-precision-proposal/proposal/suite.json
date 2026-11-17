@@ -1,0 +1,131 @@
+{
+  "addon_version": "1.7.9",
+  "addon_zip_sha256": "a90a91017fe1209dff53520d8e6715606a163bf903e4ee1b85472b2a1e0aaf97",
+  "source_commit": null,
+  "tests": [
+    {
+      "script": "test_native_sync179.py",
+      "mode": "gui_async"
+    },
+    {
+      "script": "test_cache_invalidation.py",
+      "mode": "gui_sync"
+    },
+    {
+      "script": "test_better_item_173.py",
+      "mode": "background"
+    },
+    {
+      "script": "test_better_item_live173.py",
+      "mode": "background"
+    },
+    {
+      "script": "test_better_item_matrix170.py",
+      "mode": "background"
+    },
+    {
+      "script": "test_better_item_matrix160.py",
+      "mode": "background"
+    },
+    {
+      "script": "test_better_item_features160.py",
+      "mode": "background"
+    },
+    {
+      "script": "test_better_item_170.py",
+      "mode": "background"
+    },
+    {
+      "script": "test_better_item_edge170.py",
+      "mode": "background"
+    },
+    {
+      "script": "test_better_item_precision172.py",
+      "mode": "background"
+    },
+    {
+      "script": "test_better_item_collapse172.py",
+      "mode": "background"
+    },
+    {
+      "script": "test_better_item_171.py",
+      "mode": "background"
+    },
+    {
+      "script": "test_better_item_regressions.py",
+      "mode": "background"
+    },
+    {
+      "script": "test_better_item_gui173.py",
+      "mode": "gui_async"
+    },
+    {
+      "script": "test_retired_custom175.py",
+      "mode": "gui_async"
+    },
+    {
+      "script": "test_retired_custom175_persistence.py",
+      "mode": "background"
+    },
+    {
+      "script": "test_better_item_preview170.py",
+      "mode": "gui_sync"
+    },
+    {
+      "script": "test_better_item_inspection172.py",
+      "mode": "gui_sync"
+    },
+    {
+      "script": "test_better_item_cache154.py",
+      "mode": "gui_sync"
+    },
+    {
+      "script": "test_archive_install.py",
+      "mode": "background"
+    },
+    {
+      "script": "test_better_item_stress157.py",
+      "mode": "gui_sync"
+    },
+    {
+      "script": "test_better_item_operator177.py",
+      "mode": "gui_sync"
+    },
+    {
+      "script": "test_better_item_gestures179.py",
+      "mode": "background"
+    },
+    {
+      "script": "test_better_item_units179.py",
+      "mode": "background"
+    }
+  ],
+  "baseline_source_commit": "97a676d6e320742fa83185f62296c9d1730116d5",
+  "python_source_sha256": "9962acf27ed3808014da16cdd04d4b11b650eb73dffaee0e327dd013e3008166",
+  "studies": [
+    {
+      "script": "test_better_item_units_gui179.py",
+      "mode": "gui_async"
+    },
+    {
+      "script": "benchmark_cache_invalidation.py",
+      "mode": "gui_sync"
+    },
+    {
+      "script": "test_editmode_foundations.py",
+      "mode": "gui_sync"
+    },
+    {
+      "script": "benchmark_editmode_normal179.py",
+      "mode": "gui_sync"
+    },
+    {
+      "script": "test_ui_precision_proposal179.py",
+      "mode": "gui_async"
+    }
+  ],
+  "auxiliary_tests": [
+    "test_cross_version_state.py",
+    "test_better_item_placement177_persistence.py"
+  ]
+}

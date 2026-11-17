@@ -1,0 +1,99 @@
+{
+  "not_merged": true,
+  "not_a_release": true,
+  "base_commit": "02f672831bf0a1e3cc00663062eff3846bf48173",
+  "stable_archive_sha256": "6a01eb809165347e94668d259a492b922b69f0c368657cae48599a2f57a9f029",
+  "temporary_candidate_archive_sha256": "a90a91017fe1209dff53520d8e6715606a163bf903e4ee1b85472b2a1e0aaf97",
+  "runs": [
+    {
+      "phase": "baseline",
+      "blender": "4.2.0",
+      "scale": "scale1",
+      "entries": 1,
+      "passed": true,
+      "archive_sha256": "6a01eb809165347e94668d259a492b922b69f0c368657cae48599a2f57a9f029",
+      "original_summary_bytes": 1528,
+      "published_summary_bytes": 1139,
+      "lossless_reconstruction_verified": true
+    },
+    {
+      "phase": "baseline",
+      "blender": "4.2.0",
+      "scale": "scale0001",
+      "entries": 1,
+      "passed": true,
+      "archive_sha256": "6a01eb809165347e94668d259a492b922b69f0c368657cae48599a2f57a9f029",
+      "original_summary_bytes": 1548,
+      "published_summary_bytes": 1141,
+      "lossless_reconstruction_verified": true
+    },
+    {
+      "phase": "baseline",
+      "blender": "5.3.0",
+      "scale": "scale1",
+      "entries": 1,
+      "passed": true,
+      "archive_sha256": "6a01eb809165347e94668d259a492b922b69f0c368657cae48599a2f57a9f029",
+      "original_summary_bytes": 1560,
+      "published_summary_bytes": 1171,
+      "lossless_reconstruction_verified": true
+    },
+    {
+      "phase": "baseline",
+      "blender": "5.3.0",
+      "scale": "scale0001",
+      "entries": 1,
+      "passed": true,
+      "archive_sha256": "6a01eb809165347e94668d259a492b922b69f0c368657cae48599a2f57a9f029",
+      "original_summary_bytes": 1581,
+      "published_summary_bytes": 1174,
+      "lossless_reconstruction_verified": true
+    },
+    {
+      "phase": "proposal",
+      "blender": "4.2.0",
+      "scale": "scale1",
+      "entries": 3,
+      "passed": true,
+      "archive_sha256": "a90a91017fe1209dff53520d8e6715606a163bf903e4ee1b85472b2a1e0aaf97",
+      "original_summary_bytes": 443884,
+      "published_summary_bytes": 1935,
+      "lossless_reconstruction_verified": true
+    },
+    {
+      "phase": "proposal",
+      "blender": "4.2.0",
+      "scale": "scale0001",
+      "entries": 1,
+      "passed": true,
+      "archive_sha256": "a90a91017fe1209dff53520d8e6715606a163bf903e4ee1b85472b2a1e0aaf97",
+      "original_summary_bytes": 1550,
+      "published_summary_bytes": 1141,
+      "lossless_reconstruction_verified": true
+    },
+    {
+      "phase": "proposal",
+      "blender": "5.3.0",
+      "scale": "scale1",
+      "entries": 3,
+      "passed": true,
+      "archive_sha256": "a90a91017fe1209dff53520d8e6715606a163bf903e4ee1b85472b2a1e0aaf97",
+      "original_summary_bytes": 442745,
+      "published_summary_bytes": 1966,
+      "lossless_reconstruction_verified": true
+    },
+    {
+      "phase": "proposal",
+      "blender": "5.3.0",
+      "scale": "scale0001",
+      "entries": 1,
+      "passed": true,
+      "archive_sha256": "a90a91017fe1209dff53520d8e6715606a163bf903e4ee1b85472b2a1e0aaf97",
+      "original_summary_bytes": 1583,
+      "published_summary_bytes": 1174,
+      "lossless_reconstruction_verified": true
+    }
+  ],
+  "keyboard_input_tested": false,
+  "runtime_policy_changes": false
+}

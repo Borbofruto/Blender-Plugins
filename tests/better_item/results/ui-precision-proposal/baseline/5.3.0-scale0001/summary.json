@@ -1,0 +1,32 @@
+{
+  "requested_version": "5.3.0-scale0001",
+  "executable": "C:/Users/gabri/Documents/Codex/better-item-compatibility/portable/blender-5.3.0-windows-x64/blender.exe",
+  "started_utc": "2026-11-17T13:03:34Z",
+  "tests": [
+    {
+      "script": "test_ui_precision_proposal179.py",
+      "mode": "gui_async",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 5.414,
+      "result": {
+        "result_file": "test_ui_precision_proposal179.results.json",
+        "result_file_sha256": "c268eac2b6301073cc3db10099f5a2c32caf9860a7a1b34abe5c2d4ca30a3574"
+      }
+    }
+  ],
+  "passed": true,
+  "addon_version": "1.7.9",
+  "addon_zip_sha256": "6a01eb809165347e94668d259a492b922b69f0c368657cae48599a2f57a9f029",
+  "finished_utc": "2026-11-17T13:03:39Z",
+  "_storage": {
+    "inline_results_replaced_by_files": [
+      "test_ui_precision_proposal179.py"
+    ],
+    "original_summary_sha256": "849a2c6a419192f4257f219c879bdd6bfd8d72da25721e567620583e8a4ade61",
+    "original_summary_crlf": true,
+    "original_summary_normalized_lf_sha256": "e7e5da363e0f21b85ce97bd64bd248b3a1a09ddbd18bf80c7abfc58245b08796",
+    "reconstruction_verified": true
+  }
+}

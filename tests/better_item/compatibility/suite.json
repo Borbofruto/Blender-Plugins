@@ -118,6 +118,10 @@
     {
       "script": "benchmark_editmode_normal179.py",
       "mode": "gui_sync"
+    },
+    {
+      "script": "test_ui_precision_proposal179.py",
+      "mode": "gui_async"
     }
   ],
   "auxiliary_tests": [

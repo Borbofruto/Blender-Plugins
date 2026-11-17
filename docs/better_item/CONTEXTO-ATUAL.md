@@ -1,5 +1,7 @@
 # Better Item — contexto atual e passagem de trabalho
 
+> **Branch de proposta, sem merge:** a fonte desta branch contém apenas a proposta de precisão visual e título BI-F006. O ZIP e snapshot rastreados continuam sendo a baseline estável; não constituem pacote da proposta. Leia [ui-precision-proposal.md](ui-precision-proposal.md), inclusive a correção da inferência anterior sobre Unit Scale. O restante deste contexto preserva a base main `02f6728`. A versão de destino depende de Gabriel.
+
 Atualizado em **17/11/2026**, após consolidar a contribuição `release/1.7.9` com a manutenção local aprovada. Leia este arquivo **antes** do manual histórico. A 1.7.9 combina gestos linkados, leitura fria e fingerprint de Normal com recuperação do timer nativo e integridade da entrega. Inclui as correções encontradas na revisão da ordem Euler em Default e do desligamento/religamento dos links. Resultados e limites: [release-1.7.9.md](release-1.7.9.md).
 
 ## 1. Estado exato a assumir
