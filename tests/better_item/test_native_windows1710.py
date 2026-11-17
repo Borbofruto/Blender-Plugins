@@ -32,11 +32,8 @@ def migration_with_close():
         with bpy.context.temp_override(window=secondary):
             bpy.ops.wm.window_close()
     result['close_operator_returned']=True
-    try:
-        secondary.scene
-        result['closed_wrapper_invalid']=False
-    except ReferenceError:
-        result['closed_wrapper_invalid']=True
+    result['window_removed']=secondary not in list(bpy.context.window_manager.windows)
+    print('CLOSE CHECKPOINT: removed from current windows',result['window_removed'],flush=True)
     raise RuntimeError('Controlled migration fault after closing secondary real window')
 
 def run():
@@ -81,10 +78,10 @@ def run():
         result['timer_registered_after']=bpy.app.timers.is_registered(nr.sync)
         result['observer_issue']=dict(nr._sync_errors.get((0,''),{}))
         result['syncing_after']=nr._syncing
-        result['window_failure_reproduced']=bool(result.get('closed_wrapper_invalid') and not result['timer_registered_after'])
+        result['window_failure_reproduced']=bool(result.get('window_removed') and not result['timer_registered_after'])
         result['volume_guidance_reproduced']=bool('BI-P003' in str(result['volume']['cause']) and
             'Complete references to measure spacing.' in result['volume']['labels'])
-        result['passed']=bool(result.get('close_operator_returned') and result['timer_registered_before'] and result['timer_registered_after'] and not result['syncing_after'] and not result['volume_guidance_reproduced'])
+        result['passed']=bool(result.get('close_operator_returned') and result.get('window_removed') and result['timer_registered_before'] and result['timer_registered_after'] and not result['syncing_after'] and not result['volume_guidance_reproduced'])
         done=True
     except Exception:
         result['probe_error']=traceback.format_exc();done=True
