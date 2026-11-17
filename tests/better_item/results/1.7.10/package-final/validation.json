@@ -1,0 +1,118 @@
+{
+  "passed": true,
+  "version": "1.7.10",
+  "archive_sha256": "d0d06869fcb4e6143116f4acad38912a7530e69303452b109200c9a170a02175",
+  "python_source_sha256": "d9a02770dc57b25836de826a0031fe5cabb38e83e3ae6ce3699fa2afc58bd1f0",
+  "scope": "final package installation and native validation; changelog-only repackage",
+  "checks": [
+    {
+      "build": "4.2.0",
+      "check": "native-extension-validate",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "build": "4.2.0",
+      "check": "archive-install",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "build": "4.2.23",
+      "check": "native-extension-validate",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "build": "4.2.23",
+      "check": "archive-install",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "build": "4.3.2",
+      "check": "native-extension-validate",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "build": "4.3.2",
+      "check": "archive-install",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "build": "4.4.3",
+      "check": "native-extension-validate",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "build": "4.4.3",
+      "check": "archive-install",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "build": "4.5.16",
+      "check": "native-extension-validate",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "build": "4.5.16",
+      "check": "archive-install",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "build": "5.0.1",
+      "check": "native-extension-validate",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "build": "5.0.1",
+      "check": "archive-install",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "build": "5.1.2",
+      "check": "native-extension-validate",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "build": "5.1.2",
+      "check": "archive-install",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "build": "5.2.4",
+      "check": "native-extension-validate",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "build": "5.2.4",
+      "check": "archive-install",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "build": "5.3.0",
+      "check": "native-extension-validate",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "build": "5.3.0",
+      "check": "archive-install",
+      "passed": true,
+      "exit_code": 0
+    }
+  ],
+  "infrastructure_tests": 14
+}

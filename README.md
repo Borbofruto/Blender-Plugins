@@ -6,9 +6,7 @@ Each addon uses a stable installer filename. Updates replace that file; earlier 
 
 ## Better Item 1.7.10
 
-**VG maintenance candidate — separate branch, not published on main. Automated qualification passed 28/28 on nine builds; manual interaction remains pending. See the release report for gates and limitations.**
-
-[Download ZIP](https://github.com/Borbofruto/Blender-Plugins/raw/refs/heads/release/1.7.10-vg/addons/better_item.zip) | [Manual](src/better_item/README.md) | [Release report](docs/better_item/release-1.7.10.md) | [Changelog](src/better_item/CHANGELOG.md) | [Source](src/better_item) | [Tests](tests/better_item)
+[Download ZIP](https://github.com/Borbofruto/Blender-Plugins/raw/refs/heads/main/addons/better_item.zip) | [Manual](src/better_item/README.md) | [Release report](docs/better_item/release-1.7.10.md) | [Changelog](src/better_item/CHANGELOG.md) | [Source](src/better_item) | [Tests](tests/better_item)
 
 [Current context — Portuguese](docs/better_item/CONTEXTO-ATUAL.md) | [Full engineering manual](docs/better_item/CONTINUIDADE-IA.md) | [Release snapshot](docs/better_item/handoff-1.7.10.json)
 
@@ -16,15 +14,15 @@ A spatial-precision Transform, Reference Frames and Align/Distribute addon for B
 
 ### What changed recently
 
-- **1.7.10 VG candidate:** native-window recovery guard, accurate spacing-refusal diagnostics, native-matched Transform precision and BI-F006 heading. Automated qualification and manual gates are tracked in the [candidate report](docs/better_item/release-1.7.10.md).
+- **1.7.10:** native-window recovery guard, accurate spacing-refusal diagnostics, native-matched Transform precision and BI-F006 heading. Validation results and limitations are tracked in the [release report](docs/better_item/release-1.7.10.md).
 - **1.7.9:** stable linked ratios through zero, faster cold spacing reads and idle Normal polling, plus native-orientation failure isolation and recovery. Link toggles and Default Euler-order changes discard the old ratio. The consolidated ZIP passed 24 matrix entries on Blender 4.2.0, 4.2.23 and 5.3.0 (Windows x64), plus 14 separate infrastructure checks. The [1.7.9 release report](docs/better_item/release-1.7.9.md) identifies that historical artifact and keeps earlier branch measurements separate.
 - **1.7.8:** spacing inspection survives unrelated transform updates; lighter Object Mode polling ([report](docs/better_item/release-1.7.8.md)).
 - **1.7.7:** direct Endpoint operator arguments fixed ([report](docs/better_item/release-1.7.7.md)).
 - **1.7.6:** minimum lowered to Blender 4.2.0 ([compatibility report](docs/better_item/compatibility-1.7.6.md)). The separate [Edit Mode 2.0 feasibility study](docs/better_item/edit-mode-2.0-feasibility.md) confirms public BMesh foundations without shipping Edit Mode targets yet.
 
-[Scene-unit qualification](docs/better_item/units-1.7.9.md): new tests cover Metric, Imperial and Unit Scale variants on the historical 1.7.9 stable ZIP; this candidate is qualified separately. Conversion passed the tested cases; display rounding and the limits of absolute mm accuracy are documented separately.
+[Scene-unit qualification](docs/better_item/units-1.7.9.md): new tests cover Metric, Imperial and Unit Scale variants on the historical 1.7.9 stable ZIP; 1.7.10 is qualified separately. Conversion passed the tested cases; display rounding and the limits of absolute mm accuracy are documented separately.
 
-[Final-archive compatibility follow-up](docs/better_item/followup-review-1.7.9.md): 25/25 newly executed on 4.3.2, 4.4.3, 4.5.16, 5.0.1, 5.1.2 and 5.2.4. Earlier three-build 24-entry matrices retain their original provenance. The main still has the stable 1.7.9. Its visual proposal was incorporated into this VG candidate without merging the proposal branch wholesale.
+[Final-archive compatibility follow-up](docs/better_item/followup-review-1.7.9.md): 25/25 newly executed on 4.3.2, 4.4.3, 4.5.16, 5.0.1, 5.1.2 and 5.2.4. Earlier three-build 24-entry matrices retain their original provenance. Display precision and the synchronization heading were corrected in 1.7.10.
 
 ### Distribution by references, points and occupied geometry
 

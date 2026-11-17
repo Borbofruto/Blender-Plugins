@@ -1,37 +1,21 @@
-# Better Item — contexto atual e passagem de trabalho
+# Better Item — contexto atual
 
-**Revisão cruzada VC/VG:** [comparação independente](review-vc-vg-1.7.10.md), com 14 processos dirigidos novos e o parecer externo do Claude separados da matriz de aceite. Recomenda manter VG; nenhuma integração/exclusão da VC foi feita.
+Atualizado em **17/11/2026**. Versão oficial: **1.7.10**, na **main**. Mínimo **Blender 4.2.0**.
 
-**Branch VG em desenvolvimento:** `release/1.7.10-vg`, worktree `D:/Codex-BetterItem-1710-VG`, base `f9180b6`. O fonte e `addons/better_item.zip` desta branch são o candidato 1.7.10, sem merge na main. A qualificação automatizada final passou 28/28 nas nove builds; quatro comparações GUI frias, 14 guards e 20 processos auxiliares passaram separadamente. Interação manual continua pendente; os crashes das sondagens artificiais não tiveram causa conclusivamente isolada e não devem ser apresentados como corrida cotidiana corrigida. Leia primeiro [release-1.7.10.md](release-1.7.10.md) e [handoff-1.7.10.json](handoff-1.7.10.json). A antiga remota `release/1.7.9` foi excluída após confirmar ancestralidade na main. Abaixo permanece o contexto da base 1.7.9; seus hashes/resultados não qualificam o candidato. O trabalho atual foi autorizado por Gabriel nesta branch; não interpretar a proposta anterior como impedimento de execução.
+## 1. Estado atual e leitura
 
-Atualizado em **17/11/2026**, após consolidar a contribuição `release/1.7.9` com a manutenção local aprovada. Leia este arquivo **antes** do manual histórico. A 1.7.9 combina gestos linkados, leitura fria e fingerprint de Normal com recuperação do timer nativo e integridade da entrega. Inclui as correções encontradas na revisão da ordem Euler em Default e do desligamento/religamento dos links. Resultados e limites: [release-1.7.9.md](release-1.7.9.md).
-
-## 1. Estado exato a assumir
-
-- Repositório: [Borbofruto/Blender-Plugins](https://github.com/Borbofruto/Blender-Plugins).
-- Versão atual: **1.7.9**, manutenção sobre a 1.7.8 `97a676d6e320742fa83185f62296c9d1730116d5`. Confirme o HEAD real antes de trabalhar. O snapshot [handoff-1.7.9.json](handoff-1.7.9.json) identifica o instalador consolidado; [handoff-1.7.9-branch.json](handoff-1.7.9-branch.json) identifica o ZIP anterior da outra branch.
-- Fonte editável: `src/better_item/`. Instalador estável: `addons/better_item.zip`.
-- SHA256 do ZIP consolidado: `6a01eb809165347e94668d259a492b922b69f0c368657cae48599a2f57a9f029`.
-- Dos 15 módulos Python, oito mudaram desde a 1.7.8: `__init__.py`, `diagnostics.py`, `engine.py`, `frames.py`, `geometry_arrange.py` (docstring), `math_core.py`, `native_refs.py` e `transform_view.py`. Os outros sete são byte a byte iguais. Preservados schema, IDs, migração, escolhas por método, solvers e mínimo **Blender 4.2.0**.
-- Resultados do consolidado: `tests/better_item/results/1.7.9/integration/`, matriz de **24 entradas em 4.2.0, 4.2.23 e 5.3.0**, mais **14 verificações externas da infraestrutura**. As duas contagens não se somam como entradas Blender.
-- Benchmarks do consolidado foram medidos novamente contra o ZIP 1.7.8 com os mesmos scripts, em sequência, nas builds 4.2.23 e 5.3.0. Dados em `results/1.7.9/integration/comparison.json`.
-- Resultados anteriores da branch continuam em `results/1.7.9/matrix/` (23 entradas × 10 executáveis, ZIP `c053f366…`) e `benchmark/` (ZIP `beb561ad…`). Não são execuções do novo instalador. A [contribuição anterior](release-1.7.9-branch.md) foi preservada como registro separado.
-
-### Ordem de leitura e autoridade
-
-1. Solicitação atual de Gabriel e instruções do workspace.
-2. Este contexto: contratos atuais, pendências e limites da evidência.
-3. [Manual de engenharia](CONTINUIDADE-IA.md), com 25 seções, ou [capítulos gerados](continuidade/README.md). Sua base continua explicitamente **1.7.3**; detalhes históricos não anulam atualizações deste contexto.
-4. [Consolidação 1.7.9](release-1.7.9.md), [cache e testes novos 1.7.8](release-1.7.8.md), [correção Endpoint 1.7.7](release-1.7.7.md), [compatibilidade histórica 1.7.6](compatibility-1.7.6.md), [estudo Edit Mode 2.0](edit-mode-2.0-feasibility.md), README do pacote e código no commit efetivamente usado.
-5. Relatórios antigos como evidência de suas respectivas versões, não como requisitos atuais.
-
-O manual histórico explica arquitetura, matemática, casos já resolvidos, bootstrap e estratégia de testes. Ele NÃO deve ser substituído apenas por este resumo. As divergências conhecidas estão explicitadas na seção 9 abaixo. Nunca faça uma atualização global de números de versão em relatórios históricos para aparentar validação atual.
+- Fonte: `src/better_item/`; instalador: `addons/better_item.zip`.
+- SHA256 oficial: `d0d06869fcb4e6143116f4acad38912a7530e69303452b109200c9a170a02175`. [Snapshot](handoff-1.7.10.json) e [relatório](release-1.7.10.md).
+- O runtime passou 28 entradas em nove builds. A embalagem oficial só atualiza o changelog em relação ao artefato dessas execuções; a validação de instalação final está registrada separadamente. Não atribuir resultados a outro SHA.
+- As quatro correções da 1.7.10 estão concluídas: observador por janela, causa da inspeção indisponível, precisão visual e título BI-F006. Endpoint direto/changelog foram corrigidos na 1.7.7; cache/polling e gestos receberam correções na 1.7.8/1.7.9.
+- Leia este contexto, [manual técnico histórico](CONTINUIDADE-IA.md), [validação de unidades](units-1.7.9.md), [runner](../../tests/better_item/compatibility/README.md) e [estudo Edit Mode](edit-mode-2.0-feasibility.md). O manual tem base 1.7.3; contratos e resultados atuais prevalecem.
+- Documentação deve tratar do produto, arquitetura, decisões e evidências. **Não versionar comparações entre IAs, variantes por autoria, conversas ou briefings de sessões.** Revisões desse tipo ficam na conversa. Comparações técnicas com o Blender nativo e benchmarks continuam válidas.
 
 ## 2. Produto, escopo e colaboração
 
 Better Item amplia **leitura, interpretação, edição numérica e reutilização de referenciais espaciais**, junto com alinhamento e distribuição. Não pretende substituir todas as ferramentas de transformação do Blender nem resolver toda combinação matemática que o Blender consegue representar.
 
-Gabriel prefere entender responsabilidades, fluxo de dados, trade-offs e limites. Não aceite feedback de outra IA como prova. Diferencie reprodução, inspeção estática, hipótese, registro histórico e decisão de escopo. Antes de alterar o sistema, entenda o caminho existente. Não comece com refatoração geral ou implementação de todas as sugestões de um relatório.
+Gabriel prefere entender responsabilidades, fluxo de dados, trade-offs e limites. Não aceite feedback externo como prova. Diferencie reprodução, inspeção estática, hipótese, registro histórico e decisão de escopo. Antes de alterar o sistema, entenda o caminho existente. Não comece com refatoração geral ou implementação de todas as sugestões de um relatório.
 
 ### Decisões que devem ser preservadas
 
@@ -43,7 +27,7 @@ Gabriel prefere entender responsabilidades, fluxo de dados, trade-offs e limites
 - Transform edita o **objeto ativo**. Não transformar esse painel num editor em massa. Operações de seleção pertencem às ferramentas nativas e Align/Distribute.
 - Referenciar não cria parenting, Child Of ou constraint permanente nos alvos. Mudar a fonte depois de uma edição comum não move o alvo. **Live** é a exceção explícita e temporária de edição, não animação.
 - Restrições matemáticas legítimas devem ser diagnosticadas e recusadas sem efeitos parciais. Não eliminar proteções apenas para aumentar a taxa de sucesso.
-- Preparar publicação com estabilização e revisão de UI, sem usar essa fase para ampliar silenciosamente funcionalidades. Otimização de Normal, flexibilização de constraints e novas interações de viewport ficaram em trabalhos separados.
+- Preparar publicação com estabilização e revisão de UI, sem usar essa fase para ampliar silenciosamente funcionalidades. Novas otimizações de Normal exigem medição; flexibilização de constraints e novas interações de viewport exigem definição de escopo.
 
 ## 3. Contratos conceituais e de interface atuais
 
@@ -72,7 +56,7 @@ Gabriel prefere entender responsabilidades, fluxo de dados, trade-offs e limites
 
 ### Alignment e Distribution
 
-- O usuário voltou a perguntar sobre Min/Max/Center e Selection Bounds; depois concordou com a explicação do fluxo atual. **Não interpretar essa pergunta como autorização pendente para restaurar menus redundantes.** Leia o painel e os caminhos legados antes de modificar a semântica.
+- Min/Max/Center e Selection Bounds seguem o fluxo atual. Não restaurar seletores redundantes sem definir sua semântica e observar os caminhos legados do operador.
 - Alignment tem posição e orientação. O histórico de Min/Center/Max não significa que Center seja média aritmética: o solver legado usa `(min+max)/2`. Não renomear esses conceitos como equivalentes.
 - Distribution tem duas dimensões de escolha independentes: **método** (Offset/Endpoint) e **Placement** (o representante ou intervalo geométrico).
 - **Offset:** Origins, Bounds Center, Center of Mass (Surface), Center of Mass (Volume), Geometry Bounds. O sinal de Spacing define o sentido. Não adicionar um seletor separado de direção.
@@ -124,91 +108,15 @@ Planejar primeiro, validar plano, aplicar e conferir resultado avaliado. Em falh
 - Getters e draw devem evitar escrita persistente e operações de cena. Migração precisa ocorrer em contexto permitido, não disfarçada como leitura.
 - Não reter wrappers de Custom Orientation, Object removido, BMesh ou outros dados RNA ao atravessar Undo, reload ou callbacks. Reobter com identidade validada; armazenar cópias numéricas quando apropriado.
 
-## 5. Pendências atuais: estado e próximo passo
 
-### A. Corrigido na 1.7.7 — parâmetros Python do Endpoint
+## 5. Limites e pendências técnicas
 
-O diagnóstico abaixo documenta a **1.7.6**. Nesta continuação a falha foi novamente reproduzida, inclusive pela regressão nova contra o ZIP antigo. A instrumentação mostrou o setter de Placement executando com Method ainda OFFSET, independentemente da ordem dos kwargs. A correção declara Method antes de seu enum dependente; preserva campos, IDs e migração. Chamadas válidas são verificadas geometricamente e Geometry inválido é recusado na conversão RNA sem mover objetos. Invoke, propriedades de F9, repeat-last e Undo/Redo têm verificações automatizadas; gestos físicos de F9 ainda fazem parte da passada manual pendente. Veja os resultados novos no relatório 1.7.7.
+- Checklist real de teclado/mouse não executado; manter esse limite explícito. Não marcar digitação, Esc/arrasto, F9 ou seleção física como testados por setters.
+- Crashes em sondagens artificiais de janela não tiveram causa conclusivamente isolada. O cenário final válido passou; uma nova reprodução de uso normal deve ser investigada sem presumir a mesma causa.
+- Minimum Separation não é erro máximo. Geometry Bounds já aceitou 1 mm de gap a 1 km da origem com cerca de 0,051 mm de erro dentro do orçamento atual. Exatidão absoluta exige definir tolerância e faixa de operação antes de alterar contrato.
+- Invalidação geométrica permanece conservadora. Trabalho de desempenho exige medição de custo e frescor; não confundir cache de geometria/Dimensions com inspeção escalar de espaçamento.
 
-Reprodução em Windows, Blender **4.2.23 LTS e 5.3.0**, fonte publicada 1.7.6. Foram 11 chamadas por build, total 22, com registro dos valores efetivamente recebidos em execute e das posições finais.
-
-`bpy.ops.better_item.distribute(method='ENDPOINT', distribution_mode='VOLUME')` retorna FINISHED, mas execute recebe ORIGINS. O mesmo ocorre com BOUNDS_CENTER e SURFACE. GEOMETRY também cai em ORIGINS em vez de recusar. Trocar a ordem dos dois kwargs não resolveu. Informar a propriedade interna `endpoint_placement=4` produziu VOLUME e posições diferentes, como esperado para uma malha deslocada de sua origem.
-
-O operador tem enum proxy com get/set em `placement.operator_read/operator_write`, e inteiros ocultos por método. `invoke` copia o estado da Scene; a chamada EXEC direta é outro caminho. **A reprodução demonstra a perda do parâmetro, não estabelece por si só toda a sequência interna do RNA que a causa.** Não prometer que basta reordenar duas declarações antes de testar.
-
-Material reproduzível e resultados: [evidências desta revisão](continuidade/evidencias-1.7.6/README.md). Script é diagnóstico que captura o comportamento atual, NÃO uma regressão verde que prova o comportamento correto. A futura correção precisa de assertions de equivalência entre pedido e resultado.
-
-Cobertura acrescentada: as quatro bases válidas via chamada direta, ambas as ordens de kwargs e os dois caminhos Endpoint; Geometry inválido sem mover objetos; os cinco Placements Offset; invoke, propriedades de F9, repeat-last e Undo/Redo. O tetraedro deslocado tem centros de bounds, superfície e volume distintos com oráculo analítico independente. Migração real 1.7.2→1.7.7 e persistência de escolhas em processo novo foram verificadas separadamente.
-
-### B. Corrigido na 1.7.7 — changelog
-
-O título agora precede as entradas, ordenadas de 1.7.7 para trás. A entrada 1.7.4 foi reconstruída a partir de `release-1.7.4.md` e informa a remoção da capacidade na 1.7.5. Nenhuma capacidade retirada foi reintegrada. A versão continua centralizada no manifesto, sem `bl_info` duplicado. Fontes e ZIP foram conferidos byte a byte.
-
-### C. Primeira rodada medida e implementada na 1.7.8 — cache e polling
-
-O comportamento anterior foi medido novamente no ZIP 1.7.7. Com 1.500 objetos, mover um Empty sem dependência causava três inspeções em três atualizações. A 1.7.8 usa identidades numéricas de alvos/âncoras para preservar entradas em lotes exclusivamente de transformação de objetos alheios, sem flags geométricas. Updates de geometria e eventos desconhecidos continuam invalidando conservadoramente. A chave continua incluindo referências resolvidas e revisão geométrica; aplicar uma operação nunca usa a inspeção como validação.
-
-Medição nova de Volume/1.500: 822,59→2,18 ms na 4.2.23 e 1.041,32→3,06 ms na 5.3.0 para update do Empty + leitura, com zero inspeções completas posteriores. Não é ganho equivalente numa leitura fria. Os tempos do revisor externo continuam sendo de outro ambiente/cenário, não a baseline desta comparação.
-
-O timer nativo não busca mais fontes de todos os objetos em Object Mode; publicação de Frame e Normal em Edit Mode foram preservados/testados. A invalidação de arrays só busca dependências de GeometryNodeTree e evita varrer objetos quando esses caches estão vazios, avançando antes a revisão consumida por Placement/Live. Nenhum wrapper RNA novo é retido.
-
-**Atualização 1.7.9:** a leitura fria tinha custo quadrático (verificação BI-M005 percorria todas as instâncias para cada objeto) e foi corrigida; Normal densa em Edit Mode deixou de varrer elementos a cada tick ocioso; os getters Transform foram medidos e não eram problema (cerca de 0,4 ms por redesenho, medição Linux). Números do Windows em [release-1.7.9.md](release-1.7.9.md).
-
-**Pendente (histórico 1.7.8):** perfilar custo frio de geometria/centroides e repetição dos getters Transform; medir Normal densa separadamente. Shader usado pode provocar flags de geometria nos objetos, e nesses casos a invalidação permanece. Não eliminar essas flags, criar cache com chave só de depsgraph/revisão, impor limite de objetos ou prometer invalidação seletiva completa sem nova evidência. [Medições e triagem dos relatórios](release-1.7.8.md).
-
-### D. Validação humana e publicação
-
-Há testes automatizados com GUI real e Undo/Redo no Windows, preservados na matriz. Isso não equivale a uma passada manual completa com mouse. Revisar ligar/editar/desligar Live, troca de fontes, Endpoint, F9, Undo/Redo, larguras do painel e mensagens em 4.2 e versão recente. Testadores externos podem trazer fluxos não cobertos; registrar cenário e contrato esperado.
-
-### E. Pendências separadas, não iniciar automaticamente
-
-- **Normal:** o custo do tick ocioso foi tratado na 1.7.9. A troca de seleção ainda faz uma varredura completa e uma amostra nativa (70–110 ms com 130 mil vértices), e há uma varredura a cada 2 s como rede de proteção. Reduzir isso exige outra fonte de identidade de seleção; não é sinônimo do cache escalar acima.
-- **Constraints:** o bloqueio conservador pode recusar constraints que não afetam o canal solicitado. Flexibilizar exige estudar dependências e verificação, não apenas uma whitelist por tipo.
-- **Interações novas:** gizmos manipuláveis de Frame/pivô e operações extras são expansão de produto.
-- **Transform compartilhado:** decidir dono do estado e migração antes de mudar Object para Scene/Workspace.
-- **Benchmark:** o usuário solicitou estudar outros addons CAD/espaciais para reutilizar métodos robustos; não há comprovação, nesta passagem, de um benchmark abrangente concluído. Consultar fontes/licenças e comparar contratos antes de copiar soluções.
-- **Comercial:** existe material de roadmap externo; não confundir recomendações comerciais com novas features aprovadas. Não afirmar que loja/publicação já foi concluída.
-- A exceção inesperada que encerrava o timer nativo foi reproduzida por injeção controlada e tratada na 1.7.9, incluindo recuperação, múltiplas cenas e limpeza de saúde. Os demais riscos antigos sobre timers e contexto continuam pistas de investigação; não os anunciar como bugs atuais sem reprodução. Ver seção 23 do manual histórico e priorizar os itens confirmados acima.
-
-### E. Qualificação de unidades após a consolidação — runtime inalterado
-
-O [estudo de unidades](units-1.7.9.md) executou agora 590 cenários numéricos por build em 26 configurações Metric/Imperial/None e seis configurações GUI em 4.2.0, 4.2.23 e 5.3.0. ZIP/fonte continuam iguais à consolidação. A suíte padrão ganhou a regressão e tem 25 entradas; somente as duas entradas novas foram executadas nesta rodada, sem reclassificar a matriz anterior de 24 como uma matriz nova de 25.
-
-Conversão física, Scale adimensional, mínimo explícito em mm, Frames/Dimensions, quatro bases de Placement, mudança de unidades e recusas atômicas passaram os casos descritos. Não foi certificada precisão absoluta uniforme: Geometry Bounds aceitou um gap de 1 mm a 1 km da origem com até 0,050976574 mm de erro, dentro do orçamento atual. Minimum Separation não é erro físico máximo. None não declara uma unidade SI. Não anunciar uma precisão mínima/máxima absoluta em mm sem definir um contrato e faixa de operação.
-
-**Achado visual, com inferência corrigida:** os metadados do Transform são 3 em todos os grupos, contra 5 nativo em Location/Rotation/Dimensions e 3 em Scale. As capturas sequenciais antigas sugeriam que 0,001 eliminava a diferença, mas novas comparações frias de 4.2.0/5.3.0 mostram 12,3 mm no addon e 12,346 mm no nativo nas duas escalas. Não atribuir a imagem antiga a uma causa confirmada. Há proposta separada, sem merge; veja [revisão complementar](followup-review-1.7.9.md). A digitação física continua pendente.
-
-### F. Matriz complementar e proposta visual sem merge
-
-Foram executadas agora 25/25 entradas no mesmo ZIP final em 4.3.2, 4.4.3, 4.5.16, 5.0.1, 5.1.2 e 5.2.4. São 150 processos novos, separados em `results/1.7.9/remaining-builds/`. O código/ZIP da main não mudou. Os registros anteriores de 24 entradas nas três builds e os do ZIP c053f366… não foram reclassificados.
-
-A branch `proposal/better-item-ui-precision` contém apenas metadados por grupo e título de sincronização pausada; usa um candidato temporário distinto. Não foi mesclada e sua versão de destino depende de Gabriel. O [inventário do mínimo](minimum-naming-1.7.9.md) e o [checklist humano](manual-publication-checklist.md) estão fora do pacote. A hipótese window.scene permanece sem reprodução real.
-
-## 6. Compatibilidade atual e o que foi realmente testado
-
-**Execução do consolidado 1.7.9:** **24/24 em 4.2.0, 4.2.23 e 5.3.0**, perfis isolados e GUI real; **14/14 verificações externas de integridade** separadas. Veja [relatório e hashes](release-1.7.9.md). As nove builds portáteis e o instalado da contribuição anterior passaram 23 entradas no ZIP `c053f366…`; essa evidência permanece identificada e não certifica o ZIP consolidado nas builds intermediárias.
-
-
-**Registro histórico 1.7.8:** matriz completa **22/22 em 4.2.23 e 22/22 em 5.3.0**, Windows x64, mesmo ZIP final. Acrescenta a regressão de invalidação às 21 entradas anteriores, com GUI real, Undo e referências/Normal. Benchmark opt-in foi executado separadamente e em sequência nos dois ZIPs, nas duas builds. [Relatório](release-1.7.8.md). A 4.2.0 inicial e as demais builds históricas não foram repetidas nesta entrega.
-
-**Registro histórico 1.7.7:** matriz completa de 21 entradas por build em 4.2.23 e 5.3.0. Migração 1.7.2 e persistência em novos processos tiveram execução própria naquela entrega. [Relatório e limites](release-1.7.7.md). A tabela abaixo preserva exclusivamente a proveniência histórica 1.7.6.
-
-Relatório autoritativo e resultados: [compatibility-1.7.6.md](compatibility-1.7.6.md), `tests/better_item/results/1.7.6/` e [ferramentas de reprodução](../../tests/better_item/compatibility/README.md).
-
-| Builds Windows x64 | Origem da evidência |
-|---|---|
-| 4.2.0 e 5.3.0 | Matriz completa no ZIP final 1.7.6, 19 API/regressão + instalação. |
-| 4.2.23, 4.3.2, 4.4.3 | Candidato 1.7.6, mesmo Python e mínimo; diferença final documental. |
-| 4.5.16 | 19 regressões do mesmo Python na 1.7.5 e instalação repetida com ZIP final 1.7.6. |
-| 5.0.1, 5.1.2, 5.2.4 | Evidência 1.7.5 reutilizada porque Python é idêntico; não afirmar execução completa do novo ZIP nessas builds. |
-
-Cobertura inclui Location/Rotation/Dimensions, hierarquias e sinais, deltas, Geometry Nodes, caches, isolamento de dados, distribuição e Live, GUI, Undo/Redo e persistência. Grade de estado: 8.064 combinações por build, incluindo recusas esperadas. Os números são casos finitos, não prova de todos os estados possíveis. Consulte JSON e suite em vez de somar resultados de épocas diferentes como uma execução nova.
-
-Fixture 4.2.0→5.3.0 passou com Frame vinculado, referência relativa, configurações de distribuição e GN. Não é promessa de compatibilidade universal de arquivos nem de abertura de arquivo novo em versão antiga.
-
-Sem certificação macOS/Linux/GPU/backends/todos os patches. O revisor externo usou Linux/bpy PyPI e trouxe evidência adicional, mas não substituiu a matriz Windows nem testou mouse. Relatórios podem ter builds 5.2.3 externas versus 5.2.4 da matriz; não trocar esses números.
-
-## 7. Como testar sem repetir erros de infraestrutura
+## 6. Validação
 
 Use clone/checkout e workspace isolados. Neste computador, novos ambientes e portáteis devem ficar no **D:** conforme pedido de Gabriel. A pasta exibida como cwd pode ser o antigo projeto Mixer e não contém necessariamente o fonte atual. Não modificar instalação nem arquivos `.blend` de clientes.
 
@@ -238,97 +146,14 @@ Chamada mínima de script:
 - Refusos legítimos (ordem empatada, volume inválido, Gimbal singular, canais bloqueados, precisão insuficiente etc.) não são falhas da suíte. Verificar diagnóstico e ausência de efeito parcial.
 - Não atribuir mensagens de shutdown como “not freed memory blocks” automaticamente ao addon. Reproduzir com controle sem addon antes de concluir.
 
-### Ambiente local da validação 1.7.9 — verificar disponibilidade
 
-- Checkout: `C:/Users/gabri/OneDrive/Documentos/GitHub/Blender-Plugins/`. O `git` não está no PATH; foi usado o do GitHub Desktop (`%LOCALAPPDATA%/GitHubDesktop/app-*/resources/app/git/cmd/git.exe`).
-- Blender instalado: `C:/Program Files/Blender Foundation/Blender 5.3/blender.exe` (5.3.0). Python para os utilitários: `.../Blender 5.3/5.3/python/bin/python.exe` (o `python.exe` do PATH é o atalho da Microsoft Store).
-- Workspaces: `C:/work/better-item-matrix-1.7.9/` (matriz e downloads dos 9 portáteis, extrações removidas) e `C:/work/better-item-matrix-1.7.8/` (baseline de benchmark). Árvore 1.7.8 exportada em `C:/work/better-item-repo-1.7.8/`.
-- O checkout tem `core.autocrlf=true`: gere o ZIP a partir de `git -c core.autocrlf=false archive`, não da árvore de trabalho, para manter LF como nos ZIPs anteriores.
+## 7. Próximo ciclo: 1.8
 
-### Ambiente local anterior — histórico
+Escopo para discussão, sem implementação automática de funcionalidades:
 
-O checkout anterior estava em `C:/Users/gabri/Nova pasta/Documents/ChatGPT/Mixer - Modified Blender 2/Blender-Plugins/`. Workspaces irmãos: `matrix178-final/` (matriz), `matrix178-benchmark/` (benchmark novo) e `cache-baseline-final/` (medição nova do runtime 1.7.7). Os workspaces 1.7.6/1.7.7 permanecem históricos; não são a fonte atual para editar.
+1. **Diagnósticos e estados:** distinguir configuração incompleta, recusa matemática, operação não aplicada e sincronização pausada; instruções curtas e específicas.
+2. **Layout e legibilidade:** hierarquia dos painéis, agrupamento, largura, rótulos e nomes do mínimo. Preservar a distinção entre configurações da Scene e override do operador.
+3. **Gestos de edição:** coerência de arrasto/digitação, links, Esc, Undo/Redo e F9; corrigir comportamentos reproduzidos com interação real.
+4. **Responsividade medida:** medir cenários frios/quentes e Normal em seleção densa antes de novas otimizações; preservar frescor e determinismo.
 
-- Fonte publicada congelada: `C:/Users/gabri/Documents/Codex/better-item-176/publish176/src/better_item/`.
-- ZIP final: `C:/Users/gabri/Documents/Codex/better-item-176/publish176/addons/better_item.zip`.
-- Workspace de matriz: `C:/Users/gabri/Documents/Codex/better-item-compatibility/`.
-- Executáveis preservados em `portable/blender-4.2.23-windows-x64/blender.exe` e `portable/blender-5.3.0-windows-x64/blender.exe` dentro desse workspace.
-- Blender instalado do usuário: `C:/Program Files/Blender Foundation/Blender 5.2/blender.exe` (5.2.3 neste ambiente).
-- Python bundled usado para utilitários: `C:/Program Files/Blender Foundation/Blender 5.2/5.2/python/bin/python.exe`.
-- Revisão com script e resultados: `C:/Users/gabri/Documents/Codex/better-item-review176-report/`.
-- Este pacote de documentação: `C:/Users/gabri/Documents/Codex/better-item-handoff-176/`.
-
-São conveniências locais, não pré-requisitos portáveis. Alguns portáteis antigos foram removidos para liberar disco; preserve resultados, URLs e checksums. Confira espaço antes de extrair outra build (aproximadamente 1 GB por extração, além do ZIP). Não apagar instalações do usuário. Em outro computador, use os comandos de preparação oficiais em vez de presumir esses caminhos.
-
-## 8. Edit Mode 2.0 — estudo concluído, produto não implementado
-
-Gabriel pediu viabilidade para transformar, alinhar e distribuir vértices/arestas/faces usando referências de componentes, objetos e Frames. Quer discutir como fazer antes de começar uma grande versão 2.0.
-
-O [estudo](edit-mode-2.0-feasibility.md) e `test_editmode_foundations.py` demonstraram primitivas BMesh em 4.2.0/4.2.23/4.3.2/4.4.3/5.3.0. Não foi identificada exigência de API exclusiva 4.5/5.x para o escopo pretendido. Isso permitiu suportar 4.2 nas capacidades atuais sem bloquear a futura proposta. Não significa que a 2.0 esteja pronta.
-
-Reutilizar resolvedor de referências, matemática e planejadores quando contratos coincidirem; criar caminho de escrita BMesh separado da escrita de canais Object. Para transformar ponto local pela transformação mundial T: `x_novo = M.inverted() @ T @ M @ x`. Não refatorar todos os motores antecipadamente para uma abstração universal.
-
-Definir ANTES da UI:
-
-- significado de Rotation/Scale de uma seleção sem TRS intrínseco;
-- unidade de distribuição (vértice, componente, ilha) e destinos incompatíveis de vértices compartilhados;
-- orientação de ponto/aresta/face: normal sozinha não define todos os graus de liberdade;
-- identidade persistente: índices e wrappers não sobrevivem à edição; duplicação copia IDs customizados, logo um inteiro não resolve sozinho;
-- referências capturadas versus vinculadas e reação a exclusão/reindexação/merge;
-- multiobjeto e Mesh compartilhada: não escrever dois destinos conflitantes nem duplicar dados silenciosamente;
-- malha editável versus resultado avaliado dos modificadores, shape keys, seleção oculta e desempenho.
-
-Sequência sugerida, ainda dependente de definição: vértices em uma malha com referências existentes/Frames capturados → validação de Undo/precisão → multiobjeto/ilhas → arestas/faces → referências persistentes. Um probe pequeno de BMesh não valida sliders, todas as features ou malhas densas.
-
-## 9. O que mudou desde o manual 1.7.3
-
-| Informação antiga | Leitura correta hoje |
-|---|---|
-| Mínimo 5.0 e testes concentrados em 5.2.3 | Mínimo 4.2.0, matriz e proveniência da seção 6. |
-| Compatibilidade é apenas uma pendência | Investigação e matriz foram executadas; expansão de plataformas ainda não certificada. |
-| Possibilidade de buscar Custom Orientation da cena | Implementada experimentalmente na 1.7.4 e removida na 1.7.5; não restaurar. Exportação de Frame preservada. |
-| Capítulos/JSON antigos são estado mais recente | São snapshot 1.7.3. Este contexto e snapshot consolidado 1.7.9 têm prioridade para o estado atual. |
-| Pendências genéricas de runner unificado | Há toolkit em `tests/better_item/compatibility/`. Inspecioná-lo antes de propor recriação. |
-| Tudo que passa nos testes é coberto por script | O bug de kwargs diretos passou despercebido; caminho invoke não cobre EXEC_DEFAULT. |
-| Endpoint com Geometry Bounds | Já retirado na 1.7.3; não confundir testes anteriores com contrato vigente. |
-
-## 10. Entrega, repositório e continuidade
-
-O usuário já autorizou publicação da documentação em GitHub público. Não enviar documentos externos de terceiros integralmente sem necessidade: esta passagem registra análise própria, referências locais e evidências reproduzidas.
-
-Manter `addons/better_item.zip` atualizado **no mesmo caminho**; não criar uma coleção de ZIPs de novas versões na raiz ou em addons. O código editável continua em src e os testes fora do instalador. Artefatos históricos preexistentes em dist/archive não devem ser apagados por essa regra sem uma tarefa específica.
-
-Em entrega de runtime: conferir manifesto/bl_info/README/changelog; pacote sem bytecode, outputs de teste ou segredos; comparar bytes empacotados com src, SHA256 e instalação nativa; executar regressões adequadas e matriz de compatibilidade conforme impacto. Atualizar toolkit para apontar ao novo ZIP. Não rebatizar evidência antiga como teste da versão nova. Em documentação-only, NÃO incrementar versão nem reconstruir instalador sem motivo.
-
-Ferramenta usada em sessões anteriores: conector GitHub para ler árvore/blobs e publicar commit com base tree e atualização protegida do ref. Git convencional também é adequado em checkout correto. Sempre conferir HEAD e arquivos alterados; não sobrescrever mudanças concorrentes. Só publicar o escopo autorizado. Este trabalho de documentação não autoriza editar o runtime como parte oculta da preparação.
-
-### Próximo trabalho na 1.7.10 VG
-
-1. Confirmar HEAD, SHA e status em [release-1.7.10.md](release-1.7.10.md) e [handoff-1.7.10.json](handoff-1.7.10.json). O candidato está nesta branch; a main permanece 1.7.9. Não reclassificar evidência histórica como testes deste ZIP.
-2. Executar o checklist de teclado/mouse pendente e registrar resultados reais. A matriz final 28/28 em nove builds, capturas, persistência e migração são evidências automatizadas separadas.
-3. Precisão visual, título BI-F006, aviso de Volume e limite Python de recuperação do observador foram corrigidos nesta branch. Não reabri-los como pendências da 1.8 sem uma nova reprodução.
-4. Manter explícita a causa ainda incerta dos crashes das sondagens artificiais. O cenário final válido passou nas nove builds; a leitura direta de RNA da janela removida foi retirada do teste. Um crash novo em cenário válido exige investigação antes de fechar publicação.
-5. Revisar/decidir merge e publicação estável; não fazê-los como consequência automática de concluir testes na branch.
-6. Depois do fechamento, planejar as quatro frentes da 1.8 sem repetir essas correções. Tolerância física absoluta em mm exige decisão própria; animação e novos alvos Edit Mode não entram.
-
-### Recomendação anterior, após a 1.7.9 (histórico)
-
-**Atualização de 17/11/2026:** Gabriel pediu avaliar uma manutenção antes da 1.8. Leia primeiro [avaliação e critérios de fechamento](pre-1.8-maintenance-assessment.md). Há nova reprodução sintética da exceção que escapa do observador e um crash de sondagem combinada cuja causa ainda não foi isolada; não os confundir com falha cotidiana comprovada. O escopo de correção está proposto, sem implementação. O número técnico recomendado é **1.7.10**, pois os validadores de extensão rejeitam `1.7.9.1`. Os itens abaixo são a recomendação anterior; a alocação dos ajustes pontuais de UI pode mudar se a manutenção for aprovada.
-
-1. Confirmar o HEAD e o SHA do ZIP consolidado; ler [release-1.7.9.md](release-1.7.9.md).
-2. Executar o checklist manual de mouse da 1.7.9.
-3. Planejar 1.8.x em quatro frentes: diagnósticos, layout/clareza de estados, gestos de edição e responsividade das leituras. As correções objetivas e otimizações medidas da 1.7.9 já foram tratadas; não repeti-las como pendências.
-4. Exibição reproduzida ainda pendente para 1.8.x: precisão visual de Location/Rotation/Dimensions diferente do nativo; a antiga inferência sobre Unit Scale foi corrigida na revisão fria. Ver seções E/F. Não confundir valor exibido com valor armazenado.
-5. Diagnóstico reproduzido ainda pendente para 1.8.x: malhas abertas em Volume, com referências válidas, podem mostrar “Complete references…” em vez de explicar a geometria inválida. Não mudar solver para esconder o diagnóstico.
-6. Confirmar o checklist manual, especialmente cancelamento de arrasto, F9, larguras e seleção Normal densa. Os testes com setters/GUI não certificam os gestos físicos.
-7. Animação continua excluída; alvos Edit Mode são estudo para 2.0. Novas features/constraints/estado compartilhado dependem de discussão.
-
-### Recomendação anterior, após a 1.7.8 (histórico)
-
-1. Confirmar HEAD, versão, fonte/ZIP e ler os documentos nesta ordem.
-2. Ler os relatórios 1.7.7/1.7.8 e seus resultados. Endpoint direto/changelog e a primeira otimização estão implementados; não reabrir como se não houvesse evidência.
-3. Concluir a passada humana de publicação com mouse, F9, larguras, mensagens e troca de fontes; automação GUI não a substitui.
-4. Perfilar leituras frias/centroides e getters Transform, e medir o que ainda causa invalidação geométrica. Não confundir a seletividade parcial já medida com um rastreador completo de dependências.
-5. Manter separadas discussão de UI, Normal/constraints e futura 2.0. Novas alterações dependem do pedido atual de Gabriel.
-
-Uma mensagem pronta está em [MENSAGEM-NOVA-CONVERSA.md](MENSAGEM-NOVA-CONVERSA.md). Não é necessário transferir o histórico inteiro da conversa, mas a próxima IA precisa realmente conseguir abrir os documentos e o repositório; se não conseguir, deve declarar a falta de acesso antes de afirmar que revisou.
+Recomendação inicial: começar a 1.8.0 por diagnósticos/estados e organização visual, fechando o recorte antes de mexer em gestos ou otimizações. Os ajustes visuais não mudam tolerâncias físicas nem ampliam o solver. Animação continua fora do escopo. Edit Mode permanece estudo de futura 2.0, sem novos alvos nesta etapa.

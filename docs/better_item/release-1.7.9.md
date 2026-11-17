@@ -1,6 +1,6 @@
 # Better Item 1.7.9 — consolidação e estabilização
 
-Entrega de **17/11/2026**, sobre a 1.7.8 `97a676d6e320742fa83185f62296c9d1730116d5`. Integra `release/1.7.9` (`de73eaa`) e a manutenção local (`0ef6b94`), preservando seus históricos. Instalador único no mesmo caminho `addons/better_item.zip`. Mínimo: **Blender 4.2.0**.
+Entrega de **17/11/2026**, sobre a 1.7.8 `97a676d6e320742fa83185f62296c9d1730116d5`. Instalador único no mesmo caminho `addons/better_item.zip`. Mínimo: **Blender 4.2.0**.
 
 ## O que entrou
 
@@ -70,7 +70,7 @@ Uma tentativa auxiliar de fixture também falhou antes de carregar o addon, porq
 
 ## Proveniência anterior e pendências
 
-Os registros anteriores de 23 entradas × 10 executáveis continuam em `results/1.7.9/matrix/`, com SHA `c053f366…`. Os benchmarks anteriores usam outro ZIP (`beb561ad…`). [Relatório anterior preservado](release-1.7.9-branch.md) e [snapshot anterior](handoff-1.7.9-branch.json). Eles não certificam este novo instalador nas builds intermediárias.
+Os registros anteriores de 23 entradas × 10 executáveis continuam em `results/1.7.9/matrix/`, com SHA `c053f366…`. Os benchmarks anteriores usam outro ZIP (`beb561ad…`). Metadados dos artefatos anteriores constam em handoff-1.7.9.json; medições e resultados mantêm seus hashes originais. Eles não certificam este novo instalador nas builds intermediárias.
 
 Os probes anteriores à manutenção local estão em `integration/before-fix-assessment/`: a exceção nativa foi injetada uma vez na 1.7.8 e deixou o timer desregistrado com exportação ainda habilitada e eixos velhos; não foi um crash espontâneo de produção. Esses registros da avaliação anterior não foram reexecutados nesta consolidação. A regressão GUI atual valida isolamento e recuperação no novo ZIP.
 
@@ -82,4 +82,4 @@ O [estudo de unidades](units-1.7.9.md) acrescenta testes e achados físicos/visu
 
 ## Revisão complementar do mesmo ZIP
 
-A [rodada posterior](followup-review-1.7.9.md) executou 25 entradas nas seis builds intermediárias que faltavam, com o ZIP estável inalterado. A proposta de precisão/título está em outra branch, sem merge. O checklist humano e o inventário do mínimo estão na documentação externa.
+A [rodada posterior](followup-review-1.7.9.md) executou 25 entradas nas seis builds intermediárias que faltavam, com o ZIP estável inalterado. Precisão visual e título de sincronização foram corrigidos na 1.7.10. O checklist humano e o inventário do mínimo estão na documentação externa.

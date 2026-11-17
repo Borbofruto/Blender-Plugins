@@ -1,6 +1,5 @@
 {
   "status": "automated-qualified-manual-pending",
-  "branch": "release/1.7.10-vg",
   "source_commit": "caba3716302069af763f4169e728b21cf060b9bc",
   "addon_zip_sha256": "53ea12dee71f48cf755964405111688b15fa943ffb1bfb07ba4a67301a63fbef",
   "python_source_sha256": "d9a02770dc57b25836de826a0031fe5cabb38e83e3ae6ce3699fa2afc58bd1f0",
@@ -635,5 +634,6 @@
     "manual mouse/keyboard checklist",
     "original artificial 4.2.0 crash cause not conclusively isolated; corrected close-once case passes"
   ],
-  "archive_policy": "Raw results/logs/scripts in standard ZIPs with hashes; new regression JSONs and compact summaries directly readable. Cold UI and two representative sync screenshots published; remaining screenshots retained on D with hashes in each index. No .blend, profiles, Blender runtime or downloads."
+  "archive_policy": "Raw results/logs/scripts in standard ZIPs with hashes; new regression JSONs and compact summaries directly readable. Cold UI and two representative sync screenshots published; remaining screenshots retained on D with hashes in each index. No .blend, profiles, Blender runtime or downloads.",
+  "version": "1.7.10"
 }

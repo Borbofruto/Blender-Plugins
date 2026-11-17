@@ -1,6 +1,6 @@
 {
   "addon_version": "1.7.10",
-  "addon_zip_sha256": "53ea12dee71f48cf755964405111688b15fa943ffb1bfb07ba4a67301a63fbef",
+  "addon_zip_sha256": "d0d06869fcb4e6143116f4acad38912a7530e69303452b109200c9a170a02175",
   "source_commit": null,
   "tests": [
     {

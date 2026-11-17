@@ -9,7 +9,7 @@
 - Title BI-F006 as Orientation sync paused, preserving its severity, retry policy and other diagnostic titles.
 
 ### Validation
-- Maintenance candidate on release/1.7.10-vg; qualification status and pending interaction checks are tracked outside the package. No new feature, saved schema, mathematical tolerance or supported minimum change.
+- No new feature, saved schema, mathematical tolerance or supported minimum change. Validation results and limitations are recorded in the release report.
 
 ## 1.7.9
 

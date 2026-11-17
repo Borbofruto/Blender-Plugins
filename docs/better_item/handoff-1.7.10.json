@@ -1,13 +1,13 @@
 {
   "version": "1.7.10",
   "date": "2026-11-17",
-  "branch": "release/1.7.10-vg",
-  "status": "automated-qualified-manual-pending",
+  "branch": "main",
+  "status": "official",
   "baseline_commit": "f9180b6",
   "archive": {
     "path": "addons/better_item.zip",
-    "sha256": "53ea12dee71f48cf755964405111688b15fa943ffb1bfb07ba4a67301a63fbef",
-    "bytes": 102194
+    "sha256": "d0d06869fcb4e6143116f4acad38912a7530e69303452b109200c9a170a02175",
+    "bytes": 102162
   },
   "minimum_blender": "4.2.0",
   "python_source_sha256": "d9a02770dc57b25836de826a0031fe5cabb38e83e3ae6ce3699fa2afc58bd1f0",
@@ -74,10 +74,10 @@
     }
   ],
   "pending": [
-    "manual mouse/keyboard checklist",
-    "original artificial 4.2.0 crash cause not conclusively isolated; corrected close-once case passes"
+    "manual keyboard/mouse interaction not executed",
+    "cause of earlier artificial native crashes not conclusively isolated"
   ],
-  "historical_evidence": "See handoff-1.7.9.json; not acceptance for this candidate",
+  "historical_evidence": "Earlier release records retain their original artifact hashes.",
   "source_commit": "caba3716302069af763f4169e728b21cf060b9bc",
   "qualification": "tests/better_item/results/1.7.10/qualification.json",
   "automated": {
@@ -98,11 +98,31 @@
     "infrastructure_checks": 14,
     "extra_processes": 20
   },
-  "cross_review": {
-    "report": "docs/better_item/review-vc-vg-1.7.10.md",
-    "reviewed_vc_commit": "2cb09d5",
-    "new_targeted_processes": 14,
-    "not_full_vc_matrix": true,
-    "runtime_unchanged": true
+  "approval_date": "2026-11-17",
+  "runtime_qualification_archive_sha256": "53ea12dee71f48cf755964405111688b15fa943ffb1bfb07ba4a67301a63fbef",
+  "documentation_only_repackage": {
+    "changed_files": [
+      "CHANGELOG.md"
+    ],
+    "python_unchanged": true,
+    "final_package_validation": "tests/better_item/results/1.7.10/package-final/"
+  },
+  "final_package_validation": {
+    "passed": true,
+    "builds": [
+      "4.2.0",
+      "4.2.23",
+      "5.3.0",
+      "4.3.2",
+      "4.4.3",
+      "4.5.16",
+      "5.0.1",
+      "5.1.2",
+      "5.2.4"
+    ],
+    "installation_processes": 9,
+    "native_validation_processes": 9,
+    "infrastructure_checks": 14,
+    "results": "tests/better_item/results/1.7.10/package-final/validation.json"
   }
 }

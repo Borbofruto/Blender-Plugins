@@ -2,7 +2,7 @@
 
 Executada em **17/11/2026**, após a publicação `77ce932`. **Nenhum código do addon ou ZIP foi alterado.** SHA256: `6a01eb809165347e94668d259a492b922b69f0c368657cae48599a2f57a9f029`. Os testes novos usam o runner existente e ambientes/perfis separados no D:.
 
-> **Revisão posterior:** comparações em processos frios contradizem a inferência de que Unit Scale 0,001 elimina o arredondamento. Veja [a correção e a proposta separada](followup-review-1.7.9.md). Os dados numéricos e as capturas originais foram preservados.
+> **Revisão posterior:** comparações em processos frios contradizem a inferência de que Unit Scale 0,001 elimina o arredondamento. Veja [a correção da inferência](followup-review-1.7.9.md). Os dados numéricos e as capturas originais foram preservados.
 
 ## Conclusão
 
@@ -10,7 +10,7 @@ A conversão de comprimentos e do mínimo explícito em mm foi consistente nas c
 
 Há dois achados que precisam permanecer explícitos:
 
-1. **Exibição:** os campos do addon têm uma precisão declarada diferente do nativo. A dependência causal de Unit Scale inferida originalmente não foi confirmada em processos frios. Em 5.3.0, `12,3456789 mm` aparece como `12,3 mm` em Unit Scale 1 e `12,346 mm` em 0,001. O nativo mostra `12,346 mm` nos dois casos. Essa descrição registra as capturas sequenciais originais; a nova comparação fria mantém 12,3 mm nas duas escalas e não reproduz o desaparecimento. Os valores RNA armazenados são iguais. A propriedade do addon tem `precision=3`, contra 5 no campo nativo; isso é uma pista técnica da causa, não uma mudança implementada. Pendência de apresentação para 1.8.x.
+1. **Exibição:** os campos do addon têm uma precisão declarada diferente do nativo. A dependência causal de Unit Scale inferida originalmente não foi confirmada em processos frios. Em 5.3.0, `12,3456789 mm` aparece como `12,3 mm` em Unit Scale 1 e `12,346 mm` em 0,001. O nativo mostra `12,346 mm` nos dois casos. Essa descrição registra as capturas sequenciais originais; a nova comparação fria mantém 12,3 mm nas duas escalas e não reproduz o desaparecimento. Os valores RNA armazenados são iguais. A propriedade do addon tem `precision=3`, contra 5 no campo nativo; isso é uma pista técnica da causa, não uma mudança implementada. Achado de apresentação da 1.7.9, corrigido na 1.7.10.
 2. **Tolerância física:** Geometry Bounds pode aceitar uma diferença superior ao mínimo configurado, pois esse mínimo não é o erro máximo admissível. Um gap de 1 mm a 1 km da origem teve erro observado de até **0,050976574 mm**, aceito pelo orçamento de arredondamento atual. Não anunciar `Minimum Separation` como garantia de exatidão absoluta.
 
 ## O que foi executado agora

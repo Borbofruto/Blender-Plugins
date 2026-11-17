@@ -1,0 +1,11 @@
+{
+  "passed": true,
+  "final_archive_sha256": "d0d06869fcb4e6143116f4acad38912a7530e69303452b109200c9a170a02175",
+  "native_validation_processes": 9,
+  "installation_processes": 9,
+  "record_archives_verified": 9,
+  "only_repackaged_file": "CHANGELOG.md",
+  "runtime_byte_identical": true,
+  "documentation_links_checked": 86,
+  "manual_keyboard_mouse_tested": false
+}
