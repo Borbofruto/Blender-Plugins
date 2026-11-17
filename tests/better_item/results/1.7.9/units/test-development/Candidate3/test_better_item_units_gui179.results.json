@@ -1,0 +1,116 @@
+{
+  "passed": true,
+  "configurations": [
+    {
+      "system": "METRIC",
+      "scale_length": 1.0,
+      "length_unit": "MILLIMETERS",
+      "raw_blender_units": [
+        0.012345679104328156,
+        9.99999993922529e-09,
+        0.0010000000474974513
+      ],
+      "raw_mm_by_scene_scale": [
+        12.345679104328156,
+        9.99999993922529e-06,
+        1.0000000474974513
+      ],
+      "native_and_addon_rna_equal": true,
+      "screenshot": "units-gui-00-METRIC-MILLIMETERS.png",
+      "physical_units_declared": true
+    },
+    {
+      "system": "METRIC",
+      "scale_length": 0.0010000000474974513,
+      "length_unit": "MILLIMETERS",
+      "raw_blender_units": [
+        12.345678329467773,
+        9.999999747378752e-06,
+        0.9999999403953552
+      ],
+      "raw_mm_by_scene_scale": [
+        12.345678915856029,
+        1.0000000222353253e-05,
+        0.9999999878928036
+      ],
+      "native_and_addon_rna_equal": true,
+      "screenshot": "units-gui-01-METRIC-MILLIMETERS.png",
+      "physical_units_declared": true
+    },
+    {
+      "system": "METRIC",
+      "scale_length": 0.009999999776482582,
+      "length_unit": "CENTIMETERS",
+      "raw_blender_units": [
+        1.2345678806304932,
+        9.999999974752427e-07,
+        0.10000000149011612
+      ],
+      "raw_mm_by_scene_scale": [
+        12.345678530357507,
+        9.99999975123501e-06,
+        0.9999999925494191
+      ],
+      "native_and_addon_rna_equal": true,
+      "screenshot": "units-gui-02-METRIC-CENTIMETERS.png",
+      "physical_units_declared": true
+    },
+    {
+      "system": "METRIC",
+      "scale_length": 1.0,
+      "length_unit": "METERS",
+      "raw_blender_units": [
+        0.012345679104328156,
+        9.99999993922529e-09,
+        0.0010000000474974513
+      ],
+      "raw_mm_by_scene_scale": [
+        12.345679104328156,
+        9.99999993922529e-06,
+        1.0000000474974513
+      ],
+      "native_and_addon_rna_equal": true,
+      "screenshot": "units-gui-03-METRIC-METERS.png",
+      "physical_units_declared": true
+    },
+    {
+      "system": "IMPERIAL",
+      "scale_length": 1.0,
+      "length_unit": "INCHES",
+      "raw_blender_units": [
+        0.012345679104328156,
+        9.99999993922529e-09,
+        0.0010000000474974513
+      ],
+      "raw_mm_by_scene_scale": [
+        12.345679104328156,
+        9.99999993922529e-06,
+        1.0000000474974513
+      ],
+      "native_and_addon_rna_equal": true,
+      "screenshot": "units-gui-04-IMPERIAL-INCHES.png",
+      "physical_units_declared": true
+    },
+    {
+      "system": "NONE",
+      "scale_length": 1.0,
+      "length_unit": "ADAPTIVE",
+      "raw_blender_units": [
+        0.012345679104328156,
+        9.99999993922529e-09,
+        0.0010000000474974513
+      ],
+      "raw_mm_by_scene_scale": [
+        12.345679104328156,
+        9.99999993922529e-06,
+        1.0000000474974513
+      ],
+      "native_and_addon_rna_equal": true,
+      "screenshot": "units-gui-05-NONE-ADAPTIVE.png",
+      "physical_units_declared": false
+    }
+  ],
+  "draw_errors": [],
+  "keyboard_input_tested": false,
+  "blender": "5.3.0"
+}

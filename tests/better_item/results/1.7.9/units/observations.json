@@ -1,0 +1,83 @@
+{
+  "maximum_observed_accepted_geometry_errors": {
+    "4.2.0": {
+      "kind": "geometry_precision",
+      "system": "IMPERIAL",
+      "requested_scale_length": 0.3048,
+      "length_unit": "INCHES",
+      "mm_per_blender_unit": 304.80000376701355,
+      "offset_mm": 1000000.0,
+      "input_gap_mm": 1.0,
+      "stored_requested_gap_mm": 1.000000008633678,
+      "coordinate_ulp_mm": 0.07441406341968104,
+      "geometry": true,
+      "accepted": true,
+      "measured_gaps_mm": [
+        1.0091797036584467,
+        0.9765625194413587,
+        1.0509765829192474
+      ],
+      "maximum_gap_error_mm": 0.050976574285569454,
+      "passed": true
+    },
+    "4.2.23": {
+      "kind": "geometry_precision",
+      "system": "IMPERIAL",
+      "requested_scale_length": 0.3048,
+      "length_unit": "INCHES",
+      "mm_per_blender_unit": 304.80000376701355,
+      "offset_mm": 1000000.0,
+      "input_gap_mm": 1.0,
+      "stored_requested_gap_mm": 1.000000008633678,
+      "coordinate_ulp_mm": 0.07441406341968104,
+      "geometry": true,
+      "accepted": true,
+      "measured_gaps_mm": [
+        1.0091797036584467,
+        0.9765625194413587,
+        1.0509765829192474
+      ],
+      "maximum_gap_error_mm": 0.050976574285569454,
+      "passed": true
+    },
+    "5.3.0": {
+      "kind": "geometry_precision",
+      "system": "IMPERIAL",
+      "requested_scale_length": 0.3048,
+      "length_unit": "INCHES",
+      "mm_per_blender_unit": 304.80000376701355,
+      "offset_mm": 1000000.0,
+      "input_gap_mm": 1.0,
+      "stored_requested_gap_mm": 1.000000008633678,
+      "coordinate_ulp_mm": 0.07441406341968104,
+      "geometry": true,
+      "accepted": true,
+      "measured_gaps_mm": [
+        1.0091797036584467,
+        0.9765625194413587,
+        1.0509765829192474
+      ],
+      "maximum_gap_error_mm": 0.050976574285569454,
+      "passed": true
+    }
+  },
+  "visual_observation": {
+    "kind": "Human inspection of automated Blender 5.3.0 screenshots",
+    "physical_location_mm": 12.3456789,
+    "length_unit": "MILLIMETERS",
+    "unit_scale_1": {
+      "addon_display": "12.3 mm",
+      "native_display": "12.346 mm"
+    },
+    "unit_scale_0_001": {
+      "addon_display": "12.346 mm",
+      "native_display": "12.346 mm"
+    },
+    "rna_precision": {
+      "addon": 3,
+      "native": 5
+    },
+    "stored_values_equal": true,
+    "open_for_1_8_ui": true
+  }
+}

@@ -19,6 +19,8 @@ A spatial-precision Transform, Reference Frames and Align/Distribute addon for B
 - **1.7.7:** direct Endpoint operator arguments fixed ([report](docs/better_item/release-1.7.7.md)).
 - **1.7.6:** minimum lowered to Blender 4.2.0 ([compatibility report](docs/better_item/compatibility-1.7.6.md)). The separate [Edit Mode 2.0 feasibility study](docs/better_item/edit-mode-2.0-feasibility.md) confirms public BMesh foundations without shipping Edit Mode targets yet.
 
+[Scene-unit qualification](docs/better_item/units-1.7.9.md): new tests cover Metric, Imperial and Unit Scale variants on the same stable ZIP. Conversion passed the tested cases; display rounding and the limits of absolute mm accuracy are documented separately.
+
 ### Distribution by references, points and occupied geometry
 
 - Explicit Offset / Endpoint. Between Points uses Start-to-End direction; Reference Axis projects End onto one chosen reference axis.

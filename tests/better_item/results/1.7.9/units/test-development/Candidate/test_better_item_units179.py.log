@@ -1,0 +1,20 @@
+Traceback (most recent call last):
+  File "D:\Codex-BetterItem-Units-179-Candidate\results\5.3.0\test_better_item_units179.py", line 283, in <module>
+    Path(__file__).with_suffix('.results.json').write_text(json.dumps(result,indent=2),encoding='utf-8')
+                                                           ~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\gabri\Documents\Codex\better-item-compatibility\portable\blender-5.3.0-windows-x64\5.3\python\Lib\json\__init__.py", line 242, in dumps
+    **kw).encode(obj)
+          ~~~~~~^^^^^
+  File "C:\Users\gabri\Documents\Codex\better-item-compatibility\portable\blender-5.3.0-windows-x64\5.3\python\Lib\json\encoder.py", line 202, in encode
+    chunks = self.iterencode(o, _one_shot=True)
+  File "C:\Users\gabri\Documents\Codex\better-item-compatibility\portable\blender-5.3.0-windows-x64\5.3\python\Lib\json\encoder.py", line 263, in iterencode
+    return _iterencode(o, 0)
+  File "C:\Users\gabri\Documents\Codex\better-item-compatibility\portable\blender-5.3.0-windows-x64\5.3\python\Lib\json\encoder.py", line 182, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+                    f'is not JSON serializable')
+TypeError: Object of type float32 is not JSON serializable
+
+Error: script failed, file: 'D:\Codex-BetterItem-Units-179-Candidate\results\5.3.0\test_better_item_units179.py', exiting.
+Blender 5.3.0 (hash 02f0899d78e3 built 2026-11-10 01:33:43)
+
+Blender quit

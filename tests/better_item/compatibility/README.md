@@ -27,7 +27,7 @@ The reports distinguish successful runtime tests, legitimate solver refusals, ma
 
 ## Optional Edit Mode foundation study
 
-`run_matrix.py --exe PATH_TO_BLENDER --version VERSION --studies --only test_editmode_foundations.py` runs the independent GUI BMesh probe. It does not import Better Item and is not a shipped Edit Mode feature. The default runtime suite has 24 entry points (the 22 entries from 1.7.8 plus native-sync and linked-gesture regressions). The probe is intentionally small; it does not certify dense-mesh performance, shape keys or a complete reference identity implementation.
+`run_matrix.py --exe PATH_TO_BLENDER --version VERSION --studies --only test_editmode_foundations.py` runs the independent GUI BMesh probe. It does not import Better Item and is not a shipped Edit Mode feature. The default runtime suite has 25 entry points (the 24 entries from the consolidation plus the scene-unit regression). The probe is intentionally small; it does not certify dense-mesh performance, shape keys or a complete reference identity implementation.
 
 `prepare_matrix.py` also copies `test_cross_version_state.py` into the workspace tests directory. Run it with Blender 4.2.0 and `-- --write --fixture PATH/state.blend`, then with 5.3.0 and `-- --fixture PATH/state.blend`. Use `--background --factory-startup --python-exit-code 1 --python PATH_TO_SCRIPT` for both. This checks one representative upward migration, not universal backward file compatibility.
 
@@ -56,3 +56,7 @@ Run the pure-Python guard regressions separately with `python tests/better_item/
 The linked-gesture regression also checks Default Euler-order changes and links switched off/on without an intervening edit. The optional `benchmark_editmode_normal179.py` measures the existing selection-Normal observer in a real GUI; it does not implement Edit Mode targets. Prepared test bootstraps disable bytecode explicitly, and any mid-run integrity failure sets the summary to failed even if preceding tests passed.
 
 For the consolidated 1.7.9 comparison, use the immutable 1.7.8 ZIP with both CURRENT benchmark scripts and the current integrity-aware runner in a separate prepared workspace. Results are in `results/1.7.9/integration/benchmark/`; the baseline was measured again, sequentially, against the consolidated ZIP. Keep the original branch matrices/benchmarks under their original hashes.
+
+## Scene-unit qualification
+
+`test_better_item_units179.py` is a default background regression (590 internal cases, 26 unit configurations). The optional `test_better_item_units_gui179.py` renders six configurations and compares native/addon RNA; it does not type into widgets or certify visual rounding. Run both with `--studies --only test_better_item_units179.py test_better_item_units_gui179.py` in a fresh workspace. Results are in `results/1.7.9/units/`. These two entries were run on 4.2.0, 4.2.23 and 5.3.0; the previous full 24-entry matrices were not rerun. Do not claim three new full 25-entry suites. The runtime ZIP is unchanged; see `docs/better_item/units-1.7.9.md` for physical-error and display findings.

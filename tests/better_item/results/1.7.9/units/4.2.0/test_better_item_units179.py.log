@@ -1,0 +1,5 @@
+TBBmalloc: skip allocation functions replacement in ucrtbase.dll: unknown prologue for function _msize
+Blender 4.2.0 (hash a51f293548ad built 2024-07-16 06:29:33)
+SCENE UNITS {"passed": true, "blender": "4.2.0", "configurations": 26, "case_count": 590, "accepted_precision_cases": 91, "atomic_precision_rejections": 161, "limits": "No universal absolute mm accuracy is asserted. Unit text is parsed through Blender API, not actual keyboard events."}
+
+Blender quit

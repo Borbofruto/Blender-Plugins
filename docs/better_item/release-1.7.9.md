@@ -75,3 +75,7 @@ Os registros anteriores de 23 entradas × 10 executáveis continuam em `results/
 Os probes anteriores à manutenção local estão em `integration/before-fix-assessment/`: a exceção nativa foi injetada uma vez na 1.7.8 e deixou o timer desregistrado com exportação ainda habilitada e eixos velhos; não foi um crash espontâneo de produção. Esses registros da avaliação anterior não foram reexecutados nesta consolidação. A regressão GUI atual valida isolamento e recuperação no novo ZIP.
 
 Permanecem para a próxima etapa: passada humana de mouse/F9/cancelamento/larguras, diagnósticos e clareza de estados da 1.8.x. Foi reproduzida uma mensagem inadequada de Volume em malha aberta (“Complete references…” com referências válidas); a correção fica no bloco de diagnósticos. Não se certificaram macOS/Linux GUI, todas as builds intermediárias ou todos os backends. Edit Mode é estudo para futura 2.0; animação permanece fora do produto.
+
+## Qualificação posterior, sem alterar o artefato
+
+O [estudo de unidades](units-1.7.9.md) acrescenta testes e achados físicos/visuais ao mesmo ZIP. A regressão padrão foi ampliada para 25 entradas; a matriz de 24 relatada acima continua sendo a execução histórica da consolidação. Não foi repetida nesta rodada.

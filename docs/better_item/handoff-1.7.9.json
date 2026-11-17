@@ -121,12 +121,57 @@
   "pending": [
     "Human mouse/F9/cancel/width checklist",
     "1.8.x diagnostics: invalid Volume geometry can show Complete references",
-    "Intermediate builds, macOS and Linux GUI not reexecuted on this consolidated archive"
+    "Intermediate builds, macOS and Linux GUI not reexecuted on this consolidated archive",
+    "1.8.x: Location display rounding depends on Unit Scale; stored RNA remains correct",
+    "Define physical error tolerance and operating range before promising absolute mm accuracy"
   ],
   "excluded": [
     "Animation",
     "Edit Mode targets implementation",
     "UI redesign",
     "Schema migration/general refactor"
-  ]
+  ],
+  "unit_qualification": {
+    "date": "2026-11-17",
+    "runtime_commit": "77ce932634075f79cd0414681a0c0d8239b961f2",
+    "archive_unchanged": true,
+    "builds": [
+      {
+        "blender": "4.2.0",
+        "launcher_entries": 2,
+        "passed": true,
+        "numerical_cases": 590,
+        "unit_configurations": 26,
+        "gui_configurations": 6,
+        "accepted_precision_cases": 91,
+        "expected_atomic_precision_rejections": 161
+      },
+      {
+        "blender": "4.2.23",
+        "launcher_entries": 2,
+        "passed": true,
+        "numerical_cases": 590,
+        "unit_configurations": 26,
+        "gui_configurations": 6,
+        "accepted_precision_cases": 91,
+        "expected_atomic_precision_rejections": 161
+      },
+      {
+        "blender": "5.3.0",
+        "launcher_entries": 2,
+        "passed": true,
+        "numerical_cases": 590,
+        "unit_configurations": 26,
+        "gui_configurations": 6,
+        "accepted_precision_cases": 91,
+        "expected_atomic_precision_rejections": 161
+      }
+    ],
+    "current_default_suite_entries": 25,
+    "full_25_entry_suite_reexecuted": false,
+    "results": "tests/better_item/results/1.7.9/units/",
+    "physical_absolute_mm_accuracy_certified": false,
+    "visual_rounding_issue_open": true,
+    "keyboard_input_tested": false
+  }
 }

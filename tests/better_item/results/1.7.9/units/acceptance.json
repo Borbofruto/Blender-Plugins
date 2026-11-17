@@ -1,0 +1,43 @@
+{
+  "passed": true,
+  "runtime_commit": "77ce932634075f79cd0414681a0c0d8239b961f2",
+  "archive_sha256": "6a01eb809165347e94668d259a492b922b69f0c368657cae48599a2f57a9f029",
+  "runtime_changed": false,
+  "builds": [
+    {
+      "blender": "4.2.0",
+      "launcher_entries": 2,
+      "passed": true,
+      "numerical_cases": 590,
+      "unit_configurations": 26,
+      "gui_configurations": 6,
+      "accepted_precision_cases": 91,
+      "expected_atomic_precision_rejections": 161
+    },
+    {
+      "blender": "4.2.23",
+      "launcher_entries": 2,
+      "passed": true,
+      "numerical_cases": 590,
+      "unit_configurations": 26,
+      "gui_configurations": 6,
+      "accepted_precision_cases": 91,
+      "expected_atomic_precision_rejections": 161
+    },
+    {
+      "blender": "5.3.0",
+      "launcher_entries": 2,
+      "passed": true,
+      "numerical_cases": 590,
+      "unit_configurations": 26,
+      "gui_configurations": 6,
+      "accepted_precision_cases": 91,
+      "expected_atomic_precision_rejections": 161
+    }
+  ],
+  "full_previous_24_entry_matrix_repeated": false,
+  "scope": "New numerical entry plus optional GUI study only; not six fresh complete suites.",
+  "fixed_absolute_mm_accuracy_certified": false,
+  "keyboard_events_tested": false,
+  "visual_rounding_issue_open": true
+}

@@ -1,0 +1,55 @@
+SCENE UNITS {"passed": false, "blender": "5.3.0", "configurations": 26, "case_count": 590, "accepted_precision_cases": 91, "atomic_precision_rejections": 161, "limits": "No universal absolute mm accuracy is asserted. Unit text is parsed through Blender API, not actual keyboard events."}
+Traceback (most recent call last):
+  File "D:\Codex-BetterItem-Units-179-Candidate3\results\5.3.0\test_better_item_units179.py", line 94, in case
+    factor=reset(config);row.update(mm_per_blender_unit=factor,**fn(factor,*args));row['passed']=True
+                                                                 ~~^^^^^^^^^^^^^^
+  File "D:\Codex-BetterItem-Units-179-Candidate3\results\5.3.0\test_better_item_units179.py", line 250, in point_placements
+    assert error<=80*eps*float(np.max(np.abs(wanted))),(basis,method,actual,wanted,error)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ('BOUNDS_CENTER', 'ENDPOINT', array([ 3.00000003,  7.99999991, 12.9999998 ]), array([0.        , 4.99999989, 9.99999978]), 3.000000026077032)
+
+Traceback (most recent call last):
+  File "D:\Codex-BetterItem-Units-179-Candidate3\results\5.3.0\test_better_item_units179.py", line 94, in case
+    factor=reset(config);row.update(mm_per_blender_unit=factor,**fn(factor,*args));row['passed']=True
+                                                                 ~~^^^^^^^^^^^^^^
+  File "D:\Codex-BetterItem-Units-179-Candidate3\results\5.3.0\test_better_item_units179.py", line 250, in point_placements
+    assert error<=80*eps*float(np.max(np.abs(wanted))),(basis,method,actual,wanted,error)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ('SURFACE', 'ENDPOINT', array([ 3.00000003,  7.99999991, 12.9999998 ]), array([0.        , 4.99999989, 9.99999978]), 3.000000026077032)
+
+Traceback (most recent call last):
+  File "D:\Codex-BetterItem-Units-179-Candidate3\results\5.3.0\test_better_item_units179.py", line 94, in case
+    factor=reset(config);row.update(mm_per_blender_unit=factor,**fn(factor,*args));row['passed']=True
+                                                                 ~~^^^^^^^^^^^^^^
+  File "D:\Codex-BetterItem-Units-179-Candidate3\results\5.3.0\test_better_item_units179.py", line 250, in point_placements
+    assert error<=80*eps*float(np.max(np.abs(wanted))),(basis,method,actual,wanted,error)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ('VOLUME', 'ENDPOINT', array([ 3.00000003,  7.99999991, 12.9999998 ]), array([0.        , 4.99999989, 9.99999978]), 3.000000026077032)
+
+Traceback (most recent call last):
+  File "D:\Codex-BetterItem-Units-179-Candidate3\results\5.3.0\test_better_item_units179.py", line 94, in case
+    factor=reset(config);row.update(mm_per_blender_unit=factor,**fn(factor,*args));row['passed']=True
+                                                                 ~~^^^^^^^^^^^^^^
+  File "D:\Codex-BetterItem-Units-179-Candidate3\results\5.3.0\test_better_item_units179.py", line 250, in point_placements
+    assert error<=80*eps*float(np.max(np.abs(wanted))),(basis,method,actual,wanted,error)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ('BOUNDS_CENTER', 'ENDPOINT', array([ 3.00000003,  7.99999991, 12.9999998 ]), array([0.        , 4.99999989, 9.99999978]), 3.000000026077032)
+
+Traceback (most recent call last):
+  File "D:\Codex-BetterItem-Units-179-Candidate3\results\5.3.0\test_better_item_units179.py", line 94, in case
+    factor=reset(config);row.update(mm_per_blender_unit=factor,**fn(factor,*args));row['passed']=True
+                                                                 ~~^^^^^^^^^^^^^^
+  File "D:\Codex-BetterItem-Units-179-Candidate3\results\5.3.0\test_better_item_units179.py", line 250, in point_placements
+    assert error<=80*eps*float(np.max(np.abs(wanted))),(basis,method,actual,wanted,error)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ('SURFACE', 'ENDPOINT', array([ 3.00000003,  7.99999991, 12.9999998 ]), array([0.        , 4.99999989, 9.99999978]), 3.000000026077032)
+
+Traceback (most recent call last):
+  File "D:\Codex-BetterItem-Units-179-Candidate3\results\5.3.0\test_better_item_units179.py", line 313, in <module>
+    raise AssertionError(str(len(errors))+' unit qualification cases failed')
+AssertionError: 78 unit qualification cases failed
+
+Error: script failed, file: 'D:\Codex-BetterItem-Units-179-Candidate3\results\5.3.0\test_better_item_units179.py', exiting.
+Blender 5.3.0 (hash 02f0899d78e3 built 2026-11-10 01:33:43)
+
+Blender quit

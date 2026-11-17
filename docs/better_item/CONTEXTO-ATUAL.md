@@ -166,6 +166,14 @@ Há testes automatizados com GUI real e Undo/Redo no Windows, preservados na mat
 - **Comercial:** existe material de roadmap externo; não confundir recomendações comerciais com novas features aprovadas. Não afirmar que loja/publicação já foi concluída.
 - A exceção inesperada que encerrava o timer nativo foi reproduzida por injeção controlada e tratada na 1.7.9, incluindo recuperação, múltiplas cenas e limpeza de saúde. Os demais riscos antigos sobre timers e contexto continuam pistas de investigação; não os anunciar como bugs atuais sem reprodução. Ver seção 23 do manual histórico e priorizar os itens confirmados acima.
 
+### E. Qualificação de unidades após a consolidação — runtime inalterado
+
+O [estudo de unidades](units-1.7.9.md) executou agora 590 cenários numéricos por build em 26 configurações Metric/Imperial/None e seis configurações GUI em 4.2.0, 4.2.23 e 5.3.0. ZIP/fonte continuam iguais à consolidação. A suíte padrão ganhou a regressão e tem 25 entradas; somente as duas entradas novas foram executadas nesta rodada, sem reclassificar a matriz anterior de 24 como uma matriz nova de 25.
+
+Conversão física, Scale adimensional, mínimo explícito em mm, Frames/Dimensions, quatro bases de Placement, mudança de unidades e recusas atômicas passaram os casos descritos. Não foi certificada precisão absoluta uniforme: Geometry Bounds aceitou um gap de 1 mm a 1 km da origem com até 0,050976574 mm de erro, dentro do orçamento atual. Minimum Separation não é erro físico máximo. None não declara uma unidade SI. Não anunciar uma precisão mínima/máxima absoluta em mm sem definir um contrato e faixa de operação.
+
+**Achado visual para 1.8.x:** em 5.3.0, 12,3456789 mm aparece como 12,3 mm no addon com Unit Scale 1 e 12,346 mm com 0,001; o campo nativo mostra 12,346 mm nos dois. Os valores RNA são iguais. A propriedade do addon declara precision 3, contra 5 no nativo. Nenhuma UI foi alterada nesta qualificação. A digitação física nos widgets continua pendente.
+
 ## 6. Compatibilidade atual e o que foi realmente testado
 
 **Execução do consolidado 1.7.9:** **24/24 em 4.2.0, 4.2.23 e 5.3.0**, perfis isolados e GUI real; **14/14 verificações externas de integridade** separadas. Veja [relatório e hashes](release-1.7.9.md). As nove builds portáteis e o instalado da contribuição anterior passaram 23 entradas no ZIP `c053f366…`; essa evidência permanece identificada e não certifica o ZIP consolidado nas builds intermediárias.
@@ -289,9 +297,10 @@ Ferramenta usada em sessões anteriores: conector GitHub para ler árvore/blobs 
 1. Confirmar o HEAD e o SHA do ZIP consolidado; ler [release-1.7.9.md](release-1.7.9.md).
 2. Executar o checklist manual de mouse da 1.7.9.
 3. Planejar 1.8.x em quatro frentes: diagnósticos, layout/clareza de estados, gestos de edição e responsividade das leituras. As correções objetivas e otimizações medidas da 1.7.9 já foram tratadas; não repeti-las como pendências.
-4. Diagnóstico reproduzido ainda pendente para 1.8.x: malhas abertas em Volume, com referências válidas, podem mostrar “Complete references…” em vez de explicar a geometria inválida. Não mudar solver para esconder o diagnóstico.
-5. Confirmar o checklist manual, especialmente cancelamento de arrasto, F9, larguras e seleção Normal densa. Os testes com setters/GUI não certificam os gestos físicos.
-6. Animação continua excluída; alvos Edit Mode são estudo para 2.0. Novas features/constraints/estado compartilhado dependem de discussão.
+4. Exibição reproduzida ainda pendente para 1.8.x: arredondamento de Location dependente de Unit Scale; ver a seção E e os screenshots. Não confundir valor exibido com valor armazenado.
+5. Diagnóstico reproduzido ainda pendente para 1.8.x: malhas abertas em Volume, com referências válidas, podem mostrar “Complete references…” em vez de explicar a geometria inválida. Não mudar solver para esconder o diagnóstico.
+6. Confirmar o checklist manual, especialmente cancelamento de arrasto, F9, larguras e seleção Normal densa. Os testes com setters/GUI não certificam os gestos físicos.
+7. Animação continua excluída; alvos Edit Mode são estudo para 2.0. Novas features/constraints/estado compartilhado dependem de discussão.
 
 ### Recomendação anterior, após a 1.7.8 (histórico)
 

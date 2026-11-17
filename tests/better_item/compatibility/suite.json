@@ -94,11 +94,19 @@
     {
       "script": "test_better_item_gestures179.py",
       "mode": "background"
+    },
+    {
+      "script": "test_better_item_units179.py",
+      "mode": "background"
     }
   ],
   "baseline_source_commit": "97a676d6e320742fa83185f62296c9d1730116d5",
   "python_source_sha256": "b468b68b34354621378140325cc0c40c96655788d40dc332b24aa04e041dcccd",
   "studies": [
+    {
+      "script": "test_better_item_units_gui179.py",
+      "mode": "gui_async"
+    },
     {
       "script": "benchmark_cache_invalidation.py",
       "mode": "gui_sync"
