@@ -1,0 +1,5 @@
+TBBmalloc: skip allocation functions replacement in ucrtbase.dll: unknown prologue for function _msize
+170 PREVIEW PASSED {"native_preview_undo_redo": true, "invalid_preview_retains_last_valid": true, "selection_changes_keep_capture": true, "cancel_restores_session_start": true, "transform_selection_capture": true, "empty_anchor_bases": 4}
+Saved session recovery to "C:\Users\gabri\AppData\Local\Temp\quit.blend"
+
+Blender quit

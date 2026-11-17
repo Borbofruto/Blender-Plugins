@@ -1,0 +1,1176 @@
+{
+  "requested_version": "4.2.0",
+  "executable": "C:\\work\\better-item-matrix-1.7.9-fix\\portable\\blender-4.2.0-windows-x64\\blender.exe",
+  "addon_version": "1.7.9",
+  "addon_zip_sha256": "c053f3663cff7b9a954656c15b3d2de8d66885fb3b7657dba04dae9410de288f",
+  "started_utc": "2026-11-16T17:25:16Z",
+  "tests": [
+    {
+      "script": "api_probe.py",
+      "mode": "background",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 4.137,
+      "result": {
+        "passed": true,
+        "blender": "4.2.0",
+        "version": [
+          4,
+          2,
+          0
+        ],
+        "build_hash": "a51f293548ad",
+        "python": "3.11.7 (main, Feb  5 2024, 18:45:06) [MSC v.1928 64 bit (AMD64)]",
+        "numpy": "1.24.3",
+        "platform": "Windows-10-10.0.26100-SP0",
+        "scene_orientation_attributes": [
+          "transform_orientation_slots"
+        ],
+        "slot_type_enum": [
+          "GLOBAL",
+          "LOCAL",
+          "NORMAL",
+          "GIMBAL",
+          "VIEW",
+          "CURSOR",
+          "PARENT"
+        ],
+        "slot_type_functions": [],
+        "capabilities": {
+          "NodesModifier.persistent_uid": true,
+          "NodeTree.interface": true,
+          "Object.to_mesh": true,
+          "Object.to_mesh_clear": true,
+          "UILayout.prop_search": true,
+          "UILayout.panel": true,
+          "Context.temp_override": true,
+          "Scene.transform_orientations": false
+        },
+        "registered": true,
+        "custom_discovery_removed": true,
+        "modifier_api": {
+          "GeometryNodeInputPosition": {
+            "inputs": [],
+            "outputs": [
+              [
+                "Position",
+                "Position",
+                "NodeSocketVector"
+              ]
+            ]
+          },
+          "ShaderNodeVectorMath": {
+            "inputs": [
+              [
+                "Vector",
+                "Vector",
+                "NodeSocketVector"
+              ],
+              [
+                "Vector",
+                "Vector_001",
+                "NodeSocketVector"
+              ],
+              [
+                "Vector",
+                "Vector_002",
+                "NodeSocketVector"
+              ],
+              [
+                "Scale",
+                "Scale",
+                "NodeSocketFloat"
+              ]
+            ],
+            "outputs": [
+              [
+                "Vector",
+                "Vector",
+                "NodeSocketVector"
+              ],
+              [
+                "Value",
+                "Value",
+                "NodeSocketFloat"
+              ]
+            ]
+          },
+          "ShaderNodeCombineXYZ": {
+            "inputs": [
+              [
+                "X",
+                "X",
+                "NodeSocketFloat"
+              ],
+              [
+                "Y",
+                "Y",
+                "NodeSocketFloat"
+              ],
+              [
+                "Z",
+                "Z",
+                "NodeSocketFloat"
+              ]
+            ],
+            "outputs": [
+              [
+                "Vector",
+                "Vector",
+                "NodeSocketVector"
+              ]
+            ]
+          },
+          "GeometryNodeSetPosition": {
+            "inputs": [
+              [
+                "Geometry",
+                "Geometry",
+                "NodeSocketGeometry"
+              ],
+              [
+                "Selection",
+                "Selection",
+                "NodeSocketBool"
+              ],
+              [
+                "Position",
+                "Position",
+                "NodeSocketVector"
+              ],
+              [
+                "Offset",
+                "Offset",
+                "NodeSocketVectorTranslation"
+              ]
+            ],
+            "outputs": [
+              [
+                "Geometry",
+                "Geometry",
+                "NodeSocketGeometry"
+              ]
+            ]
+          },
+          "NodeGroupInput": {
+            "inputs": [],
+            "outputs": [
+              [
+                "Geometry",
+                "Socket_0",
+                "NodeSocketGeometry"
+              ],
+              [
+                "",
+                "__extend__",
+                "NodeSocketVirtual"
+              ]
+            ]
+          },
+          "NodeGroupOutput": {
+            "inputs": [
+              [
+                "Geometry",
+                "Socket_1",
+                "NodeSocketGeometry"
+              ],
+              [
+                "",
+                "__extend__",
+                "NodeSocketVirtual"
+              ]
+            ],
+            "outputs": []
+          }
+        },
+        "modifier_input_properties": false,
+        "modifier_uid": 668223759,
+        "timer_registered": true,
+        "unregistered": true
+      }
+    },
+    {
+      "script": "test_cache_invalidation.py",
+      "mode": "gui_sync",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 2.819,
+      "result": {
+        "passed": true,
+        "blender": "4.2.0",
+        "checks": [
+          "selected target transform / ORIGINS",
+          "selected target transform / GEOMETRY",
+          "selected target transform / BOUNDS_CENTER",
+          "selected target transform / SURFACE",
+          "selected target transform / VOLUME",
+          "parent transform propagates to selected evaluated target",
+          "unselected parent moves selected target",
+          "unselected reference scale changes its placement",
+          "mesh edits remain conservative",
+          "Endpoint object source",
+          "indirect Frame source resolved in the key",
+          "cursor changes without evaluated object update",
+          "application never uses display-cache validation",
+          "empty vertex caches still advance Placement/Live revision",
+          "shader-only tree does not advance geometry revision",
+          "Object Mode sync skips scans and preserves native Frame publication",
+          "Edit Mode still refreshes native selection Normal",
+          "Undo clears entries and numeric dependencies"
+        ]
+      }
+    },
+    {
+      "script": "test_better_item_173.py",
+      "mode": "background",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 0.96,
+      "result": {
+        "passed": true,
+        "checks": [
+          "separate saved placements and native labels",
+          "short Endpoint permits overlap without resizing",
+          "legacy Geometry Endpoint migration notice",
+          "object sources, changed selection, stable order and stop",
+          "cursor and captured Active identity; selected anchor editable",
+          "Frame/manual inputs, recovery and target edit guard",
+          "Offset reference observer preserves transverse axes",
+          "frame change and render end Live",
+          "per-method choices persist across reopen",
+          "unregister keeps poses and removes observer/guards"
+        ]
+      }
+    },
+    {
+      "script": "test_better_item_live173.py",
+      "mode": "background",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 1.527,
+      "result": {
+        "passed": true,
+        "live_batches": 96,
+        "reference_updates": 192,
+        "point_bases": 4,
+        "paths": 2,
+        "anchor_modes": 3,
+        "parented_and_mirrored": true,
+        "stable_order": true,
+        "independent_cube_center_oracle": true
+      }
+    },
+    {
+      "script": "test_better_item_matrix170.py",
+      "mode": "background",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 2.364,
+      "result": {
+        "endpoint_batches": 256,
+        "offset_batches": 140,
+        "bases": [
+          "ORIGINS",
+          "BOUNDS_CENTER",
+          "SURFACE",
+          "VOLUME",
+          "GEOMETRY"
+        ],
+        "endpoint_paths": 2,
+        "anchor_patterns": 4,
+        "units": [
+          1,
+          0.001
+        ],
+        "parented_and_mirrored": true,
+        "axis_masks": 7
+      }
+    },
+    {
+      "script": "test_better_item_matrix160.py",
+      "mode": "background",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 1.756,
+      "result": {
+        "geometry_combinations": 168,
+        "rotation_batches": 72,
+        "rotation_targets_checked": 288,
+        "geometry_axes_masks": 7,
+        "unit_scales": [
+          1,
+          0.001
+        ],
+        "zero_and_positive_gaps": true,
+        "oblique_and_rotated_references": true,
+        "shared_meshes_and_parented_targets": true
+      }
+    },
+    {
+      "script": "test_better_item_features160.py",
+      "mode": "background",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 1.09,
+      "result": {
+        "key_geometry": 4,
+        "projected_bounds": 10,
+        "geometry_rollback": 3,
+        "orientation": 8,
+        "ux": "INFO pending, WARNING domain failures, ERROR unexpected; no red pending; solver collapsed; independent frame components",
+        "persistence": true
+      }
+    },
+    {
+      "script": "test_better_item_170.py",
+      "mode": "background",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 0.995,
+      "result": {
+        "point_endpoint_and_retired_interval_rejection": true,
+        "all_bases_oblique_reversed_segment": 8,
+        "selected_anchors_and_cursor": true,
+        "independent_frame_components_and_override": true,
+        "reference_axis_projection": true,
+        "surface_volume_oracle_and_open_volume_rejection": true,
+        "retired_basis_and_dependency_rejections": true,
+        "offset_centers_and_measured_spacing": true,
+        "preview_initial_order_cancel_confirm": true,
+        "frame_context_capture": true,
+        "persistence": true
+      }
+    },
+    {
+      "script": "test_better_item_edge170.py",
+      "mode": "background",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 1.893,
+      "result": {
+        "object_info_dependency_bases": 3,
+        "centroid_cache_checks": 24,
+        "deleted_frame_choices_reset": true,
+        "native_bbox_semantics": true,
+        "invalid_capture_is_non_destructive": true,
+        "point_spacing_precision_rollback": true,
+        "contextual_start_preview_guard": true,
+        "geometry_offset_200": {
+          "seconds_plan_apply_verify": 0.1330691000330262,
+          "maximum_gap_error_blender_units": 0.0
+        },
+        "preview_deleted_target_cancel": true
+      }
+    },
+    {
+      "script": "test_better_item_precision172.py",
+      "mode": "background",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 2.718,
+      "result": {
+        "passed": true,
+        "cases": [
+          {
+            "method": "OFFSET",
+            "basis": "GEOMETRY",
+            "count": 200,
+            "offset": 100,
+            "spacing": 0.05,
+            "seed": 0,
+            "inspection_state": "UNIFORM",
+            "accepted": true,
+            "max_gap_error": 1.8310546874997224e-05,
+            "expected_gap": 0.05
+          },
+          {
+            "method": "OFFSET",
+            "basis": "GEOMETRY",
+            "count": 200,
+            "offset": 100,
+            "spacing": 0.05,
+            "seed": 1,
+            "inspection_state": "UNIFORM",
+            "accepted": true,
+            "max_gap_error": 1.8310546874997224e-05,
+            "expected_gap": 0.05
+          },
+          {
+            "method": "OFFSET",
+            "basis": "GEOMETRY",
+            "count": 200,
+            "offset": 100,
+            "spacing": 0.05,
+            "seed": 2,
+            "inspection_state": "UNIFORM",
+            "accepted": true,
+            "max_gap_error": 1.8310546874997224e-05,
+            "expected_gap": 0.05
+          },
+          {
+            "method": "OFFSET",
+            "basis": "GEOMETRY",
+            "count": 200,
+            "offset": 100,
+            "spacing": 0.2,
+            "seed": 0,
+            "inspection_state": "UNIFORM",
+            "accepted": true,
+            "max_gap_error": 4.88281250000111e-05,
+            "expected_gap": 0.2
+          },
+          {
+            "method": "OFFSET",
+            "basis": "GEOMETRY",
+            "count": 200,
+            "offset": 100,
+            "spacing": 0.2,
+            "seed": 1,
+            "inspection_state": "UNIFORM",
+            "accepted": true,
+            "max_gap_error": 4.88281250000111e-05,
+            "expected_gap": 0.2
+          },
+          {
+            "method": "OFFSET",
+            "basis": "GEOMETRY",
+            "count": 200,
+            "offset": 100,
+            "spacing": 0.2,
+            "seed": 2,
+            "inspection_state": "UNIFORM",
+            "accepted": true,
+            "max_gap_error": 4.88281250000111e-05,
+            "expected_gap": 0.2
+          },
+          {
+            "method": "OFFSET",
+            "basis": "GEOMETRY",
+            "count": 200,
+            "offset": 100,
+            "spacing": 1.0,
+            "seed": 0,
+            "inspection_state": "UNIFORM",
+            "accepted": true,
+            "max_gap_error": 0.0,
+            "expected_gap": 1.0
+          },
+          {
+            "method": "OFFSET",
+            "basis": "GEOMETRY",
+            "count": 200,
+            "offset": 100,
+            "spacing": 1.0,
+            "seed": 1,
+            "inspection_state": "UNIFORM",
+            "accepted": true,
+            "max_gap_error": 0.0,
+            "expected_gap": 1.0
+          },
+          {
+            "method": "OFFSET",
+            "basis": "GEOMETRY",
+            "count": 200,
+            "offset": 100,
+            "spacing": 1.0,
+            "seed": 2,
+            "inspection_state": "UNIFORM",
+            "accepted": true,
+            "max_gap_error": 0.0,
+            "expected_gap": 1.0
+          },
+          {
+            "method": "ENDPOINT",
+            "basis": "ORIGINS",
+            "count": 12,
+            "offset": 300,
+            "spacing": 0.2,
+            "seed": 0,
+            "inspection_state": "UNIFORM",
+            "accepted": true,
+            "max_gap_error": 2.6800464317133788e-05,
+            "expected_gap": 6.763790543968886
+          },
+          {
+            "method": "ENDPOINT",
+            "basis": "ORIGINS",
+            "count": 12,
+            "offset": 300,
+            "spacing": 0.2,
+            "seed": 1,
+            "inspection_state": "UNIFORM",
+            "accepted": true,
+            "max_gap_error": 2.6800464317133788e-05,
+            "expected_gap": 6.763790543968886
+          },
+          {
+            "method": "ENDPOINT",
+            "basis": "ORIGINS",
+            "count": 12,
+            "offset": 300,
+            "spacing": 0.2,
+            "seed": 2,
+            "inspection_state": "UNIFORM",
+            "accepted": true,
+            "max_gap_error": 2.6800464317133788e-05,
+            "expected_gap": 6.763790543968886
+          },
+          {
+            "method": "ENDPOINT",
+            "basis": "ORIGINS",
+            "count": 12,
+            "offset": 300,
+            "spacing": 0.2,
+            "seed": 3,
+            "inspection_state": "UNIFORM",
+            "accepted": true,
+            "max_gap_error": 2.6800464317133788e-05,
+            "expected_gap": 6.763790543968886
+          },
+          {
+            "method": "ENDPOINT",
+            "basis": "ORIGINS",
+            "count": 12,
+            "offset": 1000,
+            "spacing": 0.2,
+            "seed": 0,
+            "inspection_state": "UNIFORM",
+            "accepted": true,
+            "max_gap_error": 8.538799035839872e-05,
+            "expected_gap": 6.763790543968886
+          },
+          {
+            "method": "ENDPOINT",
+            "basis": "ORIGINS",
+            "count": 12,
+            "offset": 1000,
+            "spacing": 0.2,
+            "seed": 1,
+            "inspection_state": "UNIFORM",
+            "accepted": true,
+            "max_gap_error": 8.538799035839872e-05,
+            "expected_gap": 6.763790543968886
+          },
+          {
+            "method": "ENDPOINT",
+            "basis": "ORIGINS",
+            "count": 12,
+            "offset": 1000,
+            "spacing": 0.2,
+            "seed": 2,
+            "inspection_state": "UNIFORM",
+            "accepted": true,
+            "max_gap_error": 8.538799035839872e-05,
+            "expected_gap": 6.763790543968886
+          },
+          {
+            "method": "ENDPOINT",
+            "basis": "ORIGINS",
+            "count": 12,
+            "offset": 1000,
+            "spacing": 0.2,
+            "seed": 3,
+            "inspection_state": "UNIFORM",
+            "accepted": true,
+            "max_gap_error": 8.538799035839872e-05,
+            "expected_gap": 6.763790543968886
+          },
+          {
+            "method": "ENDPOINT",
+            "basis": "ORIGINS",
+            "count": 4,
+            "offset": 5000,
+            "spacing": 0.2,
+            "seed": 0,
+            "inspection_state": "UNIFORM",
+            "accepted": true,
+            "max_gap_error": 0.00031218607477967453,
+            "expected_gap": 32.01899848228027
+          },
+          {
+            "method": "ENDPOINT",
+            "basis": "ORIGINS",
+            "count": 4,
+            "offset": 5000,
+            "spacing": 0.2,
+            "seed": 1,
+            "inspection_state": "UNIFORM",
+            "accepted": true,
+            "max_gap_error": 0.00031218607477967453,
+            "expected_gap": 32.01899848228027
+          },
+          {
+            "method": "ENDPOINT",
+            "basis": "ORIGINS",
+            "count": 4,
+            "offset": 5000,
+            "spacing": 0.2,
+            "seed": 2,
+            "inspection_state": "UNIFORM",
+            "accepted": true,
+            "max_gap_error": 0.00031218607477967453,
+            "expected_gap": 32.01899848228027
+          },
+          {
+            "method": "ENDPOINT",
+            "basis": "ORIGINS",
+            "count": 4,
+            "offset": 5000,
+            "spacing": 0.2,
+            "seed": 3,
+            "inspection_state": "UNIFORM",
+            "accepted": true,
+            "max_gap_error": 0.00031218607477967453,
+            "expected_gap": 32.01899848228027
+          }
+        ],
+        "accepted": 21,
+        "rejected": 0
+      }
+    },
+    {
+      "script": "test_better_item_collapse172.py",
+      "mode": "background",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 0.906,
+      "result": {
+        "passed": true,
+        "symmetric_geometry_dependency_rejected": true,
+        "atomic_rejections": [
+          [
+            "OFFSET",
+            0.2,
+            0,
+            "[BI-G002]"
+          ],
+          [
+            "OFFSET",
+            0,
+            0,
+            "[BI-G002]"
+          ],
+          [
+            "ENDPOINT",
+            0,
+            128,
+            "[BI-E003]"
+          ],
+          [
+            "ENDPOINT",
+            0,
+            4,
+            "[BI-E001]"
+          ]
+        ]
+      }
+    },
+    {
+      "script": "test_better_item_171.py",
+      "mode": "background",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 1.027,
+      "result": {
+        "passed": true,
+        "transverse_cases": 30,
+        "zero_direction_sequences": 3,
+        "checkbox_no_initial_mutation": true,
+        "checkbox_disable_keeps_result": true,
+        "direction_persistence": true
+      }
+    },
+    {
+      "script": "test_better_item_regressions.py",
+      "mode": "background",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 1.097,
+      "result": null
+    },
+    {
+      "script": "test_better_item_gui173.py",
+      "mode": "gui_async",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 7.405,
+      "result": {
+        "passed": true,
+        "phases": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "before": {
+          "Captured Start": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "Piece 1": [
+            6.0,
+            -1.0,
+            2.0
+          ],
+          "Piece 2": [
+            12.0,
+            -2.0,
+            4.0
+          ],
+          "Piece 3": [
+            18.0,
+            -3.0,
+            6.0
+          ]
+        },
+        "after": {
+          "Captured Start": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "Piece 1": [
+            7.0,
+            3.0,
+            0.0
+          ],
+          "Piece 2": [
+            14.0,
+            6.0,
+            0.0
+          ],
+          "Piece 3": [
+            21.0,
+            9.0,
+            0.0
+          ]
+        },
+        "draw_errors": [],
+        "checks": [
+          "actual timer follows cursor",
+          "actual timer follows Empty with targets deselected",
+          "captured Active identity stable",
+          "zero retains negative Offset direction",
+          "Endpoint restores point basis",
+          "disable stops following",
+          "native invoke and F9 placements",
+          "native Undo/Redo"
+        ]
+      }
+    },
+    {
+      "script": "test_retired_custom175.py",
+      "mode": "gui_async",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 4.208,
+      "result": {
+        "passed": true,
+        "checks": [
+          "No discovery/cache/search registration; no custom source in new choices; old files explicitly unavailable without pose changes",
+          "Native Frame export and G operation in exported axes remain functional",
+          "Deletion through native Blender UI is observed without recreating orientation",
+          "Repeated registration lifecycle without orphan handlers"
+        ],
+        "draw_errors": []
+      }
+    },
+    {
+      "script": "test_retired_custom175_persistence.py",
+      "mode": "background",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 0.673,
+      "result": {
+        "passed": true,
+        "retired_sources_preserved_and_reported": true
+      }
+    },
+    {
+      "script": "test_better_item_preview170.py",
+      "mode": "gui_sync",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 2.389,
+      "result": {
+        "native_preview_undo_redo": true,
+        "invalid_preview_retains_last_valid": true,
+        "selection_changes_keep_capture": true,
+        "cancel_restores_session_start": true,
+        "transform_selection_capture": true,
+        "empty_anchor_bases": 4
+      }
+    },
+    {
+      "script": "test_better_item_inspection172.py",
+      "mode": "gui_sync",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 5.229,
+      "result": {
+        "passed": true,
+        "timings": [
+          {
+            "count": 600,
+            "basis": "ORIGINS",
+            "cold_seconds": 0.012045400042552501,
+            "cached_seconds": 0.0003469999996013939
+          },
+          {
+            "count": 600,
+            "basis": "GEOMETRY",
+            "cold_seconds": 0.10105749999638647,
+            "cached_seconds": 0.00035099999513477087
+          },
+          {
+            "count": 600,
+            "basis": "VOLUME",
+            "cold_seconds": 0.22975580004276708,
+            "cached_seconds": 0.00034681999823078514
+          },
+          {
+            "count": 1500,
+            "basis": "ORIGINS",
+            "cold_seconds": 0.027990099973976612,
+            "cached_seconds": 0.0007557600038126111
+          },
+          {
+            "count": 1500,
+            "basis": "GEOMETRY",
+            "cold_seconds": 0.25263429997721687,
+            "cached_seconds": 0.000803919997997582
+          },
+          {
+            "count": 1500,
+            "basis": "VOLUME",
+            "cold_seconds": 0.5657849999843165,
+            "cached_seconds": 0.0007673599990084768
+          }
+        ],
+        "shared_draw_getter_measurement": true,
+        "invalidation_checks": [
+          "target Location",
+          "target Rotation",
+          "target Scale",
+          "spacing sign",
+          "axis mask",
+          "placement basis",
+          "shape key",
+          "modifier creation",
+          "modifier viewport state",
+          "mesh data",
+          "frame evaluation",
+          "saved Location Frame",
+          "manual Frame value without depsgraph update",
+          "Endpoint method and source",
+          "manual Endpoint value",
+          "cursor Endpoint",
+          "active object",
+          "external Geometry Nodes dependency",
+          "unselected reference geometry",
+          "Undo/Redo clears inspection"
+        ],
+        "bounded_cache_and_unregister": true
+      }
+    },
+    {
+      "script": "test_better_item_cache154.py",
+      "mode": "gui_sync",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 2.389,
+      "result": null
+    },
+    {
+      "script": "test_archive_install.py",
+      "mode": "background",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 1.512,
+      "result": {
+        "blender": "4.2.0",
+        "passed": true,
+        "archive_install": true,
+        "declared_minimum": [
+          4,
+          2,
+          0
+        ],
+        "repository": "installed",
+        "operator_result": [
+          "FINISHED"
+        ],
+        "module_loaded": true
+      }
+    },
+    {
+      "script": "test_better_item_stress157.py",
+      "mode": "gui_sync",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 14.204,
+      "result": {
+        "groups": {
+          "group1": {
+            "cases": 8064,
+            "accepted": 5408,
+            "coded_atomic_rejections": 2656,
+            "rejection_codes": {
+              "[BI-T009]": 1760,
+              "[BI-V001]": 896
+            }
+          },
+          "group2": {
+            "actual_native_rotation_comparisons": 192,
+            "single_axis_gimbal_direction_comparisons": 54
+          },
+          "group3": {
+            "parent_types": 4,
+            "collapsed_child_cases": 3,
+            "deep_signed_delta_chain": true
+          },
+          "group4": {
+            "extreme_signed_scale_cases": 16
+          },
+          "group5": {
+            "float64_truth_from_stored_vertices": 3
+          },
+          "group6": {
+            "chained_edits": 1000,
+            "max_ratio_drift": 1.4916061719105755e-07,
+            "linked_lock_rollback": true
+          },
+          "group7": {
+            "angle_zero_turn_crossing_cases": 5,
+            "gimbal_lock_rejected": true
+          },
+          "group8": {
+            "chain_lengths": [
+              2,
+              20,
+              100
+            ],
+            "cycle_rename_removal_cases": 3
+          },
+          "group9": {
+            "coordinate_unit_cases": 8,
+            "expected_precision_rejections": 0,
+            "ambiguity_and_collapse": true,
+            "selected_parent_child_operations": 2
+          },
+          "group10": {
+            "array_mirror_shape_key_cases": 3
+          },
+          "group11": {
+            "undo_redo_creation": true,
+            "copy_on_write": true,
+            "blend_roundtrip": true
+          }
+        },
+        "errors": {}
+      }
+    },
+    {
+      "script": "test_better_item_operator177.py",
+      "mode": "gui_sync",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 2.467,
+      "result": {
+        "passed": true,
+        "blender": "4.2.0",
+        "module": "C:\\work\\better-item-matrix-1.7.9-fix\\results\\4.2.0\\better_item\\__init__.py",
+        "cases": [
+          {
+            "method": "ENDPOINT",
+            "path": "SEGMENT",
+            "basis": "ORIGINS",
+            "method_first": true
+          },
+          {
+            "method": "ENDPOINT",
+            "path": "SEGMENT",
+            "basis": "ORIGINS",
+            "method_first": false
+          },
+          {
+            "method": "ENDPOINT",
+            "path": "SEGMENT",
+            "basis": "BOUNDS_CENTER",
+            "method_first": true
+          },
+          {
+            "method": "ENDPOINT",
+            "path": "SEGMENT",
+            "basis": "BOUNDS_CENTER",
+            "method_first": false
+          },
+          {
+            "method": "ENDPOINT",
+            "path": "SEGMENT",
+            "basis": "SURFACE",
+            "method_first": true
+          },
+          {
+            "method": "ENDPOINT",
+            "path": "SEGMENT",
+            "basis": "SURFACE",
+            "method_first": false
+          },
+          {
+            "method": "ENDPOINT",
+            "path": "SEGMENT",
+            "basis": "VOLUME",
+            "method_first": true
+          },
+          {
+            "method": "ENDPOINT",
+            "path": "SEGMENT",
+            "basis": "VOLUME",
+            "method_first": false
+          },
+          {
+            "method": "ENDPOINT",
+            "path": "AXIS",
+            "basis": "ORIGINS",
+            "method_first": true
+          },
+          {
+            "method": "ENDPOINT",
+            "path": "AXIS",
+            "basis": "ORIGINS",
+            "method_first": false
+          },
+          {
+            "method": "ENDPOINT",
+            "path": "AXIS",
+            "basis": "BOUNDS_CENTER",
+            "method_first": true
+          },
+          {
+            "method": "ENDPOINT",
+            "path": "AXIS",
+            "basis": "BOUNDS_CENTER",
+            "method_first": false
+          },
+          {
+            "method": "ENDPOINT",
+            "path": "AXIS",
+            "basis": "SURFACE",
+            "method_first": true
+          },
+          {
+            "method": "ENDPOINT",
+            "path": "AXIS",
+            "basis": "SURFACE",
+            "method_first": false
+          },
+          {
+            "method": "ENDPOINT",
+            "path": "AXIS",
+            "basis": "VOLUME",
+            "method_first": true
+          },
+          {
+            "method": "ENDPOINT",
+            "path": "AXIS",
+            "basis": "VOLUME",
+            "method_first": false
+          },
+          {
+            "method": "OFFSET",
+            "basis": "ORIGINS",
+            "method_first": true
+          },
+          {
+            "method": "OFFSET",
+            "basis": "ORIGINS",
+            "method_first": false
+          },
+          {
+            "method": "OFFSET",
+            "basis": "BOUNDS_CENTER",
+            "method_first": true
+          },
+          {
+            "method": "OFFSET",
+            "basis": "BOUNDS_CENTER",
+            "method_first": false
+          },
+          {
+            "method": "OFFSET",
+            "basis": "SURFACE",
+            "method_first": true
+          },
+          {
+            "method": "OFFSET",
+            "basis": "SURFACE",
+            "method_first": false
+          },
+          {
+            "method": "OFFSET",
+            "basis": "VOLUME",
+            "method_first": true
+          },
+          {
+            "method": "OFFSET",
+            "basis": "VOLUME",
+            "method_first": false
+          },
+          {
+            "method": "OFFSET",
+            "basis": "GEOMETRY",
+            "method_first": true
+          },
+          {
+            "method": "OFFSET",
+            "basis": "GEOMETRY",
+            "method_first": false
+          }
+        ],
+        "checks": [
+          "16 direct Endpoint calls: independent analytic centers, both keyword orders and paths",
+          "invalid Endpoint Geometry rejects both keyword orders atomically",
+          "10 direct Offset calls including Geometry; transverse axes and native data preserved",
+          "saved numeric IDs and legacy Geometry migration/notice preserved",
+          "native invoke and real Undo/Redo; F9 property memory; repeat-last applies Surface"
+        ]
+      }
+    },
+    {
+      "script": "test_better_item_gestures179.py",
+      "mode": "background",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 1.416,
+      "result": null
+    }
+  ],
+  "passed": true,
+  "finished_utc": "2026-11-16T17:26:21Z"
+}

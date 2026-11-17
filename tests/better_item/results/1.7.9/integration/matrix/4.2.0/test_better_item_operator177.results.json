@@ -1,0 +1,160 @@
+{
+  "passed": true,
+  "blender": "4.2.0",
+  "module": "D:\\Codex-BetterItem-179-Consolidated\\results\\4.2.0\\better_item\\__init__.py",
+  "cases": [
+    {
+      "method": "ENDPOINT",
+      "path": "SEGMENT",
+      "basis": "ORIGINS",
+      "method_first": true
+    },
+    {
+      "method": "ENDPOINT",
+      "path": "SEGMENT",
+      "basis": "ORIGINS",
+      "method_first": false
+    },
+    {
+      "method": "ENDPOINT",
+      "path": "SEGMENT",
+      "basis": "BOUNDS_CENTER",
+      "method_first": true
+    },
+    {
+      "method": "ENDPOINT",
+      "path": "SEGMENT",
+      "basis": "BOUNDS_CENTER",
+      "method_first": false
+    },
+    {
+      "method": "ENDPOINT",
+      "path": "SEGMENT",
+      "basis": "SURFACE",
+      "method_first": true
+    },
+    {
+      "method": "ENDPOINT",
+      "path": "SEGMENT",
+      "basis": "SURFACE",
+      "method_first": false
+    },
+    {
+      "method": "ENDPOINT",
+      "path": "SEGMENT",
+      "basis": "VOLUME",
+      "method_first": true
+    },
+    {
+      "method": "ENDPOINT",
+      "path": "SEGMENT",
+      "basis": "VOLUME",
+      "method_first": false
+    },
+    {
+      "method": "ENDPOINT",
+      "path": "AXIS",
+      "basis": "ORIGINS",
+      "method_first": true
+    },
+    {
+      "method": "ENDPOINT",
+      "path": "AXIS",
+      "basis": "ORIGINS",
+      "method_first": false
+    },
+    {
+      "method": "ENDPOINT",
+      "path": "AXIS",
+      "basis": "BOUNDS_CENTER",
+      "method_first": true
+    },
+    {
+      "method": "ENDPOINT",
+      "path": "AXIS",
+      "basis": "BOUNDS_CENTER",
+      "method_first": false
+    },
+    {
+      "method": "ENDPOINT",
+      "path": "AXIS",
+      "basis": "SURFACE",
+      "method_first": true
+    },
+    {
+      "method": "ENDPOINT",
+      "path": "AXIS",
+      "basis": "SURFACE",
+      "method_first": false
+    },
+    {
+      "method": "ENDPOINT",
+      "path": "AXIS",
+      "basis": "VOLUME",
+      "method_first": true
+    },
+    {
+      "method": "ENDPOINT",
+      "path": "AXIS",
+      "basis": "VOLUME",
+      "method_first": false
+    },
+    {
+      "method": "OFFSET",
+      "basis": "ORIGINS",
+      "method_first": true
+    },
+    {
+      "method": "OFFSET",
+      "basis": "ORIGINS",
+      "method_first": false
+    },
+    {
+      "method": "OFFSET",
+      "basis": "BOUNDS_CENTER",
+      "method_first": true
+    },
+    {
+      "method": "OFFSET",
+      "basis": "BOUNDS_CENTER",
+      "method_first": false
+    },
+    {
+      "method": "OFFSET",
+      "basis": "SURFACE",
+      "method_first": true
+    },
+    {
+      "method": "OFFSET",
+      "basis": "SURFACE",
+      "method_first": false
+    },
+    {
+      "method": "OFFSET",
+      "basis": "VOLUME",
+      "method_first": true
+    },
+    {
+      "method": "OFFSET",
+      "basis": "VOLUME",
+      "method_first": false
+    },
+    {
+      "method": "OFFSET",
+      "basis": "GEOMETRY",
+      "method_first": true
+    },
+    {
+      "method": "OFFSET",
+      "basis": "GEOMETRY",
+      "method_first": false
+    }
+  ],
+  "checks": [
+    "16 direct Endpoint calls: independent analytic centers, both keyword orders and paths",
+    "invalid Endpoint Geometry rejects both keyword orders atomically",
+    "10 direct Offset calls including Geometry; transverse axes and native data preserved",
+    "saved numeric IDs and legacy Geometry migration/notice preserved",
+    "native invoke and real Undo/Redo; F9 property memory; repeat-last applies Surface"
+  ]
+}

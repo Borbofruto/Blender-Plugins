@@ -1,0 +1,9 @@
+{
+  "passed": true,
+  "blender": "4.2.0",
+  "fixture": "test_better_item_173.blend",
+  "endpoint": "VOLUME",
+  "offset": "GEOMETRY",
+  "live": false,
+  "fresh_process": true
+}

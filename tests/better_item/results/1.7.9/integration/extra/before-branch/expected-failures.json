@@ -1,0 +1,16 @@
+{
+  "archive_sha256": "c053f3663cff7b9a954656c15b3d2de8d66885fb3b7657dba04dae9410de288f",
+  "passed": true,
+  "cases": [
+    {
+      "case": "default_rotation_order",
+      "exit_code": 1,
+      "expected_failure_observed": true
+    },
+    {
+      "case": "links_toggle_back",
+      "exit_code": 1,
+      "expected_failure_observed": true
+    }
+  ]
+}

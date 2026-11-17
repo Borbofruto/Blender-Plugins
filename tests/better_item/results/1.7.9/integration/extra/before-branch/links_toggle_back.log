@@ -1,0 +1,13 @@
+Blender 5.3.0 (hash 02f0899d78e3 built 2026-11-10 01:33:43)
+
+Blender quit
+Traceback (most recent call last):
+  File "D:\Codex-BetterItem-179-Consolidated\extra\before-branch\links_toggle_back.py", line 334, in <module>
+    case()
+    ~~~~^^
+  File "D:\Codex-BetterItem-179-Consolidated\extra\before-branch\links_toggle_back.py", line 209, in links_toggle_back
+    assert message and 'BI-T008' in message, (space, message)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ('DEFAULT', None)
+
+Error: script failed, file: 'D:\Codex-BetterItem-179-Consolidated\extra\before-branch\links_toggle_back.py', exiting.

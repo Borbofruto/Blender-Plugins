@@ -1,0 +1,24 @@
+{
+  "passed": true,
+  "blender": "4.4.3",
+  "checks": [
+    "selected target transform / ORIGINS",
+    "selected target transform / GEOMETRY",
+    "selected target transform / BOUNDS_CENTER",
+    "selected target transform / SURFACE",
+    "selected target transform / VOLUME",
+    "parent transform propagates to selected evaluated target",
+    "unselected parent moves selected target",
+    "unselected reference scale changes its placement",
+    "mesh edits remain conservative",
+    "Endpoint object source",
+    "indirect Frame source resolved in the key",
+    "cursor changes without evaluated object update",
+    "application never uses display-cache validation",
+    "empty vertex caches still advance Placement/Live revision",
+    "shader-only tree does not advance geometry revision",
+    "Object Mode sync skips scans and preserves native Frame publication",
+    "Edit Mode still refreshes native selection Normal",
+    "Undo clears entries and numeric dependencies"
+  ]
+}

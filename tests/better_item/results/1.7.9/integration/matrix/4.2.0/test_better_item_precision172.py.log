@@ -1,0 +1,5 @@
+TBBmalloc: skip allocation functions replacement in ucrtbase.dll: unknown prologue for function _msize
+172 PRECISION 21 0
+Blender 4.2.0 (hash a51f293548ad built 2024-07-16 06:29:33)
+
+Blender quit

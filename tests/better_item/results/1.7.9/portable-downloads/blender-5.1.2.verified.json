@@ -1,0 +1,8 @@
+{
+  "file": "blender-5.1.2-windows-x64.zip",
+  "url": "https://download.blender.org/release/Blender5.1/blender-5.1.2-windows-x64.zip",
+  "sha256": "345bedea7b0acf7cc9666423d8553f9129622aea34ded65c23e8cb70f83f14ff",
+  "verified_against_official_checksum": true,
+  "bytes": 414378949,
+  "download_seconds": 61.21
+}

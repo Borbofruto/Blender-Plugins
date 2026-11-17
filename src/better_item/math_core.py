@@ -56,6 +56,47 @@ def linked_values(before,axis,value,links,zero_angle_as_turn=False,*,denominator
     return vector3(result)
 
 
+_LINK_ANCHOR_ENTRIES=16
+_link_anchors={}
+
+
+def link_base(key,before):
+    """Return the vector a linked edit should scale from.
+
+    Dragging a linked field sends one edit per tick, and each tick reads the
+    previous result back from float32 storage. While nothing else has changed
+    the channels, the vector before the gesture stays authoritative: it keeps
+    the ratio exact and survives passing through zero. Any outside change to the
+    values makes the stored read-back differ, and the current values are used.
+    """
+    before=tuple(before)
+    # Keep only the most recently observed configuration of this object/group.
+    # Returning to an old order/reference must not revive its earlier ratio.
+    for previous in list(_link_anchors):
+        if previous[:2]==key[:2] and previous!=key:del _link_anchors[previous]
+    anchor=_link_anchors.get(key)
+    return anchor[0] if anchor is not None and anchor[1]==before else before
+
+
+def link_remember(key,axis,links,base,after):
+    """Remember a successful linked edit for the next tick of the same gesture."""
+    if links[axis] and sum(bool(v) for v in links)>1:
+        _link_anchors.pop(key,None)
+        _link_anchors[key]=(tuple(base),tuple(after))
+        while len(_link_anchors)>_LINK_ANCHOR_ENTRIES:
+            _link_anchors.pop(next(iter(_link_anchors)))
+    else:
+        _link_anchors.pop(key,None)
+
+
+def clear_link_anchors(object_pointer=None):
+    if object_pointer is None:
+        _link_anchors.clear()
+    else:
+        for key in list(_link_anchors):
+            if key[0]==object_pointer:del _link_anchors[key]
+
+
 def _inputs(origins,axes,reference,key):
     if len(axes)!=3 or not any(axes):
         raise BetterItemError('[BI-A001] Select at least one axis: X, Y or Z.')

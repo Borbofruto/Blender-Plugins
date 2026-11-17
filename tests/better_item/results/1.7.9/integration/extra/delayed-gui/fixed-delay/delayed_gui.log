@@ -1,0 +1,12 @@
+TBBmalloc: skip allocation functions replacement in ucrtbase.dll: unknown prologue for function _msize
+Traceback (most recent call last):
+  File "D:\Codex-BetterItem-179-Consolidated\extra\delayed-gui\fixed-delay\delayed_gui.py", line 51, in run
+    line((15,6,0));assert not addon.arrange.error(ctx.scene),str(addon.arrange.error(ctx.scene))
+    ^^^^^^^^^^^^^^
+  File "D:\Codex-BetterItem-179-Consolidated\extra\delayed-gui\fixed-delay\delayed_gui.py", line 35, in line
+    for i,o in enumerate(objects):assert np.allclose(o.matrix_world.translation,np.array(end)*i/3,atol=3e-5),(o.name,tuple(o.location),end)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ('Piece 1', (5.0, 1.0, 0.0), (15, 6, 0))
+Saved session recovery to "D:\Codex-BetterItem-179-Consolidated\extra\delayed-gui\fixed-delay\profile\config\quit.blend"
+
+Blender quit

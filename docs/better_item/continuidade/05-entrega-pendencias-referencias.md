@@ -6,7 +6,7 @@
 
 Base: Better Item 1.7.3, commit `0421e9df30b13e4cf062d9ffcd5b30759c5b2ca9`.
 
-Gerado de CONTINUIDADE-IA.md, SHA-256 `55d13725533571835a9f1b0d367fc09674ddf0d209793ae0fc3957b1f1bbd3f4`. Não editar este capítulo isoladamente; altere o manual integral e execute `gerar.py`.
+Gerado de CONTINUIDADE-IA.md, SHA-256 `3aa559e3c3679f3a3488d2f82041f1a0c7e7638313a53f9794d93abea316b928`. Não editar este capítulo isoladamente; altere o manual integral e execute `gerar.py`.
 
 <a id="s21"></a>
 ## 21. Empacotamento, GitHub e publicação

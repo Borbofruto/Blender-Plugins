@@ -1,0 +1,5 @@
+TBBmalloc: skip allocation functions replacement in ucrtbase.dll: unknown prologue for function _msize
+172 COLLAPSE PASSED {'passed': True, 'symmetric_geometry_dependency_rejected': True, 'atomic_rejections': [('OFFSET', 0.2, 0, '[BI-G002]'), ('OFFSET', 0, 0, '[BI-G002]'), ('ENDPOINT', 0, 128, '[BI-E003]'), ('ENDPOINT', 0, 4, '[BI-E001]')]}
+Blender 4.2.0 (hash a51f293548ad built 2024-07-16 06:29:33)
+
+Blender quit

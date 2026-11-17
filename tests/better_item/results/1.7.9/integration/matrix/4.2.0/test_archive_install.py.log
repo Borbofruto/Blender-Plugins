@@ -1,0 +1,6 @@
+TBBmalloc: skip allocation functions replacement in ucrtbase.dll: unknown prologue for function _msize
+Info: Added User Repository "Better Item Compatibility"
+{"blender": "4.2.0", "passed": true, "archive_install": true, "declared_minimum": [4, 2, 0], "repository": "installed", "operator_result": ["FINISHED"], "module_loaded": true}
+Blender 4.2.0 (hash a51f293548ad built 2024-07-16 06:29:33)
+
+Blender quit

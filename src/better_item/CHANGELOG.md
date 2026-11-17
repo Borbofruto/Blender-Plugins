@@ -6,6 +6,16 @@
 - Keep native orientation synchronization registered after unexpected failures. Isolate failed Frames/scenes, expose paused export health and retry with bounded backoff without confusing failed reads with deliberate native deletion.
 - Clear transient synchronization health on Undo/load/unregister; preserve the existing suspension/recovery behavior for invalid sources.
 - Correct the repository homepage version and current report/snapshot links.
+- Linked Location, Rotation, Scale and Dimensions edits no longer accumulate float32 read-back error across a drag (a 400-tick Location drag lost about 6e-6 of the ratio), and no longer collapse every linked axis when the dragged value reaches zero, which previously made every later tick fail with BI-T008. While the channels are exactly as the previous linked edit left them, the vector from before the gesture remains the ratio source; any outside change, link change, change of the resolved reference (Frame, orientation, pivot, rotation order) or cache reset discards it.
+- Changing Default Euler order or toggling links invalidates the remembered ratio, including a toggle back to the previous link configuration.
+
+### Performance
+- Find objects that emit unrealized instances once per evaluated state instead of scanning every instance for each measured object. First Geometry Bounds / Volume inspections were quadratic in selection size.
+- In Edit Mode with a Normal source, reuse the per-element selection fingerprint until a depsgraph event, an object-set change or a 2 s safety interval; idle timer ticks no longer walk every vertex, edge and face in Python.
+
+### Documentation
+- Clarify that `position_roundoff` returns one object's budget and that a gap sums both endpoints.
+- No saved schema, mathematical contract, UI layout or supported minimum changed.
 
 ### Maintenance
 - Verify installer hash, version, Python fingerprint and exact source inventory during matrix preparation and before each test process. Reject contaminated workspaces without deleting results or profiles.

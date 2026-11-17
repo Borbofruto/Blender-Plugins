@@ -1,0 +1,13 @@
+{
+  "geometry_combinations": 168,
+  "rotation_batches": 72,
+  "rotation_targets_checked": 288,
+  "geometry_axes_masks": 7,
+  "unit_scales": [
+    1,
+    0.001
+  ],
+  "zero_and_positive_gaps": true,
+  "oblique_and_rotated_references": true,
+  "shared_meshes_and_parented_targets": true
+}

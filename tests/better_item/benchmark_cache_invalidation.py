@@ -131,6 +131,32 @@ try:
                                  cold_seconds=cold, median_seconds=statistics.median(samples),
                                  full_inspections=full_calls-n, tree_visits=tree_calls-trees,
                                  updates=list(updates.values())))
+    # First read with every runtime cache dropped (1.7.9). The 'cold_seconds'
+    # above only clears the distribution inspection; transform caches stay warm.
+    cold_rows = []
+    for count in (600, 1500):
+        chosen = objects[:count]
+        for obj in objects:
+            obj.select_set(obj in chosen)
+        ctx.view_layer.update()
+        for basis in ('GEOMETRY', 'VOLUME'):
+            s.distribution_mode = basis
+            ctx.view_layer.update()
+            samples = []
+            n = full_calls
+            reference = None
+            for repeat in range(3):
+                tv.clear_cache()
+                native_refs.clear_cache()
+                d.clear_inspection()
+                start = time.perf_counter()
+                value = d.inspect_spacing(ctx, chosen)
+                samples.append(time.perf_counter() - start)
+                assert reference is None or value == reference
+                reference = value
+            cold_rows.append(dict(count=count, basis=basis, event='cold_first_read',
+                                  samples_seconds=samples, median_seconds=statistics.median(samples),
+                                  full_inspections=full_calls-n))
     # Isolate sync itself; do not turn these timings into UI frame-rate claims.
     n = source_calls
     samples = []
@@ -141,9 +167,9 @@ try:
     polling = dict(scene_objects=len(ctx.scene.objects), iterations=30,
                    source_scans=source_calls-n, median_seconds=statistics.median(samples))
     result = dict(passed=True, blender=bpy.app.version_string,
-                  module=__import__('better_item').__file__, rows=rows, polling=polling)
+                  module=__import__('better_item').__file__, rows=rows, cold_rows=cold_rows, polling=polling)
     Path(__file__).with_suffix('.results.json').write_text(json.dumps(result, indent=2), encoding='utf-8')
-    print('CACHE BENCHMARK', json.dumps(dict(rows=[{k:v for k,v in row.items() if k != 'updates'} for row in rows], polling=polling)))
+    print('CACHE BENCHMARK', json.dumps(dict(rows=[{k:v for k,v in row.items() if k != 'updates'} for row in rows], cold_rows=cold_rows, polling=polling)))
 finally:
     bpy.app.handlers.depsgraph_update_post.remove(capture)
     d._inspect_spacing = original_inspect

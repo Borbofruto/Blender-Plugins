@@ -1,0 +1,27 @@
+{
+  "passed": true,
+  "blender": "4.2.23 LTS",
+  "module": "D:\\Codex-BetterItem-179-Integrated-BenchmarkBefore\\results\\4.2.23-normal-study\\better_item\\__init__.py",
+  "walker": "_normal_signature",
+  "vertices": 130562,
+  "first_sample_ms": 75.05129999481142,
+  "idle": {
+    "iterations": 30,
+    "median_ms": 35.91919999598758,
+    "max_ms": 37.48749999795109,
+    "walks": 30
+  },
+  "swap_same_count_ms": 66.17459999688435,
+  "idle_after_swap": {
+    "iterations": 30,
+    "median_ms": 36.27205000520917,
+    "max_ms": 37.02099999645725,
+    "walks": 30
+  },
+  "after_safety_interval": {
+    "iterations": 1,
+    "median_ms": 33.101200009696186,
+    "max_ms": 33.101200009696186,
+    "walks": 1
+  }
+}

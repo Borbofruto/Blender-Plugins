@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "checks": [
+    "separate saved placements and native labels",
+    "short Endpoint permits overlap without resizing",
+    "legacy Geometry Endpoint migration notice",
+    "object sources, changed selection, stable order and stop",
+    "cursor and captured Active identity; selected anchor editable",
+    "Frame/manual inputs, recovery and target edit guard",
+    "Offset reference observer preserves transverse axes",
+    "frame change and render end Live",
+    "per-method choices persist across reopen",
+    "unregister keeps poses and removes observer/guards"
+  ]
+}

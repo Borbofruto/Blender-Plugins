@@ -1,0 +1,4 @@
+00:31.734  blend            | Saved session recovery to "D:\Codex-BetterItem-179-Integrated-BenchmarkBefore\results\5.3.0-normal-study\profile\temp\quit.blend"
+EDITMODE NORMAL BENCHMARK {"passed": true, "blender": "5.3.0", "module": "D:\\Codex-BetterItem-179-Integrated-BenchmarkBefore\\results\\5.3.0-normal-study\\better_item\\__init__.py", "walker": "_normal_signature", "vertices": 130562, "first_sample_ms": 122.10310000227764, "idle": {"iterations": 30, "median_ms": 61.33824999415083, "max_ms": 67.35650000337046, "walks": 30}, "swap_same_count_ms": 116.46140000084415, "idle_after_swap": {"iterations": 30, "median_ms": 61.82785000419244, "max_ms": 74.77470001322217, "walks": 30}, "after_safety_interval": {"iterations": 1, "median_ms": 55.55839999578893, "max_ms": 55.55839999578893, "walks": 1}}
+
+Blender quit

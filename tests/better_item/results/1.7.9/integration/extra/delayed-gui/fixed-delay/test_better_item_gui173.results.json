@@ -1,0 +1,7 @@
+{
+  "passed": false,
+  "phases": [
+    0
+  ],
+  "traceback": "Traceback (most recent call last):\n  File \"D:\\Codex-BetterItem-179-Consolidated\\extra\\delayed-gui\\fixed-delay\\delayed_gui.py\", line 51, in run\n    line((15,6,0));assert not addon.arrange.error(ctx.scene),str(addon.arrange.error(ctx.scene))\n    ^^^^^^^^^^^^^^\n  File \"D:\\Codex-BetterItem-179-Consolidated\\extra\\delayed-gui\\fixed-delay\\delayed_gui.py\", line 35, in line\n    for i,o in enumerate(objects):assert np.allclose(o.matrix_world.translation,np.array(end)*i/3,atol=3e-5),(o.name,tuple(o.location),end)\n                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: ('Piece 1', (5.0, 1.0, 0.0), (15, 6, 0))\n"
+}

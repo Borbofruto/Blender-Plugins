@@ -1,0 +1,5 @@
+TBBmalloc: skip allocation functions replacement in ucrtbase.dll: unknown prologue for function _msize
+EDITMODE NORMAL BENCHMARK {"passed": true, "blender": "4.2.23 LTS", "module": "C:\\work\\better-item-matrix-1.7.8\\results\\bench-4.2.23\\better_item\\__init__.py", "walker": "_normal_signature", "vertices": 130562, "first_sample_ms": 73.26880004256964, "idle": {"iterations": 30, "median_ms": 35.85200000088662, "max_ms": 36.276200029533356, "walks": 30}, "swap_same_count_ms": 72.46669998858124, "idle_after_swap": {"iterations": 30, "median_ms": 35.87364999111742, "max_ms": 38.1863999646157, "walks": 30}, "after_safety_interval": {"iterations": 1, "median_ms": 35.93670000554994, "max_ms": 35.93670000554994, "walks": 1}}
+Saved session recovery to "C:\Users\gabri\AppData\Local\Temp\quit.blend"
+
+Blender quit

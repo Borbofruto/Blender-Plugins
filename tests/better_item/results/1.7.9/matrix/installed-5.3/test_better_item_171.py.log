@@ -1,0 +1,8 @@
+00:02.000  blend            | Read blend: "C:\work\better-item-matrix-1.7.9-fix\results\installed-5.3\test_better_item_171.blend"
+00:02.016  blend            | Read blend: "C:\work\better-item-matrix-1.7.9-fix\results\installed-5.3\test_better_item_171.blend"
+Info: Saved as "test_better_item_171.blend"
+Info: Saved as "test_better_item_171.blend"
+171 PASSED {'passed': True, 'transverse_cases': 30, 'zero_direction_sequences': 3, 'checkbox_no_initial_mutation': True, 'checkbox_disable_keeps_result': True, 'direction_persistence': True}
+Blender 5.3.0 (hash 02f0899d78e3 built 2026-11-10 01:33:43)
+
+Blender quit

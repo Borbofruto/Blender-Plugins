@@ -1,0 +1,8 @@
+TBBmalloc: skip allocation functions replacement in ucrtbase.dll: unknown prologue for function _msize
+Blender 4.2.0 (hash a51f293548ad built 2024-07-16 06:29:33)
+Info: Total files 0 | Changed 0 | Failed 0
+Info: Saved "test_better_item_173.blend"
+173 PASSED {"passed": true, "checks": ["separate saved placements and native labels", "short Endpoint permits overlap without resizing", "legacy Geometry Endpoint migration notice", "object sources, changed selection, stable order and stop", "cursor and captured Active identity; selected anchor editable", "Frame/manual inputs, recovery and target edit guard", "Offset reference observer preserves transverse axes", "frame change and render end Live", "per-method choices persist across reopen", "unregister keeps poses and removes observer/guards"]}
+Read blend: "D:\Codex-BetterItem-179-Consolidated\results\4.2.0\test_better_item_173.blend"
+
+Blender quit

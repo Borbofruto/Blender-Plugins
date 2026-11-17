@@ -3,7 +3,7 @@
 import bpy
 from bpy.app.handlers import persistent
 from . import engine, frames, transform_view, arrange, native_refs, references, trace,diagnostics,geometry_arrange,distribution,distribution_preview,placement
-from .math_core import BetterItemError
+from .math_core import BetterItemError,clear_link_anchors
 
 _field_errors={}
 _groups=[('LOCATION','Location','Object Location'),
@@ -65,6 +65,7 @@ def _origin_changed(self,context):
 
 def _links_changed(self,context):
     _field_errors.pop(self.id_data.as_pointer(),None)
+    clear_link_anchors(self.id_data.as_pointer())
 
 
 def _arrange_changed(self,context):

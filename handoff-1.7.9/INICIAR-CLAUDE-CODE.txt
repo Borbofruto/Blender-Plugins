@@ -1,0 +1,7 @@
+REGISTRO HISTÓRICO ANTERIOR À CONSOLIDAÇÃO. Não reaplique o patch nem use os HEADs esperados abaixo na main atual. Comece por docs/better_item/CONTEXTO-ATUAL.md e MENSAGEM-NOVA-CONVERSA.md; as instruções do usuário atual prevalecem.
+
+Abra o Claude Code na pasta do repositório (C:\Users\gabri\OneDrive\Documentos\GitHub\Blender-Plugins) e cole a mensagem abaixo.
+
+---
+
+Leia handoff-1.7.9/CODE-SESSION-1.7.9.md inteiro e siga as instruções, em português. Trabalhe só na branch release/1.7.9, sem mexer na main e sem push. Comece conferindo git status e o HEAD da main (esperado 97a676d), depois aplique handoff-1.7.9/better-item-1.7.9.patch e me diga o que encontrou antes de rodar a matriz. Use o Blender instalado e baixe os portáteis conforme o README de tests/better_item/compatibility. Reporte o que você executou separado do que veio dos relatórios anteriores.

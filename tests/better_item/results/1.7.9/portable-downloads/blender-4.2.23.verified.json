@@ -1,0 +1,8 @@
+{
+  "file": "blender-4.2.23-windows-x64.zip",
+  "url": "https://download.blender.org/release/Blender4.2/blender-4.2.23-windows-x64.zip",
+  "sha256": "82e791475779a7342424a480bdde9a20b43710da9264c60346125aa16cd910cb",
+  "verified_against_official_checksum": true,
+  "bytes": 383193007,
+  "download_seconds": 55.59
+}

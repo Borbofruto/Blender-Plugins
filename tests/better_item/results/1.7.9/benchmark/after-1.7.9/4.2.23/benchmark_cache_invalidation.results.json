@@ -1,0 +1,567 @@
+{
+  "passed": true,
+  "blender": "4.2.23 LTS",
+  "module": "C:\\work\\better-item-matrix-1.7.9\\results\\bench-4.2.23\\better_item\\__init__.py",
+  "rows": [
+    {
+      "count": 600,
+      "basis": "ORIGINS",
+      "event": "unchanged",
+      "cold_seconds": 0.012072300014551729,
+      "median_seconds": 0.00036179996095597744,
+      "full_inspections": 0,
+      "tree_visits": 0,
+      "updates": []
+    },
+    {
+      "count": 600,
+      "basis": "ORIGINS",
+      "event": "unrelated_transform",
+      "cold_seconds": 0.012072300014551729,
+      "median_seconds": 0.0018282000091858208,
+      "full_inspections": 0,
+      "tree_visits": 0,
+      "updates": [
+        {
+          "type": "Object",
+          "geometry": false,
+          "transform": true,
+          "shading": false,
+          "count": 3,
+          "examples": [
+            "Unrelated Empty"
+          ]
+        }
+      ]
+    },
+    {
+      "count": 600,
+      "basis": "ORIGINS",
+      "event": "shader",
+      "cold_seconds": 0.012072300014551729,
+      "median_seconds": 0.018707300012465566,
+      "full_inspections": 3,
+      "tree_visits": 0,
+      "updates": [
+        {
+          "type": "Object",
+          "geometry": false,
+          "transform": false,
+          "shading": true,
+          "count": 4503,
+          "examples": [
+            "Cube",
+            "Benchmark 0000",
+            "Benchmark 0001"
+          ]
+        },
+        {
+          "type": "Mesh",
+          "geometry": false,
+          "transform": false,
+          "shading": true,
+          "count": 3,
+          "examples": [
+            "Cube.001"
+          ]
+        },
+        {
+          "type": "Material",
+          "geometry": false,
+          "transform": false,
+          "shading": true,
+          "count": 3,
+          "examples": [
+            "Unrelated shader"
+          ]
+        },
+        {
+          "type": "ShaderNodeTree",
+          "geometry": false,
+          "transform": false,
+          "shading": false,
+          "count": 3,
+          "examples": [
+            "Shader Nodetree"
+          ]
+        }
+      ]
+    },
+    {
+      "count": 600,
+      "basis": "GEOMETRY",
+      "event": "unchanged",
+      "cold_seconds": 0.10080739995464683,
+      "median_seconds": 0.00036180001916363835,
+      "full_inspections": 0,
+      "tree_visits": 0,
+      "updates": []
+    },
+    {
+      "count": 600,
+      "basis": "GEOMETRY",
+      "event": "unrelated_transform",
+      "cold_seconds": 0.10080739995464683,
+      "median_seconds": 0.001837700023315847,
+      "full_inspections": 0,
+      "tree_visits": 0,
+      "updates": [
+        {
+          "type": "Object",
+          "geometry": false,
+          "transform": true,
+          "shading": false,
+          "count": 3,
+          "examples": [
+            "Unrelated Empty"
+          ]
+        }
+      ]
+    },
+    {
+      "count": 600,
+      "basis": "GEOMETRY",
+      "event": "shader",
+      "cold_seconds": 0.10080739995464683,
+      "median_seconds": 0.10908210003981367,
+      "full_inspections": 3,
+      "tree_visits": 0,
+      "updates": [
+        {
+          "type": "Object",
+          "geometry": false,
+          "transform": false,
+          "shading": true,
+          "count": 4503,
+          "examples": [
+            "Cube",
+            "Benchmark 0000",
+            "Benchmark 0001"
+          ]
+        },
+        {
+          "type": "Mesh",
+          "geometry": false,
+          "transform": false,
+          "shading": true,
+          "count": 3,
+          "examples": [
+            "Cube.001"
+          ]
+        },
+        {
+          "type": "Material",
+          "geometry": false,
+          "transform": false,
+          "shading": true,
+          "count": 3,
+          "examples": [
+            "Unrelated shader"
+          ]
+        },
+        {
+          "type": "ShaderNodeTree",
+          "geometry": false,
+          "transform": false,
+          "shading": false,
+          "count": 3,
+          "examples": [
+            "Shader Nodetree"
+          ]
+        }
+      ]
+    },
+    {
+      "count": 600,
+      "basis": "VOLUME",
+      "event": "unchanged",
+      "cold_seconds": 0.22523640003055334,
+      "median_seconds": 0.00035719998413696885,
+      "full_inspections": 0,
+      "tree_visits": 0,
+      "updates": []
+    },
+    {
+      "count": 600,
+      "basis": "VOLUME",
+      "event": "unrelated_transform",
+      "cold_seconds": 0.22523640003055334,
+      "median_seconds": 0.001976100029423833,
+      "full_inspections": 0,
+      "tree_visits": 0,
+      "updates": [
+        {
+          "type": "Object",
+          "geometry": false,
+          "transform": true,
+          "shading": false,
+          "count": 3,
+          "examples": [
+            "Unrelated Empty"
+          ]
+        }
+      ]
+    },
+    {
+      "count": 600,
+      "basis": "VOLUME",
+      "event": "shader",
+      "cold_seconds": 0.22523640003055334,
+      "median_seconds": 0.22924760001478717,
+      "full_inspections": 3,
+      "tree_visits": 0,
+      "updates": [
+        {
+          "type": "Object",
+          "geometry": false,
+          "transform": false,
+          "shading": true,
+          "count": 4503,
+          "examples": [
+            "Cube",
+            "Benchmark 0000",
+            "Benchmark 0001"
+          ]
+        },
+        {
+          "type": "Mesh",
+          "geometry": false,
+          "transform": false,
+          "shading": true,
+          "count": 3,
+          "examples": [
+            "Cube.001"
+          ]
+        },
+        {
+          "type": "Material",
+          "geometry": false,
+          "transform": false,
+          "shading": true,
+          "count": 3,
+          "examples": [
+            "Unrelated shader"
+          ]
+        },
+        {
+          "type": "ShaderNodeTree",
+          "geometry": false,
+          "transform": false,
+          "shading": false,
+          "count": 3,
+          "examples": [
+            "Shader Nodetree"
+          ]
+        }
+      ]
+    },
+    {
+      "count": 1500,
+      "basis": "ORIGINS",
+      "event": "unchanged",
+      "cold_seconds": 0.030761800007894635,
+      "median_seconds": 0.000838999985717237,
+      "full_inspections": 0,
+      "tree_visits": 0,
+      "updates": []
+    },
+    {
+      "count": 1500,
+      "basis": "ORIGINS",
+      "event": "unrelated_transform",
+      "cold_seconds": 0.030761800007894635,
+      "median_seconds": 0.002346699999179691,
+      "full_inspections": 0,
+      "tree_visits": 0,
+      "updates": [
+        {
+          "type": "Object",
+          "geometry": false,
+          "transform": true,
+          "shading": false,
+          "count": 3,
+          "examples": [
+            "Unrelated Empty"
+          ]
+        }
+      ]
+    },
+    {
+      "count": 1500,
+      "basis": "ORIGINS",
+      "event": "shader",
+      "cold_seconds": 0.030761800007894635,
+      "median_seconds": 0.03539370000362396,
+      "full_inspections": 3,
+      "tree_visits": 0,
+      "updates": [
+        {
+          "type": "Object",
+          "geometry": false,
+          "transform": false,
+          "shading": true,
+          "count": 4503,
+          "examples": [
+            "Cube",
+            "Benchmark 0000",
+            "Benchmark 0001"
+          ]
+        },
+        {
+          "type": "Mesh",
+          "geometry": false,
+          "transform": false,
+          "shading": true,
+          "count": 3,
+          "examples": [
+            "Cube.001"
+          ]
+        },
+        {
+          "type": "Material",
+          "geometry": false,
+          "transform": false,
+          "shading": true,
+          "count": 3,
+          "examples": [
+            "Unrelated shader"
+          ]
+        },
+        {
+          "type": "ShaderNodeTree",
+          "geometry": false,
+          "transform": false,
+          "shading": false,
+          "count": 3,
+          "examples": [
+            "Shader Nodetree"
+          ]
+        }
+      ]
+    },
+    {
+      "count": 1500,
+      "basis": "GEOMETRY",
+      "event": "unchanged",
+      "cold_seconds": 0.2531662000110373,
+      "median_seconds": 0.0008320999913848937,
+      "full_inspections": 0,
+      "tree_visits": 0,
+      "updates": []
+    },
+    {
+      "count": 1500,
+      "basis": "GEOMETRY",
+      "event": "unrelated_transform",
+      "cold_seconds": 0.2531662000110373,
+      "median_seconds": 0.002502900024410337,
+      "full_inspections": 0,
+      "tree_visits": 0,
+      "updates": [
+        {
+          "type": "Object",
+          "geometry": false,
+          "transform": true,
+          "shading": false,
+          "count": 3,
+          "examples": [
+            "Unrelated Empty"
+          ]
+        }
+      ]
+    },
+    {
+      "count": 1500,
+      "basis": "GEOMETRY",
+      "event": "shader",
+      "cold_seconds": 0.2531662000110373,
+      "median_seconds": 0.2551102999714203,
+      "full_inspections": 3,
+      "tree_visits": 0,
+      "updates": [
+        {
+          "type": "Object",
+          "geometry": false,
+          "transform": false,
+          "shading": true,
+          "count": 4503,
+          "examples": [
+            "Cube",
+            "Benchmark 0000",
+            "Benchmark 0001"
+          ]
+        },
+        {
+          "type": "Mesh",
+          "geometry": false,
+          "transform": false,
+          "shading": true,
+          "count": 3,
+          "examples": [
+            "Cube.001"
+          ]
+        },
+        {
+          "type": "Material",
+          "geometry": false,
+          "transform": false,
+          "shading": true,
+          "count": 3,
+          "examples": [
+            "Unrelated shader"
+          ]
+        },
+        {
+          "type": "ShaderNodeTree",
+          "geometry": false,
+          "transform": false,
+          "shading": false,
+          "count": 3,
+          "examples": [
+            "Shader Nodetree"
+          ]
+        }
+      ]
+    },
+    {
+      "count": 1500,
+      "basis": "VOLUME",
+      "event": "unchanged",
+      "cold_seconds": 0.5522226000321098,
+      "median_seconds": 0.0008780999924056232,
+      "full_inspections": 0,
+      "tree_visits": 0,
+      "updates": []
+    },
+    {
+      "count": 1500,
+      "basis": "VOLUME",
+      "event": "unrelated_transform",
+      "cold_seconds": 0.5522226000321098,
+      "median_seconds": 0.0029763999627903104,
+      "full_inspections": 0,
+      "tree_visits": 0,
+      "updates": [
+        {
+          "type": "Object",
+          "geometry": false,
+          "transform": true,
+          "shading": false,
+          "count": 3,
+          "examples": [
+            "Unrelated Empty"
+          ]
+        }
+      ]
+    },
+    {
+      "count": 1500,
+      "basis": "VOLUME",
+      "event": "shader",
+      "cold_seconds": 0.5522226000321098,
+      "median_seconds": 0.5605155999655835,
+      "full_inspections": 3,
+      "tree_visits": 0,
+      "updates": [
+        {
+          "type": "Object",
+          "geometry": false,
+          "transform": false,
+          "shading": true,
+          "count": 4503,
+          "examples": [
+            "Cube",
+            "Benchmark 0000",
+            "Benchmark 0001"
+          ]
+        },
+        {
+          "type": "Mesh",
+          "geometry": false,
+          "transform": false,
+          "shading": true,
+          "count": 3,
+          "examples": [
+            "Cube.001"
+          ]
+        },
+        {
+          "type": "Material",
+          "geometry": false,
+          "transform": false,
+          "shading": true,
+          "count": 3,
+          "examples": [
+            "Unrelated shader"
+          ]
+        },
+        {
+          "type": "ShaderNodeTree",
+          "geometry": false,
+          "transform": false,
+          "shading": false,
+          "count": 3,
+          "examples": [
+            "Shader Nodetree"
+          ]
+        }
+      ]
+    }
+  ],
+  "cold_rows": [
+    {
+      "count": 600,
+      "basis": "GEOMETRY",
+      "event": "cold_first_read",
+      "samples_seconds": [
+        0.09824120003031567,
+        0.09829069999977946,
+        0.09830040001543239
+      ],
+      "median_seconds": 0.09829069999977946,
+      "full_inspections": 3
+    },
+    {
+      "count": 600,
+      "basis": "VOLUME",
+      "event": "cold_first_read",
+      "samples_seconds": [
+        0.2267784999567084,
+        0.2266001000534743,
+        0.22622700000647455
+      ],
+      "median_seconds": 0.2266001000534743,
+      "full_inspections": 3
+    },
+    {
+      "count": 1500,
+      "basis": "GEOMETRY",
+      "event": "cold_first_read",
+      "samples_seconds": [
+        0.2495340000023134,
+        0.24734559998614714,
+        0.244723999989219
+      ],
+      "median_seconds": 0.24734559998614714,
+      "full_inspections": 3
+    },
+    {
+      "count": 1500,
+      "basis": "VOLUME",
+      "event": "cold_first_read",
+      "samples_seconds": [
+        0.5522595000220463,
+        0.5514084000024013,
+        0.5514639000175521
+      ],
+      "median_seconds": 0.5514639000175521,
+      "full_inspections": 3
+    }
+  ],
+  "polling": {
+    "scene_objects": 1502,
+    "iterations": 30,
+    "source_scans": 0,
+    "median_seconds": 1.9550032448023558e-05
+  }
+}

@@ -1,0 +1,11 @@
+OK drag_ratio - Location (Reference and Default) and Scale keep exact ratios over a 400-tick drag
+OK cross_zero - Location, Rotation and Scale continue through zero with the original ratio
+OK outside_changes_win - a value changed outside the gesture, or a link change, discards the remembered ratio
+OK reference_switch - a ratio remembered in one reference is not reused after switching orientation; a fixed Frame still crosses zero
+OK anchors_bounded - anchor store is bounded and cleared with the transform caches
+OK instancers - unrealized instances are refused and the lookup follows modifier add/remove
+OK normal_fingerprint - idle ticks reuse the fingerprint; events, equal-count swaps and the safety interval are detected
+BETTER_ITEM_GESTURES179_OK
+Blender 5.3.0 (hash 02f0899d78e3 built 2026-11-10 01:33:43)
+
+Blender quit

@@ -1,0 +1,13 @@
+Blender 4.2.0 (hash a51f293548ad built 2024-07-16 06:29:33)
+
+Blender quit
+TBBmalloc: skip allocation functions replacement in ucrtbase.dll: unknown prologue for function _msize
+Traceback (most recent call last):
+  File "D:\Codex-BetterItem-179-Integrated-Final\extra\test_cross_version_state.py", line 10, in <module>
+    for candidate in (root/'source',root.parent/'source',root.parents[2]/'src'):
+                                                         ~~~~~~~~~~~~^^^
+  File "D:\Codex-BetterItem-179-Portable\blender-4.2.0-windows-x64\4.2\python\Lib\pathlib.py", line 445, in __getitem__
+    raise IndexError(idx)
+IndexError: 2
+
+Error: script failed, file: 'D:\Codex-BetterItem-179-Integrated-Final\extra\test_cross_version_state.py', exiting.

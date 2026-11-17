@@ -1,0 +1,48 @@
+{
+  "addon_zip_sha256": "015d87d69b47b16f4c2f286271e78922b0239ebd44e8616512e999b2fca4d8b1",
+  "checks": [
+    {
+      "version": "4.2.0",
+      "check": "extension-validate",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "version": "4.2.23",
+      "check": "extension-validate",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "version": "5.3.0",
+      "check": "extension-validate",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "version": "4.2.0",
+      "check": "placement-persistence",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "version": "4.2.23",
+      "check": "placement-persistence",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "version": "5.3.0",
+      "check": "placement-persistence",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "version": "4.2.0",
+      "check": "cross-write",
+      "exit_code": 1,
+      "passed": false
+    }
+  ],
+  "passed": false
+}

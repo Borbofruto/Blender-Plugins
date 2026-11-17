@@ -7,6 +7,7 @@ A live Transform panel with declared Blender 4.2+ compatibility. Executed builds
 1.7.8 retains spacing inspection results across unrelated transform-only object updates, avoids Object Mode selection-normal source scans, and narrows geometry-tree invalidation work. Geometry updates and unclassified events still invalidate conservatively; applying an operation always plans and validates independently. Measured before/after results and remaining costs are recorded in the [cache maintenance report](https://github.com/Borbofruto/Blender-Plugins/blob/main/docs/better_item/release-1.7.8.md).
 
 1.7.9 keeps the native orientation observer alive after unexpected failures, isolates failed Frames and retries with bounded backoff. A paused export shows BI-F006 instead of appearing healthy while its axes are outdated. Explicit native deletion is still respected; transient health is cleared on Undo/load/unregister. Release and runner integrity checks are documented in the [1.7.9 maintenance report](https://github.com/Borbofruto/Blender-Plugins/blob/main/docs/better_item/release-1.7.9.md).
+1.7.9 keeps linked Location, Rotation, Scale and Dimensions edits exact across a continuous drag, including through zero; removes a quadratic scan from the first (cold) spacing inspection; and stops re-walking every selected element in Edit Mode on each Normal-orientation refresh. No mathematical contract, saved schema, UI workflow or supported minimum changed. Measurements and limits are in the [1.7.9 report](https://github.com/Borbofruto/Blender-Plugins/blob/main/docs/better_item/release-1.7.9.md).
 
 ## Installation
 
@@ -233,7 +234,7 @@ Unsupported geometry, moving endpoint dependencies, native locks/drivers/constra
 | BI-T005 | Singular parent transform |
 | BI-T006 | Evaluated position did not retain the target; residual is reported |
 | BI-T007 | Coordinate exceeds the numeric range |
-| BI-T008 | Proportional denominator is zero or unresolved within Location rounding uncertainty |
+| BI-T008 | Proportional denominator is zero or unresolved within Location rounding uncertainty. A linked edit that continues the previous edit of the same channels keeps its original ratio and is not refused when it passes through zero |
 | BI-T009 | A moving reference prevents the requested numeric readback |
 | BI-T010 | Singular zero/negative Dimensions edit |
 | BI-T011 | Rotation unexpectedly changes evaluated Scale |

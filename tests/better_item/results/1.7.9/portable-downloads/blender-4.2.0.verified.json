@@ -1,0 +1,8 @@
+{
+  "file": "blender-4.2.0-windows-x64.zip",
+  "url": "https://download.blender.org/release/Blender4.2/blender-4.2.0-windows-x64.zip",
+  "sha256": "b6e72874f8cb5c4ed77f9b03d7f1fde851b9455a7ff02a1e1119c876318ebc65",
+  "verified_against_official_checksum": true,
+  "bytes": 383542405,
+  "download_seconds": 57.18
+}

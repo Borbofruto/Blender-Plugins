@@ -1,0 +1,4 @@
+﻿version C:\work\repro-anchor-1.7.8\better_item\__init__.py
+after drag in Global: world (0.0, 0.0, 3.0) values (np.float64(0.0), np.float64(0.0), np.float64(3.0))
+values in Rz90 frame (np.float64(0.0), np.float64(0.0), np.float64(3.0))
+RESULT edit X=1 refused: [BI-T008] Cannot define a ratio from X = 0. Unlink that axis first.

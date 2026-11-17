@@ -1,18 +1,22 @@
 {
   "version": "1.7.9",
-  "date": "2026-11-16",
+  "date": "2026-11-17",
   "baseline_commit": "97a676d6e320742fa83185f62296c9d1730116d5",
+  "integrated_contributions": {
+    "release_branch": "de73eaa1e5d60190278fe19ffac8a76aea0d9592",
+    "local_maintenance": "0ef6b94"
+  },
   "archive": {
     "path": "addons/better_item.zip",
-    "sha256": "53778db311cee794c63d6040d3e3ba699c4784df8049942971faaf6c4616f090",
-    "bytes": 99297
+    "sha256": "6a01eb809165347e94668d259a492b922b69f0c368657cae48599a2f57a9f029",
+    "bytes": 101727
   },
   "minimum_blender": "4.2.0",
-  "python_source_sha256": "6476976963936480775a97c5d3be488781b4f988c3c5f7b0cbfcfeb0c0631e29",
+  "python_source_sha256": "b468b68b34354621378140325cc0c40c96655788d40dc332b24aa04e041dcccd",
   "files": [
     {
       "path": "src/better_item/__init__.py",
-      "sha256": "91a829be064f8dae661b8b16942cfc3a9c0da2e1031f2a08ee58edc9bbfa9b52"
+      "sha256": "50131f2566e90e98830ee9e69cc624237feced242c39b3f12db61e28344f5791"
     },
     {
       "path": "src/better_item/arrange.py",
@@ -32,7 +36,7 @@
     },
     {
       "path": "src/better_item/engine.py",
-      "sha256": "ebb4102ed53da1ff344db28e8e52ca5c42683cb07628069d250aa9266f7125ba"
+      "sha256": "fcb8da35f865eac6eb8717fbe713e7aec8b7c601fea4fdb525bb7a7547750dfc"
     },
     {
       "path": "src/better_item/frames.py",
@@ -40,15 +44,15 @@
     },
     {
       "path": "src/better_item/geometry_arrange.py",
-      "sha256": "5a8629c13eac45cbd20f172db7cf5fda869eb06949b245872f1a7152327f14c0"
+      "sha256": "91576acfc512187a366d9f92d0398ea38e872182561696528f8eca0535fcc79f"
     },
     {
       "path": "src/better_item/math_core.py",
-      "sha256": "c4cb2e7b8e76e4e377181e75146d95ecc86f0e9d78629cfd0514d9c54be5e4c5"
+      "sha256": "a26636d06acba142a59a29538a1f9ca8341a8857701e96ed8521e0920039d964"
     },
     {
       "path": "src/better_item/native_refs.py",
-      "sha256": "3d4cf14d9cf97822850ba4bd4e74026df2940db4f03efb2fe08790910fcc63fb"
+      "sha256": "d8d5242d07fde2e32ceb2c65cb45197a9a41412283119c3e83b1a9c48086ec49"
     },
     {
       "path": "src/better_item/orientation.py",
@@ -68,7 +72,61 @@
     },
     {
       "path": "src/better_item/transform_view.py",
-      "sha256": "3767a4185fc2c0a89a1b577425e0402ac1b2d5dadb2ae8cb22140e1d14bdcc24"
+      "sha256": "e85cc9a366985dc1b656489d64388a3674ae39e4a30996bd75341ffaa62d2007"
     }
+  ],
+  "builds": [
+    {
+      "blender": "4.2.0",
+      "matrix_entries": 24,
+      "passed": true
+    },
+    {
+      "blender": "4.2.23",
+      "matrix_entries": 24,
+      "passed": true
+    },
+    {
+      "blender": "5.3.0",
+      "matrix_entries": 24,
+      "passed": true
+    }
+  ],
+  "runtime_changed": [
+    "__init__.py",
+    "diagnostics.py",
+    "engine.py",
+    "frames.py",
+    "geometry_arrange.py",
+    "math_core.py",
+    "native_refs.py",
+    "transform_view.py"
+  ],
+  "unchanged_runtime_modules": 7,
+  "infrastructure": {
+    "tests": 14,
+    "passed": true,
+    "results": "tests/better_item/results/1.7.9/integration/infrastructure/"
+  },
+  "results": "tests/better_item/results/1.7.9/integration/",
+  "combined_hash_algorithm": "SHA256(sorted basename UTF-8 + NUL + raw Python bytes)",
+  "previous_branch_archive_sha256": "c053f3663cff7b9a954656c15b3d2de8d66885fb3b7657dba04dae9410de288f",
+  "benchmark_baseline_archive_sha256": "369fb55c5eb153f6c805d552da7bf3b3c068b8ee046aba416d3acdc75335fa61",
+  "benchmarks_measured_against_consolidated_archive": true,
+  "fixed_during_integration": [
+    "Default Euler order included in linked anchor key",
+    "RNA links callback clears object anchors even when links are toggled back",
+    "GUI173 awaits actual timer results with a 10 s deadline instead of assuming a fixed .8 s interval"
+  ],
+  "pending": [
+    "Human mouse/F9/cancel/width checklist",
+    "1.8.x diagnostics: invalid Volume geometry can show Complete references",
+    "Intermediate builds, macOS and Linux GUI not reexecuted on this consolidated archive"
+  ],
+  "excluded": [
+    "Animation",
+    "Edit Mode targets implementation",
+    "UI redesign",
+    "Schema migration/general refactor"
   ]
 }

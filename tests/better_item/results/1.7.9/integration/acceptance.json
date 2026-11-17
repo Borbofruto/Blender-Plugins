@@ -1,0 +1,117 @@
+{
+  "passed": true,
+  "archive_sha256": "6a01eb809165347e94668d259a492b922b69f0c368657cae48599a2f57a9f029",
+  "matrix": [
+    {
+      "blender": "4.2.0",
+      "matrix_entries": 24,
+      "passed": true
+    },
+    {
+      "blender": "4.2.23",
+      "matrix_entries": 24,
+      "passed": true
+    },
+    {
+      "blender": "5.3.0",
+      "matrix_entries": 24,
+      "passed": true
+    }
+  ],
+  "infrastructure": {
+    "passed": true,
+    "tests_run": 14,
+    "failures": [],
+    "errors": []
+  },
+  "extra": {
+    "addon_zip_sha256": "6a01eb809165347e94668d259a492b922b69f0c368657cae48599a2f57a9f029",
+    "checks": [
+      {
+        "version": "4.2.0",
+        "check": "extension-validate",
+        "exit_code": 0,
+        "passed": true
+      },
+      {
+        "version": "4.2.23",
+        "check": "extension-validate",
+        "exit_code": 0,
+        "passed": true
+      },
+      {
+        "version": "5.3.0",
+        "check": "extension-validate",
+        "exit_code": 0,
+        "passed": true
+      },
+      {
+        "version": "4.2.0",
+        "check": "placement-persistence",
+        "exit_code": 0,
+        "passed": true
+      },
+      {
+        "version": "4.2.23",
+        "check": "placement-persistence",
+        "exit_code": 0,
+        "passed": true
+      },
+      {
+        "version": "5.3.0",
+        "check": "placement-persistence",
+        "exit_code": 0,
+        "passed": true
+      },
+      {
+        "version": "4.2.0",
+        "check": "cross-write",
+        "exit_code": 0,
+        "passed": true
+      },
+      {
+        "version": "5.3.0",
+        "check": "cross-read",
+        "exit_code": 0,
+        "passed": true
+      }
+    ],
+    "passed": true
+  },
+  "negative_regressions": {
+    "archive_sha256": "c053f3663cff7b9a954656c15b3d2de8d66885fb3b7657dba04dae9410de288f",
+    "passed": true,
+    "cases": [
+      {
+        "case": "default_rotation_order",
+        "exit_code": 1,
+        "expected_failure_observed": true
+      },
+      {
+        "case": "links_toggle_back",
+        "exit_code": 1,
+        "expected_failure_observed": true
+      }
+    ]
+  },
+  "controlled_gui_delay": {
+    "passed": true,
+    "note": "Injected 1.2 s main-thread stall, same consolidated runtime in both processes",
+    "cases": [
+      {
+        "test": "fixed-delay",
+        "exit_code": 0,
+        "test_passed": false,
+        "waits": {}
+      },
+      {
+        "test": "bounded-condition",
+        "exit_code": 0,
+        "test_passed": true,
+        "waits": {
+          "1": 1
+        }
+      }
+    ]
+  }
+}

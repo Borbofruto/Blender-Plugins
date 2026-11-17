@@ -4,7 +4,7 @@ import math
 import bpy
 import numpy as np
 from mathutils import Vector,Matrix
-from .math_core import BetterItemError,linked_values,different
+from .math_core import BetterItemError,linked_values,different,link_base,link_remember
 
 GROUP_LINK={'LOCATION':'link_location','ROTATION':'link_rotation','SCALE':'link_scale','DIMENSIONS':'link_dimensions'}
 
@@ -36,7 +36,10 @@ def edit_scale_component(obj,axis,value):
     editable(obj)
     bpy.context.view_layer.update()
     before=tuple(obj.scale)
-    desired=linked_values(before,axis,value,obj.better_item.link_scale)
+    links=obj.better_item.link_scale
+    key=(obj.as_pointer(),'SCALE',tuple(links))
+    base=link_base(key,before)
+    desired=linked_values(base,axis,value,links)
     for i,locked in enumerate(obj.lock_scale):
         if locked and different(before[i],desired[i]):
             raise BetterItemError('Axis %s is locked on "%s". The linked edit was cancelled.' % ('XYZ'[i],obj.name))
@@ -46,6 +49,7 @@ def edit_scale_component(obj,axis,value):
         bpy.context.view_layer.update()
         if not _native_matches(obj.scale,desired):
             raise BetterItemError('Blender did not retain the requested Scale. Check drivers and constraints on "%s".' % obj.name)
+        link_remember(key,axis,links,base,tuple(obj.scale))
     except Exception as exc:
         obj.scale=before
         bpy.context.view_layer.update()

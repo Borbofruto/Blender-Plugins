@@ -1,0 +1,30 @@
+{
+  "passed": true,
+  "symmetric_geometry_dependency_rejected": true,
+  "atomic_rejections": [
+    [
+      "OFFSET",
+      0.2,
+      0,
+      "[BI-G002]"
+    ],
+    [
+      "OFFSET",
+      0,
+      0,
+      "[BI-G002]"
+    ],
+    [
+      "ENDPOINT",
+      0,
+      128,
+      "[BI-E003]"
+    ],
+    [
+      "ENDPOINT",
+      0,
+      4,
+      "[BI-E001]"
+    ]
+  ]
+}

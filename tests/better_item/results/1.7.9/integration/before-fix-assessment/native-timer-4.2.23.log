@@ -1,0 +1,4 @@
+NATIVE TIMER FAULT OBSERVATION {"blender": "4.2.23 LTS", "kind": "one-shot synthetic RuntimeError; not a spontaneous production crash", "initial_timer_registered": true, "initial_export_enabled": true, "timer_registered_after_fault": false, "sync_reentry_flag": false, "fault_calls": 1, "export_error_after_source_change": 0.4794255793094635, "export_still_enabled": true, "reproduced": true}
+Saved session recovery to "C:\Users\gabri\AppData\Local\Temp\quit.blend"
+
+Blender quit

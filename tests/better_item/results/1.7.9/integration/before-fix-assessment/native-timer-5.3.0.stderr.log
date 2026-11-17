@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "C:\Users\gabri\Nova pasta\Documents\ChatGPT\Mixer - Modified Blender 2\Blender-Plugins\src\better_item\native_refs.py", line 289, in sync
+    if frame.native_enabled and not frame.native_suspended and frame.native_name and named(scene,frame.native_name) is None:
+                                                                                     ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\gabri\Nova pasta\Documents\ChatGPT\Mixer - Modified Blender 2\ui-assessment\probe_native_timer_failure.py", line 32, in faulty_named
+    if calls==1:raise RuntimeError('Injected one-shot native orientation read failure')
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: Injected one-shot native orientation read failure

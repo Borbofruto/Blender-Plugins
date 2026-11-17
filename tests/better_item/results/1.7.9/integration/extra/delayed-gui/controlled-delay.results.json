@@ -1,0 +1,20 @@
+{
+  "passed": true,
+  "note": "Injected 1.2 s main-thread stall, same consolidated runtime in both processes",
+  "cases": [
+    {
+      "test": "fixed-delay",
+      "exit_code": 0,
+      "test_passed": false,
+      "waits": {}
+    },
+    {
+      "test": "bounded-condition",
+      "exit_code": 0,
+      "test_passed": true,
+      "waits": {
+        "1": 1
+      }
+    }
+  ]
+}

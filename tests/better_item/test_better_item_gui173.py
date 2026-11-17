@@ -1,5 +1,5 @@
 """Real timer observes cursor and Empty changes after target deselection."""
-import sys,json,traceback
+import sys,json,traceback,time
 from pathlib import Path
 sys.dont_write_bytecode=True
 sys.path.insert(0,str(Path(__file__).resolve().parents[2]/"src"))
@@ -13,7 +13,7 @@ def checked(self,ctx):
  except Exception:errors.append(traceback.format_exc());raise
 addon.BETTERITEM_PT_alignment.draw=checked;addon.register()
 from better_item import native_refs,distribution_preview as live,placement
-ctx=bpy.context;root=Path(__file__).parent;phase=0;result={'passed':False,'phases':[]}
+ctx=bpy.context;root=Path(__file__).parent;phase=0;phase_started=time.monotonic();result={'passed':False,'phases':[],'waits':{}}
 ctx.preferences.view.show_splash=False;ctx.preferences.edit.use_global_undo=True
 key=ctx.object;key.name='Captured Start';objects=[key]
 for i,x in enumerate((5,12,20)):
@@ -32,11 +32,22 @@ def line(end):
  for i,o in enumerate(objects):assert np.allclose(o.matrix_world.translation,np.array(end)*i/3,atol=3e-5),(o.name,tuple(o.location),end)
 
 def run():
- global phase,ctx,s,key,objects,source
+ global phase,phase_started,ctx,s,key,objects,source
  try:
   with native_refs.view_context(bpy.context):
    ctx=bpy.context;s=ctx.scene.better_item
    next(r for r in area.regions if r.type=='UI').active_panel_category='Better Item'
+   # Test and Live timers can both be overdue after a blocked UI tick. The
+   # test callback was registered first and may run before Live in that tick.
+   # Wait for the observable result, bounded, without invoking poll ourselves.
+   expected={1:(15,6,0),2:(12,8,0),3:(18,-3,6)}.get(phase)
+   ready=all(np.allclose(o.matrix_world.translation,np.array(expected)*i/3,atol=3e-5) for i,o in enumerate(objects)) if expected else True
+   if phase==4:ready=all(o.location.x<0 for o in objects[1:])
+   if not ready and time.monotonic()-phase_started<10.:
+    error=addon.arrange.error(ctx.scene)
+    assert not error,str(error)
+    result['waits'][str(phase)]=result['waits'].get(str(phase),0)+1
+    return .1
    if phase==0:
     initial=[tuple(o.location) for o in objects];s.distribution_live=True;assert [tuple(o.location) for o in objects]==initial
     ctx.scene.cursor.location=(15,6,0)
@@ -69,7 +80,7 @@ def run():
     assert not errors,errors
     result.update(passed=True,draw_errors=errors,checks=['actual timer follows cursor','actual timer follows Empty with targets deselected','captured Active identity stable','zero retains negative Offset direction','Endpoint restores point basis','disable stops following','native invoke and F9 placements','native Undo/Redo'])
     (root/'test_better_item_gui173.results.json').write_text(json.dumps(result,indent=2));print('173 REAL UI PASSED',flush=True);bpy.ops.wm.quit_blender();return None
-  result['phases'].append(phase);phase+=1;return .8
+  result['phases'].append(phase);phase+=1;phase_started=time.monotonic();return .8
  except Exception:
   result['traceback']=traceback.format_exc();traceback.print_exc();(root/'test_better_item_gui173.results.json').write_text(json.dumps(result,indent=2));bpy.ops.wm.quit_blender();return None
 bpy.app.timers.register(run,first_interval=2.)

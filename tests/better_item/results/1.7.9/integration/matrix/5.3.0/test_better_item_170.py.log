@@ -1,0 +1,8 @@
+00:00.610  reports          | WARNING Path 'C:\Users\gabri\Documents\Codex\better-item-compatibility\portable\blender-5.3.0-windows-x64\5.3\datafiles\assets\brushes\essentials_brushes-gp_draw.blend' cannot be made relative for Material 'Dots Stroke'
+Blender 5.3.0 (hash 02f0899d78e3 built 2026-11-10 01:33:43)
+00:00.610  reports          | WARNING Path 'C:\Users\gabri\Documents\Codex\better-item-compatibility\portable\blender-5.3.0-windows-x64\5.3\datafiles\assets\brushes\essentials_brushes-gp_draw.blend' cannot be made relative for Material 'Material'
+00:00.657  blend            | Read blend: "D:\Codex-BetterItem-179-Consolidated\results\5.3.0\tmpyim31372\distribution170.blend"
+Info: Saved as "distribution170.blend"
+170 CONTRACTS PASSED {"point_endpoint_and_retired_interval_rejection": true, "all_bases_oblique_reversed_segment": 8, "selected_anchors_and_cursor": true, "independent_frame_components_and_override": true, "reference_axis_projection": true, "surface_volume_oracle_and_open_volume_rejection": true, "retired_basis_and_dependency_rejections": true, "offset_centers_and_measured_spacing": true, "preview_initial_order_cancel_confirm": true, "frame_context_capture": true, "persistence": true}
+
+Blender quit

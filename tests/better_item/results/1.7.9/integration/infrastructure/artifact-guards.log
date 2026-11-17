@@ -1,0 +1,19 @@
+test_exact_tree_rejects_extra_missing_and_changed (__main__.Guards.test_exact_tree_rejects_extra_missing_and_changed) ... ok
+test_integrity_failure_after_a_test_replaces_partial_pass (__main__.Guards.test_integrity_failure_after_a_test_replaces_partial_pass) ... ok
+test_preparation_rejects_stale_module_and_preserves_results (__main__.Guards.test_preparation_rejects_stale_module_and_preserves_results) ... ok
+test_release_accepts_consistent_metadata (__main__.Guards.test_release_accepts_consistent_metadata) ... ok
+test_release_rejects_old_root_readme (__main__.Guards.test_release_rejects_old_root_readme) ... ok
+test_release_rejects_source_package_mismatch (__main__.Guards.test_release_rejects_source_package_mismatch) ... ok
+test_runner_rechecks_installer_hash (__main__.Guards.test_runner_rechecks_installer_hash) ... ok
+test_runner_rejects_edited_source (__main__.Guards.test_runner_rejects_edited_source) ... ok
+test_runner_rejects_extra_output_module (__main__.Guards.test_runner_rejects_extra_output_module) ... ok
+test_runner_rejects_extra_source_module (__main__.Guards.test_runner_rejects_extra_source_module) ... ok
+test_runner_rejects_modified_test_input (__main__.Guards.test_runner_rejects_modified_test_input) ... ok
+test_runner_rejects_stale_output_script (__main__.Guards.test_runner_rejects_stale_output_script) ... ok
+test_valid_workspace_can_be_prepared_again (__main__.Guards.test_valid_workspace_can_be_prepared_again) ... ok
+test_zip_hash_and_unsafe_entries (__main__.Guards.test_zip_hash_and_unsafe_entries) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 9.449s
+
+OK

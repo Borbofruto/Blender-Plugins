@@ -1,0 +1,15 @@
+00:08.906  reports          | WARNING Path 'C:\Users\gabri\Documents\Codex\better-item-compatibility\portable\blender-5.3.0-windows-x64\5.3\datafiles\assets\brushes\essentials_brushes-gp_draw.blend' cannot be made relative for Material 'Dots Stroke'
+00:08.906  reports          | WARNING Path 'C:\Users\gabri\Documents\Codex\better-item-compatibility\portable\blender-5.3.0-windows-x64\5.3\datafiles\assets\brushes\essentials_brushes-gp_draw.blend' cannot be made relative for Material 'Material'
+00:09.062  blend            | Read blend: "D:\Codex-BetterItem-179-Consolidated\results\5.3.0\native-sync179.blend"
+Better Item native sync paused [(2542476460192, 'a423fb7608cb4986906f97ab0a05271b')]: RuntimeError: Injected native read failure; automatic retry pending.
+Better Item native sync paused [(2542476460192, 'a423fb7608cb4986906f97ab0a05271b')]: RuntimeError: Injected native read failure; automatic retry pending.
+Better Item native sync paused [(2542476460192, 'a423fb7608cb4986906f97ab0a05271b')]: RuntimeError: Injected native read failure; automatic retry pending.
+Better Item native sync paused [(2543960170568, '')]: RuntimeError: Injected health for removed scene; automatic retry pending.
+Better Item native sync paused [(0, '')]: RuntimeError: Injected migration failure; automatic retry pending.
+Better Item native sync paused [(2542476460192, '')]: RuntimeError: Injected health for Undo; automatic retry pending.
+Info: Saved as "native-sync179.blend"
+Better Item native sync paused [(0, '')]: RuntimeError: Injected health for load; automatic retry pending.
+NATIVE SYNC 179 {"passed": true, "checks": ["one Frame pauses visibly while healthy export updates", "real timer retries one-shot read failure and recovers", "persistent fault keeps timer and other Frames alive; backoff prevents busy retry", "persistent failure recovers without resetting export intent", "external deletion during backoff is respected; export is not recreated", "invalid source retains existing remove/suspend/recover policy", "scene switching uses current context; removed-scene health is pruned", "observer-level migration fault is visible and recoverable", "Undo clears transient sync health", "load clears health and retains persistent observer", "unregister removes observer and health"], "draw_errors": [], "blender": "5.3.0"}
+00:09.265  blend            | Saved session recovery to "D:\Codex-BetterItem-179-Consolidated\results\5.3.0\profile\temp\quit.blend"
+
+Blender quit

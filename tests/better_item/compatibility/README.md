@@ -27,7 +27,7 @@ The reports distinguish successful runtime tests, legitimate solver refusals, ma
 
 ## Optional Edit Mode foundation study
 
-`run_matrix.py --exe PATH_TO_BLENDER --version VERSION --studies --only test_editmode_foundations.py` runs the independent GUI BMesh probe. It does not import Better Item and is not a shipped Edit Mode feature. The default runtime suite has 23 entry points (the 22 entries from 1.7.8 plus the native-sync regression). The probe is intentionally small; it does not certify dense-mesh performance, shape keys or a complete reference identity implementation.
+`run_matrix.py --exe PATH_TO_BLENDER --version VERSION --studies --only test_editmode_foundations.py` runs the independent GUI BMesh probe. It does not import Better Item and is not a shipped Edit Mode feature. The default runtime suite has 24 entry points (the 22 entries from 1.7.8 plus native-sync and linked-gesture regressions). The probe is intentionally small; it does not certify dense-mesh performance, shape keys or a complete reference identity implementation.
 
 `prepare_matrix.py` also copies `test_cross_version_state.py` into the workspace tests directory. Run it with Blender 4.2.0 and `-- --write --fixture PATH/state.blend`, then with 5.3.0 and `-- --fixture PATH/state.blend`. Use `--background --factory-startup --python-exit-code 1 --python PATH_TO_SCRIPT` for both. This checks one representative upward migration, not universal backward file compatibility.
 
@@ -52,3 +52,7 @@ Run `python tests/better_item/compatibility/check_release.py --repository PATH_T
 Before launching Blender and before each test process, the runner verifies the installer hash/version/Python fingerprint, exact extracted/imported runtime inventory and bytes, and the prepared test/tool inputs. Extra output helper scripts are also rejected. These checks prevent accidental contamination; they are not a security boundary against someone deliberately rewriting the runner and its manifest. TEMP/TMP and Blender user directories are isolated inside each result profile.
 
 Run the pure-Python guard regressions separately with `python tests/better_item/compatibility/test_artifact_guards.py --workspace PATH_TO_WRITABLE_TEST_DIRECTORY`. They use checked temporary subdirectories, exercise positive/negative preparation/runner/release paths and do not launch Blender. Their JSON count is separate from the Blender matrix entry count.
+
+The linked-gesture regression also checks Default Euler-order changes and links switched off/on without an intervening edit. The optional `benchmark_editmode_normal179.py` measures the existing selection-Normal observer in a real GUI; it does not implement Edit Mode targets. Prepared test bootstraps disable bytecode explicitly, and any mid-run integrity failure sets the summary to failed even if preceding tests passed.
+
+For the consolidated 1.7.9 comparison, use the immutable 1.7.8 ZIP with both CURRENT benchmark scripts and the current integrity-aware runner in a separate prepared workspace. Results are in `results/1.7.9/integration/benchmark/`; the baseline was measured again, sequentially, against the consolidated ZIP. Keep the original branch matrices/benchmarks under their original hashes.

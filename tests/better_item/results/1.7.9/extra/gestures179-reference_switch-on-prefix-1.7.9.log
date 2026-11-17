@@ -1,0 +1,6 @@
+﻿Traceback (most recent call last):
+  File "C:\work\repro-anchor-1.7.9\test_better_item_gestures179.py", line 299, in <module>
+  File "C:\work\repro-anchor-1.7.9\test_better_item_gestures179.py", line 164, in reference_switch
+    assert message and 'BI-T008' in message, message
+AssertionError: None
+Error: script failed, file: 'C:\work\repro-anchor-1.7.9\test_better_item_gestures179.py', exiting.

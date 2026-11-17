@@ -1,0 +1,1002 @@
+{
+  "4.2.23": {
+    "1.7.8": {
+      "rows": [
+        {
+          "count": 600,
+          "basis": "ORIGINS",
+          "event": "unchanged",
+          "cold_seconds": 0.011930900043807924,
+          "median_seconds": 0.00036530004581436515,
+          "full_inspections": 0,
+          "tree_visits": 0
+        },
+        {
+          "count": 600,
+          "basis": "ORIGINS",
+          "event": "unrelated_transform",
+          "cold_seconds": 0.011930900043807924,
+          "median_seconds": 0.0020797000033780932,
+          "full_inspections": 0,
+          "tree_visits": 0
+        },
+        {
+          "count": 600,
+          "basis": "ORIGINS",
+          "event": "shader",
+          "cold_seconds": 0.011930900043807924,
+          "median_seconds": 0.017665599996689707,
+          "full_inspections": 3,
+          "tree_visits": 0
+        },
+        {
+          "count": 600,
+          "basis": "GEOMETRY",
+          "event": "unchanged",
+          "cold_seconds": 0.2917054999852553,
+          "median_seconds": 0.0003964999923482537,
+          "full_inspections": 0,
+          "tree_visits": 0
+        },
+        {
+          "count": 600,
+          "basis": "GEOMETRY",
+          "event": "unrelated_transform",
+          "cold_seconds": 0.2917054999852553,
+          "median_seconds": 0.0017488999874331057,
+          "full_inspections": 0,
+          "tree_visits": 0
+        },
+        {
+          "count": 600,
+          "basis": "GEOMETRY",
+          "event": "shader",
+          "cold_seconds": 0.2917054999852553,
+          "median_seconds": 0.2995078000240028,
+          "full_inspections": 3,
+          "tree_visits": 0
+        },
+        {
+          "count": 600,
+          "basis": "VOLUME",
+          "event": "unchanged",
+          "cold_seconds": 0.4147456000209786,
+          "median_seconds": 0.00035639997804537416,
+          "full_inspections": 0,
+          "tree_visits": 0
+        },
+        {
+          "count": 600,
+          "basis": "VOLUME",
+          "event": "unrelated_transform",
+          "cold_seconds": 0.4147456000209786,
+          "median_seconds": 0.0021690999856218696,
+          "full_inspections": 0,
+          "tree_visits": 0
+        },
+        {
+          "count": 600,
+          "basis": "VOLUME",
+          "event": "shader",
+          "cold_seconds": 0.4147456000209786,
+          "median_seconds": 0.41820479999296367,
+          "full_inspections": 3,
+          "tree_visits": 0
+        },
+        {
+          "count": 1500,
+          "basis": "ORIGINS",
+          "event": "unchanged",
+          "cold_seconds": 0.028016399999614805,
+          "median_seconds": 0.0007890000124461949,
+          "full_inspections": 0,
+          "tree_visits": 0
+        },
+        {
+          "count": 1500,
+          "basis": "ORIGINS",
+          "event": "unrelated_transform",
+          "cold_seconds": 0.028016399999614805,
+          "median_seconds": 0.002653700008522719,
+          "full_inspections": 0,
+          "tree_visits": 0
+        },
+        {
+          "count": 1500,
+          "basis": "ORIGINS",
+          "event": "shader",
+          "cold_seconds": 0.028016399999614805,
+          "median_seconds": 0.03476100001716986,
+          "full_inspections": 3,
+          "tree_visits": 0
+        },
+        {
+          "count": 1500,
+          "basis": "GEOMETRY",
+          "event": "unchanged",
+          "cold_seconds": 0.7169456999981776,
+          "median_seconds": 0.0008301999769173563,
+          "full_inspections": 0,
+          "tree_visits": 0
+        },
+        {
+          "count": 1500,
+          "basis": "GEOMETRY",
+          "event": "unrelated_transform",
+          "cold_seconds": 0.7169456999981776,
+          "median_seconds": 0.0022267000167630613,
+          "full_inspections": 0,
+          "tree_visits": 0
+        },
+        {
+          "count": 1500,
+          "basis": "GEOMETRY",
+          "event": "shader",
+          "cold_seconds": 0.7169456999981776,
+          "median_seconds": 0.728005499986466,
+          "full_inspections": 3,
+          "tree_visits": 0
+        },
+        {
+          "count": 1500,
+          "basis": "VOLUME",
+          "event": "unchanged",
+          "cold_seconds": 1.0288291000179015,
+          "median_seconds": 0.0007968000136315823,
+          "full_inspections": 0,
+          "tree_visits": 0
+        },
+        {
+          "count": 1500,
+          "basis": "VOLUME",
+          "event": "unrelated_transform",
+          "cold_seconds": 1.0288291000179015,
+          "median_seconds": 0.002324200002476573,
+          "full_inspections": 0,
+          "tree_visits": 0
+        },
+        {
+          "count": 1500,
+          "basis": "VOLUME",
+          "event": "shader",
+          "cold_seconds": 1.0288291000179015,
+          "median_seconds": 1.0523458999814466,
+          "full_inspections": 3,
+          "tree_visits": 0
+        }
+      ],
+      "cold_rows": [
+        {
+          "count": 600,
+          "basis": "GEOMETRY",
+          "event": "cold_first_read",
+          "samples_seconds": [
+            0.290055499994196,
+            0.2902518999762833,
+            0.28950349998194724
+          ],
+          "median_seconds": 0.290055499994196,
+          "full_inspections": 3
+        },
+        {
+          "count": 600,
+          "basis": "VOLUME",
+          "event": "cold_first_read",
+          "samples_seconds": [
+            0.4191032000235282,
+            0.4194009999628179,
+            0.4178709999541752
+          ],
+          "median_seconds": 0.4191032000235282,
+          "full_inspections": 3
+        },
+        {
+          "count": 1500,
+          "basis": "GEOMETRY",
+          "event": "cold_first_read",
+          "samples_seconds": [
+            0.7476940999622457,
+            0.7263629999943078,
+            0.732814600050915
+          ],
+          "median_seconds": 0.732814600050915,
+          "full_inspections": 3
+        },
+        {
+          "count": 1500,
+          "basis": "VOLUME",
+          "event": "cold_first_read",
+          "samples_seconds": [
+            1.0611363999778405,
+            1.059485899982974,
+            1.050229600048624
+          ],
+          "median_seconds": 1.059485899982974,
+          "full_inspections": 3
+        }
+      ],
+      "polling": {
+        "scene_objects": 1502,
+        "iterations": 30,
+        "source_scans": 0,
+        "median_seconds": 1.915002940222621e-05
+      },
+      "editmode": {
+        "passed": true,
+        "blender": "4.2.23 LTS",
+        "module": "C:\\work\\better-item-matrix-1.7.8\\results\\bench-4.2.23\\better_item\\__init__.py",
+        "walker": "_normal_signature",
+        "vertices": 130562,
+        "first_sample_ms": 73.26880004256964,
+        "idle": {
+          "iterations": 30,
+          "median_ms": 35.85200000088662,
+          "max_ms": 36.276200029533356,
+          "walks": 30
+        },
+        "swap_same_count_ms": 72.46669998858124,
+        "idle_after_swap": {
+          "iterations": 30,
+          "median_ms": 35.87364999111742,
+          "max_ms": 38.1863999646157,
+          "walks": 30
+        },
+        "after_safety_interval": {
+          "iterations": 1,
+          "median_ms": 35.93670000554994,
+          "max_ms": 35.93670000554994,
+          "walks": 1
+        }
+      }
+    },
+    "1.7.9": {
+      "rows": [
+        {
+          "count": 600,
+          "basis": "ORIGINS",
+          "event": "unchanged",
+          "cold_seconds": 0.012072300014551729,
+          "median_seconds": 0.00036179996095597744,
+          "full_inspections": 0,
+          "tree_visits": 0
+        },
+        {
+          "count": 600,
+          "basis": "ORIGINS",
+          "event": "unrelated_transform",
+          "cold_seconds": 0.012072300014551729,
+          "median_seconds": 0.0018282000091858208,
+          "full_inspections": 0,
+          "tree_visits": 0
+        },
+        {
+          "count": 600,
+          "basis": "ORIGINS",
+          "event": "shader",
+          "cold_seconds": 0.012072300014551729,
+          "median_seconds": 0.018707300012465566,
+          "full_inspections": 3,
+          "tree_visits": 0
+        },
+        {
+          "count": 600,
+          "basis": "GEOMETRY",
+          "event": "unchanged",
+          "cold_seconds": 0.10080739995464683,
+          "median_seconds": 0.00036180001916363835,
+          "full_inspections": 0,
+          "tree_visits": 0
+        },
+        {
+          "count": 600,
+          "basis": "GEOMETRY",
+          "event": "unrelated_transform",
+          "cold_seconds": 0.10080739995464683,
+          "median_seconds": 0.001837700023315847,
+          "full_inspections": 0,
+          "tree_visits": 0
+        },
+        {
+          "count": 600,
+          "basis": "GEOMETRY",
+          "event": "shader",
+          "cold_seconds": 0.10080739995464683,
+          "median_seconds": 0.10908210003981367,
+          "full_inspections": 3,
+          "tree_visits": 0
+        },
+        {
+          "count": 600,
+          "basis": "VOLUME",
+          "event": "unchanged",
+          "cold_seconds": 0.22523640003055334,
+          "median_seconds": 0.00035719998413696885,
+          "full_inspections": 0,
+          "tree_visits": 0
+        },
+        {
+          "count": 600,
+          "basis": "VOLUME",
+          "event": "unrelated_transform",
+          "cold_seconds": 0.22523640003055334,
+          "median_seconds": 0.001976100029423833,
+          "full_inspections": 0,
+          "tree_visits": 0
+        },
+        {
+          "count": 600,
+          "basis": "VOLUME",
+          "event": "shader",
+          "cold_seconds": 0.22523640003055334,
+          "median_seconds": 0.22924760001478717,
+          "full_inspections": 3,
+          "tree_visits": 0
+        },
+        {
+          "count": 1500,
+          "basis": "ORIGINS",
+          "event": "unchanged",
+          "cold_seconds": 0.030761800007894635,
+          "median_seconds": 0.000838999985717237,
+          "full_inspections": 0,
+          "tree_visits": 0
+        },
+        {
+          "count": 1500,
+          "basis": "ORIGINS",
+          "event": "unrelated_transform",
+          "cold_seconds": 0.030761800007894635,
+          "median_seconds": 0.002346699999179691,
+          "full_inspections": 0,
+          "tree_visits": 0
+        },
+        {
+          "count": 1500,
+          "basis": "ORIGINS",
+          "event": "shader",
+          "cold_seconds": 0.030761800007894635,
+          "median_seconds": 0.03539370000362396,
+          "full_inspections": 3,
+          "tree_visits": 0
+        },
+        {
+          "count": 1500,
+          "basis": "GEOMETRY",
+          "event": "unchanged",
+          "cold_seconds": 0.2531662000110373,
+          "median_seconds": 0.0008320999913848937,
+          "full_inspections": 0,
+          "tree_visits": 0
+        },
+        {
+          "count": 1500,
+          "basis": "GEOMETRY",
+          "event": "unrelated_transform",
+          "cold_seconds": 0.2531662000110373,
+          "median_seconds": 0.002502900024410337,
+          "full_inspections": 0,
+          "tree_visits": 0
+        },
+        {
+          "count": 1500,
+          "basis": "GEOMETRY",
+          "event": "shader",
+          "cold_seconds": 0.2531662000110373,
+          "median_seconds": 0.2551102999714203,
+          "full_inspections": 3,
+          "tree_visits": 0
+        },
+        {
+          "count": 1500,
+          "basis": "VOLUME",
+          "event": "unchanged",
+          "cold_seconds": 0.5522226000321098,
+          "median_seconds": 0.0008780999924056232,
+          "full_inspections": 0,
+          "tree_visits": 0
+        },
+        {
+          "count": 1500,
+          "basis": "VOLUME",
+          "event": "unrelated_transform",
+          "cold_seconds": 0.5522226000321098,
+          "median_seconds": 0.0029763999627903104,
+          "full_inspections": 0,
+          "tree_visits": 0
+        },
+        {
+          "count": 1500,
+          "basis": "VOLUME",
+          "event": "shader",
+          "cold_seconds": 0.5522226000321098,
+          "median_seconds": 0.5605155999655835,
+          "full_inspections": 3,
+          "tree_visits": 0
+        }
+      ],
+      "cold_rows": [
+        {
+          "count": 600,
+          "basis": "GEOMETRY",
+          "event": "cold_first_read",
+          "samples_seconds": [
+            0.09824120003031567,
+            0.09829069999977946,
+            0.09830040001543239
+          ],
+          "median_seconds": 0.09829069999977946,
+          "full_inspections": 3
+        },
+        {
+          "count": 600,
+          "basis": "VOLUME",
+          "event": "cold_first_read",
+          "samples_seconds": [
+            0.2267784999567084,
+            0.2266001000534743,
+            0.22622700000647455
+          ],
+          "median_seconds": 0.2266001000534743,
+          "full_inspections": 3
+        },
+        {
+          "count": 1500,
+          "basis": "GEOMETRY",
+          "event": "cold_first_read",
+          "samples_seconds": [
+            0.2495340000023134,
+            0.24734559998614714,
+            0.244723999989219
+          ],
+          "median_seconds": 0.24734559998614714,
+          "full_inspections": 3
+        },
+        {
+          "count": 1500,
+          "basis": "VOLUME",
+          "event": "cold_first_read",
+          "samples_seconds": [
+            0.5522595000220463,
+            0.5514084000024013,
+            0.5514639000175521
+          ],
+          "median_seconds": 0.5514639000175521,
+          "full_inspections": 3
+        }
+      ],
+      "polling": {
+        "scene_objects": 1502,
+        "iterations": 30,
+        "source_scans": 0,
+        "median_seconds": 1.9550032448023558e-05
+      },
+      "editmode": {
+        "passed": true,
+        "blender": "4.2.23 LTS",
+        "module": "C:\\work\\better-item-matrix-1.7.9\\results\\bench-4.2.23\\better_item\\__init__.py",
+        "walker": "_selection_states",
+        "vertices": 130562,
+        "first_sample_ms": 72.11130001815036,
+        "idle": {
+          "iterations": 30,
+          "median_ms": 0.04050001734867692,
+          "max_ms": 0.09759998647496104,
+          "walks": 0
+        },
+        "swap_same_count_ms": 70.59710001340136,
+        "idle_after_swap": {
+          "iterations": 30,
+          "median_ms": 0.04010001430287957,
+          "max_ms": 0.08800002979114652,
+          "walks": 0
+        },
+        "after_safety_interval": {
+          "iterations": 1,
+          "median_ms": 35.84330005105585,
+          "max_ms": 35.84330005105585,
+          "walks": 1
+        }
+      }
+    }
+  },
+  "5.3.0": {
+    "1.7.8": {
+      "rows": [
+        {
+          "count": 600,
+          "basis": "ORIGINS",
+          "event": "unchanged",
+          "cold_seconds": 0.010327099997084588,
+          "median_seconds": 0.00044899998465552926,
+          "full_inspections": 0,
+          "tree_visits": 0
+        },
+        {
+          "count": 600,
+          "basis": "ORIGINS",
+          "event": "unrelated_transform",
+          "cold_seconds": 0.010327099997084588,
+          "median_seconds": 0.0036951000220142305,
+          "full_inspections": 0,
+          "tree_visits": 0
+        },
+        {
+          "count": 600,
+          "basis": "ORIGINS",
+          "event": "shader",
+          "cold_seconds": 0.010327099997084588,
+          "median_seconds": 0.020810000016354024,
+          "full_inspections": 3,
+          "tree_visits": 0
+        },
+        {
+          "count": 600,
+          "basis": "GEOMETRY",
+          "event": "unchanged",
+          "cold_seconds": 0.381632000033278,
+          "median_seconds": 0.00042559998109936714,
+          "full_inspections": 0,
+          "tree_visits": 0
+        },
+        {
+          "count": 600,
+          "basis": "GEOMETRY",
+          "event": "unrelated_transform",
+          "cold_seconds": 0.381632000033278,
+          "median_seconds": 0.0033428000169806182,
+          "full_inspections": 0,
+          "tree_visits": 0
+        },
+        {
+          "count": 600,
+          "basis": "GEOMETRY",
+          "event": "shader",
+          "cold_seconds": 0.381632000033278,
+          "median_seconds": 0.3886727999779396,
+          "full_inspections": 3,
+          "tree_visits": 0
+        },
+        {
+          "count": 600,
+          "basis": "VOLUME",
+          "event": "unchanged",
+          "cold_seconds": 0.5393310999497771,
+          "median_seconds": 0.0004208000027574599,
+          "full_inspections": 0,
+          "tree_visits": 0
+        },
+        {
+          "count": 600,
+          "basis": "VOLUME",
+          "event": "unrelated_transform",
+          "cold_seconds": 0.5393310999497771,
+          "median_seconds": 0.0036646999651566148,
+          "full_inspections": 0,
+          "tree_visits": 0
+        },
+        {
+          "count": 600,
+          "basis": "VOLUME",
+          "event": "shader",
+          "cold_seconds": 0.5393310999497771,
+          "median_seconds": 0.5497627999866381,
+          "full_inspections": 3,
+          "tree_visits": 0
+        },
+        {
+          "count": 1500,
+          "basis": "ORIGINS",
+          "event": "unchanged",
+          "cold_seconds": 0.02402870001969859,
+          "median_seconds": 0.000999600044451654,
+          "full_inspections": 0,
+          "tree_visits": 0
+        },
+        {
+          "count": 1500,
+          "basis": "ORIGINS",
+          "event": "unrelated_transform",
+          "cold_seconds": 0.02402870001969859,
+          "median_seconds": 0.004725000006146729,
+          "full_inspections": 0,
+          "tree_visits": 0
+        },
+        {
+          "count": 1500,
+          "basis": "ORIGINS",
+          "event": "shader",
+          "cold_seconds": 0.02402870001969859,
+          "median_seconds": 0.034923700033687055,
+          "full_inspections": 3,
+          "tree_visits": 0
+        },
+        {
+          "count": 1500,
+          "basis": "GEOMETRY",
+          "event": "unchanged",
+          "cold_seconds": 0.9553845999762416,
+          "median_seconds": 0.000980400014668703,
+          "full_inspections": 0,
+          "tree_visits": 0
+        },
+        {
+          "count": 1500,
+          "basis": "GEOMETRY",
+          "event": "unrelated_transform",
+          "cold_seconds": 0.9553845999762416,
+          "median_seconds": 0.004517099994700402,
+          "full_inspections": 0,
+          "tree_visits": 0
+        },
+        {
+          "count": 1500,
+          "basis": "GEOMETRY",
+          "event": "shader",
+          "cold_seconds": 0.9553845999762416,
+          "median_seconds": 0.9588351999991573,
+          "full_inspections": 3,
+          "tree_visits": 0
+        },
+        {
+          "count": 1500,
+          "basis": "VOLUME",
+          "event": "unchanged",
+          "cold_seconds": 1.3410662999958731,
+          "median_seconds": 0.0009436000254936516,
+          "full_inspections": 0,
+          "tree_visits": 0
+        },
+        {
+          "count": 1500,
+          "basis": "VOLUME",
+          "event": "unrelated_transform",
+          "cold_seconds": 1.3410662999958731,
+          "median_seconds": 0.0037972999853082,
+          "full_inspections": 0,
+          "tree_visits": 0
+        },
+        {
+          "count": 1500,
+          "basis": "VOLUME",
+          "event": "shader",
+          "cold_seconds": 1.3410662999958731,
+          "median_seconds": 1.354773800005205,
+          "full_inspections": 3,
+          "tree_visits": 0
+        }
+      ],
+      "cold_rows": [
+        {
+          "count": 600,
+          "basis": "GEOMETRY",
+          "event": "cold_first_read",
+          "samples_seconds": [
+            0.37886530003743246,
+            0.38328950002323836,
+            0.3776804000372067
+          ],
+          "median_seconds": 0.37886530003743246,
+          "full_inspections": 3
+        },
+        {
+          "count": 600,
+          "basis": "VOLUME",
+          "event": "cold_first_read",
+          "samples_seconds": [
+            0.5431593999965116,
+            0.5737326000235043,
+            0.5406302000046708
+          ],
+          "median_seconds": 0.5431593999965116,
+          "full_inspections": 3
+        },
+        {
+          "count": 1500,
+          "basis": "GEOMETRY",
+          "event": "cold_first_read",
+          "samples_seconds": [
+            1.0140834000194445,
+            1.071130299998913,
+            0.9527872999897227
+          ],
+          "median_seconds": 1.0140834000194445,
+          "full_inspections": 3
+        },
+        {
+          "count": 1500,
+          "basis": "VOLUME",
+          "event": "cold_first_read",
+          "samples_seconds": [
+            1.37365950003732,
+            1.4946469999849796,
+            1.442751299997326
+          ],
+          "median_seconds": 1.442751299997326,
+          "full_inspections": 3
+        }
+      ],
+      "polling": {
+        "scene_objects": 1502,
+        "iterations": 30,
+        "source_scans": 0,
+        "median_seconds": 2.8900045435875654e-05
+      },
+      "editmode": {
+        "passed": true,
+        "blender": "5.3.0",
+        "module": "C:\\work\\better-item-matrix-1.7.8\\results\\bench-5.3.0\\better_item\\__init__.py",
+        "walker": "_normal_signature",
+        "vertices": 130562,
+        "first_sample_ms": 91.63719997741282,
+        "idle": {
+          "iterations": 30,
+          "median_ms": 46.6298499959521,
+          "max_ms": 57.292799989227206,
+          "walks": 30
+        },
+        "swap_same_count_ms": 93.53399998508394,
+        "idle_after_swap": {
+          "iterations": 30,
+          "median_ms": 46.21894998126663,
+          "max_ms": 56.68159999186173,
+          "walks": 30
+        },
+        "after_safety_interval": {
+          "iterations": 1,
+          "median_ms": 43.96830004407093,
+          "max_ms": 43.96830004407093,
+          "walks": 1
+        }
+      }
+    },
+    "1.7.9": {
+      "rows": [
+        {
+          "count": 600,
+          "basis": "ORIGINS",
+          "event": "unchanged",
+          "cold_seconds": 0.010172400041483343,
+          "median_seconds": 0.0004110999871045351,
+          "full_inspections": 0,
+          "tree_visits": 0
+        },
+        {
+          "count": 600,
+          "basis": "ORIGINS",
+          "event": "unrelated_transform",
+          "cold_seconds": 0.010172400041483343,
+          "median_seconds": 0.0032942999969236553,
+          "full_inspections": 0,
+          "tree_visits": 0
+        },
+        {
+          "count": 600,
+          "basis": "ORIGINS",
+          "event": "shader",
+          "cold_seconds": 0.010172400041483343,
+          "median_seconds": 0.019391699985135347,
+          "full_inspections": 3,
+          "tree_visits": 0
+        },
+        {
+          "count": 600,
+          "basis": "GEOMETRY",
+          "event": "unchanged",
+          "cold_seconds": 0.10284349997527897,
+          "median_seconds": 0.00042859994573518634,
+          "full_inspections": 0,
+          "tree_visits": 0
+        },
+        {
+          "count": 600,
+          "basis": "GEOMETRY",
+          "event": "unrelated_transform",
+          "cold_seconds": 0.10284349997527897,
+          "median_seconds": 0.003048099984880537,
+          "full_inspections": 0,
+          "tree_visits": 0
+        },
+        {
+          "count": 600,
+          "basis": "GEOMETRY",
+          "event": "shader",
+          "cold_seconds": 0.10284349997527897,
+          "median_seconds": 0.11255889997119084,
+          "full_inspections": 3,
+          "tree_visits": 0
+        },
+        {
+          "count": 600,
+          "basis": "VOLUME",
+          "event": "unchanged",
+          "cold_seconds": 0.2608915999880992,
+          "median_seconds": 0.00042500003473833203,
+          "full_inspections": 0,
+          "tree_visits": 0
+        },
+        {
+          "count": 600,
+          "basis": "VOLUME",
+          "event": "unrelated_transform",
+          "cold_seconds": 0.2608915999880992,
+          "median_seconds": 0.003450999967753887,
+          "full_inspections": 0,
+          "tree_visits": 0
+        },
+        {
+          "count": 600,
+          "basis": "VOLUME",
+          "event": "shader",
+          "cold_seconds": 0.2608915999880992,
+          "median_seconds": 0.2707978999824263,
+          "full_inspections": 3,
+          "tree_visits": 0
+        },
+        {
+          "count": 1500,
+          "basis": "ORIGINS",
+          "event": "unchanged",
+          "cold_seconds": 0.024014700029511005,
+          "median_seconds": 0.000931000045966357,
+          "full_inspections": 0,
+          "tree_visits": 0
+        },
+        {
+          "count": 1500,
+          "basis": "ORIGINS",
+          "event": "unrelated_transform",
+          "cold_seconds": 0.024014700029511005,
+          "median_seconds": 0.003894300025422126,
+          "full_inspections": 0,
+          "tree_visits": 0
+        },
+        {
+          "count": 1500,
+          "basis": "ORIGINS",
+          "event": "shader",
+          "cold_seconds": 0.024014700029511005,
+          "median_seconds": 0.03377609996823594,
+          "full_inspections": 3,
+          "tree_visits": 0
+        },
+        {
+          "count": 1500,
+          "basis": "GEOMETRY",
+          "event": "unchanged",
+          "cold_seconds": 0.25366839999333024,
+          "median_seconds": 0.0009563000057823956,
+          "full_inspections": 0,
+          "tree_visits": 0
+        },
+        {
+          "count": 1500,
+          "basis": "GEOMETRY",
+          "event": "unrelated_transform",
+          "cold_seconds": 0.25366839999333024,
+          "median_seconds": 0.0037590000429190695,
+          "full_inspections": 0,
+          "tree_visits": 0
+        },
+        {
+          "count": 1500,
+          "basis": "GEOMETRY",
+          "event": "shader",
+          "cold_seconds": 0.25366839999333024,
+          "median_seconds": 0.2610098000150174,
+          "full_inspections": 3,
+          "tree_visits": 0
+        },
+        {
+          "count": 1500,
+          "basis": "VOLUME",
+          "event": "unchanged",
+          "cold_seconds": 0.6408423000248149,
+          "median_seconds": 0.0009133000276051462,
+          "full_inspections": 0,
+          "tree_visits": 0
+        },
+        {
+          "count": 1500,
+          "basis": "VOLUME",
+          "event": "unrelated_transform",
+          "cold_seconds": 0.6408423000248149,
+          "median_seconds": 0.0038941000238992274,
+          "full_inspections": 0,
+          "tree_visits": 0
+        },
+        {
+          "count": 1500,
+          "basis": "VOLUME",
+          "event": "shader",
+          "cold_seconds": 0.6408423000248149,
+          "median_seconds": 0.6521847999538295,
+          "full_inspections": 3,
+          "tree_visits": 0
+        }
+      ],
+      "cold_rows": [
+        {
+          "count": 600,
+          "basis": "GEOMETRY",
+          "event": "cold_first_read",
+          "samples_seconds": [
+            0.10065909998957068,
+            0.10038770001847297,
+            0.10052219999488443
+          ],
+          "median_seconds": 0.10052219999488443,
+          "full_inspections": 3
+        },
+        {
+          "count": 600,
+          "basis": "VOLUME",
+          "event": "cold_first_read",
+          "samples_seconds": [
+            0.2560177000123076,
+            0.2651293000089936,
+            0.25773829995887354
+          ],
+          "median_seconds": 0.25773829995887354,
+          "full_inspections": 3
+        },
+        {
+          "count": 1500,
+          "basis": "GEOMETRY",
+          "event": "cold_first_read",
+          "samples_seconds": [
+            0.2512370999902487,
+            0.2541147000156343,
+            0.2590551999746822
+          ],
+          "median_seconds": 0.2541147000156343,
+          "full_inspections": 3
+        },
+        {
+          "count": 1500,
+          "basis": "VOLUME",
+          "event": "cold_first_read",
+          "samples_seconds": [
+            0.6554998999927193,
+            0.6519550000084564,
+            0.6541226000408642
+          ],
+          "median_seconds": 0.6541226000408642,
+          "full_inspections": 3
+        }
+      ],
+      "polling": {
+        "scene_objects": 1502,
+        "iterations": 30,
+        "source_scans": 0,
+        "median_seconds": 2.945002052001655e-05
+      },
+      "editmode": {
+        "passed": true,
+        "blender": "5.3.0",
+        "module": "C:\\work\\better-item-matrix-1.7.9\\results\\bench-5.3.0\\better_item\\__init__.py",
+        "walker": "_selection_states",
+        "vertices": 130562,
+        "first_sample_ms": 92.49790001194924,
+        "idle": {
+          "iterations": 30,
+          "median_ms": 0.059550016885623336,
+          "max_ms": 0.12240000069141388,
+          "walks": 0
+        },
+        "swap_same_count_ms": 108.14789996948093,
+        "idle_after_swap": {
+          "iterations": 30,
+          "median_ms": 0.060049991589039564,
+          "max_ms": 0.13290002243593335,
+          "walks": 0
+        },
+        "after_safety_interval": {
+          "iterations": 1,
+          "median_ms": 48.42180002015084,
+          "max_ms": 48.42180002015084,
+          "walks": 1
+        }
+      }
+    }
+  }
+}
