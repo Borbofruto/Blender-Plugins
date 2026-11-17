@@ -1,5 +1,16 @@
 # Better Item — changelog
 
+## 1.7.10
+
+### Fixed
+- Keep observer error/recovery redraws inside the Window RNA guard and skip removed windows before creating a native context override.
+- Show the actual spacing-inspection refusal, including invalid Volume geometry, instead of requesting already valid references. Keep the (status, value) tuple contract and cache only display text, never exceptions or RNA wrappers.
+- Match native Transform display precision: Location, Rotation and Dimensions use 5; Scale remains 3. Stored values and unit conversion are unchanged.
+- Title BI-F006 as Orientation sync paused, preserving its severity, retry policy and other diagnostic titles.
+
+### Validation
+- Maintenance candidate on release/1.7.10-vg; qualification status and pending interaction checks are tracked outside the package. No new feature, saved schema, mathematical tolerance or supported minimum change.
+
 ## 1.7.9
 
 ### Fixed

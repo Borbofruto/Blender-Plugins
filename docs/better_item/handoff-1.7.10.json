@@ -1,0 +1,82 @@
+{
+  "version": "1.7.10",
+  "date": "2026-11-17",
+  "branch": "release/1.7.10-vg",
+  "status": "candidate-unqualified",
+  "baseline_commit": "f9180b6",
+  "archive": {
+    "path": "addons/better_item.zip",
+    "sha256": "53ea12dee71f48cf755964405111688b15fa943ffb1bfb07ba4a67301a63fbef",
+    "bytes": 102194
+  },
+  "minimum_blender": "4.2.0",
+  "python_source_sha256": "d9a02770dc57b25836de826a0031fe5cabb38e83e3ae6ce3699fa2afc58bd1f0",
+  "files": [
+    {
+      "path": "src/better_item/__init__.py",
+      "sha256": "a6dcdb35650768fea2d46aee5f221c6a3aabcef4bcd589a315bf97cf3a341089"
+    },
+    {
+      "path": "src/better_item/arrange.py",
+      "sha256": "880f31ea9ad8ee76bdb406fc15b0c2874c3254afb45662aa7af7acc708ec0c04"
+    },
+    {
+      "path": "src/better_item/diagnostics.py",
+      "sha256": "5bf2d04070a8d1dfae2b8aa8e2b1927b3e146152c8b3134b882a77497e0e21d9"
+    },
+    {
+      "path": "src/better_item/distribution.py",
+      "sha256": "497467b616ce19e093bfc4840b1beb238b3c8f69207226c3dd1f5094d2c2e8bb"
+    },
+    {
+      "path": "src/better_item/distribution_preview.py",
+      "sha256": "37f217cc32860c4fa47f9089ae75ec53757cf114aa3642bd81e2cc53524c476c"
+    },
+    {
+      "path": "src/better_item/engine.py",
+      "sha256": "fcb8da35f865eac6eb8717fbe713e7aec8b7c601fea4fdb525bb7a7547750dfc"
+    },
+    {
+      "path": "src/better_item/frames.py",
+      "sha256": "401d3a9a97b536c66e64a51b1e08ba97dedaedfa69a4b2c42beb9a075a8d6231"
+    },
+    {
+      "path": "src/better_item/geometry_arrange.py",
+      "sha256": "91576acfc512187a366d9f92d0398ea38e872182561696528f8eca0535fcc79f"
+    },
+    {
+      "path": "src/better_item/math_core.py",
+      "sha256": "a26636d06acba142a59a29538a1f9ca8341a8857701e96ed8521e0920039d964"
+    },
+    {
+      "path": "src/better_item/native_refs.py",
+      "sha256": "039c7d49167ee27858bd805743c51570ffba9f362746820456f60490d40a1493"
+    },
+    {
+      "path": "src/better_item/orientation.py",
+      "sha256": "d31756a0b2a9a638ac5d9cde2a9d35af5ed989f1ff7a12b49eea8a00cbb155d5"
+    },
+    {
+      "path": "src/better_item/placement.py",
+      "sha256": "fa846922f0791bf6052b5fb2789ab3a2ecbf0c190f43f3a046e3a2be19ea3b07"
+    },
+    {
+      "path": "src/better_item/references.py",
+      "sha256": "6f934a1945d211eff5bdc2771eee5864be54ebe4cbbe44c71667421ead14a1f5"
+    },
+    {
+      "path": "src/better_item/trace.py",
+      "sha256": "e846587508b38fb8c795ca141bb17bb8ef0424cf7612174ec53fe3305c45146f"
+    },
+    {
+      "path": "src/better_item/transform_view.py",
+      "sha256": "e85cc9a366985dc1b656489d64388a3674ae39e4a30996bd75341ffaa62d2007"
+    }
+  ],
+  "pending": [
+    "new-artifact qualification",
+    "legacy migration",
+    "manual interaction checklist"
+  ],
+  "historical_evidence": "See handoff-1.7.9.json; not acceptance for this candidate"
+}

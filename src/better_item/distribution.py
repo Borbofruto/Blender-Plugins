@@ -1,12 +1,13 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 """Distribution contracts: explicit sources, point placement and interval fitting."""
 import math
+import textwrap
 from collections import OrderedDict
 from bpy.app.handlers import persistent
 import bpy
 import numpy as np
 from mathutils import Matrix
-from . import arrange,engine,frames,references,placement,geometry_arrange
+from . import arrange,engine,frames,references,placement,geometry_arrange,diagnostics
 from .math_core import BetterItemError,ReferencePending
 from .transform_view import has_surface_geometry
 
@@ -284,13 +285,21 @@ def apply(context,objects,**kwargs):
     return engine.apply_world_positions(objects,targets,verify=verify),info
 
 
+class _UnavailableInspection(tuple):
+    """Keep the (status, value) contract and a traceback-free display cause."""
+    def __new__(cls,error):
+        result=super().__new__(cls,('UNAVAILABLE',None))
+        result.diagnostic=diagnostics.Diagnostic(error)
+        return result
+
+
 def inspect_spacing(context,objects):
     from . import distribution_preview as live
     if live.active(context.scene) and not live.in_context():
         try:
             with live.reference_context(context) as captured:
                 return _cached_inspection(captured,live.captured_objects(captured))
-        except (BetterItemError,ReferenceError):return 'UNAVAILABLE',None
+        except (BetterItemError,ReferenceError) as exc:return _UnavailableInspection(exc)
     return _cached_inspection(context,objects)
 
 
@@ -316,7 +325,7 @@ def _cached_inspection(context,objects):
             identities,
             s.distribution_method,s.distribution_mode,s.endpoint_path,tuple(s.axes),
             s.spacing,s.distribution_last_sign,s.minimum_distance_mm,source,orientation)
-    except BetterItemError:return 'UNAVAILABLE',None
+    except BetterItemError as exc:return _UnavailableInspection(exc)
     if key in _inspection_cache:
         _inspection_cache.move_to_end(key);return _inspection_cache[key][0]
     result=_inspect_spacing(context,objects)
@@ -338,7 +347,7 @@ def _inspect_spacing(context,objects):
             targets,_,info=plan(context,objects)
             uniform=all(engine._position_matches(obj,targets[obj.name]) for obj in objects)
             return ('UNIFORM' if uniform else 'MIXED'),info.get('spacing') if uniform else None
-        if not any(s.axes):return 'UNAVAILABLE',None
+        if not any(s.axes):return _UnavailableInspection(ReferencePending('Choose at least one Move axis to measure spacing.'))
         matrix,origin,source=arrange.reference_frame(context,'REFERENCE')
         physical=s.distribution_mode=='GEOMETRY'
         axes=matrix/np.linalg.norm(matrix,axis=0) if physical else matrix
@@ -375,7 +384,7 @@ def _inspect_spacing(context,objects):
         # Do not call collapsed and positive intervals one uniform nonzero gap.
         if physical and any(np.sign(value)!=np.sign(first) for value in gaps):uniform=False
         return ('UNIFORM',sign*first) if uniform else ('MIXED',None)
-    except BetterItemError:return 'UNAVAILABLE',None
+    except BetterItemError as exc:return _UnavailableInspection(exc)
 
 
 def draw(layout,context):
@@ -399,17 +408,22 @@ def draw(layout,context):
         if settings.endpoint_path=='SEGMENT':box.label(text='Start → End defines the direction.')
         else:box.label(text='End is projected onto one Move axis.')
         box.label(text='References are not moved.')
-        status,value=inspect_spacing(context,list(context.selected_objects))
+        inspection=inspect_spacing(context,list(context.selected_objects))
+        status,value=inspection
         if status=='UNIFORM' and value is not None:box.label(text='Point interval: '+_display_mm(context,value))
         else:box.label(text='Spacing is derived from the endpoints.')
     else:
-        status,value=inspect_spacing(context,list(context.selected_objects))
+        inspection=inspect_spacing(context,list(context.selected_objects))
+        status,value=inspection
         if status=='UNIFORM':box.label(text='Current: '+_display_mm(context,value))
         elif status=='MIXED':
             box.label(text='Mixed spacing.',icon='INFO');box.label(text='Edit Spacing to make it uniform.')
-        elif status=='UNAVAILABLE':box.label(text='Complete references to measure spacing.',icon='INFO')
         box.prop(settings,'spacing_view' if live else 'spacing',text='Spacing')
         box.label(text='Sign sets direction.'+(' Zero allows contact.' if settings.distribution_mode=='GEOMETRY' else ''))
+    if status=='UNAVAILABLE':
+        message=getattr(inspection,'diagnostic',None)
+        for paragraph in (message.summary,message.action) if message else ('Spacing unavailable.',):
+            for line in textwrap.wrap(paragraph,34):box.label(text=line,icon='INFO')
     row=box.row()
     row.enabled=live or (not settings.distribution_legacy_range and not distribution_preview.contextual_start(context))
     row.prop(settings,'distribution_live',text='Live')

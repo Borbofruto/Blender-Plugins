@@ -282,8 +282,11 @@ def _refresh_normal(context):
 def _redraw_scene(scene,windows):
     for window in windows:
         try:
+            # A snapshot may still contain a window closed by a callback.
+            if window not in list(bpy.context.window_manager.windows):continue
+            current_scene=window.scene
             screen=window.screen
-            if window.scene==scene and screen:
+            if (scene is None or current_scene==scene) and screen:
                 for area in screen.areas:
                     if area.type=='VIEW_3D':area.tag_redraw()
         except (ReferenceError,RuntimeError):
@@ -391,18 +394,24 @@ def sync():
         if context.window in windows:windows.remove(context.window);windows.insert(0,context.window)
         visited=set()
         for window in windows:
-            scene=window.scene
-            if scene.as_pointer() in visited:continue
-            area=next((a for a in window.screen.areas if a.type=='VIEW_3D'),None)
-            if area is None:continue
-            region=next((r for r in area.regions if r.type=='WINDOW'),None)
-            if region is None:continue
+            try:
+                if window not in list(context.window_manager.windows):continue
+                scene=window.scene
+                if scene.as_pointer() in visited:continue
+                screen=window.screen
+                area=next((a for a in screen.areas if a.type=='VIEW_3D'),None)
+                if area is None:continue
+                region=next((r for r in area.regions if r.type=='WINDOW'),None)
+                if region is None:continue
+            except (ReferenceError,RuntimeError):
+                # Expected lifecycle invalidation must not starve other windows.
+                continue
             visited.add(scene.as_pointer())
             key=(scene.as_pointer(),'')
             if not _retry_ready(key):continue
             had_error=key in _sync_errors
             try:
-                with context.temp_override(window=window,screen=window.screen,area=area,region=region):
+                with context.temp_override(window=window,screen=screen,area=area,region=region):
                     _sync_scene(bpy.context,scene,windows)
                 _sync_errors.pop(key,None)
                 if had_error:_redraw_scene(scene,windows)
@@ -410,12 +419,12 @@ def sync():
                 if _sync_failed(key,exc):_redraw_scene(scene,windows)
         recovered=bool(_sync_errors.pop((0,''),None))
         if recovered:
-            for window in windows:_redraw_scene(window.scene,windows)
+            _redraw_scene(None,windows)
     except Exception as exc:
         # Registration/migration/window enumeration can fail before a Frame is
         # available. Keep a visible observer-level diagnostic and bounded retry.
         if _sync_failed((0,''),exc):
-            for window in windows:_redraw_scene(window.scene,windows)
+            _redraw_scene(None,windows)
     finally:_syncing=False
     return .2
 

@@ -1,5 +1,7 @@
 # Better Item — contexto atual e passagem de trabalho
 
+**Branch VG em desenvolvimento:** `release/1.7.10-vg`, worktree `D:/Codex-BetterItem-1710-VG`, base `f9180b6`. O fonte e `addons/better_item.zip` desta branch são o candidato 1.7.10, sem merge na main. Leia primeiro [release-1.7.10.md](release-1.7.10.md) e [handoff-1.7.10.json](handoff-1.7.10.json). A antiga remota `release/1.7.9` foi excluída após confirmar ancestralidade na main. Abaixo permanece o contexto da base 1.7.9; seus hashes/resultados não qualificam o candidato. O trabalho atual foi autorizado por Gabriel nesta branch; não interpretar a proposta anterior como impedimento de execução.
+
 Atualizado em **17/11/2026**, após consolidar a contribuição `release/1.7.9` com a manutenção local aprovada. Leia este arquivo **antes** do manual histórico. A 1.7.9 combina gestos linkados, leitura fria e fingerprint de Normal com recuperação do timer nativo e integridade da entrega. Inclui as correções encontradas na revisão da ordem Euler em Default e do desligamento/religamento dos links. Resultados e limites: [release-1.7.9.md](release-1.7.9.md).
 
 ## 1. Estado exato a assumir

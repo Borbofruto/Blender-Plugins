@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "baseline": "f9180b6",
+  "changed_python_modules": [
+    "__init__.py",
+    "diagnostics.py",
+    "distribution.py",
+    "native_refs.py"
+  ],
+  "modules_checked": 15,
+  "RNA_class_annotations_identical": true,
+  "migration_functions_identical": true,
+  "limitation": "Static contract check; not a substitute for fresh-process legacy migration or manual interaction."
+}
