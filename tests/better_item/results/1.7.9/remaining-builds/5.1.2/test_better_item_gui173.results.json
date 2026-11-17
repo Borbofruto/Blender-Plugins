@@ -1,0 +1,66 @@
+{
+  "passed": true,
+  "phases": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "waits": {},
+  "before": {
+    "Captured Start": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "Piece 1": [
+      6.0,
+      -1.0,
+      2.0
+    ],
+    "Piece 2": [
+      12.0,
+      -2.0,
+      4.0
+    ],
+    "Piece 3": [
+      18.0,
+      -3.0,
+      6.0
+    ]
+  },
+  "after": {
+    "Captured Start": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "Piece 1": [
+      7.0,
+      3.0,
+      0.0
+    ],
+    "Piece 2": [
+      14.0,
+      6.0,
+      0.0
+    ],
+    "Piece 3": [
+      21.0,
+      9.0,
+      0.0
+    ]
+  },
+  "draw_errors": [],
+  "checks": [
+    "actual timer follows cursor",
+    "actual timer follows Empty with targets deselected",
+    "captured Active identity stable",
+    "zero retains negative Offset direction",
+    "Endpoint restores point basis",
+    "disable stops following",
+    "native invoke and F9 placements",
+    "native Undo/Redo"
+  ]
+}

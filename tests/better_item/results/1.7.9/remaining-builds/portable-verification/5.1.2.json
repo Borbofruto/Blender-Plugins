@@ -1,0 +1,9 @@
+{
+  "version": "5.1.2",
+  "archive": "blender-5.1.2-windows-x64.zip",
+  "bytes": 414378949,
+  "sha256": "345bedea7b0acf7cc9666423d8553f9129622aea34ded65c23e8cb70f83f14ff",
+  "verified_against_official_checksum": true,
+  "checksum_file_reused_from_previous_official_download": true,
+  "verified_utc": "2026-11-17T12:48:47.816401+00:00"
+}

@@ -122,8 +122,11 @@
     "Human mouse/F9/cancel/width checklist",
     "1.8.x diagnostics: invalid Volume geometry can show Complete references",
     "Intermediate builds, macOS and Linux GUI not reexecuted on this consolidated archive",
-    "1.8.x: Location display rounding depends on Unit Scale; stored RNA remains correct",
-    "Define physical error tolerance and operating range before promising absolute mm accuracy"
+    "1.8.x: Transform display precision differs from native; cold comparison persists in both Unit Scales",
+    "Define physical error tolerance and operating range before promising absolute mm accuracy",
+    "Human typing with explicit unit suffix and locale control; checklist outside package",
+    "Choose release version for the unmerged visual proposal",
+    "window.scene recovery access: static robustness hypothesis, not a reproduced user crash"
   ],
   "excluded": [
     "Animation",
@@ -172,6 +175,76 @@
     "results": "tests/better_item/results/1.7.9/units/",
     "physical_absolute_mm_accuracy_certified": false,
     "visual_rounding_issue_open": true,
-    "keyboard_input_tested": false
+    "keyboard_input_tested": false,
+    "visual_inference_corrected_by_cold_process_comparison": true
+  },
+  "remaining_builds_qualification": {
+    "base_commit": "02f672831bf0a1e3cc00663062eff3846bf48173",
+    "archive_sha256": "6a01eb809165347e94668d259a492b922b69f0c368657cae48599a2f57a9f029",
+    "new_processes": 150,
+    "builds": [
+      {
+        "blender": "4.3.2",
+        "entries": 25,
+        "passed": true,
+        "original_summary_bytes": 475918,
+        "published_summary_bytes": 10226,
+        "lossless_reconstruction_verified": true
+      },
+      {
+        "blender": "4.4.3",
+        "entries": 25,
+        "passed": true,
+        "original_summary_bytes": 475919,
+        "published_summary_bytes": 10220,
+        "lossless_reconstruction_verified": true
+      },
+      {
+        "blender": "4.5.16",
+        "entries": 25,
+        "passed": true,
+        "original_summary_bytes": 475956,
+        "published_summary_bytes": 10225,
+        "lossless_reconstruction_verified": true
+      },
+      {
+        "blender": "5.0.1",
+        "entries": 25,
+        "passed": true,
+        "original_summary_bytes": 475896,
+        "published_summary_bytes": 10220,
+        "lossless_reconstruction_verified": true
+      },
+      {
+        "blender": "5.1.2",
+        "entries": 25,
+        "passed": true,
+        "original_summary_bytes": 475911,
+        "published_summary_bytes": 10223,
+        "lossless_reconstruction_verified": true
+      },
+      {
+        "blender": "5.2.4",
+        "entries": 25,
+        "passed": true,
+        "original_summary_bytes": 475935,
+        "published_summary_bytes": 10222,
+        "lossless_reconstruction_verified": true
+      }
+    ],
+    "results": "tests/better_item/results/1.7.9/remaining-builds/",
+    "previous_results_reclassified": false
+  },
+  "unmerged_visual_proposal": {
+    "branch": "proposal/better-item-ui-precision",
+    "commit": "65971a21c8123779b9bf12d2a6290625dd480232",
+    "merged": false,
+    "release_version_decided": false,
+    "stable_zip_replaced": false,
+    "scope": [
+      "native-matched precision by group",
+      "BI-F006 heading"
+    ],
+    "note": "Temporary candidate qualification is separate from stable matrices."
   }
 }

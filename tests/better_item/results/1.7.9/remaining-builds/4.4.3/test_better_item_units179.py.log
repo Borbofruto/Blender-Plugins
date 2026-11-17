@@ -1,0 +1,4 @@
+Blender 4.4.3 (hash 802179c51ccc built 2025-04-29 15:39:58)
+SCENE UNITS {"passed": true, "blender": "4.4.3", "configurations": 26, "case_count": 590, "accepted_precision_cases": 91, "atomic_precision_rejections": 161, "limits": "No universal absolute mm accuracy is asserted. Unit text is parsed through Blender API, not actual keyboard events."}
+
+Blender quit

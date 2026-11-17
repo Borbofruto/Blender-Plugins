@@ -1,0 +1,9 @@
+{
+  "version": "4.5.16",
+  "archive": "blender-4.5.16-windows-x64.zip",
+  "bytes": 398426797,
+  "sha256": "e258e90a1ebc14798ad65b3426bc5f11f5e0e013541c61cc7c3ee9bbf4ca0ce6",
+  "verified_against_official_checksum": true,
+  "checksum_file_reused_from_previous_official_download": true,
+  "verified_utc": "2026-11-17T12:37:07.698976+00:00"
+}

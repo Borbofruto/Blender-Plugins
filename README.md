@@ -21,6 +21,8 @@ A spatial-precision Transform, Reference Frames and Align/Distribute addon for B
 
 [Scene-unit qualification](docs/better_item/units-1.7.9.md): new tests cover Metric, Imperial and Unit Scale variants on the same stable ZIP. Conversion passed the tested cases; display rounding and the limits of absolute mm accuracy are documented separately.
 
+[Final-archive compatibility follow-up](docs/better_item/followup-review-1.7.9.md): 25/25 newly executed on 4.3.2, 4.4.3, 4.5.16, 5.0.1, 5.1.2 and 5.2.4. Earlier three-build 24-entry matrices retain their original provenance. The visual proposal remains unmerged.
+
 ### Distribution by references, points and occupied geometry
 
 - Explicit Offset / Endpoint. Between Points uses Start-to-End direction; Reference Axis projects End onto one chosen reference axis.

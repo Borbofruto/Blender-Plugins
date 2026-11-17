@@ -1,0 +1,6 @@
+Info: Saved "test_better_item_173.blend"
+173 PASSED {"passed": true, "checks": ["separate saved placements and native labels", "short Endpoint permits overlap without resizing", "legacy Geometry Endpoint migration notice", "object sources, changed selection, stable order and stop", "cursor and captured Active identity; selected anchor editable", "Frame/manual inputs, recovery and target edit guard", "Offset reference observer preserves transverse axes", "frame change and render end Live", "per-method choices persist across reopen", "unregister keeps poses and removes observer/guards"]}
+Blender 4.3.2 (hash 32f5fdce0a0a built 2024-12-17 03:35:23)
+Read blend: "D:\Codex-BetterItem-179-Remaining\results\4.3.2\test_better_item_173.blend"
+
+Blender quit

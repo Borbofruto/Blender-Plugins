@@ -1,0 +1,18 @@
+{
+  "passed": true,
+  "checks": [
+    "one Frame pauses visibly while healthy export updates",
+    "real timer retries one-shot read failure and recovers",
+    "persistent fault keeps timer and other Frames alive; backoff prevents busy retry",
+    "persistent failure recovers without resetting export intent",
+    "external deletion during backoff is respected; export is not recreated",
+    "invalid source retains existing remove/suspend/recover policy",
+    "scene switching uses current context; removed-scene health is pruned",
+    "observer-level migration fault is visible and recoverable",
+    "Undo clears transient sync health",
+    "load clears health and retains persistent observer",
+    "unregister removes observer and health"
+  ],
+  "draw_errors": [],
+  "blender": "4.5.16 LTS"
+}

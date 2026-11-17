@@ -1,0 +1,4 @@
+172 COLLAPSE PASSED {'passed': True, 'symmetric_geometry_dependency_rejected': True, 'atomic_rejections': [('OFFSET', 0.2, 0, '[BI-G002]'), ('OFFSET', 0, 0, '[BI-G002]'), ('ENDPOINT', 0, 128, '[BI-E003]'), ('ENDPOINT', 0, 4, '[BI-E001]')]}
+Blender 4.3.2 (hash 32f5fdce0a0a built 2024-12-17 03:35:23)
+
+Blender quit

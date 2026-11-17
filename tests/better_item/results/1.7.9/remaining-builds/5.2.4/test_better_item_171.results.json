@@ -1,0 +1,8 @@
+{
+  "passed": true,
+  "transverse_cases": 30,
+  "zero_direction_sequences": 3,
+  "checkbox_no_initial_mutation": true,
+  "checkbox_disable_keeps_result": true,
+  "direction_persistence": true
+}

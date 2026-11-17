@@ -1,0 +1,9 @@
+{
+  "version": "4.4.3",
+  "archive": "blender-4.4.3-windows-x64.zip",
+  "bytes": 385412148,
+  "sha256": "60a9703b07f2cf42509f699ccdec4f5ede71c1932f6c14329f0e14c023e27d5c",
+  "verified_against_official_checksum": true,
+  "checksum_file_reused_from_previous_official_download": true,
+  "verified_utc": "2026-11-17T12:33:54.370126+00:00"
+}

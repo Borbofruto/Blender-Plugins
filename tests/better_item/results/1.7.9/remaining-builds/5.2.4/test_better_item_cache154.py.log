@@ -1,0 +1,8 @@
+00:02.891  blend            | Saved session recovery to "D:\Codex-BetterItem-179-Remaining\results\5.2.4\profile\temp\quit.blend"
+NESTED EXTERNAL CACHE: 0 (2.0, 2.0, 2.0)
+NESTED EXTERNAL CACHE: 1 (4.0, 2.0, 2.0)
+NESTED EXTERNAL CACHE: 3 (8.0, 2.0, 2.0)
+NESTED EXTERNAL CACHE: 0 (2.0, 2.0, 2.0)
+154 CACHE PASSED: nested GN external dependencies, modifier toggles, native external keyframes/drivers, shape keys, frame/subframe changes, backward seeks, key edits, translation cache reuse, undo/redo and no target pose writes
+
+Blender quit

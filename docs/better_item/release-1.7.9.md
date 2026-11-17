@@ -79,3 +79,7 @@ Permanecem para a próxima etapa: passada humana de mouse/F9/cancelamento/largur
 ## Qualificação posterior, sem alterar o artefato
 
 O [estudo de unidades](units-1.7.9.md) acrescenta testes e achados físicos/visuais ao mesmo ZIP. A regressão padrão foi ampliada para 25 entradas; a matriz de 24 relatada acima continua sendo a execução histórica da consolidação. Não foi repetida nesta rodada.
+
+## Revisão complementar do mesmo ZIP
+
+A [rodada posterior](followup-review-1.7.9.md) executou 25 entradas nas seis builds intermediárias que faltavam, com o ZIP estável inalterado. A proposta de precisão/título está em outra branch, sem merge. O checklist humano e o inventário do mínimo estão na documentação externa.
