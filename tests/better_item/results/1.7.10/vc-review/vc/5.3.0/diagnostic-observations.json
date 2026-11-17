@@ -1,0 +1,65 @@
+{
+  "passed": true,
+  "purpose": "observation only; not release acceptance",
+  "blender": "5.3.0",
+  "module": "D:\\Codex-BetterItem-1710-VC-Comparison\\vc-workspace\\results\\5.3.0\\better_item\\__init__.py",
+  "cases": [
+    {
+      "case": "offset_no_axes_complete_references",
+      "status": "UNAVAILABLE",
+      "value": null,
+      "diagnostic": "",
+      "plan_refusal": "[BI-A001] Select at least one distribution axis.",
+      "labels": [
+        "Distribution",
+        "Placement:",
+        "Complete references to measure spacing.",
+        "Sign sets direction."
+      ]
+    },
+    {
+      "case": "endpoint_coincident_complete_references",
+      "status": "UNAVAILABLE",
+      "value": null,
+      "diagnostic": "",
+      "plan_refusal": "[BI-E001] Start and End are coincident or too close. Separate the endpoint references.",
+      "labels": [
+        "Distribution",
+        "Placement:",
+        "Start: shared Location reference.",
+        "End:",
+        "├",
+        "X:",
+        "├",
+        "Y:",
+        "└",
+        "Z:",
+        "Start → End defines the direction.",
+        "References are not moved.",
+        "Spacing is derived from the endpoints."
+      ]
+    },
+    {
+      "case": "endpoint_axis_missing_complete_references",
+      "status": "UNAVAILABLE",
+      "value": null,
+      "diagnostic": "",
+      "plan_refusal": "[BI-A001] Select exactly one reference axis for Endpoint / Reference Axis.",
+      "labels": [
+        "Distribution",
+        "Placement:",
+        "Start: shared Location reference.",
+        "End:",
+        "├",
+        "X:",
+        "├",
+        "Y:",
+        "└",
+        "Z:",
+        "End is projected onto one Move axis.",
+        "References are not moved.",
+        "Spacing is derived from the endpoints."
+      ]
+    }
+  ]
+}

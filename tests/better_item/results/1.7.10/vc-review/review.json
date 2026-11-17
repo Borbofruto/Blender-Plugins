@@ -1,0 +1,63 @@
+{
+  "reviewed_vc_commit": "2cb09d5",
+  "reviewed_vg_commit": "cc5b058",
+  "date": "2026-11-17",
+  "vc_zip_sha256": "2c8dfbf3d2254700aba44e669e64ab81e6a4362f2ade8d7c206c7964826fd72d",
+  "vg_zip_sha256": "53ea12dee71f48cf755964405111688b15fa943ffb1bfb07ba4a67301a63fbef",
+  "checks": [
+    {
+      "candidate": "vc",
+      "build": "4.2.0",
+      "entries": 4,
+      "passed": true,
+      "addon_zip_sha256": "2c8dfbf3d2254700aba44e669e64ab81e6a4362f2ade8d7c206c7964826fd72d",
+      "records_sha256": "bee4fb83f6093d90d40f3ff7c40053acd98fdec4aedb82f9c92f7a052946772d",
+      "observation_only_entry": "probe_vc_vg_diagnostics1710.py"
+    },
+    {
+      "candidate": "vc",
+      "build": "4.3.2",
+      "entries": 4,
+      "passed": true,
+      "addon_zip_sha256": "2c8dfbf3d2254700aba44e669e64ab81e6a4362f2ade8d7c206c7964826fd72d",
+      "records_sha256": "66c32c330a02ba8a67b1a52f650edea4fbb072dd3e473162996c838dab3ec82a",
+      "observation_only_entry": "probe_vc_vg_diagnostics1710.py"
+    },
+    {
+      "candidate": "vc",
+      "build": "5.3.0",
+      "entries": 4,
+      "passed": true,
+      "addon_zip_sha256": "2c8dfbf3d2254700aba44e669e64ab81e6a4362f2ade8d7c206c7964826fd72d",
+      "records_sha256": "0be1303d95808db1ed46c6999f0d9fed1e6a2d218de6a646e7360e3db59210ca",
+      "observation_only_entry": "probe_vc_vg_diagnostics1710.py"
+    },
+    {
+      "candidate": "vg",
+      "build": "4.2.0",
+      "entries": 1,
+      "passed": true,
+      "addon_zip_sha256": "53ea12dee71f48cf755964405111688b15fa943ffb1bfb07ba4a67301a63fbef",
+      "records_sha256": "c38125dd1b768a57bb8111b12de2acaf6b8f25619fd03ce2197457903b6bada2",
+      "observation_only_entry": "probe_vc_vg_diagnostics1710.py"
+    },
+    {
+      "candidate": "vg",
+      "build": "5.3.0",
+      "entries": 1,
+      "passed": true,
+      "addon_zip_sha256": "53ea12dee71f48cf755964405111688b15fa943ffb1bfb07ba4a67301a63fbef",
+      "records_sha256": "245d4b828649fc07ea83e017fc6faccc6383129981e147ff513046bc224b3459",
+      "observation_only_entry": "probe_vc_vg_diagnostics1710.py"
+    }
+  ],
+  "processes": 14,
+  "regression_processes": 9,
+  "observation_processes": 5,
+  "limitations": [
+    "targeted review only, not the full VC matrix",
+    "recording layout, not physical typing",
+    "Linux execution reported externally by Claude, not rerun here"
+  ],
+  "decision": "Recommend keeping VG as candidate; no merge, source change or branch deletion performed."
+}

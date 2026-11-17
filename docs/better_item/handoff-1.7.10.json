@@ -97,5 +97,12 @@
     "cold_ui_entries": 4,
     "infrastructure_checks": 14,
     "extra_processes": 20
+  },
+  "cross_review": {
+    "report": "docs/better_item/review-vc-vg-1.7.10.md",
+    "reviewed_vc_commit": "2cb09d5",
+    "new_targeted_processes": 14,
+    "not_full_vc_matrix": true,
+    "runtime_unchanged": true
   }
 }
