@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "blender": "4.2.23 LTS",
+  "checks": [
+    "Transform precision matches native groups and Diagnostic preserves str.title",
+    "publish RuntimeError isolation and recovery",
+    "publish TypeError isolation and recovery",
+    "remove RuntimeError isolation and recovery",
+    "remove TypeError isolation and recovery",
+    "invalid window does not escape observer failure or prevent recovery"
+  ]
+}

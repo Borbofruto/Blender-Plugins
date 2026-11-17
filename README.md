@@ -6,7 +6,7 @@ Each addon uses a stable installer filename. Updates replace that file; earlier 
 
 ## Better Item 1.7.10
 
-**VG maintenance candidate — separate branch, not published on main. Qualification is in progress; see the release report for gates and pending checks.**
+**VG maintenance candidate — separate branch, not published on main. Automated qualification passed 28/28 on nine builds; manual interaction remains pending. See the release report for gates and limitations.**
 
 [Download ZIP](https://github.com/Borbofruto/Blender-Plugins/raw/refs/heads/release/1.7.10-vg/addons/better_item.zip) | [Manual](src/better_item/README.md) | [Release report](docs/better_item/release-1.7.10.md) | [Changelog](src/better_item/CHANGELOG.md) | [Source](src/better_item) | [Tests](tests/better_item)
 

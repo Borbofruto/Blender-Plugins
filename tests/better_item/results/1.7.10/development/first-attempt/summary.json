@@ -1,0 +1,120 @@
+{
+  "requested_version": "4.2.0-targeted",
+  "executable": "D:/Codex-BetterItem-179-Portable/blender-4.2.0-windows-x64/blender.exe",
+  "started_utc": "2026-11-17T13:58:05Z",
+  "tests": [
+    {
+      "script": "test_native_sync179.py",
+      "mode": "gui_async",
+      "passed": false,
+      "exit_code": 1,
+      "timeout": false,
+      "seconds": 22.521,
+      "result": null
+    },
+    {
+      "script": "test_better_item_units179.py",
+      "mode": "background",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 26.515,
+      "result": {
+        "archive": "runner-records.zip",
+        "member": "test_better_item_units179.results.json",
+        "sha256": "3e10f468608c51558eb5dfc8e2b51dc908aaf0590e4b4f367beb7c4173e0f425"
+      }
+    },
+    {
+      "script": "test_spacing_diagnostics1710.py",
+      "mode": "gui_sync",
+      "passed": false,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 2.562,
+      "result": null
+    },
+    {
+      "script": "test_native_faults1710.py",
+      "mode": "gui_sync",
+      "passed": false,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 23.625,
+      "result": null
+    },
+    {
+      "script": "test_native_windows1710.py",
+      "mode": "gui_async",
+      "passed": false,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 4.129,
+      "result": {
+        "archive": "runner-records.zip",
+        "member": "test_native_windows1710.results.json",
+        "sha256": "efd4e10e3baf185ec3fc2fafb9476ae09a7e1a0f7ec12c348b2a8f3e456ea0e8"
+      }
+    }
+  ],
+  "passed": false,
+  "addon_version": "1.7.10",
+  "addon_zip_sha256": "e73b7dfcfc90a871fb2c5fa420000e1c3f1d25b5c43f6fd53f0add0c5b7ca744",
+  "finished_utc": "2026-11-17T13:59:26Z",
+  "_storage": {
+    "archive_sha256": "4f8ffbe8b42d1aa6ac8e833c145a258fc72718af201de1db199d5cd284a2686c",
+    "original_summary_sha256": "f56fa8896275ccbc50c6cb639871d1e88cf0b09a2d475b7310e2d004acd7543a",
+    "format": "original runner summary, results, logs and version text in standard ZIP; exact bytes verified",
+    "members": {
+      "api_probe.py": "0e632ddcc5bcf9cdddde9919ca0b250efe92554e7b8e88048e2c292bb4a9e266",
+      "benchmark_cache_invalidation.py": "4240637f647aae33b7974017e80bc32225a9587af066e626094d9f4f5620e326",
+      "benchmark_editmode_normal179.py": "bab2e9abd5a2cc66bea46327df41b750db68bbe967c2db0571de0cd1f75592e1",
+      "blender-version.txt": "fbc847f2cfc50c65826a6cf46d77ea7969c8575fd9035cf3094162bb76e094ff",
+      "launch_test_native_faults1710.py": "276b12039924e66c651961dc0211c48bc534ff56714e09e0634fdfc6e3a40f49",
+      "launch_test_spacing_diagnostics1710.py": "36ca3c0aa7597983836486d8847bd24671ccb769651b787e895ebe74fd65c75d",
+      "summary.json": "f56fa8896275ccbc50c6cb639871d1e88cf0b09a2d475b7310e2d004acd7543a",
+      "test_archive_install.py": "f4e90ede8a88b9332f42a6aca221b159e5104446df0f9e397bf11f5b9e1e21ba",
+      "test_better_item_170.py": "02077442d5bc5f4d67d8439915f8f70dd1df0babafe807993c74e33e0b4daf73",
+      "test_better_item_171.py": "eab348ab07e71650e12150ae943782822fa75341297ab6dfb8861984340aff8e",
+      "test_better_item_173.py": "316a462af3fcda24e4bed70aa1329748b59d7a8539be1a2785f357055b0150d0",
+      "test_better_item_cache154.py": "30ffb23243769dc4d6462eb6fb8b8a79d91a56323ec4e4f4d716c89f87b571d7",
+      "test_better_item_collapse172.py": "97c15f17309524a7952426c6a1a92a5e41c3ab5c1b0f99272d2f443f492b333f",
+      "test_better_item_edge170.py": "ebe5f7266c4e87483646df1bdec77f9c642d17db2c691c1584632e240cb5e032",
+      "test_better_item_features160.py": "871a5b8562ae8e8a1140b83c3fde3536da9d082fd371322215f520f724dda16f",
+      "test_better_item_gestures179.py": "6d405d8c5f00cda7c486a60a9f793d61ac95c472e6c71a1c51db77251d840c53",
+      "test_better_item_gui173.py": "06b52685e2af2a097d73448793a087656f6a920c426603d416bb32c949aec3d1",
+      "test_better_item_inspection172.py": "70492af2a1c20450ebc84b99163f2f99a4e72546611d98afe4f14fbe02a673a8",
+      "test_better_item_live173.py": "e75dfd82d4436c9f0fc9891a487b144f0a8f75c94262a0b8b4760f9446a6691a",
+      "test_better_item_matrix160.py": "d4d492fbb2952e0a620ac18b6f196dfc1d73fa85cf9549ccccb033dd5cb9568e",
+      "test_better_item_matrix170.py": "7bf01d24bb800aa30610fc60dd87b620dbd585cb6411b784aedf3b42edcec663",
+      "test_better_item_operator177.py": "c00f1cc3e3d1a2a515212e04cf79e77463fb1f04087519dfe1b23c076c1ac1b6",
+      "test_better_item_placement177_persistence.py": "29a0f49c333406a22d13d63a86879f9736b59d4f898c64a3ca376154142170ab",
+      "test_better_item_precision172.py": "4f2dc8da6cb509a7de59d0b08cc50f426bb809450aad890ad2342a0d3780beab",
+      "test_better_item_preview170.py": "77598821f1934ffaf8dcbb0e6aea12cc361de594b23b3093e7306a041fe3ec01",
+      "test_better_item_regressions.py": "c5b4070e5fb17ab971398077446c4fe6bb9b53a14ae8ba0b0c65d338686fc2f6",
+      "test_better_item_stress157.py": "7695e45dd8395694f2e3bf388fc1e975a6fba0f9d2c9334654b8b3d388e4a245",
+      "test_better_item_units179.py": "1cff929f5b2b80e52a7b15c6c58fc57f34e61f7b08bdf3d813ef4b2b06a50f41",
+      "test_better_item_units179.py.log": "1d572fd60daef1d8b0c553af5300341b5b7bc435ac2f1cfd5a3efcbd9102cfa5",
+      "test_better_item_units179.results.json": "3e10f468608c51558eb5dfc8e2b51dc908aaf0590e4b4f367beb7c4173e0f425",
+      "test_better_item_units_gui179.py": "e578f6da396baa6264b76a400faf3e6f001054fcea7810a306e8b0617f659eb0",
+      "test_cache_invalidation.py": "5837b3bf896a775d98bec521fe96a18623555669395b9244f0d2ea87ff267124",
+      "test_cross_version_state.py": "8149b4b078fd0577a18a1125a02012de1dce0483ec357d00ac520f3799eac194",
+      "test_editmode_foundations.py": "f8042d37c096b5ef4554975c70b9908cfab32ed593c1cd4a878be0d976cb5eb2",
+      "test_native_faults1710.py": "9ecaca837dc7259c070c00b039fee73891b5aa1b383f97cd05c0025ff63f88c5",
+      "test_native_faults1710.py.failed": "c7035dec9f0ac1a8ea48cf529cea6d55fceacfdb30a7bba739c83ef5380a5116",
+      "test_native_faults1710.py.log": "4de4070f80a1ee3d540bbad6003e85ee6c5b9e2a61b62c7cc8009cbd51a30a82",
+      "test_native_sync179.py": "74d98923f9417d2cf58fb13cd2000af5da90164a396690b7d3431ae339a27c66",
+      "test_native_sync179.py.log": "49c36ecaaadf845d44bcd31cf691bbe1a53de8d62cb237b8e3493efee431d6e0",
+      "test_native_windows1710.py": "d7592ea764a6965271e7906bc8cd9f90f7b3bc2e8e167819f883c7259aefc0ba",
+      "test_native_windows1710.py.log": "f59dd099547d5dcea7d5353389a31156e89f8410e2f5cf8757ee5ce6cd1585f4",
+      "test_native_windows1710.results.json": "efd4e10e3baf185ec3fc2fafb9476ae09a7e1a0f7ec12c348b2a8f3e456ea0e8",
+      "test_retired_custom175.py": "f1440fb02f50633868689821d03f610a48bee6153d6ddefb63e3e1893527261e",
+      "test_retired_custom175_persistence.py": "3dde2ad9c2bfed8d75da33b3b58d2beed3928adbb4b1ebb99777e403fcbbeb78",
+      "test_spacing_diagnostics1710.py": "768456a152b17c1d515bd764b49a2489d5e6b0f8061922467a22a58b0ac97eca",
+      "test_spacing_diagnostics1710.py.failed": "0022bb2d5a92e63998cc269da3f0997c2f93dcd2732bb7186d1cfc85edade231",
+      "test_spacing_diagnostics1710.py.log": "83da63541d6dcd46bf0d1400cc0811d59b0f907c2a1301723eb0569d968db2cc",
+      "test_ui_precision_proposal179.py": "99089b590f4beb84908acd659a2b75f523a62593bbf8c432f13c7ec31eb7ceed"
+    },
+    "images": {}
+  }
+}

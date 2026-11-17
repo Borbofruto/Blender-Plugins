@@ -1,0 +1,639 @@
+{
+  "status": "automated-qualified-manual-pending",
+  "branch": "release/1.7.10-vg",
+  "source_commit": "caba3716302069af763f4169e728b21cf060b9bc",
+  "addon_zip_sha256": "53ea12dee71f48cf755964405111688b15fa943ffb1bfb07ba4a67301a63fbef",
+  "python_source_sha256": "d9a02770dc57b25836de826a0031fe5cabb38e83e3ae6ce3699fa2afc58bd1f0",
+  "matrix": [
+    {
+      "folder": "matrix/4.2.0",
+      "passed": true,
+      "entries": 28,
+      "zip_sha256": "53ea12dee71f48cf755964405111688b15fa943ffb1bfb07ba4a67301a63fbef",
+      "records_sha256": "ec7cd7f8c9c76b1c8fa1a4f7f71b6d075fe36a328bf18da7a5ede3854ead447c",
+      "original_summary_sha256": "b1f7fe355da8e025ae06316e56bbe0ef00d9456b5977b83c0ae6152f00a3315d"
+    },
+    {
+      "folder": "matrix/4.2.23",
+      "passed": true,
+      "entries": 28,
+      "zip_sha256": "53ea12dee71f48cf755964405111688b15fa943ffb1bfb07ba4a67301a63fbef",
+      "records_sha256": "801a5535211887747bba9e5552c0b1c82b094fd1de322f02462196616afa7978",
+      "original_summary_sha256": "227e736ea1d4ad4f933b3047a53524ced3bce9ccda89c36a9882ac3ef48e2449"
+    },
+    {
+      "folder": "matrix/4.3.2",
+      "passed": true,
+      "entries": 28,
+      "zip_sha256": "53ea12dee71f48cf755964405111688b15fa943ffb1bfb07ba4a67301a63fbef",
+      "records_sha256": "db6796c05d8e1bb8fcf42950bb4a5cf358dcc5a65f232b446eb8b789ba6c6da0",
+      "original_summary_sha256": "376aeb1052c1173bf6fa4d6226392673a56912cd78d3c0e1c59554410c6aca53"
+    },
+    {
+      "folder": "matrix/4.4.3",
+      "passed": true,
+      "entries": 28,
+      "zip_sha256": "53ea12dee71f48cf755964405111688b15fa943ffb1bfb07ba4a67301a63fbef",
+      "records_sha256": "1a3897259919f3c55672043baaf54dce080f99b72cf38994bfe3c2c38b80fc0d",
+      "original_summary_sha256": "54f781ad4dc51c255ab44b20fe3ab4250a57bc2bd09b63dd3876a3d55217cd68"
+    },
+    {
+      "folder": "matrix/4.5.16",
+      "passed": true,
+      "entries": 28,
+      "zip_sha256": "53ea12dee71f48cf755964405111688b15fa943ffb1bfb07ba4a67301a63fbef",
+      "records_sha256": "1383db2a7a63a87b47a0ffe2a3549d1eb73bfc8481b2d0face2779de2e476e24",
+      "original_summary_sha256": "06a4d143f0679d5471bb7a7807e18c1ce2e613bf022c3561407caed532ca870b"
+    },
+    {
+      "folder": "matrix/5.0.1",
+      "passed": true,
+      "entries": 28,
+      "zip_sha256": "53ea12dee71f48cf755964405111688b15fa943ffb1bfb07ba4a67301a63fbef",
+      "records_sha256": "1497b43fc49e2f53f35e3124c6ee637f365362bb9bf3875df935373dd512fc13",
+      "original_summary_sha256": "db7c4e5dfe59a6fac1bee6e25e7f3280ab10052bc62d5e6d0f0f10ac0edd2e27"
+    },
+    {
+      "folder": "matrix/5.1.2",
+      "passed": true,
+      "entries": 28,
+      "zip_sha256": "53ea12dee71f48cf755964405111688b15fa943ffb1bfb07ba4a67301a63fbef",
+      "records_sha256": "a1ea9ac4566d136d441fbf38683667291a33a9d2136df4ea16fa15dd648d28da",
+      "original_summary_sha256": "b47df28ceac807dfa02f2fb674cbae0a6855bc8dbe167f678f1d0f9186676e4b"
+    },
+    {
+      "folder": "matrix/5.2.4",
+      "passed": true,
+      "entries": 28,
+      "zip_sha256": "53ea12dee71f48cf755964405111688b15fa943ffb1bfb07ba4a67301a63fbef",
+      "records_sha256": "07c56e94f194840ad7aa43b3f072aba930c3aa3f82c97d9f533fe55e5470672b",
+      "original_summary_sha256": "b8591cfe36bb84a8000bf324b30ff028cd993b3d0644955654f21a8b02517876"
+    },
+    {
+      "folder": "matrix/5.3.0",
+      "passed": true,
+      "entries": 28,
+      "zip_sha256": "53ea12dee71f48cf755964405111688b15fa943ffb1bfb07ba4a67301a63fbef",
+      "records_sha256": "efae23e4b92e16c18cdb440350645e2631f3634632bea544aa8cf492ff8cde95",
+      "original_summary_sha256": "470b72c67748ca2131867b5b96ea07a5dbb8e96c4912b83c6ceb11970975603b"
+    }
+  ],
+  "matrix_entries": 252,
+  "cold_ui": [
+    {
+      "folder": "cold-ui/4.2.0-ui-scale1",
+      "passed": true,
+      "entries": 1,
+      "zip_sha256": "53ea12dee71f48cf755964405111688b15fa943ffb1bfb07ba4a67301a63fbef",
+      "records_sha256": "eb597104512fd0def6e89be2dff383b13f8148a13e696344b3c6eaac58af834a",
+      "original_summary_sha256": "a11e891e66aee6c0787cebce58c81e9d2c4c2541502e4efe64979c0f33350164"
+    },
+    {
+      "folder": "cold-ui/4.2.0-ui-scale0001",
+      "passed": true,
+      "entries": 1,
+      "zip_sha256": "53ea12dee71f48cf755964405111688b15fa943ffb1bfb07ba4a67301a63fbef",
+      "records_sha256": "854a081500591b842e877a50fadd4bb415117c465c667557abcaafb35921b514",
+      "original_summary_sha256": "b3b18baf0a0f0a797f0c377344e090ea73e81ff8f3c48566f9b07e5e374718fd"
+    },
+    {
+      "folder": "cold-ui/5.3.0-ui-scale1",
+      "passed": true,
+      "entries": 1,
+      "zip_sha256": "53ea12dee71f48cf755964405111688b15fa943ffb1bfb07ba4a67301a63fbef",
+      "records_sha256": "2597916da0b62f50cf37d40fb6869c44b1a47ae03530a36f079e5c378f95a590",
+      "original_summary_sha256": "7edd7a1160c5c6c013da1d74890b2c779892daaebd2ba6b766784ccadc2e4ac1"
+    },
+    {
+      "folder": "cold-ui/5.3.0-ui-scale0001",
+      "passed": true,
+      "entries": 1,
+      "zip_sha256": "53ea12dee71f48cf755964405111688b15fa943ffb1bfb07ba4a67301a63fbef",
+      "records_sha256": "602683a73e57e348896b258c36aeee3d45f4683ac5276127aec56512756dcf3d",
+      "original_summary_sha256": "fe58f3a7f76d97a00eb71eddd4fa3b2344adbbd3563cce6a4fe365cd2f3aa8ba"
+    }
+  ],
+  "extra_records_sha256": "0ee4053e2a0965db8d2c7b05b51d8e0d1f6f4a651af8873149ceeec9ca267c8d",
+  "infrastructure_checks": 14,
+  "extras": [
+    {
+      "version": "4.2.0",
+      "check": "extension-validate",
+      "exit_code": 0,
+      "passed": true,
+      "command": [
+        "D:/Codex-BetterItem-179-Portable/blender-4.2.0-windows-x64/blender.exe",
+        "--command",
+        "extension",
+        "validate",
+        "D:\\Codex-BetterItem-1710-Qualification-2\\source\\better_item.zip"
+      ],
+      "seconds": 0.558
+    },
+    {
+      "version": "4.2.23",
+      "check": "extension-validate",
+      "exit_code": 0,
+      "passed": true,
+      "command": [
+        "C:/Users/gabri/Documents/Codex/better-item-compatibility/portable/blender-4.2.23-windows-x64/blender.exe",
+        "--command",
+        "extension",
+        "validate",
+        "D:\\Codex-BetterItem-1710-Qualification-2\\source\\better_item.zip"
+      ],
+      "seconds": 0.538
+    },
+    {
+      "version": "5.3.0",
+      "check": "extension-validate",
+      "exit_code": 0,
+      "passed": true,
+      "command": [
+        "C:/Users/gabri/Documents/Codex/better-item-compatibility/portable/blender-5.3.0-windows-x64/blender.exe",
+        "--command",
+        "extension",
+        "validate",
+        "D:\\Codex-BetterItem-1710-Qualification-2\\source\\better_item.zip"
+      ],
+      "seconds": 0.639
+    },
+    {
+      "version": "4.2.0",
+      "check": "placement-persistence",
+      "exit_code": 0,
+      "passed": true,
+      "command": [
+        "D:/Codex-BetterItem-179-Portable/blender-4.2.0-windows-x64/blender.exe",
+        "--background",
+        "--factory-startup",
+        "--disable-autoexec",
+        "--threads",
+        "2",
+        "--python-exit-code",
+        "1",
+        "--python",
+        "D:\\Codex-BetterItem-1710-Qualification-2\\extra\\4.2.0-placement-fixture\\test_better_item_placement177_persistence.py",
+        "--",
+        "--source",
+        "D:\\Codex-BetterItem-1710-Qualification-2\\source",
+        "--fixture",
+        "D:\\Codex-BetterItem-1710-Qualification-2\\results\\4.2.0\\test_better_item_173.blend"
+      ],
+      "seconds": 0.691
+    },
+    {
+      "version": "4.2.23",
+      "check": "placement-persistence",
+      "exit_code": 0,
+      "passed": true,
+      "command": [
+        "C:/Users/gabri/Documents/Codex/better-item-compatibility/portable/blender-4.2.23-windows-x64/blender.exe",
+        "--background",
+        "--factory-startup",
+        "--disable-autoexec",
+        "--threads",
+        "2",
+        "--python-exit-code",
+        "1",
+        "--python",
+        "D:\\Codex-BetterItem-1710-Qualification-2\\extra\\4.2.23-placement-fixture\\test_better_item_placement177_persistence.py",
+        "--",
+        "--source",
+        "D:\\Codex-BetterItem-1710-Qualification-2\\source",
+        "--fixture",
+        "D:\\Codex-BetterItem-1710-Qualification-2\\results\\4.2.23\\test_better_item_173.blend"
+      ],
+      "seconds": 0.684
+    },
+    {
+      "version": "5.3.0",
+      "check": "placement-persistence",
+      "exit_code": 0,
+      "passed": true,
+      "command": [
+        "C:/Users/gabri/Documents/Codex/better-item-compatibility/portable/blender-5.3.0-windows-x64/blender.exe",
+        "--background",
+        "--factory-startup",
+        "--disable-autoexec",
+        "--threads",
+        "2",
+        "--python-exit-code",
+        "1",
+        "--python",
+        "D:\\Codex-BetterItem-1710-Qualification-2\\extra\\5.3.0-placement-fixture\\test_better_item_placement177_persistence.py",
+        "--",
+        "--source",
+        "D:\\Codex-BetterItem-1710-Qualification-2\\source",
+        "--fixture",
+        "D:\\Codex-BetterItem-1710-Qualification-2\\results\\5.3.0\\test_better_item_173.blend"
+      ],
+      "seconds": 0.754
+    },
+    {
+      "version": "4.3.2",
+      "check": "placement-persistence",
+      "exit_code": 0,
+      "passed": true,
+      "command": [
+        "D:/Codex-BetterItem-179-Remaining/portable/blender-4.3.2-windows-x64/blender.exe",
+        "--background",
+        "--factory-startup",
+        "--disable-autoexec",
+        "--threads",
+        "2",
+        "--python-exit-code",
+        "1",
+        "--python",
+        "D:\\Codex-BetterItem-1710-Qualification-2\\extra\\4.3.2-placement-fixture\\test_better_item_placement177_persistence.py",
+        "--",
+        "--source",
+        "D:\\Codex-BetterItem-1710-Qualification-2\\source",
+        "--fixture",
+        "D:\\Codex-BetterItem-1710-Qualification-2\\results\\4.3.2\\test_better_item_173.blend"
+      ],
+      "seconds": 0.921
+    },
+    {
+      "version": "4.4.3",
+      "check": "placement-persistence",
+      "exit_code": 0,
+      "passed": true,
+      "command": [
+        "D:/Codex-BetterItem-179-Remaining/portable/blender-4.4.3-windows-x64/blender.exe",
+        "--background",
+        "--factory-startup",
+        "--disable-autoexec",
+        "--threads",
+        "2",
+        "--python-exit-code",
+        "1",
+        "--python",
+        "D:\\Codex-BetterItem-1710-Qualification-2\\extra\\4.4.3-placement-fixture\\test_better_item_placement177_persistence.py",
+        "--",
+        "--source",
+        "D:\\Codex-BetterItem-1710-Qualification-2\\source",
+        "--fixture",
+        "D:\\Codex-BetterItem-1710-Qualification-2\\results\\4.4.3\\test_better_item_173.blend"
+      ],
+      "seconds": 0.953
+    },
+    {
+      "version": "4.5.16",
+      "check": "placement-persistence",
+      "exit_code": 0,
+      "passed": true,
+      "command": [
+        "D:/Codex-BetterItem-179-Remaining/portable/blender-4.5.16-windows-x64/blender.exe",
+        "--background",
+        "--factory-startup",
+        "--disable-autoexec",
+        "--threads",
+        "2",
+        "--python-exit-code",
+        "1",
+        "--python",
+        "D:\\Codex-BetterItem-1710-Qualification-2\\extra\\4.5.16-placement-fixture\\test_better_item_placement177_persistence.py",
+        "--",
+        "--source",
+        "D:\\Codex-BetterItem-1710-Qualification-2\\source",
+        "--fixture",
+        "D:\\Codex-BetterItem-1710-Qualification-2\\results\\4.5.16\\test_better_item_173.blend"
+      ],
+      "seconds": 0.964
+    },
+    {
+      "version": "5.0.1",
+      "check": "placement-persistence",
+      "exit_code": 0,
+      "passed": true,
+      "command": [
+        "D:/Codex-BetterItem-179-Remaining/portable/blender-5.0.1-windows-x64/blender.exe",
+        "--background",
+        "--factory-startup",
+        "--disable-autoexec",
+        "--threads",
+        "2",
+        "--python-exit-code",
+        "1",
+        "--python",
+        "D:\\Codex-BetterItem-1710-Qualification-2\\extra\\5.0.1-placement-fixture\\test_better_item_placement177_persistence.py",
+        "--",
+        "--source",
+        "D:\\Codex-BetterItem-1710-Qualification-2\\source",
+        "--fixture",
+        "D:\\Codex-BetterItem-1710-Qualification-2\\results\\5.0.1\\test_better_item_173.blend"
+      ],
+      "seconds": 0.959
+    },
+    {
+      "version": "5.1.2",
+      "check": "placement-persistence",
+      "exit_code": 0,
+      "passed": true,
+      "command": [
+        "D:/Codex-BetterItem-179-Remaining/portable/blender-5.1.2-windows-x64/blender.exe",
+        "--background",
+        "--factory-startup",
+        "--disable-autoexec",
+        "--threads",
+        "2",
+        "--python-exit-code",
+        "1",
+        "--python",
+        "D:\\Codex-BetterItem-1710-Qualification-2\\extra\\5.1.2-placement-fixture\\test_better_item_placement177_persistence.py",
+        "--",
+        "--source",
+        "D:\\Codex-BetterItem-1710-Qualification-2\\source",
+        "--fixture",
+        "D:\\Codex-BetterItem-1710-Qualification-2\\results\\5.1.2\\test_better_item_173.blend"
+      ],
+      "seconds": 0.745
+    },
+    {
+      "version": "5.2.4",
+      "check": "placement-persistence",
+      "exit_code": 0,
+      "passed": true,
+      "command": [
+        "D:/Codex-BetterItem-179-Remaining/portable/blender-5.2.4-windows-x64/blender.exe",
+        "--background",
+        "--factory-startup",
+        "--disable-autoexec",
+        "--threads",
+        "2",
+        "--python-exit-code",
+        "1",
+        "--python",
+        "D:\\Codex-BetterItem-1710-Qualification-2\\extra\\5.2.4-placement-fixture\\test_better_item_placement177_persistence.py",
+        "--",
+        "--source",
+        "D:\\Codex-BetterItem-1710-Qualification-2\\source",
+        "--fixture",
+        "D:\\Codex-BetterItem-1710-Qualification-2\\results\\5.2.4\\test_better_item_173.blend"
+      ],
+      "seconds": 1.184
+    },
+    {
+      "version": "4.2.0",
+      "check": "legacy-write",
+      "exit_code": 0,
+      "passed": true,
+      "command": [
+        "D:/Codex-BetterItem-179-Portable/blender-4.2.0-windows-x64/blender.exe",
+        "--background",
+        "--factory-startup",
+        "--disable-autoexec",
+        "--threads",
+        "2",
+        "--python-exit-code",
+        "1",
+        "--python",
+        "D:\\Codex-BetterItem-1710-Qualification-2\\extra\\4.2.0-legacy-fixture\\test_better_item_migration173.py",
+        "--",
+        "--prepare",
+        "--source",
+        "C:\\Users\\gabri\\Nova pasta\\Documents\\ChatGPT\\Mixer - Modified Blender 2\\legacy172\\src"
+      ],
+      "seconds": 0.689
+    },
+    {
+      "version": "4.2.0",
+      "check": "legacy-read",
+      "exit_code": 0,
+      "passed": true,
+      "command": [
+        "D:/Codex-BetterItem-179-Portable/blender-4.2.0-windows-x64/blender.exe",
+        "--background",
+        "--factory-startup",
+        "--disable-autoexec",
+        "--threads",
+        "2",
+        "--python-exit-code",
+        "1",
+        "--python",
+        "D:\\Codex-BetterItem-1710-Qualification-2\\extra\\4.2.0-legacy-fixture\\test_better_item_migration173.py",
+        "--",
+        "--source",
+        "D:\\Codex-BetterItem-1710-Qualification-2\\source"
+      ],
+      "seconds": 0.689
+    },
+    {
+      "version": "4.2.23",
+      "check": "legacy-write",
+      "exit_code": 0,
+      "passed": true,
+      "command": [
+        "C:/Users/gabri/Documents/Codex/better-item-compatibility/portable/blender-4.2.23-windows-x64/blender.exe",
+        "--background",
+        "--factory-startup",
+        "--disable-autoexec",
+        "--threads",
+        "2",
+        "--python-exit-code",
+        "1",
+        "--python",
+        "D:\\Codex-BetterItem-1710-Qualification-2\\extra\\4.2.23-legacy-fixture\\test_better_item_migration173.py",
+        "--",
+        "--prepare",
+        "--source",
+        "C:\\Users\\gabri\\Nova pasta\\Documents\\ChatGPT\\Mixer - Modified Blender 2\\legacy172\\src"
+      ],
+      "seconds": 0.66
+    },
+    {
+      "version": "4.2.23",
+      "check": "legacy-read",
+      "exit_code": 0,
+      "passed": true,
+      "command": [
+        "C:/Users/gabri/Documents/Codex/better-item-compatibility/portable/blender-4.2.23-windows-x64/blender.exe",
+        "--background",
+        "--factory-startup",
+        "--disable-autoexec",
+        "--threads",
+        "2",
+        "--python-exit-code",
+        "1",
+        "--python",
+        "D:\\Codex-BetterItem-1710-Qualification-2\\extra\\4.2.23-legacy-fixture\\test_better_item_migration173.py",
+        "--",
+        "--source",
+        "D:\\Codex-BetterItem-1710-Qualification-2\\source"
+      ],
+      "seconds": 0.655
+    },
+    {
+      "version": "5.3.0",
+      "check": "legacy-write",
+      "exit_code": 0,
+      "passed": true,
+      "command": [
+        "C:/Users/gabri/Documents/Codex/better-item-compatibility/portable/blender-5.3.0-windows-x64/blender.exe",
+        "--background",
+        "--factory-startup",
+        "--disable-autoexec",
+        "--threads",
+        "2",
+        "--python-exit-code",
+        "1",
+        "--python",
+        "D:\\Codex-BetterItem-1710-Qualification-2\\extra\\5.3.0-legacy-fixture\\test_better_item_migration173.py",
+        "--",
+        "--prepare",
+        "--source",
+        "C:\\Users\\gabri\\Nova pasta\\Documents\\ChatGPT\\Mixer - Modified Blender 2\\legacy172\\src"
+      ],
+      "seconds": 0.834
+    },
+    {
+      "version": "5.3.0",
+      "check": "legacy-read",
+      "exit_code": 0,
+      "passed": true,
+      "command": [
+        "C:/Users/gabri/Documents/Codex/better-item-compatibility/portable/blender-5.3.0-windows-x64/blender.exe",
+        "--background",
+        "--factory-startup",
+        "--disable-autoexec",
+        "--threads",
+        "2",
+        "--python-exit-code",
+        "1",
+        "--python",
+        "D:\\Codex-BetterItem-1710-Qualification-2\\extra\\5.3.0-legacy-fixture\\test_better_item_migration173.py",
+        "--",
+        "--source",
+        "D:\\Codex-BetterItem-1710-Qualification-2\\source"
+      ],
+      "seconds": 0.74
+    },
+    {
+      "version": "4.2.0",
+      "check": "cross-write",
+      "exit_code": 0,
+      "passed": true,
+      "command": [
+        "D:/Codex-BetterItem-179-Portable/blender-4.2.0-windows-x64/blender.exe",
+        "--background",
+        "--factory-startup",
+        "--disable-autoexec",
+        "--threads",
+        "2",
+        "--python-exit-code",
+        "1",
+        "--python",
+        "D:\\Codex-BetterItem-1710-Qualification-2\\results\\4.2.0\\test_cross_version_state.py",
+        "--",
+        "--write",
+        "--fixture",
+        "D:\\Codex-BetterItem-1710-Qualification-2\\extra\\cross\\state.blend"
+      ],
+      "seconds": 0.687
+    },
+    {
+      "version": "5.3.0",
+      "check": "cross-read",
+      "exit_code": 0,
+      "passed": true,
+      "command": [
+        "C:/Users/gabri/Documents/Codex/better-item-compatibility/portable/blender-5.3.0-windows-x64/blender.exe",
+        "--background",
+        "--factory-startup",
+        "--disable-autoexec",
+        "--threads",
+        "2",
+        "--python-exit-code",
+        "1",
+        "--python",
+        "D:\\Codex-BetterItem-1710-Qualification-2\\results\\5.3.0\\test_cross_version_state.py",
+        "--",
+        "--fixture",
+        "D:\\Codex-BetterItem-1710-Qualification-2\\extra\\cross\\state.blend"
+      ],
+      "seconds": 0.741
+    }
+  ],
+  "before_controls": [
+    {
+      "folder": "before-controls/4.2.0",
+      "passed": false,
+      "entries": 3,
+      "zip_sha256": "6a01eb809165347e94668d259a492b922b69f0c368657cae48599a2f57a9f029",
+      "records_sha256": "bba8762522f039a810683cd18637dfe13d35c70e75402e62df60a3a6c43b8d16",
+      "original_summary_sha256": "55a822388be6e82e4ed4c23d1d34f19f33a9590f84b25b32721e1ab82935c1ee"
+    },
+    {
+      "folder": "before-controls/5.3.0",
+      "passed": false,
+      "entries": 3,
+      "zip_sha256": "6a01eb809165347e94668d259a492b922b69f0c368657cae48599a2f57a9f029",
+      "records_sha256": "9deb9b4718135e6b324694e067c1150dd512638b171f096209f517475f388f30",
+      "original_summary_sha256": "105e4edd1aff077c527fabf25ce212a4ba4ad607d95d7288e79afe2b16c929fa"
+    }
+  ],
+  "development": [
+    {
+      "folder": "development/first-attempt",
+      "passed": false,
+      "entries": 5,
+      "zip_sha256": "e73b7dfcfc90a871fb2c5fa420000e1c3f1d25b5c43f6fd53f0add0c5b7ca744",
+      "records_sha256": "4f8ffbe8b42d1aa6ac8e833c145a258fc72718af201de1db199d5cd284a2686c",
+      "original_summary_sha256": "f56fa8896275ccbc50c6cb639871d1e88cf0b09a2d475b7310e2d004acd7543a"
+    },
+    {
+      "folder": "development/directed",
+      "passed": true,
+      "entries": 5,
+      "zip_sha256": "56c31b8742d27b38f380e9f6d2d4f0d614c3e998746aa18655301252df55118e",
+      "records_sha256": "ecf7bcd8f2149a530d6e4eb484a69164f9b01e6c15a8098c0c692561cb3db023",
+      "original_summary_sha256": "03915e702e7401b6cdeb585013f8b67c33d669e831d00be88b74b1a93274f112"
+    },
+    {
+      "folder": "development/first-matrix/4.2.0",
+      "passed": true,
+      "entries": 28,
+      "zip_sha256": "53ea12dee71f48cf755964405111688b15fa943ffb1bfb07ba4a67301a63fbef",
+      "records_sha256": "fd0ce54c09c79e7680ff65782c9057b69a19e3ccb1c85437786b48a6c095d306",
+      "original_summary_sha256": "1bfa57d28f0c11eeb66980ccf47368e5756800c78efa6d26a109d0575eaf9926"
+    },
+    {
+      "folder": "development/first-matrix/4.2.23",
+      "passed": true,
+      "entries": 28,
+      "zip_sha256": "53ea12dee71f48cf755964405111688b15fa943ffb1bfb07ba4a67301a63fbef",
+      "records_sha256": "94ed489c9eff18d3f110fd4f480944c1fdcc00879a869fe461ac80fc98db65b6",
+      "original_summary_sha256": "ba59465f55021c5bb234f5ce2416273b5964baaa29afaecb4ca5d8068fc6b625"
+    },
+    {
+      "folder": "development/first-matrix/4.3.2",
+      "passed": false,
+      "entries": 28,
+      "zip_sha256": "53ea12dee71f48cf755964405111688b15fa943ffb1bfb07ba4a67301a63fbef",
+      "records_sha256": "ca7cba0dad63a22c2577f9f5327225343e01e180407eaf74b1cfd4cc0235e2a0",
+      "original_summary_sha256": "638d82e93f6205448a08828fc7e062f35199628d19d3d658bf513123f124087b"
+    },
+    {
+      "folder": "development/window-corrected/4.3.2",
+      "passed": true,
+      "entries": 1,
+      "zip_sha256": "53ea12dee71f48cf755964405111688b15fa943ffb1bfb07ba4a67301a63fbef",
+      "records_sha256": "257ddce620553651957c09bccb2e0a7742e8d15770492de049f4d1d73af02918",
+      "original_summary_sha256": "d1a81dbfc8fb29e445f4ae3bf2a277e2a0c344db6efc4e1adbe14fda858b7689"
+    },
+    {
+      "folder": "development/closed-scene-control/4.3.2",
+      "passed": true,
+      "entries": 1,
+      "zip_sha256": "6a01eb809165347e94668d259a492b922b69f0c368657cae48599a2f57a9f029",
+      "records_sha256": "c4b0cb1078049e2a54dc515e58aed86e5865318923d225e9cd6160ab8b5dd547",
+      "original_summary_sha256": "87ef84d4581159d3679156b857ad3805a3276e3ac15d48734f563bade63c6cbe"
+    }
+  ],
+  "pending": [
+    "manual mouse/keyboard checklist",
+    "original artificial 4.2.0 crash cause not conclusively isolated; corrected close-once case passes"
+  ],
+  "archive_policy": "Raw results/logs/scripts in standard ZIPs with hashes; new regression JSONs and compact summaries directly readable. Cold UI and two representative sync screenshots published; remaining screenshots retained on D with hashes in each index. No .blend, profiles, Blender runtime or downloads."
+}

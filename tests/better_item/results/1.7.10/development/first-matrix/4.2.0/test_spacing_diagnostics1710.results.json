@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "blender": "4.2.0",
+  "checks": [
+    "geometry cause preserved in cached tuple; invalid apply is atomic",
+    "panel describes invalid volume instead of requesting valid references",
+    "actually missing reference retains its own pending diagnostic",
+    "geometry repair invalidates the cached refusal",
+    "Undo and Redo restore the current geometry diagnostic",
+    "Live captured targets preserve the current geometry cause"
+  ]
+}

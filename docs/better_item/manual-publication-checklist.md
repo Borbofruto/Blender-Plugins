@@ -1,6 +1,6 @@
 # Checklist manual — publicação Better Item
 
-Status: **pendente de execução humana**. Os testes GUI com setters, parser via API e screenshots não substituem teclado/mouse nos widgets. Registrar build, commit, SHA do ZIP, idioma/interface, separador decimal, Unit System, Unit Scale e Length Unit. Usar cena de teste e perfil isolado; não arquivos de clientes.
+Status: **pendente de execução humana**. Na branch 1.7.10 VG, a qualificação automatizada está concluída; ela não marca os itens abaixo como executados. Usar o SHA do candidato registrado em release-1.7.10.md. Os testes GUI com setters, parser via API e screenshots não substituem teclado/mouse nos widgets. Registrar build, commit, SHA do ZIP, idioma/interface, separador decimal, Unit System, Unit Scale e Length Unit. Usar cena de teste e perfil isolado; não arquivos de clientes.
 
 ## Entrada explícita de unidade — inclusão solicitada
 
@@ -12,7 +12,7 @@ Status: **pendente de execução humana**. Os testes GUI com setters, parser via
 - [ ] Digitar o equivalente em metros e uma entrada em inches no sistema métrico. Comparar com o nativo; testar também entrada sem sufixo para verificar a unidade padrão do widget.
 - [ ] Conferir Rotation contra o campo Euler nativo e Scale como fator adimensional. Não aplicar conversão de comprimento ao Scale.
 - [ ] Cancelar com Esc durante edição/arrasto; depois testar Undo/Redo, links, passagem por zero e troca de referências. Confirmar que o estado anterior é restaurado quando pertinente.
-- [ ] Registrar o arredondamento fechado em Unit Scale 1 e 0,001. A baseline fria atual pode mostrar 12,3 mm onde o nativo mostra 12,346 mm. Na branch proposta, verificar equivalência visual por grupo; a proposta não está mesclada.
+- [ ] Registrar o arredondamento fechado em Unit Scale 1 e 0,001. A baseline fria atual pode mostrar 12,3 mm onde o nativo mostra 12,346 mm. No candidato 1.7.10 VG, verificar equivalência visual por grupo; o código foi incorporado à branch candidata, sem merge na main.
 
 ## Demais fluxos
 
@@ -22,6 +22,6 @@ Status: **pendente de execução humana**. Os testes GUI com setters, parser via
 - [ ] Normal em malha densa: clique, box select e troca por outro vértice com mesma contagem; conferir eixos e pausas perceptíveis.
 - [ ] Dimensions com referência oblíqua e estágio GN; manter dados compartilhados e pilha íntegros.
 - [ ] Larguras de painel e mensagens. Para BI-F006, usar a fixture de falha controlada; distinguir o título atual da baseline do título proposto, sem gerar falhas em arquivos de produção.
-- [ ] Malha aberta com Volume e referências válidas: registrar o diagnóstico incorreto conhecido, sem mudar o solver para ocultá-lo.
+- [ ] Malha aberta com Volume e referências válidas: conferir a explicação de geometria inválida, recusa sem efeitos parciais e desaparecimento do aviso após reparar a malha.
 
-Não há contrato universal de erro físico absoluto em mm. Registrar resíduos em mm e recusas; não usar Minimum Separation como erro máximo admissível. A escolha da versão para a proposta visual e uma eventual tolerância física exigem decisão do responsável pelo produto.
+Não há contrato universal de erro físico absoluto em mm. Registrar resíduos em mm e recusas; não usar Minimum Separation como erro máximo admissível. A proposta visual entrou no candidato 1.7.10 VG. Publicação estável e uma eventual tolerância física permanecem decisões do responsável pelo produto.

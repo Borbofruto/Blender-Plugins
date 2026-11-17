@@ -1,0 +1,11 @@
+{
+  "passed": true,
+  "indexed_archives_verified": 22,
+  "public_images_verified": 10,
+  "extra_archive_crc_and_sha256_verified": true,
+  "all_original_summaries_reconstructed": true,
+  "local_links_verified": 33,
+  "matrix_entries": 252,
+  "candidate_zip_sha256": "53ea12dee71f48cf755964405111688b15fa943ffb1bfb07ba4a67301a63fbef",
+  "note": "Checks publication integrity; does not mark manual interaction gates complete."
+}

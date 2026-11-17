@@ -1,0 +1,33 @@
+{
+  "passed": true,
+  "purpose": "diagnostic reproduction; failures expected on current stable",
+  "blender": "4.5.16 LTS",
+  "source": "D:\\Codex-BetterItem-1710-Qualification-2\\results\\4.5.16\\better_item\\__init__.py",
+  "volume": {
+    "references_valid": true,
+    "cause": "[BI-P003] \"Plane\" needs closed, consistently oriented geometry for Volume Centroid. Repair the mesh or choose Surface Centroid.",
+    "labels": [
+      "Distribution",
+      "Placement:",
+      "Sign sets direction.",
+      "\"Plane\" needs closed, consistently",
+      "oriented geometry for Volume",
+      "Centroid. Repair the mesh or",
+      "choose Surface Centroid."
+    ],
+    "unchanged_targets": true,
+    "drawing": "Python label capture, not screenshot or mouse"
+  },
+  "timer_registered_before": true,
+  "close_operator_returned": true,
+  "window_removed": true,
+  "timer_registered_after": true,
+  "observer_issue": {
+    "message": "RuntimeError: Controlled migration fault after closing secondary real window",
+    "attempts": 2,
+    "retry_at": 113024.531
+  },
+  "syncing_after": false,
+  "window_failure_reproduced": false,
+  "volume_guidance_reproduced": false
+}

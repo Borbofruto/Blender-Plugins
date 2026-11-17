@@ -2,7 +2,7 @@
   "version": "1.7.10",
   "date": "2026-11-17",
   "branch": "release/1.7.10-vg",
-  "status": "candidate-unqualified",
+  "status": "automated-qualified-manual-pending",
   "baseline_commit": "f9180b6",
   "archive": {
     "path": "addons/better_item.zip",
@@ -74,9 +74,28 @@
     }
   ],
   "pending": [
-    "new-artifact qualification",
-    "legacy migration",
-    "manual interaction checklist"
+    "manual mouse/keyboard checklist",
+    "original artificial 4.2.0 crash cause not conclusively isolated; corrected close-once case passes"
   ],
-  "historical_evidence": "See handoff-1.7.9.json; not acceptance for this candidate"
+  "historical_evidence": "See handoff-1.7.9.json; not acceptance for this candidate",
+  "source_commit": "caba3716302069af763f4169e728b21cf060b9bc",
+  "qualification": "tests/better_item/results/1.7.10/qualification.json",
+  "automated": {
+    "matrix_entries": 252,
+    "builds": [
+      "4.2.0",
+      "4.2.23",
+      "4.3.2",
+      "4.4.3",
+      "4.5.16",
+      "5.0.1",
+      "5.1.2",
+      "5.2.4",
+      "5.3.0"
+    ],
+    "entries_per_build": 28,
+    "cold_ui_entries": 4,
+    "infrastructure_checks": 14,
+    "extra_processes": 20
+  }
 }

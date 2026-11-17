@@ -1,6 +1,6 @@
 # Better Item — contexto atual e passagem de trabalho
 
-**Branch VG em desenvolvimento:** `release/1.7.10-vg`, worktree `D:/Codex-BetterItem-1710-VG`, base `f9180b6`. O fonte e `addons/better_item.zip` desta branch são o candidato 1.7.10, sem merge na main. Leia primeiro [release-1.7.10.md](release-1.7.10.md) e [handoff-1.7.10.json](handoff-1.7.10.json). A antiga remota `release/1.7.9` foi excluída após confirmar ancestralidade na main. Abaixo permanece o contexto da base 1.7.9; seus hashes/resultados não qualificam o candidato. O trabalho atual foi autorizado por Gabriel nesta branch; não interpretar a proposta anterior como impedimento de execução.
+**Branch VG em desenvolvimento:** `release/1.7.10-vg`, worktree `D:/Codex-BetterItem-1710-VG`, base `f9180b6`. O fonte e `addons/better_item.zip` desta branch são o candidato 1.7.10, sem merge na main. A qualificação automatizada final passou 28/28 nas nove builds; quatro comparações GUI frias, 14 guards e 20 processos auxiliares passaram separadamente. Interação manual continua pendente; os crashes das sondagens artificiais não tiveram causa conclusivamente isolada e não devem ser apresentados como corrida cotidiana corrigida. Leia primeiro [release-1.7.10.md](release-1.7.10.md) e [handoff-1.7.10.json](handoff-1.7.10.json). A antiga remota `release/1.7.9` foi excluída após confirmar ancestralidade na main. Abaixo permanece o contexto da base 1.7.9; seus hashes/resultados não qualificam o candidato. O trabalho atual foi autorizado por Gabriel nesta branch; não interpretar a proposta anterior como impedimento de execução.
 
 Atualizado em **17/11/2026**, após consolidar a contribuição `release/1.7.9` com a manutenção local aprovada. Leia este arquivo **antes** do manual histórico. A 1.7.9 combina gestos linkados, leitura fria e fingerprint de Normal com recuperação do timer nativo e integridade da entrega. Inclui as correções encontradas na revisão da ordem Euler em Default e do desligamento/religamento dos links. Resultados e limites: [release-1.7.9.md](release-1.7.9.md).
 
@@ -300,7 +300,16 @@ Em entrega de runtime: conferir manifesto/bl_info/README/changelog; pacote sem b
 
 Ferramenta usada em sessões anteriores: conector GitHub para ler árvore/blobs e publicar commit com base tree e atualização protegida do ref. Git convencional também é adequado em checkout correto. Sempre conferir HEAD e arquivos alterados; não sobrescrever mudanças concorrentes. Só publicar o escopo autorizado. Este trabalho de documentação não autoriza editar o runtime como parte oculta da preparação.
 
-### Primeiro trabalho recomendado à próxima IA, após a 1.7.9
+### Próximo trabalho na 1.7.10 VG
+
+1. Confirmar HEAD, SHA e status em [release-1.7.10.md](release-1.7.10.md) e [handoff-1.7.10.json](handoff-1.7.10.json). O candidato está nesta branch; a main permanece 1.7.9. Não reclassificar evidência histórica como testes deste ZIP.
+2. Executar o checklist de teclado/mouse pendente e registrar resultados reais. A matriz final 28/28 em nove builds, capturas, persistência e migração são evidências automatizadas separadas.
+3. Precisão visual, título BI-F006, aviso de Volume e limite Python de recuperação do observador foram corrigidos nesta branch. Não reabri-los como pendências da 1.8 sem uma nova reprodução.
+4. Manter explícita a causa ainda incerta dos crashes das sondagens artificiais. O cenário final válido passou nas nove builds; a leitura direta de RNA da janela removida foi retirada do teste. Um crash novo em cenário válido exige investigação antes de fechar publicação.
+5. Revisar/decidir merge e publicação estável; não fazê-los como consequência automática de concluir testes na branch.
+6. Depois do fechamento, planejar as quatro frentes da 1.8 sem repetir essas correções. Tolerância física absoluta em mm exige decisão própria; animação e novos alvos Edit Mode não entram.
+
+### Recomendação anterior, após a 1.7.9 (histórico)
 
 **Atualização de 17/11/2026:** Gabriel pediu avaliar uma manutenção antes da 1.8. Leia primeiro [avaliação e critérios de fechamento](pre-1.8-maintenance-assessment.md). Há nova reprodução sintética da exceção que escapa do observador e um crash de sondagem combinada cuja causa ainda não foi isolada; não os confundir com falha cotidiana comprovada. O escopo de correção está proposto, sem implementação. O número técnico recomendado é **1.7.10**, pois os validadores de extensão rejeitam `1.7.9.1`. Os itens abaixo são a recomendação anterior; a alocação dos ajustes pontuais de UI pode mudar se a manutenção for aprovada.
 
