@@ -2,3 +2,6 @@
 src/better_item/** text eol=lf
 tests/better_item/compatibility/*.py text eol=lf
 addons/better_item.zip -text
+src/better_draft/** text eol=lf
+tests/better_draft/**/*.py text eol=lf
+addons/better_draft.zip -text
