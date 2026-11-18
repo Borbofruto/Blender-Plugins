@@ -1,7 +1,7 @@
 schema_version = "1.0.0"
 id = "better_draft"
 name = "Better Draft"
-version = "0.1.0"
+version = "0.1.1"
 tagline = "Export flat mesh outlines to DXF with real arcs and circles"
 maintainer = "Gabriel Webber do Nascimento"
 website = "https://github.com/Borbofruto/Blender-Plugins"

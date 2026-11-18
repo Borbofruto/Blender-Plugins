@@ -82,6 +82,18 @@ class SelectionTests(unittest.TestCase):
         self.assertAlmostEqual(pt.part_area([rect(0, 0, 10, 10), rect(2, 2, 2, 2)]), 96.0)
 
 
+class MessageTests(unittest.TestCase):
+    def test_modifier_hint_only_for_forced_arcs_with_modifiers(self):
+        from better_draft import messages
+
+        forced = rc.Problem("FORCED_ARC_OUT_OF_TOLERANCE", 0, edges=[1, 2], deviation_mm=0.1, tolerance_mm=0.01)
+        with_mods = messages.format_problem("A", forced, None, 0.01, ["Subdivide", "Bevel"])
+        self.assertIn("read after modifiers (Subdivide, Bevel)", with_mods)
+        self.assertNotIn("after modifiers", messages.format_problem("A", forced, None, 0.01, []))
+        other = messages.format_problem("A", rc.Problem("LOOPS_TOUCH"), None, 0.01, ["Subdivide"])
+        self.assertNotIn("after modifiers", other)
+
+
 class LayoutTests(unittest.TestCase):
     def piece(self, name, loop):
         return pl.Piece(name, 0, rc.analyze_region([loop]), [[]])

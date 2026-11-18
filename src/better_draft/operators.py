@@ -133,6 +133,11 @@ class BETTER_DRAFT_OT_export_dxf(bpy.types.Operator, ExportHelper):
         if not objects:
             self.report({"ERROR"}, "Select one or more mesh objects")
             return {"CANCELLED"}
+        missing = dxf_writer.load_error()
+        if missing is not None:
+            print("%s: ezdxf import failed: %s" % (C.ADDON_NAME, missing))
+            self.report({"ERROR"}, "Nothing exported. " + messages.MISSING_EZDXF)
+            return {"CANCELLED"}
         params = self.params()
         depsgraph = context.evaluated_depsgraph_get()
         results = []
@@ -143,7 +148,11 @@ class BETTER_DRAFT_OT_export_dxf(bpy.types.Operator, ExportHelper):
             results.append(res)
             problems.extend(res.problems)
         if problems:
-            texts = [messages.format_problem(n, p, pt, params.fit_tolerance_mm) for n, p, pt in problems]
+            active_mods = {o.name: [m.name for m in o.modifiers if m.show_viewport] for o in objects}
+            texts = [
+                messages.format_problem(n, p, pt, params.fit_tolerance_mm, active_mods.get(n))
+                for n, p, pt in problems
+            ]
             for t in texts:
                 print("%s: %s" % (C.ADDON_NAME, t))
             for t in texts[1:]:

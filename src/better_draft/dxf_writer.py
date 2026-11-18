@@ -12,6 +12,15 @@ from .constants import LAYER_INNER, LAYER_OUTER
 TMP_SUFFIX = ".better-draft-tmp"
 
 
+def load_error():
+    """None if ezdxf imports, otherwise a short description of the failure."""
+    try:
+        import ezdxf  # noqa: F401
+    except Exception as exc:  # noqa: BLE001  (ImportError or a broken install)
+        return "%s: %s" % (type(exc).__name__, exc)
+    return None
+
+
 def build_document(placed):
     """Return an ezdxf document for [(piece, (dx, dy)), ...]."""
     import ezdxf

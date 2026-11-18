@@ -397,6 +397,7 @@ def forced_arc_out_of_tolerance_refused(out_dir):
     select_only(obj)
     _, _, error = export(out_dir, "forced_bad", expect_ok=False)
     assert "do not fit one circle" in error, error
+    assert "read after modifiers" not in error, error  # no modifiers here: no modifier hint
     return {"message": error}
 
 
@@ -497,6 +498,44 @@ def refusals(out_dir):
 
 
 @case
+def forced_arc_after_modifier_hint(out_dir):
+    # Marked 3-segment corner + simple Subdivision: the marked run no longer
+    # fits a circle, and the message must say marks are read after modifiers.
+    obj, _ = shapes.case_rounded_rect_bmesh(3)
+    attr = obj.data.attributes.new(ATTR, "INT", "EDGE")
+    for e in obj.data.edges:
+        if tuple(sorted(e.vertices)) in {(0, 1), (1, 2), (2, 3)}:
+            attr.data[e.index].value = 1
+    sub = obj.modifiers.new("Subdivide", "SUBSURF")
+    sub.subdivision_type = "SIMPLE"
+    sub.levels = 1
+    select_only(obj)
+    _, _, error = export(out_dir, "forced_modifier", expect_ok=False)
+    assert "do not fit one circle" in error, error
+    assert "read after modifiers (Subdivide)" in error, error
+    return {"message": error}
+
+
+@case
+def missing_ezdxf_message(out_dir):
+    # Simulate another extension having removed the bundled ezdxf.
+    obj, _ = shapes.case_bevel_modifier(8)
+    select_only(obj)
+    saved = {k: v for k, v in sys.modules.items() if k == "ezdxf" or k.startswith("ezdxf.")}
+    for k in saved:
+        del sys.modules[k]
+    sys.modules["ezdxf"] = None  # makes "import ezdxf" raise ImportError
+    try:
+        _, _, error = export(out_dir, "no_ezdxf", expect_ok=False)
+    finally:
+        del sys.modules["ezdxf"]
+        sys.modules.update(saved)
+    assert "bundled ezdxf library could not be loaded" in error, error
+    assert "Traceback" not in error, error
+    return {"message": error}
+
+
+@case
 def one_bad_object_blocks_all(out_dir):
     good, _ = shapes.case_bevel_modifier(8)
     bad = shapes.polygon_object("bad", [[(0, 0), (20, 20), (20, 0), (0, 20)]])
@@ -558,6 +597,8 @@ CASES = [
     "loose_parts",
     "identical_and_equal_area_parts",
     "refusals",
+    "forced_arc_after_modifier_hint",
+    "missing_ezdxf_message",
     "one_bad_object_blocks_all",
     "single_file_two_objects",
 ]

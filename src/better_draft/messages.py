@@ -27,7 +27,7 @@ _TEXT = {
 }
 
 
-def format_problem(object_name, problem, point=None, tol=None):
+def format_problem(object_name, problem, point=None, tol=None, modifiers=None):
     d = dict(problem.details)
     d.setdefault("tol", "%g" % tol if tol is not None else "?")
     d["at"] = " near (%.3f, %.3f) mm" % point if point is not None else ""
@@ -44,4 +44,16 @@ def format_problem(object_name, problem, point=None, tol=None):
         body = template.format(**d)
     except (KeyError, IndexError):
         body = template
-    return "%s: %s." % (object_name, body)
+    text = "%s: %s." % (object_name, body)
+    if modifiers and problem.code.startswith("FORCED_ARC"):
+        text += (
+            " Marks are read after modifiers (%s) and the marked edges changed. "
+            "Disable those modifiers for export, or mark the edges after applying them." % ", ".join(modifiers)
+        )
+    return text
+
+
+MISSING_EZDXF = (
+    "The bundled ezdxf library could not be loaded (another extension may have replaced it). "
+    "Reinstall Better Draft; on Blender 4.2.0, update to a newer 4.2 LTS release"
+)
