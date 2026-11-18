@@ -104,7 +104,9 @@ Arcos esperados com segmentos ≥ 4 (167 no total):
 | 0,5° | 64 | 126 (perde as cordas de tangência) | uma LINE |
 | 1,0° | 62 | 12 (o arco se desfaz) | uma LINE |
 
-## 4. Proposta de valores padrão
+## 4. Valores padrão
+
+Aprovados por Gabriel em 18/11/2026, como propostos abaixo.
 
 | Parâmetro | Proposta | Justificativa nos dados |
 | --- | --- | --- |
