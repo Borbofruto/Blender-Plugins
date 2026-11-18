@@ -1,0 +1,28 @@
+{
+ "blender": "4.5.16 LTS",
+ "label": "bd_conflict_pyparsing-draft_first-fs",
+ "enabled": {
+  "bl_ext.user_default.better_draft": true,
+  "bl_ext.user_default.bd_conflict_pyparsing": true,
+  "bl_ext.user_default.bd_conflict_ezdxf": false
+ },
+ "site_packages": [
+  "C:\\work\\better-draft-v0\\run-0.1.1\\profiles\\conflict-4.5.16-bd_conflict_pyparsing-draft_first-fs\\extensions\\.local\\lib\\python3.11\\site-packages"
+ ],
+ "dist_info": [
+  "ezdxf-1.4.5.dist-info",
+  "fonttools-4.68.0.dist-info",
+  "pyparsing-3.3.3.dist-info",
+  "typing_extensions-4.16.0.dist-info"
+ ],
+ "ezdxf": "1.4.5",
+ "pyparsing": "3.3.3",
+ "export": [
+  "FINISHED"
+ ],
+ "entities": {
+  "ARC": 4,
+  "LINE": 4
+ },
+ "export_ok": true
+}

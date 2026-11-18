@@ -1,16 +1,50 @@
-# Better Draft v0 (0.1.0): relatório
+# Better Draft v0 (0.1.1): relatório
 
 18/11/2026. Branch `feature/better-draft-v0`, sem push e sem merge.
 
-## Artefato
+## Artefato atual
 
 | Item | Valor |
 | --- | --- |
-| ZIP | `addons/better_draft.zip`, 2 734 259 bytes |
-| SHA256 | `E7CDE78D1E347B64599CF31B88A11443BADBC781BA2F46BFF1D6688656F57C84` |
-| Origem | `git -c core.autocrlf=false archive HEAD:src/better_draft` no commit `4db8b93`; nenhum `.py`/`.toml` com CRLF |
+| ZIP | `addons/better_draft.zip` 0.1.1, 2 734 766 bytes |
+| SHA256 | `DE70771FC945A995751FEE2AA959D50AE337F7D0BAC9920A2822966C8CBA40B3` |
+| Origem | `git -c core.autocrlf=false archive HEAD:src/better_draft` no commit `9496deb` |
 | Validação | `blender --command extension validate` (4.2.0): sem erros |
 | Conteúdo | código do addon, `LICENSE` (GPL-3.0), wheels ezdxf 1.4.5, fonttools 4.68.0, pyparsing 3.3.3, typing_extensions 4.16.0 |
+
+## 0.1.1: duas mensagens de recusa (aprovadas por você)
+
+Mudanças em relação ao 0.1.0 (`E7CDE78D…7C84`):
+
+1. **ezdxf ausente:** quando a biblioteca empacotada não carrega, a exportação recusa antes de qualquer análise. A mensagem é `Nothing exported. The bundled ezdxf library could not be loaded (another extension may have replaced it). Reinstall Better Draft; on Blender 4.2.0, update to a newer 4.2 LTS release.` No 0.1.0 aparecia um traceback do Python.
+2. **Marcas depois de modificadores:** quando um arco forçado é recusado num objeto com modificadores visíveis na viewport, a mensagem ganha a frase `Marks are read after modifiers (<nomes>) and the marked edges changed. Disable those modifiers for export, or mark the edges after applying them.` Sem modificadores, a mensagem não muda.
+
+Testes que falham no 0.1.0 e passam no 0.1.1:
+- `test_blender_v0.py`: `missing_ezdxf_message` simula a ausência do ezdxf (`sys.modules["ezdxf"] = None`) e `forced_arc_after_modifier_hint` usa Subdivision simples sobre um canto marcado. No ZIP 0.1.0, 16/18, com os dois casos falhando (`results/0.1.0/e2e-4.2.0-before-message-fix.json`).
+- `test_parts.py`: `MessageTests`, só a frase.
+- O caso `forced_arc_out_of_tolerance_refused` passou a conferir também que, sem modificadores, a frase não aparece.
+
+O conflito real do item 4 no 4.2.0 agora recusa com a mensagem nova e não grava nenhum arquivo (`results/0.1.1/conflict-*-draft_first-fs-4.2.0.json`).
+
+### Todas as baterias de novo, no ZIP 0.1.1
+
+Executado com `tools/run_all.ps1` e `tools/run_external.ps1`; resultados em `tests/better_draft/results/0.1.1/`.
+
+| Bateria | Versões | Resultado |
+| --- | --- | --- |
+| Núcleo fora do Blender (`test_recognition` 26, `test_parts` 14) | Python 3.11.7 | todos passaram |
+| Wheel offline | 4.2.0, 4.3.2, 4.4.3, 4.5.16, 5.0.1, 5.1.2, 5.2.4, 5.3.0 | OK em todas |
+| Ponta a ponta (18 casos) | as mesmas 8 | 18/18 em todas |
+| Interface com janela | 4.2.0, 4.5.16, 5.3.0 | 16/16 em cada; capturas em `gui-<versão>/` |
+| Conflito de bibliotecas (2 libs × 2 ordens × 2 modos) | 4.2.0, 4.2.23, 4.5.16, 5.3.0 | igual ao 0.1.0: só o 4.2.0 sem preferências carregadas perde o ezdxf; agora com a mensagem nova |
+| Marcações sob modificadores | 4.2.0 | mesmos resultados; nas 3 recusas (Subdivision ×2, Bevel), a mensagem cita o modificador |
+| Desempenho | 4.2.0 / 5.3.0 | chapa grande 3,22 s / 2,79 s; 20 objetos 0,39 s / 0,35 s |
+| ODA (DXF → DWG → DXF) | DXFs do 5.3.0 | 18/18, sem `.err` |
+| LibreCAD `dxf2png` | DXFs do 5.3.0 | 18/18 PNG (`external/librecad-png/`) |
+| FreeCAD 1.1.4, importação sem interface | DXFs do 5.3.0 | 18/18 contra o leitor próprio e a geometria conhecida |
+| Rede bloqueada de verdade | — | não testado (exige regra de firewall) |
+
+As seções abaixo descrevem a primeira entrega e a segunda rodada no 0.1.0. A evidência delas está em `results/0.1.0/`.
 
 ## O que foi testado, e onde
 
@@ -214,7 +248,7 @@ New-NetFirewallRule -DisplayName "BD offline test" -Direction Outbound -Program 
 ## Pendências suas
 
 - Nome final do addon.
-- Decidir as propostas dos itens 4 e 5.
+- Propostas dos itens 4 e 5: aplicadas no 0.1.1 (mensagens); subir o mínimo para 4.2.x continua em aberto.
 - Abrir um DXF no seu programa de corte.
 - Se quiser o item 7, criar a regra de firewall.
 - Push, merge e publicação, quando quiser.

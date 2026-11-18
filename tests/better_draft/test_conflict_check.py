@@ -37,19 +37,31 @@ def main():
     site = [p for p in sys.path if p.replace("\\", "/").endswith(".local/lib/python%d.%d/site-packages" % sys.version_info[:2])]
     result["site_packages"] = site
     result["dist_info"] = sorted(os.path.basename(p) for s in site for p in glob.glob(os.path.join(s, "*.dist-info")))
-    import ezdxf
-    import pyparsing
+    try:
+        import ezdxf
 
-    result["ezdxf"] = ezdxf.__version__
-    result["pyparsing"] = pyparsing.__version__
+        result["ezdxf"] = ezdxf.__version__
+    except ImportError as exc:
+        ezdxf = None
+        result["ezdxf"] = "import failed: %s" % exc
+    try:
+        import pyparsing
+
+        result["pyparsing"] = pyparsing.__version__
+    except ImportError as exc:
+        result["pyparsing"] = "import failed: %s" % exc
     obj, _ = shapes.case_bevel_modifier(8)
     for o in bpy.context.view_layer.objects:
         o.select_set(o == obj)
     bpy.context.view_layer.objects.active = obj
-    path = os.path.join(out, "conflict_%s.dxf" % label)
+    path = os.path.join(out, "conflict_%s_%s.dxf" % (label, bpy.app.version_string.split()[0]))
+    if os.path.exists(path):
+        os.remove(path)
     try:
         res = bpy.ops.better_draft.export_dxf(filepath=path)
         result["export"] = sorted(res)
+        if ezdxf is None:
+            raise RuntimeError("export finished without ezdxf")
         doc = ezdxf.readfile(path)
         counts = {}
         for e in doc.modelspace():
@@ -57,8 +69,9 @@ def main():
         result["entities"] = counts
         result["export_ok"] = counts == {"ARC": 4, "LINE": 4} and doc.header.get("$INSUNITS") == 4
     except Exception as exc:  # noqa: BLE001
-        result["export"] = "error: %s" % exc
+        result["export"] = "error: %s" % str(exc).strip()
         result["export_ok"] = False
+        result["files_written"] = os.path.exists(path)
     with open(os.path.join(out, "conflict-%s-%s.json" % (label, bpy.app.version_string.split()[0])), "w") as f:
         json.dump(result, f, indent=1)
     print(json.dumps(result, indent=1))

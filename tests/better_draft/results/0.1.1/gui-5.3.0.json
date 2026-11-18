@@ -1,0 +1,381 @@
+{
+ "checks": [
+  {
+   "name": "export poll in Object Mode",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "mark_arc poll in Object Mode is False",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "export poll in Edit Mode is False",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "mark_arc poll in Edit Mode",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "mark arc marks 8 edges",
+   "ok": true,
+   "detail": {
+    "start": {
+     "mode": "EDIT",
+     "arc": 0,
+     "lines": 0
+    },
+    "after_arc": {
+     "mode": "EDIT",
+     "arc": 8,
+     "lines": 0
+    },
+    "after_lines": {
+     "mode": "EDIT",
+     "arc": 0,
+     "lines": 8
+    },
+    "undo1": {
+     "mode": "EDIT",
+     "arc": 8,
+     "lines": 0
+    },
+    "undo2": {
+     "mode": "EDIT",
+     "arc": 0,
+     "lines": 0
+    },
+    "redo1": {
+     "mode": "EDIT",
+     "arc": 8,
+     "lines": 0
+    },
+    "redo2": {
+     "mode": "EDIT",
+     "arc": 0,
+     "lines": 8
+    }
+   }
+  },
+  {
+   "name": "mark lines overrides to 8 lines",
+   "ok": true,
+   "detail": {
+    "start": {
+     "mode": "EDIT",
+     "arc": 0,
+     "lines": 0
+    },
+    "after_arc": {
+     "mode": "EDIT",
+     "arc": 8,
+     "lines": 0
+    },
+    "after_lines": {
+     "mode": "EDIT",
+     "arc": 0,
+     "lines": 8
+    },
+    "undo1": {
+     "mode": "EDIT",
+     "arc": 8,
+     "lines": 0
+    },
+    "undo2": {
+     "mode": "EDIT",
+     "arc": 0,
+     "lines": 0
+    },
+    "redo1": {
+     "mode": "EDIT",
+     "arc": 8,
+     "lines": 0
+    },
+    "redo2": {
+     "mode": "EDIT",
+     "arc": 0,
+     "lines": 8
+    }
+   }
+  },
+  {
+   "name": "undo 1 restores arc marks, stays in Edit Mode",
+   "ok": true,
+   "detail": {
+    "start": {
+     "mode": "EDIT",
+     "arc": 0,
+     "lines": 0
+    },
+    "after_arc": {
+     "mode": "EDIT",
+     "arc": 8,
+     "lines": 0
+    },
+    "after_lines": {
+     "mode": "EDIT",
+     "arc": 0,
+     "lines": 8
+    },
+    "undo1": {
+     "mode": "EDIT",
+     "arc": 8,
+     "lines": 0
+    },
+    "undo2": {
+     "mode": "EDIT",
+     "arc": 0,
+     "lines": 0
+    },
+    "redo1": {
+     "mode": "EDIT",
+     "arc": 8,
+     "lines": 0
+    },
+    "redo2": {
+     "mode": "EDIT",
+     "arc": 0,
+     "lines": 8
+    }
+   }
+  },
+  {
+   "name": "undo 2 removes marks, stays in Edit Mode",
+   "ok": true,
+   "detail": {
+    "start": {
+     "mode": "EDIT",
+     "arc": 0,
+     "lines": 0
+    },
+    "after_arc": {
+     "mode": "EDIT",
+     "arc": 8,
+     "lines": 0
+    },
+    "after_lines": {
+     "mode": "EDIT",
+     "arc": 0,
+     "lines": 8
+    },
+    "undo1": {
+     "mode": "EDIT",
+     "arc": 8,
+     "lines": 0
+    },
+    "undo2": {
+     "mode": "EDIT",
+     "arc": 0,
+     "lines": 0
+    },
+    "redo1": {
+     "mode": "EDIT",
+     "arc": 8,
+     "lines": 0
+    },
+    "redo2": {
+     "mode": "EDIT",
+     "arc": 0,
+     "lines": 8
+    }
+   }
+  },
+  {
+   "name": "redo 1 restores arc marks",
+   "ok": true,
+   "detail": {
+    "start": {
+     "mode": "EDIT",
+     "arc": 0,
+     "lines": 0
+    },
+    "after_arc": {
+     "mode": "EDIT",
+     "arc": 8,
+     "lines": 0
+    },
+    "after_lines": {
+     "mode": "EDIT",
+     "arc": 0,
+     "lines": 8
+    },
+    "undo1": {
+     "mode": "EDIT",
+     "arc": 8,
+     "lines": 0
+    },
+    "undo2": {
+     "mode": "EDIT",
+     "arc": 0,
+     "lines": 0
+    },
+    "redo1": {
+     "mode": "EDIT",
+     "arc": 8,
+     "lines": 0
+    },
+    "redo2": {
+     "mode": "EDIT",
+     "arc": 0,
+     "lines": 8
+    }
+   }
+  },
+  {
+   "name": "redo 2 restores line marks",
+   "ok": true,
+   "detail": {
+    "start": {
+     "mode": "EDIT",
+     "arc": 0,
+     "lines": 0
+    },
+    "after_arc": {
+     "mode": "EDIT",
+     "arc": 8,
+     "lines": 0
+    },
+    "after_lines": {
+     "mode": "EDIT",
+     "arc": 0,
+     "lines": 8
+    },
+    "undo1": {
+     "mode": "EDIT",
+     "arc": 8,
+     "lines": 0
+    },
+    "undo2": {
+     "mode": "EDIT",
+     "arc": 0,
+     "lines": 0
+    },
+    "redo1": {
+     "mode": "EDIT",
+     "arc": 8,
+     "lines": 0
+    },
+    "redo2": {
+     "mode": "EDIT",
+     "arc": 0,
+     "lines": 8
+    }
+   }
+  },
+  {
+   "name": "invoke opens file browser",
+   "ok": true,
+   "detail": [
+    "RUNNING_MODAL"
+   ]
+  },
+  {
+   "name": "file browser found",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "dialog defaults match approved values",
+   "ok": true,
+   "detail": {
+    "values": {
+     "confidence_threshold": 0.699999988079071,
+     "min_segments": 4,
+     "circle_min_segments": 8,
+     "straight_tolerance": 0.10000000149011612,
+     "fit_tolerance": 0.009999999776482582,
+     "plane": "LOCAL",
+     "output": "PER_OBJECT",
+     "spacing": 10.0,
+     "loose_parts": "REFUSE",
+     "min_part_area": 1.0,
+     "write_report": true
+    },
+    "mismatch": {}
+   }
+  },
+  {
+   "name": "file browser closed after cancel",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "cancel wrote no file",
+   "ok": true,
+   "detail": []
+  },
+  {
+   "name": "cancel left the scene unchanged",
+   "ok": true,
+   "detail": null
+  }
+ ],
+ "errors": [],
+ "screenshots": [
+  "menu_file_export_object_mode.png",
+  "menu_file_export_edit_mode.png",
+  "menu_edit_mesh_context.png",
+  "menu_edit_mesh_edges.png",
+  "export_dialog.png"
+ ],
+ "undo_sequence": {
+  "start": {
+   "mode": "EDIT",
+   "arc": 0,
+   "lines": 0
+  },
+  "after_arc": {
+   "mode": "EDIT",
+   "arc": 8,
+   "lines": 0
+  },
+  "after_lines": {
+   "mode": "EDIT",
+   "arc": 0,
+   "lines": 8
+  },
+  "undo1": {
+   "mode": "EDIT",
+   "arc": 8,
+   "lines": 0
+  },
+  "undo2": {
+   "mode": "EDIT",
+   "arc": 0,
+   "lines": 0
+  },
+  "redo1": {
+   "mode": "EDIT",
+   "arc": 8,
+   "lines": 0
+  },
+  "redo2": {
+   "mode": "EDIT",
+   "arc": 0,
+   "lines": 8
+  }
+ },
+ "before_dialog": "ddfb0aed72b2f9a02aa1fa83160ab41080412a71d2b33e8a203250d8b4fd286a",
+ "windows_before": 1,
+ "dialog_values": {
+  "confidence_threshold": 0.699999988079071,
+  "min_segments": 4,
+  "circle_min_segments": 8,
+  "straight_tolerance": 0.10000000149011612,
+  "fit_tolerance": 0.009999999776482582,
+  "plane": "LOCAL",
+  "output": "PER_OBJECT",
+  "spacing": 10.0,
+  "loose_parts": "REFUSE",
+  "min_part_area": 1.0,
+  "write_report": true
+ },
+ "tool_props_width": 240,
+ "cancel_method": "Escape key (event_simulate)",
+ "passed": true,
+ "blender": "5.3.0"
+}

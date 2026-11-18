@@ -1,0 +1,20 @@
+{
+ "blender": "4.2.0",
+ "label": "bd_conflict_pyparsing-draft_first-fs",
+ "enabled": {
+  "bl_ext.user_default.better_draft": true,
+  "bl_ext.user_default.bd_conflict_pyparsing": true,
+  "bl_ext.user_default.bd_conflict_ezdxf": false
+ },
+ "site_packages": [
+  "C:\\work\\better-draft-v0\\run-0.1.1\\profiles\\conflict-4.2.0-bd_conflict_pyparsing-draft_first-fs\\extensions\\.local\\lib\\python3.11\\site-packages"
+ ],
+ "dist_info": [
+  "pyparsing-3.1.4.dist-info"
+ ],
+ "ezdxf": "import failed: No module named 'ezdxf'",
+ "pyparsing": "3.1.4",
+ "export": "error: Error: Nothing exported. The bundled ezdxf library could not be loaded (another extension may have replaced it). Reinstall Better Draft; on Blender 4.2.0, update to a newer 4.2 LTS release",
+ "export_ok": false,
+ "files_written": false
+}

@@ -1,4 +1,4 @@
-# Better Draft 0.1.0 (provisional name)
+# Better Draft 0.1.1 (provisional name)
 
 Exports the outline of a flat mesh to DXF with real LINE, ARC and CIRCLE entities, in millimetres at 1:1. Bevelled corners and round holes are recognised from the mesh; each run gets a confidence, and you can force a run to be an arc or straight lines.
 
