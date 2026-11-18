@@ -91,7 +91,54 @@ def read(path):
             if t == "ARC":
                 d["angles"] = (e.dxf.start_angle, e.dxf.end_angle)
         ents.append(d)
+    raw = parse_raw(path)
+    assert len(raw) == len(ents), (len(raw), len(ents))
+    for r, e in zip(raw, ents):
+        assert r["type"] == e["type"] and r["layer"] == e["layer"], (r, e)
+        for key in ("start", "end", "center"):
+            if key in e:
+                assert math.dist(r[key], e[key]) < 1e-9, (key, r, e)
+        if "radius" in e:
+            assert abs(r["radius"] - e["radius"]) < 1e-9 and abs(r["angles"][0] - e.get("angles", (0, 0))[0]) < 1e-9
     return {"insunits": doc.header.get("$INSUNITS"), "entities": ents}
+
+
+def parse_raw(path):
+    """Minimal DXF reader independent of ezdxf: group-code pairs of ENTITIES."""
+    with open(path, encoding="utf-8", errors="replace") as f:
+        tokens = [ln.strip() for ln in f.read().splitlines()]
+    pairs = list(zip(tokens[0::2], tokens[1::2]))
+    out = []
+    in_entities = False
+    cur = None
+    for code, value in pairs:
+        if code == "2" and value == "ENTITIES":
+            in_entities = True
+            continue
+        if not in_entities:
+            continue
+        if code == "0":
+            if cur is not None:
+                out.append(cur)
+            if value == "ENDSEC":
+                break
+            cur = {"type": value, "g": {}} if value in ("LINE", "ARC", "CIRCLE") else None
+            continue
+        if cur is not None:
+            cur["g"][code] = value
+    result = []
+    for c in out:
+        g = c["g"]
+        d = {"type": c["type"], "layer": g.get("8")}
+        if c["type"] == "LINE":
+            d["start"] = (float(g["10"]), float(g["20"]))
+            d["end"] = (float(g["11"]), float(g["21"]))
+        else:
+            d["center"] = (float(g["10"]), float(g["20"]))
+            d["radius"] = float(g["40"])
+            d["angles"] = (float(g.get("50", 0)), float(g.get("51", 0)))
+        result.append(d)
+    return result
 
 
 def kinds(dxf, layer=None):
