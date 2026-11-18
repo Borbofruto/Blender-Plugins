@@ -19,11 +19,12 @@ DUPLICATE_EPS_MM = 1e-7
 
 
 class Params:
-    """Recognition parameters. Defaults are provisional until calibrated."""
+    """Recognition parameters. Defaults approved after calibration (docs/better_draft)."""
 
     __slots__ = (
         "confidence_threshold",
         "min_segments",
+        "circle_min_segments",
         "straight_tolerance_deg",
         "fit_tolerance_mm",
         "corner_limit_deg",
@@ -36,6 +37,7 @@ class Params:
         self,
         confidence_threshold=0.7,
         min_segments=4,
+        circle_min_segments=8,
         straight_tolerance_deg=0.1,
         fit_tolerance_mm=0.01,
         corner_limit_deg=65.0,
@@ -45,6 +47,7 @@ class Params:
     ):
         self.confidence_threshold = float(confidence_threshold)
         self.min_segments = int(min_segments)
+        self.circle_min_segments = int(circle_min_segments)
         self.straight_tolerance_deg = float(straight_tolerance_deg)
         self.fit_tolerance_mm = float(fit_tolerance_mm)
         self.corner_limit_deg = float(corner_limit_deg)
@@ -600,6 +603,9 @@ def analyze_loop(points, modes=None, params=None, loop_index=None):
         elif c.segments < params.min_segments:
             c.decision = "lines"
             c.reason = "below_min_segments"
+        elif c.is_circle and c.segments < params.circle_min_segments:
+            c.decision = "lines"
+            c.reason = "below_circle_min_segments"
         elif c.confidence < params.confidence_threshold:
             c.decision = "lines"
             c.reason = "low_confidence"

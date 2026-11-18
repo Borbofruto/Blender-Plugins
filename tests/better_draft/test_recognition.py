@@ -75,10 +75,18 @@ class LoopTests(unittest.TestCase):
         self.assertTrue(all(t < 1e-6 for t in res.tangency_deg))
 
     def test_circle(self):
-        for n in (6, 8, 32, 64):
+        for n in (8, 32, 64):
             res = rc.analyze_loop(arc_points(5, 5, 10, 0, 360, n, include_end=False))
             self.assertEqual(kinds(res), ["CIRCLE"], n)
             self.assertAlmostEqual(res.entities[0].radius, 10.0, places=9)
+
+    def test_circle_min_segments(self):
+        hexagon = arc_points(0, 0, 10, 0, 360, 6, include_end=False)
+        res = rc.analyze_loop(hexagon)
+        self.assertEqual(kinds(res), ["LINE"] * 6)
+        self.assertEqual(res.candidates[0].reason, "below_circle_min_segments")
+        res = rc.analyze_loop(hexagon, params=rc.Params(circle_min_segments=6))
+        self.assertEqual(kinds(res), ["CIRCLE"])
 
     def test_circle_clockwise_input(self):
         pts = list(reversed(arc_points(0, 0, 4, 0, 360, 24, include_end=False)))

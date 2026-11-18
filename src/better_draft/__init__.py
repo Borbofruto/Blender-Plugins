@@ -1,14 +1,18 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 """Better Draft (provisional name).
 
-The recognition core (``geometry2d``, ``recognition``) has no Blender imports.
-Blender-facing modules are imported only inside ``register``.
+The recognition core (``geometry2d``, ``recognition``, ``parts``, ``pipeline``)
+has no Blender imports. Blender-facing modules are imported only in ``register``.
 """
 
 
 def register():
-    pass
+    from . import operators
+
+    operators.register()
 
 
 def unregister():
-    pass
+    from . import operators
+
+    operators.unregister()

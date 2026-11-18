@@ -2,7 +2,7 @@
 """Extract the planar region of an object's evaluated mesh as 2D loops in mm.
 
 Reads only. The evaluated mesh is a temporary copy released before return;
-the object's own mesh is never modified.
+the object's own mesh and the scene are never modified.
 """
 
 import math
@@ -11,11 +11,21 @@ from .constants import ARC_MODE_ATTRIBUTE
 from .recognition import Problem
 
 
+class PartData:
+    """One connected group of region faces."""
+
+    __slots__ = ("loops", "modes", "edge_ids", "face_count")
+
+    def __init__(self):
+        self.loops = []  # list of [(x_mm, y_mm), ...]
+        self.modes = []  # per loop, per edge: 0/1/2
+        self.edge_ids = []  # per loop, per edge: evaluated mesh edge index
+        self.face_count = 0
+
+
 class RegionData:
     __slots__ = (
-        "loops",
-        "modes",
-        "edge_ids",
+        "parts",
         "origin",
         "axis_u",
         "axis_v",
@@ -28,9 +38,7 @@ class RegionData:
     )
 
     def __init__(self):
-        self.loops = []  # list of [(x_mm, y_mm), ...]
-        self.modes = []  # per loop, per edge: 0/1/2
-        self.edge_ids = []  # per loop, per edge: evaluated mesh edge index
+        self.parts = []
         self.origin = None
         self.axis_u = None
         self.axis_v = None
@@ -40,6 +48,15 @@ class RegionData:
         self.reference = None  # "all", "active" or "largest"
         self.face_count = 0
         self.problems = []
+
+    # Convenience for single-part callers (calibration, tests).
+    @property
+    def loops(self):
+        return [lp for p in self.parts for lp in p.loops]
+
+    @property
+    def modes(self):
+        return [m for p in self.parts for m in p.modes]
 
 
 def _matrix(m):
@@ -112,20 +129,7 @@ def _extract(data, obj, eval_obj, mesh, tolerance_mm, world_xy):
         return
     vec = [_newell([verts[i] for i in p]) for p in polys]
     areas = [_norm(v) for v in vec]
-    total = (sum(v[0] for v in vec), sum(v[1] for v in vec), sum(v[2] for v in vec))
 
-    def plane_faces(normal, point, same_side):
-        out = []
-        for fi, p in enumerate(polys):
-            if same_side:
-                if areas[fi] == 0.0 or _dot(vec[fi], normal) <= 0.0:
-                    continue
-            if all(abs(_dot(_sub(verts[i], point), normal)) <= tol_bu for i in p):
-                out.append(fi)
-        return out
-
-    # Whole mesh flat? Use the best-fit normal of all faces (signs may differ
-    # on flipped faces, so align each face vector before summing).
     ref = max(range(len(polys)), key=lambda i: areas[i])
     if areas[ref] == 0.0:
         data.problems.append(Problem("DEGENERATE_FACES"))
@@ -153,51 +157,35 @@ def _extract(data, obj, eval_obj, mesh, tolerance_mm, world_xy):
             data.reference = "active"
         else:
             data.reference = "largest"
+        if areas[ref] == 0.0:
+            data.problems.append(Problem("DEGENERATE_FACES"))
+            return
         normal = _unit(vec[ref])
-        plane_point = verts[polys[ref][0]]
-        region = plane_faces(normal, plane_point, same_side=True)
+        p = polys[ref]
+        plane_point = tuple(sum(verts[i][c] for i in p) / len(p) for c in range(3))
+        if any(abs(_dot(_sub(verts[i], plane_point), normal)) > tol_bu for i in p):
+            data.problems.append(Problem("NOT_PLANAR", None, reference=data.reference))
+            return
+        region = []
+        for fi, poly in enumerate(polys):
+            if areas[fi] == 0.0 or _dot(vec[fi], normal) <= 0.0:
+                continue
+            if all(abs(_dot(_sub(verts[i], plane_point), normal)) <= tol_bu for i in poly):
+                region.append(fi)
     data.face_count = len(region)
+    # Drawing side: look from the object's +Z (then +Y, +X for plates standing
+    # on edge), so a face with a flipped normal is not exported mirrored.
+    for col in (2, 1, 0):
+        axis = _unit((mw[0][col], mw[1][col], mw[2][col]))
+        if axis is not None and abs(_dot(axis, normal)) > 1e-6:
+            if _dot(axis, normal) < 0.0:
+                normal = (-normal[0], -normal[1], -normal[2])
+            break
     data.normal = normal
-    del total
-
-    # Boundary edges of the region.
-    count = {}
-    for fi in region:
-        p = polys[fi]
-        n = len(p)
-        for j in range(n):
-            a, b = p[j], p[(j + 1) % n]
-            key = (a, b) if a < b else (b, a)
-            count[key] = count.get(key, 0) + 1
-    if any(c > 2 for c in count.values()):
-        data.problems.append(Problem("NON_MANIFOLD"))
-        return
-    boundary = [e for e, c in count.items() if c == 1]
-    if not boundary:
-        data.problems.append(Problem("NO_BOUNDARY"))
-        return
-    adj = {}
-    for a, b in boundary:
-        adj.setdefault(a, []).append(b)
-        adj.setdefault(b, []).append(a)
-    if any(len(v) != 2 for v in adj.values()):
-        data.problems.append(Problem("LOOPS_TOUCH"))
-        return
-
-    edge_index = {}
-    for e in mesh.edges:
-        a, b = e.vertices
-        edge_index[(a, b) if a < b else (b, a)] = e.index
-    attr = mesh.attributes.get(ARC_MODE_ATTRIBUTE)
-    edge_mode = None
-    if attr is not None and attr.domain == "EDGE" and attr.data_type in {"INT", "INT8"}:
-        edge_mode = [int(d.value) for d in attr.data]
 
     # Basis.
     if world_xy:
-        if abs(abs(normal[2]) - 1.0) > 1e-12 and any(
-            abs(verts[i][2] - plane_point[2]) > tol_bu for fi in region for i in polys[fi]
-        ):
+        if any(abs(verts[i][2] - plane_point[2]) > tol_bu for fi in region for i in polys[fi]):
             data.problems.append(Problem("NOT_PARALLEL_TO_XY"))
             return
         origin = (0.0, 0.0, 0.0)
@@ -209,8 +197,7 @@ def _extract(data, obj, eval_obj, mesh, tolerance_mm, world_xy):
         origin = tuple(obj_origin[c] - d * normal[c] for c in range(3))
         u = None
         for col in (0, 1):
-            axis = (mw[0][col], mw[1][col], mw[2][col])
-            axis = _unit(axis)
+            axis = _unit((mw[0][col], mw[1][col], mw[2][col]))
             if axis is None:
                 continue
             proj = _sub(axis, tuple(_dot(axis, normal) * normal[c] for c in range(3)))
@@ -222,30 +209,80 @@ def _extract(data, obj, eval_obj, mesh, tolerance_mm, world_xy):
         v = _cross(normal, u)
     data.origin, data.axis_u, data.axis_v = origin, u, v
 
-    visited = set()
-    for start in sorted(adj):
-        if start in visited:
-            continue
-        loop_v = [start]
-        visited.add(start)
-        prev, cur = start, adj[start][0]
-        while cur != start:
-            loop_v.append(cur)
-            visited.add(cur)
-            a, b = adj[cur]
-            prev, cur = cur, (b if a == prev else a)
-        pts = []
-        for i in loop_v:
-            w = _sub(verts[i], origin)
-            pts.append((_dot(w, u) * k, _dot(w, v) * k))
-        ids = []
-        modes = []
-        n = len(loop_v)
+    edge_index = {}
+    for e in mesh.edges:
+        a, b = e.vertices
+        edge_index[(a, b) if a < b else (b, a)] = e.index
+    attr = mesh.attributes.get(ARC_MODE_ATTRIBUTE)
+    edge_mode = None
+    if attr is not None and attr.domain == "EDGE" and attr.data_type in {"INT", "INT8"}:
+        edge_mode = [int(d.value) for d in attr.data]
+
+    # Connected components of region faces (shared edges).
+    parent = {fi: fi for fi in region}
+
+    def find(x):
+        while parent[x] != x:
+            parent[x] = parent[parent[x]]
+            x = parent[x]
+        return x
+
+    edge_faces = {}
+    for fi in region:
+        p = polys[fi]
+        n = len(p)
         for j in range(n):
-            a, b = loop_v[j], loop_v[(j + 1) % n]
-            ei = edge_index.get((a, b) if a < b else (b, a), -1)
-            ids.append(ei)
-            modes.append(edge_mode[ei] if edge_mode is not None and ei >= 0 else 0)
-        data.loops.append(pts)
-        data.edge_ids.append(ids)
-        data.modes.append(modes)
+            a, b = p[j], p[(j + 1) % n]
+            edge_faces.setdefault((a, b) if a < b else (b, a), []).append(fi)
+    if any(len(fs) > 2 for fs in edge_faces.values()):
+        data.problems.append(Problem("NON_MANIFOLD"))
+        return
+    for fs in edge_faces.values():
+        if len(fs) == 2:
+            ra, rb = find(fs[0]), find(fs[1])
+            if ra != rb:
+                parent[ra] = rb
+    groups = {}
+    for fi in region:
+        groups.setdefault(find(fi), []).append(fi)
+
+    for faces in sorted(groups.values(), key=lambda fs: min(fs)):
+        part = PartData()
+        part.face_count = len(faces)
+        fset = set(faces)
+        boundary = [e for e, fs in edge_faces.items() if len(fs) == 1 and fs[0] in fset]
+        adj = {}
+        for a, b in boundary:
+            adj.setdefault(a, []).append(b)
+            adj.setdefault(b, []).append(a)
+        if any(len(x) != 2 for x in adj.values()):
+            data.problems.append(Problem("LOOPS_TOUCH"))
+            return
+        visited = set()
+        for start in sorted(adj):
+            if start in visited:
+                continue
+            loop_v = [start]
+            visited.add(start)
+            prev, cur = start, adj[start][0]
+            while cur != start:
+                loop_v.append(cur)
+                visited.add(cur)
+                a, b = adj[cur]
+                prev, cur = cur, (b if a == prev else a)
+            pts = []
+            for i in loop_v:
+                w = _sub(verts[i], origin)
+                pts.append((_dot(w, u) * k, _dot(w, v) * k))
+            ids = []
+            modes = []
+            n = len(loop_v)
+            for j in range(n):
+                a, b = loop_v[j], loop_v[(j + 1) % n]
+                ei = edge_index.get((a, b) if a < b else (b, a), -1)
+                ids.append(ei)
+                modes.append(edge_mode[ei] if edge_mode is not None and ei >= 0 else 0)
+            part.loops.append(pts)
+            part.edge_ids.append(ids)
+            part.modes.append(modes)
+        data.parts.append(part)
