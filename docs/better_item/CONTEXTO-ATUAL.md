@@ -1,6 +1,6 @@
 # Better Item — contexto atual
 
-Atualizado em **17/11/2026**. Versão oficial: **1.7.10**, na **main**. Mínimo **Blender 4.2.0**.
+Atualizado em **18/11/2026**. Versão oficial: **1.7.10**, na **main**. A branch `release/1.8` está na **fase 1 de preparação**; fonte, ZIP e manifesto permanecem inalterados. Mínimo **Blender 4.2.0**.
 
 ## 1. Estado atual e leitura
 
@@ -147,13 +147,25 @@ Chamada mínima de script:
 - Não atribuir mensagens de shutdown como “not freed memory blocks” automaticamente ao addon. Reproduzir com controle sem addon antes de concluir.
 
 
-## 7. Próximo ciclo: 1.8
+## 7. Releases por tema e preparação da 1.8
 
-Escopo para discussão, sem implementação automática de funcionalidades:
+Uma release por vez. O número minor descreve um tema; patch corrige objetivamente o mesmo programa, sem mudar contrato. Um novo domínio de trabalho justifica major (Edit Mode é 2.0). Correções críticas — resultado errado sem aviso, perda de dados, travamento, falha de instalação/migração — saem como patch separado. O restante deve caber no tema ou ter encaixe registrado.
 
-1. **Diagnósticos e estados:** distinguir configuração incompleta, recusa matemática, operação não aplicada e sincronização pausada; instruções curtas e específicas.
-2. **Layout e legibilidade:** hierarquia dos painéis, agrupamento, largura, rótulos e nomes do mínimo. Preservar a distinção entre configurações da Scene e override do operador.
-3. **Gestos de edição:** coerência de arrasto/digitação, links, Esc, Undo/Redo e F9; corrigir comportamentos reproduzidos com interação real.
-4. **Responsividade medida:** medir cenários frios/quentes e Normal em seleção densa antes de novas otimizações; preservar frescor e determinismo.
+Tema aprovado da 1.8: **Quando o Better Item recusa ou não consegue medir, diz o motivo e deixa o usuário resolver.**
 
-Recomendação inicial: começar a 1.8.0 por diagnósticos/estados e organização visual, fechando o recorte antes de mexer em gestos ou otimizações. Os ajustes visuais não mudam tolerâncias físicas nem ampliam o solver. Animação continua fora do escopo. Edit Mode permanece estudo de futura 2.0, sem novos alvos nesta etapa.
+- **Núcleo:** P2 (termo único Minimum Separation; IDs preservados), F4 (correção do modificador só por clique, com revalidação; sem reaplicar edição) e U2 (ordem manual em empates de Offset).
+- **U2:** Live mantém BI-D002 sem diálogo. Endpoint está fora. Ordem válida/reproduzível no redo/F9 é requisito; a representação RNA vem do protótipo, sem formato predefinido.
+- **Condicionais:** U1 depende da tabela de casos; P3 depende de regra com limiar, oráculo e posição do aviso sem falso positivo. Ambos aguardam aprovação específica.
+- **B1:** auditar todos os códigos da 1.7.10 antes de corrigir. Só entram desvios reproduzidos cuja correção seja texto/ação de diagnóstico e que tenham lista aprovada. Mudança de regra, solver ou contrato fica fora; a auditoria não bloqueia P2/F4/U2.
+- **Fase 1:** atualizar estes documentos e o backlog; protótipo descartável fora do addon em portáteis 4.2/4.5/5.3; tabelas U1/B1/P3 e proposta de correções. **Parar nesses resultados.**
+- **Fase 2:** começa apenas depois da aprovação. Ordem sugerida P2 → F4 → U2. Nenhum comportamento do addon muda durante a preparação.
+
+Fontes de escopo: [roteiro v2](planejamento/roteiro-de-releases.md), [escopo aprovado](planejamento/escopo-1.8.md) e [backlog](planejamento/backlog-ideias.md). Antes de cada item, verificar se cabe na frase do tema. Ideia fora recebe encaixe, não implementação oportunista.
+
+A 1.9 continua **Um painel mais fácil de ler**; 1.10 continua referências com menos passos. Comandos fora do painel como novo tema da 1.9 são proposta aberta para decisão depois da 1.8, sem alterar o roteiro agora. Gestos só geram itens com falha reproduzida; responsividade exige medição. Não retomar as quatro frentes juntas como escopo da 1.8.
+
+Texto público da release: frase do tema e três linhas, sem narrativa de processo. Engenharia, testes e limites permanecem separados em docs/tests. Nesta fase não há anúncio de funcionalidade entregue nem novo ZIP. Nenhum teste usa Blender instalado; somente portáteis com perfis isolados no D.
+
+## Resultado da preparação
+
+Fase 1 concluída: [protótipo U2, tabelas U1/B1/P3 e propostas](planejamento/fase-1-resultados.md). U2 passou os casos de integração em 4.2.0, 4.5.16 e 5.3.0. Unificação de U1 e aviso P3 por distância/ULP não recomendados. Quatro correções B1 propostas (D001/E003/F001/T001), ainda sem implementação. Aguarda decisão de Gabriel; **parar antes da fase 2**. Fonte e ZIP oficiais permanecem 1.7.10.

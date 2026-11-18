@@ -1,6 +1,6 @@
-# Better Item 1.8 — escopo proposto
+# Better Item 1.8 — escopo aprovado
 
-Rascunho de 18/11/2026, **sem aprovação**. Segue o modelo da seção 3 de `roteiro-de-releases.md`. Base: **1.7.10** (main, commit `f7337d0`). Nada aqui autoriza implementação antes da aprovação de Gabriel.
+Aprovado em **18/11/2026**. Base: **1.7.10**, commit `f7337d0`. **Fase 1: preparação sem alteração de comportamento.** A aprovação do escopo não antecipa a aprovação da fase 2; protótipo, tabelas e lista B1 serão apresentados antes de implementar.
 
 ## Tema
 
@@ -12,14 +12,14 @@ Release de diagnóstico e recuperação. Sem mudança estrutural de layout além
 
 - Dois ou mais objetos disputam a mesma posição, o Distribute recusa com BI-D002 e o usuário precisa mover objetos à mão, só para desempatar.
 - O mesmo conceito, o mínimo do solver, aparece com quatro nomes diferentes entre propriedade, rótulo, operador e mensagens.
-- Quando coordenadas coincidem ou ficam abaixo do limiar, BI-D002 e BI-D003 aparecem como se fossem erros diferentes, embora sejam o mesmo limite numérico.
+- Hipótese inicial de U1: BI-D002 e BI-D003 teriam a mesma causa numérica. A preparação demonstrou causas distintas; ver a tabela U1 antes de decidir sua entrada.
 - Se o modificador de Dimensions está fora do fim da pilha ou desligado, o usuário recebe a instrução, mas precisa corrigir sozinho.
 
 ## Entra
 
 ### U2 — Ordem manual em empates (núcleo)
 
-Estado atual verificado no código: o operador `better_item.distribute` já abre um diálogo (`invoke`), e o parâmetro `order_override` existe **só** em `endpoint_plan` (usado pela sessão Live). `offset_plan` não o aceita. Portanto U2 exige um parâmetro de ordem no planejamento do Offset, sem alterar a matemática do solver.
+Estado atual verificado no fonte 1.7.10: `better_item.distribute.invoke` termina em `execute`; **não abre diálogo próprio**. O método `draw` fornece os campos de redo/F9. O parâmetro `order_override` existe **só** em `endpoint_plan` (usado pela sessão Live). `offset_plan` não o aceita. Portanto U2 exige um parâmetro de ordem no planejamento do Offset, sem alterar a matemática do solver.
 
 Comportamentos verificáveis:
 
@@ -39,15 +39,15 @@ U2 é o maior risco técnico da release. O risco não está na matemática, e si
 
 **Protótipo de viabilidade antes de implementar**, em 4.2, 4.5 e 5.3, cobrindo os quatro pontos acima. O requisito é preservar uma ordem **válida e reproduzível**; a forma de guardá-la na RNA do operador é consequência do protótipo, não está decidida. Preservar a ordem de declaração das propriedades que a 1.7.7 protegeu. Se o protótipo mostrar que algum dos quatro pontos não é confiável numa das builds, U2 volta para decisão antes de entrar.
 
-Perguntas abertas, que Gabriel decide:
-- **Live:** sessão com empate continua recusando com BI-D002 (sem diálogo dentro de um timer)? Proposta: sim.
-- **Endpoint:** incluir empates de distância ao Start? Proposta: só se o mesmo diálogo servir sem alterar o solver; caso contrário, fica para depois.
+Decisões aprovadas:
+- **Live:** sessão com empate continua recusando BI-D002, sem diálogo dentro do timer.
+- **Endpoint:** empates de distância ao Start ficam fora da 1.8.
 
 ### U1 — "Nada a fazer" e recusa por precisão (condicional)
 
 Condicionado à tabela de casos abaixo. Se a tabela mostrar que esses códigos **não** representam o mesmo problema, U1 precisa de outro desenho e sai da 1.8.
 
-Hoje BI-D002 (origens coincidentes ou mais próximas que o mínimo), BI-D003 (verificação depois de aplicar) e BI-G002 (gap que o Blender não distingue) descrevem o mesmo limite numérico. O desenho: o que já está distribuído é informado como "nada a distribuir"; o que ficaria abaixo do mínimo é recusado como precisão.
+Hipótese a verificar: BI-D002 (ordem ambígua nas coordenadas iniciais), BI-D003 (verificação depois de aplicar) e BI-G002 (gap que o Blender não distingue) representariam um mesmo limite numérico. Essa equivalência **não é um fato assumido**; a tabela de casos decide se U1 entra. O desenho: o que já está distribuído é informado como "nada a distribuir"; o que ficaria abaixo do mínimo é recusado como precisão.
 
 **Antes de implementar**, produzir uma tabela de casos reproduzidos: combinação de método, Placement, espaçamento e coordenadas → código e texto atuais → texto desejado. O texto das mensagens ainda não foi definido; sem essa tabela, o item não entra.
 
@@ -63,7 +63,7 @@ Hoje: "Minimum Separation (mm)" (propriedade da Scene), "Minimum (mm)" (rótulo 
 2. Os identificadores `minimum_distance_mm` e `minimum_mm`, o armazenamento e a migração **não mudam**. Cenas salvas na 1.7.10 abrem sem alteração.
 3. A dica diz que é parâmetro do solver, **não** tolerância de erro físico.
 
-Decisão: termo único (sugestão: Minimum Separation).
+Decisão aprovada: termo único **Minimum Separation**, sem mudança de identificadores.
 
 ### F4 — Corrigir o modificador de Dimensions por botão (núcleo)
 
@@ -76,7 +76,7 @@ Hoje BI-M002 (modificador não está no fim da pilha) e BI-M004 (modificador des
 5. O texto de M002 deixa de prometer "não reordena" e passa a dizer que só reordena por ação explícita.
 6. **Revalidação antes de agir.** O botão guarda a identidade do objeto e do modificador do diagnóstico, não "o objeto ativo". No clique, se o objeto ou o modificador não existir mais, se o modificador não for mais o do Better Item, ou se o estado já não for o que gerou o diagnóstico, o botão não altera nada e informa que o diagnóstico ficou desatualizado. Teste: trocar a seleção, apagar o objeto, apagar o modificador e corrigir manualmente antes do clique; em todos os casos nenhum outro objeto ou modificador muda.
 
-Decisão: aprovar essa mudança de promessa.
+Decisão aprovada: o addon só reordena ou liga o modificador quando a pessoa clica no botão, após revalidação.
 
 ### P3 — Resolução efetiva do gap (condicional)
 
@@ -118,15 +118,31 @@ Observação do levantamento: o código BI-D001 é lançado em 12 pontos, de qua
 - Do [checklist manual](../manual-publication-checklist.md): Esc, Undo/Redo e F9 no diálogo novo. Digitação com separadores por idioma segue pendente da 1.7.10 e **não** pode ser declarada testada por setter.
 - Limites declarados no relatório, sem apresentar evidência de outra versão como desta.
 
-## Nota ao usuário (rascunho)
+## Texto público previsto (não publicado na fase 1)
 
-> **Better Item 1.8:** quando uma operação é recusada ou não consegue medir, o Better Item explica o motivo e oferece o caminho. Empates na ordem de distribuição agora se resolvem com um diálogo, o mínimo do solver tem um nome só e os erros do modificador de Dimensions podem ser corrigidos com um clique.
+> Quando o Better Item recusa ou não consegue medir, diz o motivo e deixa o usuário resolver.
+> Resolva empates de ordem na distribuição Offset por um diálogo.
+> Use Minimum Separation como nome único do parâmetro de separação.
+> Corrija o estado do modificador de Dimensions por ação explícita.
 
-## Antes de implementar
+## Fases e ponto de parada
 
-1. Gabriel aprovar o roteiro e este escopo.
-2. Decidir: termo do P2, promessa do F4, Live e Endpoint no U2.
-3. Protótipo de viabilidade do U2 (diálogo dinâmico, redo/F9, cancelamento, identidade estável) em 4.2, 4.5 e 5.3.
-4. Tabela de casos do U1 (decide se U1 entra) e tabela de auditoria do B1 (Gabriel aprova a lista).
+### Fase 1 — preparação autorizada
+
+- Integrar este planejamento na `release/1.8`, criada da 1.7.10.
+- Atualizar contexto, continuidade e encaixes do backlog.
+- Executar protótipo U2 descartável fora do addon em portáteis 4.2, 4.5 e 5.3: diálogo dinâmico, ordem no redo/F9, cancelamento e identidade estável.
+- Entregar tabela U1 (método, Placement, espaçamento, coordenadas, diagnóstico atual e texto proposto), auditoria B1 de todos os códigos e tabela P3 (limiar, oráculo e local do aviso, ou justificativa de inviabilidade sem falso positivo).
+- Apresentar resultados e lista proposta de correções B1. **Parar e aguardar aprovação.**
+
+### Fase 2 — não autorizada nesta etapa
+
+Ordem sugerida: P2 → F4 → U2. U1 e P3 só entram mediante aprovação específica após as tabelas. B1 só recebe a lista reproduzida e aprovada, dentro do limite operacional acima.
+
+Nenhum teste usa o Blender instalado: somente portáteis e perfis isolados. ZIP, manifesto e comportamento do addon permanecem na 1.7.10 durante a preparação.
 
 **Núcleo:** U2, P2, F4. **Condicional:** U1 (tabela), P3 (regra sem falso positivo). **Auditoria limitada:** B1. U1 e P3 só entram se terminarem com uma explicação e uma ação possível para o usuário.
+
+## Resultado da fase 1
+
+Preparação concluída: [protótipo, três tabelas e lista B1 proposta](fase-1-resultados.md). U2 viável nos casos ensaiados em 4.2.0/4.5.16/5.3.0; unificação U1 e aviso simples P3 não recomendados. Aguardam decisão: quatro correções B1 e eventual U1 menor. **Fase 2 não iniciada.**

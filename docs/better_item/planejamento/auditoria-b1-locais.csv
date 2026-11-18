@@ -1,0 +1,191 @@
+code,file,line,context,class,severity,message_expression
+BI-A001,src/better_item/arrange.py,121,plan,ReferencePending,'INFO',"'[BI-A001] Select at least one arrangement axis: X, Y or Z.'"
+BI-A001,src/better_item/arrange.py,173,align_orientations,ReferencePending,'INFO','[BI-A001] Select a rotation component to set.'
+BI-A001,src/better_item/distribution.py,227,offset_plan,ReferencePending,'INFO','[BI-A001] Select at least one distribution axis.'
+BI-A001,src/better_item/distribution.py,168,endpoint_plan,ReferencePending,'INFO','[BI-A001] Select exactly one reference axis for Endpoint / Reference Axis.'
+BI-A001,src/better_item/geometry_arrange.py,32,plan,ReferencePending,'INFO','[BI-A001] Select an axis for distribution.'
+BI-A001,src/better_item/math_core.py,102,_inputs,BetterItemError,'WARNING',"'[BI-A001] Select at least one axis: X, Y or Z.'"
+BI-A002,src/better_item/arrange.py,48,reference_frame,BetterItemError,exc.severity,'[BI-A002] Invalid arrangement reference: %s' % exc
+BI-A002,src/better_item/arrange.py,130,plan,BetterItemError,'WARNING','[BI-A002] Reference axes are singular.'
+BI-A003,src/better_item/arrange.py,125,plan,ReferencePending,'INFO','[BI-A003] Select at least %s objects for this operation.' % required
+BI-A003,src/better_item/arrange.py,169,align_orientations,ReferencePending,'INFO','[BI-A003] Switch to Object Mode to align whole objects.'
+BI-A003,src/better_item/arrange.py,170,align_orientations,ReferencePending,'INFO','[BI-A003] Select objects to align.'
+BI-A003,src/better_item/arrange.py,180,align_orientations,ReferencePending,'INFO','[BI-A003] Select at least one object other than the orientation reference.'
+BI-A003,src/better_item/arrange.py,145,plan,BetterItemError,'WARNING','[BI-A003] Select at least one object other than the reference source.'
+BI-A003,src/better_item/distribution.py,157,endpoint_plan,ReferencePending,'INFO','[BI-A003] Select at least two objects for Endpoint distribution.'
+BI-A003,src/better_item/distribution.py,189,endpoint_plan,ReferencePending,'INFO','[BI-A003] Select objects between the endpoint anchors.'
+BI-A003,src/better_item/distribution.py,190,endpoint_plan,ReferencePending,'INFO','[BI-A003] Both selected objects are fixed endpoints. Select an intermediate target.'
+BI-A003,src/better_item/distribution.py,239,offset_plan,ReferencePending,'INFO','[BI-A003] Select an object other than the reference anchor.'
+BI-A003,src/better_item/distribution.py,268,plan,ReferencePending,'INFO','[BI-A003] Switch to Object Mode to distribute whole objects.'
+BI-A003,src/better_item/distribution_preview.py,116,begin,ReferencePending,'INFO','[BI-A003] Switch to Object Mode before enabling Live.'
+BI-A003,src/better_item/distribution_preview.py,122,begin,ReferencePending,'INFO','[BI-A003] Select objects before enabling Live.'
+BI-A003,src/better_item/distribution_preview.py,136,_objects,ReferencePending,'INFO','[BI-A003] Return to Object Mode to continue Live editing.'
+BI-A003,src/better_item/distribution_preview.py,163,update,ReferencePending,'INFO','[BI-A003] Return to Object Mode to continue Live editing.'
+BI-A003,src/better_item/geometry_arrange.py,31,plan,ReferencePending,'INFO','[BI-A003] Switch to Object Mode to distribute whole objects.'
+BI-A003,src/better_item/geometry_arrange.py,39,plan,ReferencePending,'INFO','[BI-A003] Select objects to distribute.'
+BI-A003,src/better_item/geometry_arrange.py,47,plan,ReferencePending,'INFO','[BI-A003] Select at least one object other than the reference.'
+BI-A003,src/better_item/geometry_arrange.py,48,plan,ReferencePending,'INFO','[BI-A003] Select at least two objects for selection-bound distribution.'
+BI-A003,src/better_item/math_core.py,113,align_positions,BetterItemError,'WARNING','[BI-A003] Select at least two objects.'
+BI-A003,src/better_item/math_core.py,130,distribute_positions,BetterItemError,'WARNING','[BI-A003] Select at least %s objects.' % (3 if reference == 'SELECTION' else 2)
+BI-A004,src/better_item/arrange.py,127,plan,BetterItemError,'WARNING','[BI-A004] Choose a valid Location reference.'
+BI-A004,src/better_item/arrange.py,133,plan,ReferencePending,'INFO','[BI-A004] The key object must be active and selected.'
+BI-A004,src/better_item/arrange.py,171,align_orientations,BetterItemError,'WARNING','[BI-A004] Choose Match Reference or Set Rotation.'
+BI-A004,src/better_item/arrange.py,172,align_orientations,BetterItemError,'WARNING','[BI-A004] Choose an Euler order for Set Rotation.'
+BI-A004,src/better_item/arrange.py,174,align_orientations,BetterItemError,'WARNING','[BI-A004] Enter finite rotation angles.'
+BI-A004,src/better_item/geometry_arrange.py,38,plan,BetterItemError,'WARNING','[BI-A004] Choose a valid Location reference.'
+BI-A004,src/better_item/geometry_arrange.py,44,plan,ReferencePending,'INFO','[BI-A004] Select the active key object with the targets.'
+BI-A004,src/better_item/math_core.py,104,_inputs,BetterItemError,'WARNING','[BI-A004] Invalid alignment reference.'
+BI-A004,src/better_item/math_core.py,106,_inputs,BetterItemError,'WARNING','[BI-A004] The key object must be active and selected.'
+BI-A004,src/better_item/math_core.py,115,align_positions,BetterItemError,'WARNING','[BI-A004] Invalid alignment mode.'
+BI-A005,src/better_item/arrange.py,203,align_orientations,BetterItemError,'WARNING','[BI-A005] The orientation reference follows a selected object. Use an independent Frame or include the reference in the selection. The operation was rolled back.'
+BI-A006,src/better_item/arrange.py,208,align_orientations,BetterItemError,'WARNING',"'[BI-A006] ""%s"" did not retain its requested orientation and position. Check parenting and dependent transforms. The operation was rolled back.' % obj.name"
+BI-D001,src/better_item/arrange.py,56,_mm_per_unit,BetterItemError,'WARNING','[BI-D001] Scene Unit Scale must be finite and greater than zero.'
+BI-D001,src/better_item/arrange.py,75,_check_distribution,BetterItemError,'WARNING',"'[BI-D001] Spacing is %s mm. Enter a positive or negative spacing with magnitude at least %s mm; zero spacing is not allowed.' % (_mm(spacing * mm_per_unit), _mm(minimum_mm))"
+BI-D001,src/better_item/arrange.py,136,plan,BetterItemError,'WARNING','[BI-D001] Minimum Distance must be greater than zero.'
+BI-D001,src/better_item/arrange.py,74,_check_distribution,BetterItemError,'WARNING','[BI-D001] Origins mode needs a nonzero interval. Choose Geometry Bounds to pack touching objects with Spacing = 0.'
+BI-D001,src/better_item/arrange.py,139,plan,BetterItemError,'WARNING','[BI-D001] Enter a finite Spacing.'
+BI-D001,src/better_item/distribution.py,175,endpoint_plan,BetterItemError,'WARNING','[BI-D001] Solver minimum separation must be positive.'
+BI-D001,src/better_item/distribution.py,228,offset_plan,BetterItemError,'WARNING','[BI-D001] Enter a finite spacing.'
+BI-D001,src/better_item/distribution.py,236,offset_plan,BetterItemError,'WARNING','[BI-D001] Solver minimum separation must be positive.'
+BI-D001,src/better_item/geometry_arrange.py,33,plan,BetterItemError,'WARNING','[BI-D001] Enter a finite Spacing.'
+BI-D001,src/better_item/geometry_arrange.py,36,plan,BetterItemError,'WARNING','[BI-D001] Solver minimum separation must be greater than zero.'
+BI-D001,src/better_item/math_core.py,132,distribute_positions,BetterItemError,'WARNING','[BI-D001] Enter a finite spacing.'
+BI-D001,src/better_item/math_core.py,134,distribute_positions,BetterItemError,'WARNING','[BI-D001] Spacing must be nonzero for key/reference distribution.'
+BI-D002,src/better_item/arrange.py,79,_check_distribution,BetterItemError,'WARNING',"'[BI-D002] Distribution order is ambiguous: object coordinates overlap or are closer than %s mm on the selected reference axes.\n%s\nSeparate the listed objects on those axes by at least %s mm, then retry. Use a larger offset if Blender rounds it back to the same coordinate.' % (_mm(minimum_mm), '\n'.join(conflicts), _mm(minimum_mm))"
+BI-D002,src/better_item/distribution.py,112,_order,BetterItemError,'WARNING',"'[BI-D002] ""%s"" and ""%s"" do not define a unique distribution order. Separate their placement points along this direction, then retry.' % (left, right)"
+BI-D002,src/better_item/distribution.py,123,_endpoint_order,BetterItemError,'WARNING',"'[BI-D002] ""%s"" and ""%s"" have the same distance from Start, so Endpoint order is ambiguous. Move one placement point slightly farther from Start.' % (left, right)"
+BI-D002,src/better_item/geometry_arrange.py,52,plan,BetterItemError,'WARNING',"'[BI-D002] The starting positions do not define a unique order. Separate these origins by at least %s mm on the selected axes, then retry:\n%s' % (arrange._mm(minimum_mm), '\n'.join(conflicts))"
+BI-D003,src/better_item/arrange.py,113,distribution_verifier.verify,BetterItemError,'WARNING',"'[BI-D003] Blender coordinate precision would place these objects closer than %s mm after distribution:\n%s\nIncrease Spacing or reduce large coordinate/parent offsets. The operation was undone; no objects were repositioned.' % (_mm(minimum_mm), '\n'.join(conflicts))"
+BI-E001,src/better_item/distribution.py,87,point,BetterItemError,'WARNING','[BI-E001] Endpoint coordinates must be finite.'
+BI-E001,src/better_item/distribution.py,176,endpoint_plan,BetterItemError,'WARNING','[BI-E001] Start and End are coincident or too close. Separate the endpoint references.'
+BI-E001,src/better_item/distribution.py,182,endpoint_plan,BetterItemError,'WARNING','[BI-E001] Start and End cannot use the same fixed object.'
+BI-E001,src/better_item/distribution.py,194,endpoint_plan,BetterItemError,'WARNING','[BI-E001] The anchor placement points are coincident or reversed. Check the placement basis and endpoint references.'
+BI-E001,src/better_item/distribution.py,274,plan,BetterItemError,'WARNING','[BI-E001] Choose Offset or Endpoint.'
+BI-E001,src/better_item/distribution.py,172,endpoint_plan,BetterItemError,'WARNING','[BI-E001] Choose a valid Endpoint path.'
+BI-E002,src/better_item/distribution.py,156,endpoint_plan,ReferencePending,'INFO',"'[BI-E002] Geometry Bounds is an Offset placement. Choose Origins, Bounds Center or Center of Mass for Endpoint.'"
+BI-E003,src/better_item/distribution.py,218,endpoint_plan.verify,BetterItemError,'WARNING',"'[BI-E003] The placement point of ""%s"" cannot retain its segment position (residual %.9g; budget %.9g Blender units). Reduce large offsets.' % (obj.name, np.linalg.norm(current + new_offset - wanted), budget)"
+BI-E003,src/better_item/distribution.py,221,endpoint_plan.verify,BetterItemError,'WARNING','[BI-E003] Distinct Endpoint placement points collapse at native coordinate precision. Enlarge the interval or use a nearby working origin; no objects were repositioned.'
+BI-E003,src/better_item/distribution.py,263,offset_plan.verify,BetterItemError,'WARNING','[BI-E003] The requested point spacing cannot be retained at native coordinate precision. Reduce large source/object offsets or increase Spacing.'
+BI-F001,src/better_item/frames.py,42,_enter,BetterItemError,'WARNING',"'[BI-F001] Circular %s reference involving frame ""%s"".' % (component, frame.name)"
+BI-F001,src/better_item/references.py,200,location_kind,BetterItemError,'WARNING','[BI-F001] Circular Location reference.'
+BI-F001,src/better_item/references.py,215,orientation_source_object.follow,BetterItemError,'WARNING','[BI-F001] Circular Orientation reference.'
+BI-F002,src/better_item/distribution.py,86,point,ReferencePending,'INFO','[BI-F002] Choose an endpoint source object linked to this scene.'
+BI-F002,src/better_item/distribution.py,78,point,ReferencePending,'INFO','[BI-F002] Choose an object for this endpoint.'
+BI-F002,src/better_item/distribution.py,79,point,ReferencePending,'INFO','[BI-F002] Choose an endpoint object in this scene.'
+BI-F002,src/better_item/distribution.py,84,point,ReferencePending,'INFO','[BI-F002] Choose an endpoint Location source.'
+BI-F002,src/better_item/frames.py,36,find,ReferencePending,'INFO','[BI-F002] Choose a saved Frame in this scene.'
+BI-F002,src/better_item/frames.py,53,frame_origin,ReferencePending,'INFO','[BI-F002] Choose a child object for the parent Location source.'
+BI-F002,src/better_item/frames.py,57,frame_origin,ReferencePending,'INFO',"'[BI-F002] Frame ""%s"": choose an object for Location.' % frame.name"
+BI-F002,src/better_item/frames.py,72,frame_axes,ReferencePending,'INFO','[BI-F002] Choose a child object for the parent Orientation source.'
+BI-F002,src/better_item/frames.py,77,frame_axes,ReferencePending,'INFO',"'[BI-F002] Frame ""%s"": choose an object for Orientation.' % frame.name"
+BI-F002,src/better_item/native_refs.py,136,orientation,ReferencePending,'INFO','[BI-F002] Select an active object for %s orientation.' % name.title()
+BI-F002,src/better_item/native_refs.py,149,pivot,ReferencePending,'INFO','[BI-F002] Select an active object or mesh elements for this Location reference.'
+BI-F002,src/better_item/native_refs.py,167,pivot,ReferencePending,'INFO','[BI-F002] Select mesh elements to define this Location reference.'
+BI-F002,src/better_item/native_refs.py,141,orientation,ReferencePending,'INFO','[BI-F002] Select mesh elements for Normal orientation and wait for refresh.'
+BI-F002,src/better_item/orientation.py,65,basis,ReferencePending,'INFO','[BI-F002] Choose an object for Orientation.'
+BI-F002,src/better_item/references.py,182,origin,ReferencePending,'INFO','[BI-F002] Choose an object for Location.'
+BI-F003,src/better_item/native_refs.py,130,orientation,ReferencePending,'INFO','[BI-F003] Custom Orientation references were removed. Choose Object or Frame for Orientation; your object was not changed.'
+BI-F004,src/better_item/frames.py,60,frame_origin,BetterItemError,'WARNING','[BI-F004] Activate the frame scene to read its viewport pivot.'
+BI-F004,src/better_item/frames.py,81,frame_axes,BetterItemError,'WARNING','[BI-F004] Activate the frame scene to read its native orientation.'
+BI-F004,src/better_item/native_refs.py,71,view_context,BetterItemError,'WARNING','[BI-F004] Open a 3D Viewport for this reference operation.'
+BI-F004,src/better_item/native_refs.py,194,publish,BetterItemError,'WARNING','[BI-F004] Cannot create a native orientation in this context.'
+BI-F005,src/better_item/frames.py,149,_position_sample,BetterItemError,'WARNING','[BI-F005] Reference axes are singular.'
+BI-F005,src/better_item/native_refs.py,95,checked,BetterItemError,'WARNING',"'[BI-F005] Reference axes are singular or too ill-conditioned for float32 source data (for example, Gimbal lock). Apply a stable reference or change the source rotation.'"
+BI-F005,src/better_item/transform_view.py,144,projected_bounds,BetterItemError,'WARNING','[BI-F005] Dimensions requires finite nonzero directions.'
+BI-F006,src/better_item/native_refs.py,304,sync_error,BetterItemError,'WARNING','[BI-F006] ' + issue['message']
+BI-G001,src/better_item/geometry_arrange.py,12,_bounds,BetterItemError,'WARNING',"'[BI-G001] ""%s"" has no supported surface geometry. Use Origins distribution for this object.' % obj.name"
+BI-G002,src/better_item/geometry_arrange.py,115,plan.verify,BetterItemError,'WARNING',"'[BI-G002] The requested gap on %s cannot be retained for ""%s"" at the current coordinate precision. Check the requested gap against the coordinate resolution; increase the gap or work closer to the origin if necessary. The operation was rolled back.' % ('XYZ'[axis], name)"
+BI-G002,src/better_item/geometry_arrange.py,128,plan.verify,BetterItemError,'WARNING',"'[BI-G002] The gap before ""%s"" on %s cannot be distinguished at this coordinate precision. Increase the gap or use a nearby working origin; the requested positive gap must remain distinguishable. The operation was rolled back.' % (name, 'XYZ'[axis])"
+BI-G003,src/better_item/distribution.py,213,endpoint_plan.verify,BetterItemError,'WARNING',"'[BI-G003] Geometry of ""%s"" changes as it moves. Apply or disable position-dependent geometry before distributing.' % obj.name"
+BI-G003,src/better_item/distribution.py,256,offset_plan.verify,BetterItemError,'WARNING','[BI-G003] The placement geometry changes with Location. Disable the dependent geometry before distributing.'
+BI-G003,src/better_item/geometry_arrange.py,105,plan.verify,BetterItemError,'WARNING',"'[BI-G003] Geometry of ""%s"" changes when it moves. Apply or disable position-dependent modifiers before geometric distribution. The operation was rolled back.' % obj.name"
+BI-G003,src/better_item/geometry_arrange.py,122,plan.verify,BetterItemError,'WARNING','[BI-G003] Reference geometry changes when a target moves. Apply or disable its position-dependent modifiers before geometric distribution. The operation was rolled back.'
+BI-G004,src/better_item/distribution.py,251,offset_plan.verify,BetterItemError,'WARNING','[BI-G004] The reference follows a moved target. Use an independent anchor.'
+BI-G004,src/better_item/distribution.py,205,endpoint_plan.verify,BetterItemError,'WARNING','[BI-G004] An endpoint moves with a distributed target. Use an independent endpoint or detach that dependency.'
+BI-G004,src/better_item/geometry_arrange.py,92,plan.verify,BetterItemError,'WARNING',"'[BI-G004] Reference ""%s"" moves with a target through parenting or another dependency. Use an independent reference before distributing. The operation was rolled back.' % key.name"
+BI-G005,src/better_item/distribution.py,135,_verify_state,BetterItemError,'WARNING',"'[BI-G005] Rotation or Scale of ""%s"" changes with Location. Disable the dependent transform before distributing.' % obj.name"
+BI-G005,src/better_item/geometry_arrange.py,94,plan.verify,BetterItemError,'WARNING','[BI-G005] Rotation or Scale of the reference changes with the targets. Disable its dependent transform driver or use an independent reference. The operation was rolled back.'
+BI-G005,src/better_item/geometry_arrange.py,99,plan.verify,BetterItemError,'WARNING',"'[BI-G005] Rotation or Scale of ""%s"" changes when Location changes. Disable the dependent transform driver before geometric distribution. The operation was rolled back.' % obj.name"
+BI-L001,src/better_item/distribution_preview.py,50,captured_objects,ReferencePending,'INFO','[BI-L001] Enable Live for this scene first.'
+BI-L001,src/better_item/distribution_preview.py,118,begin,ReferencePending,'INFO','[BI-L001] Disable Live in the existing scene before enabling it here.'
+BI-L001,src/better_item/distribution_preview.py,119,begin,ReferencePending,'INFO','[BI-L001] Switch Method to choose explicit distribution references before enabling Live on this legacy file.'
+BI-L001,src/better_item/distribution_preview.py,120,begin,ReferencePending,'INFO',"'[BI-L001] Capture this selection-dependent Location into a Frame, then use that Frame for Live. One-shot distribution can still capture the selection at operation start.'"
+BI-L001,src/better_item/distribution_preview.py,232,finish,ReferencePending,'INFO','[BI-L001] There is no Live session in this scene.'
+BI-L001,src/better_item/distribution_preview.py,34,stop_on_frame_change,ReferencePending,'INFO','[BI-L001] Live ended after a frame change. Enable it again to edit this frame.'
+BI-L001,src/better_item/distribution_preview.py,55,captured_objects,ReferencePending,'INFO',"'[BI-L001] A captured target no longer exists. Disable Live, then capture the new targets.'"
+BI-L001,src/better_item/distribution_preview.py,66,reference_context,ReferencePending,'INFO','[BI-L001] The captured active object was removed. Disable Live and select new targets.'
+BI-L001,src/better_item/distribution_preview.py,141,_objects,ReferencePending,'INFO',"'[BI-L001] Captured target ""%s"" was transformed outside Live. Disable Live, then enable it again to capture the changed targets.' % obj.name"
+BI-L001,src/better_item/distribution_preview.py,53,captured_objects,ReferencePending,'INFO',"'[BI-L001] A captured target was removed. Disable Live, then capture the new targets.'"
+BI-M001,src/better_item/transform_view.py,314,_dimensions_modifier,BetterItemError,'WARNING',"'[BI-M001] Object ""%s"" has multiple Better Item Dimensions modifiers: %s. Resolve the stack before editing Reference Dimensions; no modifiers were changed.' % (obj.name, ', '.join((mod.name for mod in owned)))"
+BI-M002,src/better_item/transform_view.py,320,_dimensions_modifier,BetterItemError,'WARNING',"'[BI-M002] Move ""%s"" to the end of the modifier stack before editing Reference Dimensions. The addon will not reorder or duplicate it.' % modifier.name"
+BI-M003,src/better_item/transform_view.py,336,_inspect_affine_group.invalid,BetterItemError,'WARNING','[BI-M003] The Better Item Dimensions node group has missing ownership data or an incompatible graph. Restore the original group; no modifiers or geometry were changed.'
+BI-M003,src/better_item/transform_view.py,330,_validate_affine_group,BetterItemError,'WARNING','[BI-M003] The Better Item Dimensions node group has an incompatible structure. Restore the original group; no data was changed.'
+BI-M004,src/better_item/transform_view.py,322,_dimensions_modifier,BetterItemError,'WARNING','[BI-M004] Enable the Better Item Dimensions modifier before editing Dimensions.'
+BI-M005,src/better_item/transform_view.py,104,_coordinates,BetterItemError,'WARNING','[BI-M005] Dimensions cannot measure unrealized Geometry Nodes instances. Use Realize Instances upstream before measuring or editing Dimensions.'
+BI-P001,src/better_item/placement.py,63,_triangles,BetterItemError,'WARNING',"'[BI-P001] ""%s"" has no surface geometry for this placement basis. Choose Origins.' % obj.name"
+BI-P001,src/better_item/placement.py,70,_triangles,BetterItemError,'WARNING',"'[BI-P001] ""%s"" has no evaluated faces for a centroid.' % obj.name"
+BI-P001,src/better_item/placement.py,133,_offset,BetterItemError,'WARNING','[BI-P001] Choose a valid placement basis.'
+BI-P002,src/better_item/placement.py,135,_offset,BetterItemError,'WARNING',"'[BI-P002] ""%s"" has an unresolved geometric centroid.' % obj.name"
+BI-P002,src/better_item/placement.py,120,_offset,BetterItemError,'WARNING',"'[BI-P002] ""%s"" has no nonzero evaluated surface area.' % obj.name"
+BI-P003,src/better_item/placement.py,127,_offset,BetterItemError,'WARNING',"'[BI-P003] ""%s"" needs closed, consistently oriented geometry for Volume Centroid. Repair the mesh or choose Surface Centroid.' % obj.name"
+BI-P003,src/better_item/placement.py,131,_offset,BetterItemError,'WARNING',"'[BI-P003] ""%s"" has zero or unresolved signed volume. Repair the volume or choose another basis.' % obj.name"
+BI-T001,src/better_item/engine.py,14,editable,BetterItemError,'WARNING',"'[BI-T001] Object ""%s"" is not locally editable.' % obj.name"
+BI-T001,src/better_item/frames.py,360,BETTERITEM_OT_new_frame.execute,BetterItemError,'WARNING','[BI-T001] Select an editable target object.'
+BI-T001,src/better_item/frames.py,423,BETTERITEM_OT_frame.execute,BetterItemError,'WARNING','[BI-T001] Select an editable target object.'
+BI-T001,src/better_item/transform_view.py,184,values,BetterItemError,'WARNING','[BI-T001] The target object is not in the active scene.'
+BI-T002,src/better_item/engine.py,23,_driver_guard,BetterItemError,'WARNING',"'[BI-T002] Object ""%s"" has an active driver on %s. Edit or disable that driver before this operation.' % (obj.name, ', '.join(labels))"
+BI-T003,src/better_item/engine.py,158,apply_world_positions,BetterItemError,'WARNING',"'[BI-T003] Local %s is locked on ""%s"". Unlock it before moving; no objects were repositioned.' % ('XYZ'[axis], obj.name)"
+BI-T004,src/better_item/engine.py,149,apply_world_positions,BetterItemError,'WARNING',"'[BI-T004] Object ""%s"" has active constraints: %s. Disable them before aligning or distributing.' % (obj.name, ', '.join(constraints))"
+BI-T005,src/better_item/engine.py,81,_parent_matrix,BetterItemError,'WARNING',"'[BI-T005] Cannot resolve %s parenting for ""%s"": its own matrix_basis is singular. Restore nonzero child Scale before this operation.' % (obj.parent_type, obj.name)"
+BI-T005,src/better_item/engine.py,93,_target_location,BetterItemError,'WARNING',"'[BI-T005] Parent transform of ""%s"" is singular; restore nonzero parent Scale.' % obj.name"
+BI-T005,src/better_item/engine.py,131,_local_roundoff,BetterItemError,'WARNING',"'[BI-T005] Parent transform of ""%s"" is singular; restore nonzero parent Scale.' % obj.name"
+BI-T005,src/better_item/transform_view.py,389,set_dimensions,BetterItemError,'WARNING','[BI-T005] The object transform is singular; restore a nonzero Scale first.'
+BI-T006,src/better_item/engine.py,171,apply_world_positions,BetterItemError,'WARNING',"'[BI-T006] Position verification failed for ""%s"" (residual %.9g Blender units). The evaluated position exceeds the float32 rounding budget for its parent/inverse transform. Check evaluated overrides and coordinate precision. No objects were repositioned.' % (obj.name, error)"
+BI-T007,src/better_item/engine.py,164,apply_world_positions,BetterItemError,'WARNING',"'[BI-T007] Position of ""%s"" exceeds the numeric range. Reduce coordinate magnitudes.' % obj.name"
+BI-T007,src/better_item/transform_view.py,157,projected_bounds,BetterItemError,'WARNING','[BI-T007] Dimensions exceeds the numeric range of the evaluated geometry.'
+BI-T007,src/better_item/transform_view.py,390,set_dimensions,BetterItemError,'WARNING','[BI-T007] Dimensions exceeds the numeric range.'
+BI-T008,src/better_item/math_core.py,43,linked_values,BetterItemError,'WARNING',"'[BI-T008] Cannot define a reliable ratio from %s = %.9g: its magnitude is within the Location rounding uncertainty (%.9g Blender units). Unlink that axis and set a resolvable nonzero value before linking again.' % ('XYZ'[axis], before[axis], denominator_tolerance)"
+BI-T008,src/better_item/math_core.py,48,linked_values,BetterItemError,'WARNING','[BI-T008] Cannot define a ratio from %s = 0. Unlink that axis first.' % 'XYZ'[axis]
+BI-T009,src/better_item/frames.py,180,set_position.verify,BetterItemError,'WARNING',"'[BI-T009] The Location reference moved with the target, so the requested value would read back differently. Apply Location to an independent Frame first. The operation was rolled back.'"
+BI-T009,src/better_item/transform_view.py,258,set_rotation,BetterItemError,'WARNING',"'[BI-T009] The Orientation reference moved with the target, so the requested Rotation would read back differently. Apply the Orientation to an independent Frame, then edit relative to that frame. The operation was rolled back.'"
+BI-T010,src/better_item/transform_view.py,369,_dimension_targets,BetterItemError,'WARNING','[BI-T010] Dimensions cannot be negative.'
+BI-T010,src/better_item/transform_view.py,371,_dimension_targets,BetterItemError,'WARNING','[BI-T010] Dimensions cannot collapse a nonzero width to zero: that edit is singular and cannot be reopened through Dimensions. Use native Scale deliberately if collapse is intended.'
+BI-T010,src/better_item/transform_view.py,373,_dimension_targets,BetterItemError,'WARNING','[BI-T010] A zero Dimension requires restoring Scale or editing geometry first.'
+BI-T011,src/better_item/arrange.py,210,align_orientations,BetterItemError,'WARNING','[BI-T011] Orientation alignment changed Scale. The operation was rolled back.'
+BI-T011,src/better_item/transform_view.py,260,set_rotation,BetterItemError,'WARNING','[BI-T011] Rotation changed an evaluated Scale channel. Check dependent drivers; the operation was rolled back.'
+BI-T012,src/better_item/transform_view.py,429,set_dimensions,BetterItemError,'WARNING','[BI-T012] The evaluated geometry did not reach the requested Dimensions within the float32 relative error budget. Reduce geometric coordinate magnitudes or improve the reference conditioning. The edit was rolled back.'
+BI-V001,src/better_item/distribution.py,350,_inspect_spacing,ReferencePending,'INFO','Choose at least one Move axis to measure spacing.'
+BI-V001,src/better_item/engine.py,45,edit_scale_component,BetterItemError,'WARNING',"'Axis %s is locked on ""%s"". The linked edit was cancelled.' % ('XYZ'[i], obj.name)"
+BI-V001,src/better_item/engine.py,51,edit_scale_component,BetterItemError,'WARNING',"'Blender did not retain the requested Scale. Check drivers and constraints on ""%s"".' % obj.name"
+BI-V001,src/better_item/frames.py,227,apply_reference,BetterItemError,'WARNING','Choose a valid frame component to apply.'
+BI-V001,src/better_item/frames.py,412,BETTERITEM_OT_frame.execute,BetterItemError,'WARNING','Select a saved reference frame.'
+BI-V001,src/better_item/frames.py,401,BETTERITEM_OT_frame.execute,BetterItemError,'WARNING','Select an object to capture a reference.'
+BI-V001,src/better_item/math_core.py,23,vector3,BetterItemError,'WARNING',"'Enter three finite X, Y and Z values.'"
+BI-V001,src/better_item/math_core.py,36,linked_values,BetterItemError,'WARNING','Invalid transform axis or value.'
+BI-V001,src/better_item/native_refs.py,441,BETTERITEM_OT_native_frame.execute,BetterItemError,'WARNING','Choose a frame.'
+BI-V001,src/better_item/orientation.py,45,matrix_rotation,BetterItemError,'WARNING','A reflected or singular parent-inverse/bone matrix has no unambiguous rotation. Clear the parent inverse or use a manual reference.'
+BI-V001,src/better_item/orientation.py,67,basis,BetterItemError,'WARNING','Invalid orientation.'
+BI-V001,src/better_item/references.py,247,draw_component,BetterItemError,"settings.get('reference_capture_severity', 'WARNING')",settings['reference_capture_error']
+BI-V001,src/better_item/trace.py,44,_read_reference,BetterItemError,'WARNING','The object is not in the active scene.'
+BI-V001,src/better_item/transform_view.py,99,_coordinates,BetterItemError,'WARNING','Dimensions is unavailable for object type %s.' % obj.type
+BI-V001,src/better_item/transform_view.py,177,_validate_default_group,BetterItemError,'WARNING',"'Default / Local Rotation uses %s storage. Edit %s directly or select an Euler rotation mode.' % (obj.rotation_mode, field)"
+BI-V001,src/better_item/transform_view.py,179,_validate_default_group,BetterItemError,'WARNING','Dimensions is unavailable for object type %s.' % obj.type
+BI-V001,src/better_item/transform_view.py,208,set_rotation,BetterItemError,'WARNING','Disable active constraints before editing Rotation.'
+BI-V001,src/better_item/transform_view.py,212,set_rotation,BetterItemError,'WARNING','Unlock Rotation before editing reference-space rotation.'
+BI-V001,src/better_item/transform_view.py,379,set_dimensions,BetterItemError,'WARNING','Unlock Scale before editing Dimensions.'
+BI-V001,src/better_item/transform_view.py,407,set_dimensions,BetterItemError,'WARNING','Oblique reference-space dimension editing currently requires a Mesh object.'
+BI-V001,src/better_item/transform_view.py,491,_edit_default,BetterItemError,'WARNING','Unlock the affected default/local channel before editing it.'
+BI-V001,src/better_item/transform_view.py,108,_coordinates,BetterItemError,'WARNING',"'Dimensions is unavailable: ""%s"" has no evaluated surface geometry.' % obj.name"
+BI-V001,src/better_item/transform_view.py,111,_coordinates,BetterItemError,'WARNING','This object has no evaluated vertices to measure.'
+BI-V001,src/better_item/transform_view.py,132,_dimension_directions,BetterItemError,'WARNING',"'Dimensions requires finite, nonzero reference directions.'"
+BI-V001,src/better_item/transform_view.py,245,set_rotation,BetterItemError,'WARNING',"'Inherited parent scaling would deform ""%s"" during this rotation. Adjust the parent Scale or use a rigid parent transform, then retry.' % obj.name"
+BI-V001,src/better_item/transform_view.py,252,set_rotation,BetterItemError,'WARNING','The parent transform prevents this reference-space rotation.'
+BI-V001,src/better_item/transform_view.py,458,edit_component,BetterItemError,'WARNING','Scale shows native values and is read-only in reference modes.'
+BI-V001,src/better_item/transform_view.py,503,_edit_default,BetterItemError,'WARNING','Dimensions would change a locked Scale channel.'
+BI-V001,src/better_item/transform_view.py,506,_edit_default,BetterItemError,'WARNING','Blender did not retain the requested default/local channel values.'
+BI-V001,src/better_item/transform_view.py,242,set_rotation,BetterItemError,'WARNING','The parent transform is singular; restore nonzero parent Scale.'
+BI-V001,src/better_item/transform_view.py,263,set_rotation,BetterItemError,'WARNING','This rotation would change a locked native axis.'
+BI-V002,src/better_item/arrange.py,50,reference_frame,BetterItemError,'ERROR','[BI-V002] Cannot read the arrangement reference: %s' % exc
+BI-V002,src/better_item/distribution_preview.py,213,poll,BetterItemError,'ERROR','[BI-V002] Live update failed unexpectedly: %s. Disable Live before continuing.' % exc
+BI-V002,src/better_item/engine.py,57,edit_scale_component,BetterItemError,'ERROR','[BI-V002] ' + str(exc)
+BI-V002,src/better_item/engine.py,180,apply_world_positions,BetterItemError,'ERROR','[BI-V002] ' + str(exc)

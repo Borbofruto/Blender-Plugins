@@ -1,6 +1,6 @@
 # Better Item — política de releases e roteiro (v2)
 
-Versão 2, de 18/11/2026. Incorpora a revisão do GPT ao rascunho anterior. Parte da **1.7.10** (main). **Nada neste documento está aprovado** até Gabriel aprovar; até lá não se altera `CONTEXTO-ATUAL.md`, `MENSAGEM-NOVA-CONVERSA.md` nem o backlog. Os IDs (B1, U2, F4 etc.) vêm de `backlog-ideias.md` (nesta pasta). O escopo detalhado da 1.8 está em `escopo-1.8.md`.
+Versão 2, **aprovada em 18/11/2026**, a partir da 1.7.10 oficial. Implementação segue uma fase de preparação e uma segunda aprovação antes de alterar comportamento. IDs e encaixes estão em [backlog-ideias.md](backlog-ideias.md); o escopo da 1.8 está em [escopo-1.8.md](escopo-1.8.md).
 
 ## 1. Princípio
 
@@ -36,7 +36,7 @@ Preencher antes de implementar e aprovar com Gabriel:
 
 Do que o usuário vê (README, CHANGELOG, manual) fica de fora todo registro de processo: comparações entre versões de IA, conversas, briefings. Engenharia e evidências continuam em `docs/` e `tests/`, como já está em `CONTEXTO-ATUAL.md`.
 
-## 4. Roteiro proposto
+## 4. Roteiro aprovado
 
 | Release | Tema (frase) | Entra | Fica de fora | Antes de começar |
 | --- | --- | --- | --- | --- |
@@ -44,7 +44,7 @@ Do que o usuário vê (README, CHANGELOG, manual) fica de fora todo registro de 
 | **1.8** | **Quando o Better Item recusa ou não consegue medir, diz o motivo e deixa o usuário resolver.** Release de diagnóstico e recuperação, sem mudança estrutural de layout além do necessário para exibir ou acionar a solução. | Núcleo: U2, P2, F4. Condicional: U1 (tabela de casos), P3. B1 só como auditoria limitada (ver `escopo-1.8.md`). | F5, F1, F3 (ver abaixo). Layout (1.9). | Ver "Antes de implementar" em `escopo-1.8.md`. |
 | **1.9** | **Um painel mais fácil de ler.** | B2 (hierarquia, agrupamento, largura, rótulos). Ajustes do diagnóstico no painel (posição do texto, ícone repetido em cada linha). Largura de texto dinâmica. | Novos botões e ações (1.10). | Depende da 1.8. |
 | **1.10** | **Criar e escolher referências com menos passos.** | C1 (Frame inicializado de uma fonte em Object Mode). C2 (ações de acesso rápido). **Condicionado:** C3 (selecionar Frame pelo indicador), só entra se o escopo de viewport for definido antes. | Frame a partir de elementos de malha (2.0). Arrastar Frames, snapping próprio. | Depende da 1.9. |
-| **Sem número** | **Distribuição pelo contato real entre geometrias.** | U3 (quinto Placement, só Offset). | — | O número só existe depois que o protótipo de desempenho provar que a abordagem é viável (paralelogramo, peça em L; 1 mil, 10 mil e 100 mil triângulos). Decidir os três pontos abertos de U3. |
+| **Sem número** | **Distribuição pelo contato real entre geometrias.** | U3 (novo Placement, só Offset). | — | O número só existe depois que o protótipo de desempenho provar que a abordagem é viável (paralelogramo, peça em L; 1 mil, 10 mil e 100 mil triângulos). Decidir os três pontos abertos de U3. |
 | **2.0** | **Better Item passa a trabalhar em Edit Mode, com vértices.** | E2 (Frame a partir de vértices selecionados) e E1 apenas para vértices. | Arestas, faces e multiobjeto (2.1 em diante). | BMesh de escrita com Undo por gesto; decidir o que fazer com vértice compartilhado. |
 | **2.1+** | Multiobjeto e ilhas; depois arestas e faces. | Resto de E1. | — | Resultado da 2.0. |
 
@@ -57,20 +57,22 @@ Do que o usuário vê (README, CHANGELOG, manual) fica de fora todo registro de 
 
 **Sem release até decisão dela:** P4 (contrato de erro físico máximo). Animação, descoberta de Custom Orientations, refactor geral e estado de Transform na Scene continuam fora, como em `CONTEXTO-ATUAL.md`.
 
-## 5. Decisões que dependem de Gabriel
+## 5. Decisões e assuntos abertos
 
-1. Aprovar a ordem e os temas de 1.8, 1.9 e 1.10.
-2. Termo único para o mínimo (P2). Sugestão: manter **Minimum Separation**, que já é o nome da propriedade da Scene.
-3. F4 muda uma promessa do produto: a mensagem atual diz que o addon "não reordena nem duplica" o modificador. Com o botão, passa a valer "só quando o usuário clicar". Aprovar?
-4. U2 em Live e em Endpoint: ver as perguntas em `escopo-1.8.md`.
-5. U3: qual era a ideia da "aresta com comprimento e ângulo"? Não consta no histórico de que disponho.
+- 1.8, 1.9 e 1.10 seguem os temas da tabela aprovada.
+- P2: **Minimum Separation** em todo texto visível; identificadores internos preservados.
+- F4: reordenar/ligar só por clique explícito e após revalidar alvo, modificador e estado. Não repetir automaticamente a edição recusada.
+- U2: Live continua recusando BI-D002 sem diálogo; Endpoint não entra na 1.8.
+- U1 e P3 dependem dos resultados da preparação e de aprovação específica. Correções de B1 dependem da auditoria reproduzida e da lista aprovada.
+- U3 continua sem número até viabilidade e decisões geométricas. P4 continua sem release.
+- A proposta de transformar a 1.9 em comandos fora do painel permanece aberta para decisão **depois da 1.8**. Ela não altera o tema atual da 1.9 nem antecipa C2/C4.
 
-## 6. Instruções para quem for implementar (GPT)
+## 6. Execução
 
-- **Não alterar** `CONTEXTO-ATUAL.md`, `MENSAGEM-NOVA-CONVERSA.md` nem o backlog antes de Gabriel aprovar este roteiro. Depois da aprovação, atualizar o contexto e a mensagem de continuidade: hoje descrevem a 1.8 como quatro frentes juntas, que é o modelo que este documento substitui.
-- Trabalhar **uma release por vez**, começando pela 1.8, e só depois de Gabriel aprovar o escopo preenchido no modelo da seção 3.
+- Contexto, continuidade e backlog seguem este roteiro aprovado. A base anterior de quatro frentes juntas foi substituída pelas releases por tema.
+- Trabalhar **uma release por vez**, começando pela preparação da 1.8. A fase 1 não altera comportamento; a fase 2 só começa após aprovação dos resultados e da lista de correções.
 - Antes de qualquer item, perguntar: **isto cabe na frase do tema?** Se não, registrar com o encaixe sugerido e seguir.
 - Bug encontrado no meio do caminho: aplicar o critério da seção 2. Crítico vira patch separado; o resto fica no escopo ou espera.
-- Texto público de cada release: a frase do tema, três linhas e, se houver, as correções objetivas. Sem narrativa de processo.
+- Texto público de cada release: a frase do tema e três linhas. Sem narrativa de processo.
 - Preservar o que já vale: gate de release, evidência por SHA, recusa sem efeito parcial, limites declarados.
 
