@@ -6,3 +6,4 @@ src/better_draft/** text eol=lf
 tests/better_draft/**/*.py text eol=lf
 addons/better_draft.zip -text
 src/better_draft/wheels/*.whl binary
+tests/better_draft/results/** -text

@@ -1,0 +1,39 @@
+{
+ "blender": "4.2.0",
+ "study": "performance",
+ "rows": [
+  {
+   "case": "plate 400x300, 4 corners x 256 seg, 50 holes x 64 seg",
+   "vertices": 4228,
+   "seconds": [
+    3.562785399990389,
+    3.1805511999991722,
+    3.165240199989057
+   ],
+   "median": 3.1805511999991722,
+   "entities": {
+    "LINE": 4,
+    "ARC": 4,
+    "CIRCLE": 50
+   },
+   "distinct_radii": [
+    4.0,
+    10.0
+   ]
+  },
+  {
+   "case": "20 objects (10 plates with 32-seg hole, 10 bevelled 16-seg rectangles), single file",
+   "seconds": [
+    0.38502480000897776,
+    0.3886249999923166,
+    0.38024919999588747
+   ],
+   "median": 0.38502480000897776,
+   "entities": {
+    "LINE": 80,
+    "ARC": 40,
+    "CIRCLE": 10
+   }
+  }
+ ]
+}

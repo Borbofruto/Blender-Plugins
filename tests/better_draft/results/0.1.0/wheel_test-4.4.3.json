@@ -1,0 +1,23 @@
+{
+ "blender": "4.4.3",
+ "online_access": false,
+ "enabled": true,
+ "ezdxf_version": "1.4.5",
+ "ezdxf_file": "C:\\work\\better-draft-v0\\profiles\\e2e-4.4.3\\extensions\\.local\\lib\\python3.11\\site-packages\\ezdxf\\__init__.py",
+ "insunits": 4,
+ "entities": [
+  [
+   "LINE",
+   "OUTER"
+  ],
+  [
+   "ARC",
+   "OUTER"
+  ],
+  [
+   "CIRCLE",
+   "INNER"
+  ]
+ ],
+ "ok": true
+}

@@ -1,0 +1,93 @@
+{
+ "blender": "5.2.4 LTS",
+ "passed": 16,
+ "total": 16,
+ "results": [
+  {
+   "case": "registration",
+   "ok": true,
+   "menus": 1
+  },
+  {
+   "case": "rounded_rect_bevel_modifier",
+   "ok": true,
+   "files": [
+    "rounded_rect.dxf",
+    "rounded_rect.txt"
+   ],
+   "max_radius_error": 7.326120888606624e-06
+  },
+  {
+   "case": "plate_with_circular_hole",
+   "ok": true,
+   "radius": 8.000000000995247
+  },
+  {
+   "case": "hexagon_hole_circle_minimum",
+   "ok": true
+  },
+  {
+   "case": "scene_scale_and_transform",
+   "ok": true
+  },
+  {
+   "case": "flipped_normal_not_mirrored",
+   "ok": true
+  },
+  {
+   "case": "thick_plate_largest_face",
+   "ok": true
+  },
+  {
+   "case": "mark_arc_operator_and_undo",
+   "ok": true,
+   "undo": true,
+   "after_undo": [
+    "OBJECT",
+    0
+   ],
+   "redo_steps": null
+  },
+  {
+   "case": "mark_auto_does_not_create_attribute",
+   "ok": true
+  },
+  {
+   "case": "mark_lines_wins",
+   "ok": true
+  },
+  {
+   "case": "forced_arc_out_of_tolerance_refused",
+   "ok": true,
+   "message": "Error: Nothing exported. rr: 7 edges marked as arc near (20.000, 18.380) mm do not fit one circle within 0.01 mm (deviation 0.5670 mm). Mark them Automatic or Lines, raise Fit Tolerance, or correct the vertices.\n"
+  },
+  {
+   "case": "loose_parts",
+   "ok": true,
+   "message": "Error: Nothing exported. parts: has 2 separate parts (plus 1 below the minimum area). Set Loose Parts to Largest or All in the export options, or separate them (Mesh > Separate > By Loose Parts).\n"
+  },
+  {
+   "case": "identical_and_equal_area_parts",
+   "ok": true
+  },
+  {
+   "case": "refusals",
+   "ok": true,
+   "messages": {
+    "not_planar": "Error: Nothing exported. warped: the reference face (largest) is not flat within 0.01 mm. In Edit Mode make a flat face active, or raise Fit Tolerance.\n",
+    "cross": "Error: Nothing exported. bowtie: outline edges cross or overlap near (10.000, 5.000) mm. Fix the crossing edges.\n",
+    "touch": "Error: Nothing exported. touch: two outline loops touch at one vertex. Move or split that vertex so each outline vertex has two outline edges.\n",
+    "world_xy": "Error: Nothing exported. bevmod: the flat region is not parallel to the world XY plane. Use Plane: Local Part, or rotate the object.\n",
+    "no_faces": "Error: Nothing exported. wire: has no faces. Export reads the faces of a flat mesh.\n"
+   }
+  },
+  {
+   "case": "one_bad_object_blocks_all",
+   "ok": true
+  },
+  {
+   "case": "single_file_two_objects",
+   "ok": true
+  }
+ ]
+}

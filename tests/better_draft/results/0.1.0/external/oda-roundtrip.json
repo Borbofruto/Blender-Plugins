@@ -1,0 +1,411 @@
+{
+ "rows": [
+  {
+   "file": "facets_auto.dxf",
+   "dwg_bytes": 12448,
+   "err_files": {},
+   "entities_original": 16,
+   "entities_roundtrip": 16,
+   "other_entities_roundtrip": {},
+   "insunits": [
+    "4",
+    "4"
+   ],
+   "layers": [
+    [
+     "OUTER"
+    ],
+    [
+     "OUTER"
+    ]
+   ],
+   "problems": [],
+   "ok": true
+  },
+  {
+   "file": "facets_marked.dxf",
+   "dwg_bytes": 12448,
+   "err_files": {},
+   "entities_original": 14,
+   "entities_roundtrip": 14,
+   "other_entities_roundtrip": {},
+   "insunits": [
+    "4",
+    "4"
+   ],
+   "layers": [
+    [
+     "OUTER"
+    ],
+    [
+     "OUTER"
+    ]
+   ],
+   "problems": [],
+   "ok": true
+  },
+  {
+   "file": "hex_default.dxf",
+   "dwg_bytes": 12288,
+   "err_files": {},
+   "entities_original": 10,
+   "entities_roundtrip": 10,
+   "other_entities_roundtrip": {},
+   "insunits": [
+    "4",
+    "4"
+   ],
+   "layers": [
+    [
+     "INNER",
+     "OUTER"
+    ],
+    [
+     "INNER",
+     "OUTER"
+    ]
+   ],
+   "problems": [],
+   "ok": true
+  },
+  {
+   "file": "hex_min6.dxf",
+   "dwg_bytes": 12127,
+   "err_files": {},
+   "entities_original": 5,
+   "entities_roundtrip": 5,
+   "other_entities_roundtrip": {},
+   "insunits": [
+    "4",
+    "4"
+   ],
+   "layers": [
+    [
+     "INNER",
+     "OUTER"
+    ],
+    [
+     "INNER",
+     "OUTER"
+    ]
+   ],
+   "problems": [],
+   "ok": true
+  },
+  {
+   "file": "hole.dxf",
+   "dwg_bytes": 12127,
+   "err_files": {},
+   "entities_original": 5,
+   "entities_roundtrip": 5,
+   "other_entities_roundtrip": {},
+   "insunits": [
+    "4",
+    "4"
+   ],
+   "layers": [
+    [
+     "INNER",
+     "OUTER"
+    ],
+    [
+     "INNER",
+     "OUTER"
+    ]
+   ],
+   "problems": [],
+   "ok": true
+  },
+  {
+   "file": "lines_win.dxf",
+   "dwg_bytes": 12639,
+   "err_files": {},
+   "entities_original": 15,
+   "entities_roundtrip": 15,
+   "other_entities_roundtrip": {},
+   "insunits": [
+    "4",
+    "4"
+   ],
+   "layers": [
+    [
+     "OUTER"
+    ],
+    [
+     "OUTER"
+    ]
+   ],
+   "problems": [],
+   "ok": true
+  },
+  {
+   "file": "normal_down.dxf",
+   "dwg_bytes": 12127,
+   "err_files": {},
+   "entities_original": 6,
+   "entities_roundtrip": 6,
+   "other_entities_roundtrip": {},
+   "insunits": [
+    "4",
+    "4"
+   ],
+   "layers": [
+    [
+     "OUTER"
+    ],
+    [
+     "OUTER"
+    ]
+   ],
+   "problems": [],
+   "ok": true
+  },
+  {
+   "file": "normal_up.dxf",
+   "dwg_bytes": 12127,
+   "err_files": {},
+   "entities_original": 6,
+   "entities_roundtrip": 6,
+   "other_entities_roundtrip": {},
+   "insunits": [
+    "4",
+    "4"
+   ],
+   "layers": [
+    [
+     "OUTER"
+    ],
+    [
+     "OUTER"
+    ]
+   ],
+   "problems": [],
+   "ok": true
+  },
+  {
+   "file": "parts_all.dxf",
+   "dwg_bytes": 12160,
+   "err_files": {},
+   "entities_original": 8,
+   "entities_roundtrip": 8,
+   "other_entities_roundtrip": {},
+   "insunits": [
+    "4",
+    "4"
+   ],
+   "layers": [
+    [
+     "OUTER"
+    ],
+    [
+     "OUTER"
+    ]
+   ],
+   "problems": [],
+   "ok": true
+  },
+  {
+   "file": "parts_largest.dxf",
+   "dwg_bytes": 12064,
+   "err_files": {},
+   "entities_original": 4,
+   "entities_roundtrip": 4,
+   "other_entities_roundtrip": {},
+   "insunits": [
+    "4",
+    "4"
+   ],
+   "layers": [
+    [
+     "OUTER"
+    ],
+    [
+     "OUTER"
+    ]
+   ],
+   "problems": [],
+   "ok": true
+  },
+  {
+   "file": "per_object_bevmod.dxf",
+   "dwg_bytes": 12383,
+   "err_files": {},
+   "entities_original": 8,
+   "entities_roundtrip": 8,
+   "other_entities_roundtrip": {},
+   "insunits": [
+    "4",
+    "4"
+   ],
+   "layers": [
+    [
+     "OUTER"
+    ],
+    [
+     "OUTER"
+    ]
+   ],
+   "problems": [],
+   "ok": true
+  },
+  {
+   "file": "per_object_hole.dxf",
+   "dwg_bytes": 12127,
+   "err_files": {},
+   "entities_original": 5,
+   "entities_roundtrip": 5,
+   "other_entities_roundtrip": {},
+   "insunits": [
+    "4",
+    "4"
+   ],
+   "layers": [
+    [
+     "INNER",
+     "OUTER"
+    ],
+    [
+     "INNER",
+     "OUTER"
+    ]
+   ],
+   "problems": [],
+   "ok": true
+  },
+  {
+   "file": "rounded_rect.dxf",
+   "dwg_bytes": 12383,
+   "err_files": {},
+   "entities_original": 8,
+   "entities_roundtrip": 8,
+   "other_entities_roundtrip": {},
+   "insunits": [
+    "4",
+    "4"
+   ],
+   "layers": [
+    [
+     "OUTER"
+    ],
+    [
+     "OUTER"
+    ]
+   ],
+   "problems": [],
+   "ok": true
+  },
+  {
+   "file": "scaled_rotated.dxf",
+   "dwg_bytes": 12383,
+   "err_files": {},
+   "entities_original": 8,
+   "entities_roundtrip": 8,
+   "other_entities_roundtrip": {},
+   "insunits": [
+    "4",
+    "4"
+   ],
+   "layers": [
+    [
+     "OUTER"
+    ],
+    [
+     "OUTER"
+    ]
+   ],
+   "problems": [],
+   "ok": true
+  },
+  {
+   "file": "scene_mm.dxf",
+   "dwg_bytes": 12383,
+   "err_files": {},
+   "entities_original": 8,
+   "entities_roundtrip": 8,
+   "other_entities_roundtrip": {},
+   "insunits": [
+    "4",
+    "4"
+   ],
+   "layers": [
+    [
+     "OUTER"
+    ],
+    [
+     "OUTER"
+    ]
+   ],
+   "problems": [],
+   "ok": true
+  },
+  {
+   "file": "single.dxf",
+   "dwg_bytes": 12544,
+   "err_files": {},
+   "entities_original": 13,
+   "entities_roundtrip": 13,
+   "other_entities_roundtrip": {},
+   "insunits": [
+    "4",
+    "4"
+   ],
+   "layers": [
+    [
+     "INNER",
+     "OUTER"
+    ],
+    [
+     "INNER",
+     "OUTER"
+    ]
+   ],
+   "problems": [],
+   "ok": true
+  },
+  {
+   "file": "thick.dxf",
+   "dwg_bytes": 12383,
+   "err_files": {},
+   "entities_original": 8,
+   "entities_roundtrip": 8,
+   "other_entities_roundtrip": {},
+   "insunits": [
+    "4",
+    "4"
+   ],
+   "layers": [
+    [
+     "OUTER"
+    ],
+    [
+     "OUTER"
+    ]
+   ],
+   "problems": [],
+   "ok": true
+  },
+  {
+   "file": "twins_largest.dxf",
+   "dwg_bytes": 12127,
+   "err_files": {},
+   "entities_original": 3,
+   "entities_roundtrip": 3,
+   "other_entities_roundtrip": {},
+   "insunits": [
+    "4",
+    "4"
+   ],
+   "layers": [
+    [
+     "OUTER"
+    ],
+    [
+     "OUTER"
+    ]
+   ],
+   "problems": [],
+   "ok": true
+  }
+ ],
+ "passed": true
+}

@@ -1,0 +1,292 @@
+{
+ "blender": "4.2.0",
+ "study": "modifiers",
+ "rows": [
+  {
+   "modifier": "none",
+   "marked": true,
+   "marks_in_evaluated_mesh": {
+    "attribute": true,
+    "domain": "EDGE",
+    "type": "INT",
+    "values": {
+     "0": 13,
+     "1": 3
+    },
+    "edges": 16
+   },
+   "result": [
+    "FINISHED"
+   ],
+   "message": null,
+   "entities": {
+    "LINE": 13,
+    "ARC": 1,
+    "CIRCLE": 0
+   },
+   "radii": [
+    5.0
+   ]
+  },
+  {
+   "modifier": "none",
+   "marked": false,
+   "marks_in_evaluated_mesh": {
+    "attribute": false,
+    "edges": 16
+   },
+   "result": [
+    "FINISHED"
+   ],
+   "message": null,
+   "entities": {
+    "LINE": 16,
+    "ARC": 0,
+    "CIRCLE": 0
+   },
+   "radii": []
+  },
+  {
+   "modifier": "subdivision_catmull_1",
+   "marked": true,
+   "marks_in_evaluated_mesh": {
+    "attribute": true,
+    "domain": "EDGE",
+    "type": "INT",
+    "values": {
+     "0": 42,
+     "1": 6
+    },
+    "edges": 48
+   },
+   "result": [
+    "CANCELLED"
+   ],
+   "message": "Error: Nothing exported. rr: 7 edges marked as arc near (37.902, 17.047) mm do not fit one circle within 0.01 mm (deviation 0.4496 mm). Mark them Automatic or Lines, raise Fit Tolerance, or correct the vertices."
+  },
+  {
+   "modifier": "subdivision_catmull_1",
+   "marked": false,
+   "marks_in_evaluated_mesh": {
+    "attribute": false,
+    "edges": 48
+   },
+   "result": [
+    "FINISHED"
+   ],
+   "message": null,
+   "entities": {
+    "LINE": 32,
+    "ARC": 0,
+    "CIRCLE": 0
+   },
+   "radii": []
+  },
+  {
+   "modifier": "subdivision_simple_1",
+   "marked": true,
+   "marks_in_evaluated_mesh": {
+    "attribute": true,
+    "domain": "EDGE",
+    "type": "INT",
+    "values": {
+     "0": 42,
+     "1": 6
+    },
+    "edges": 48
+   },
+   "result": [
+    "CANCELLED"
+   ],
+   "message": "Error: Nothing exported. rr: 6 edges marked as arc near (38.110, 18.110) mm do not fit one circle within 0.01 mm (deviation 0.0978 mm). Mark them Automatic or Lines, raise Fit Tolerance, or correct the vertices."
+  },
+  {
+   "modifier": "subdivision_simple_1",
+   "marked": false,
+   "marks_in_evaluated_mesh": {
+    "attribute": false,
+    "edges": 48
+   },
+   "result": [
+    "FINISHED"
+   ],
+   "message": null,
+   "entities": {
+    "LINE": 16,
+    "ARC": 0,
+    "CIRCLE": 0
+   },
+   "radii": []
+  },
+  {
+   "modifier": "bevel_vertices_2seg",
+   "marked": true,
+   "marks_in_evaluated_mesh": {
+    "attribute": true,
+    "domain": "EDGE",
+    "type": "INT",
+    "values": {
+     "0": 39,
+     "1": 9
+    },
+    "edges": 48
+   },
+   "result": [
+    "CANCELLED"
+   ],
+   "message": "Error: Nothing exported. rr: 11 edges marked as arc near (37.927, 17.927) mm do not fit one circle within 0.01 mm (deviation 0.0536 mm). Mark them Automatic or Lines, raise Fit Tolerance, or correct the vertices."
+  },
+  {
+   "modifier": "bevel_vertices_2seg",
+   "marked": false,
+   "marks_in_evaluated_mesh": {
+    "attribute": false,
+    "edges": 48
+   },
+   "result": [
+    "FINISHED"
+   ],
+   "message": null,
+   "entities": {
+    "LINE": 48,
+    "ARC": 0,
+    "CIRCLE": 0
+   },
+   "radii": []
+  },
+  {
+   "modifier": "array_2_x",
+   "marked": true,
+   "marks_in_evaluated_mesh": {
+    "attribute": true,
+    "domain": "EDGE",
+    "type": "INT",
+    "values": {
+     "0": 26,
+     "1": 6
+    },
+    "edges": 32
+   },
+   "result": [
+    "FINISHED"
+   ],
+   "message": null,
+   "entities": {
+    "LINE": 26,
+    "ARC": 2,
+    "CIRCLE": 0
+   },
+   "radii": [
+    5.0,
+    5.0
+   ]
+  },
+  {
+   "modifier": "array_2_x",
+   "marked": false,
+   "marks_in_evaluated_mesh": {
+    "attribute": false,
+    "edges": 32
+   },
+   "result": [
+    "FINISHED"
+   ],
+   "message": null,
+   "entities": {
+    "LINE": 32,
+    "ARC": 0,
+    "CIRCLE": 0
+   },
+   "radii": []
+  },
+  {
+   "modifier": "mirror_x",
+   "marked": true,
+   "marks_in_evaluated_mesh": {
+    "attribute": true,
+    "domain": "EDGE",
+    "type": "INT",
+    "values": {
+     "0": 25,
+     "1": 6
+    },
+    "edges": 31
+   },
+   "result": [
+    "FINISHED"
+   ],
+   "message": null,
+   "entities": {
+    "LINE": 24,
+    "ARC": 2,
+    "CIRCLE": 0
+   },
+   "radii": [
+    5.0,
+    5.0
+   ]
+  },
+  {
+   "modifier": "mirror_x",
+   "marked": false,
+   "marks_in_evaluated_mesh": {
+    "attribute": false,
+    "edges": 31
+   },
+   "result": [
+    "FINISHED"
+   ],
+   "message": null,
+   "entities": {
+    "LINE": 30,
+    "ARC": 0,
+    "CIRCLE": 0
+   },
+   "radii": []
+  },
+  {
+   "modifier": "solidify_3mm",
+   "marked": true,
+   "marks_in_evaluated_mesh": {
+    "attribute": true,
+    "domain": "EDGE",
+    "type": "INT",
+    "values": {
+     "0": 42,
+     "1": 6
+    },
+    "edges": 48
+   },
+   "result": [
+    "FINISHED"
+   ],
+   "message": null,
+   "entities": {
+    "LINE": 13,
+    "ARC": 1,
+    "CIRCLE": 0
+   },
+   "radii": [
+    5.0
+   ]
+  },
+  {
+   "modifier": "solidify_3mm",
+   "marked": false,
+   "marks_in_evaluated_mesh": {
+    "attribute": false,
+    "edges": 48
+   },
+   "result": [
+    "FINISHED"
+   ],
+   "message": null,
+   "entities": {
+    "LINE": 16,
+    "ARC": 0,
+    "CIRCLE": 0
+   },
+   "radii": []
+  }
+ ]
+}
