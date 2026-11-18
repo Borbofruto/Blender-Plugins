@@ -86,7 +86,7 @@ Entrada: os 18 DXFs gerados pela bateria de ponta a ponta no 5.3.0 (`results/0.1
 | --- | --- | --- | --- |
 | ODA File Converter | 27.10.0.0; MSI do site da Open Design Alliance, assinatura válida; extraído com `msiexec /a` para uma pasta, sem instalação | DXF → DWG (ACAD2018, auditoria ligada) → DXF; a ida e volta é comparada com o original pelo leitor próprio (`external/dxf_raw.py`) | 18/18: nenhum arquivo `.err`; mesmas entidades (tolerância 1e-6 mm), mesmas camadas e `$INSUNITS = 4` |
 | LibreCAD | 2.2.1.6; instalador do GitHub do LibreCAD (sem assinatura digital); só extraído com 7-Zip | `LibreCAD.exe dxf2png -r 1000x700 -o <png> <dxf>` | 18/18 PNG gerados, código de saída 0; imagens abaixo |
-| FreeCAD | FREECAD_RESULT | FREECAD_HOW | FREECAD_OUTCOME |
+| FreeCAD | 1.1.4 (build 20260928); `.7z` portátil do GitHub do FreeCAD, SHA256 `4828741F…4D6D` conferido com o publicado; perfil isolado em `FREECAD_USER_HOME` (nada gravado em `%APPDATA%`) | `FreeCADCmd.exe external/freecad_check.py`: importador DXF em C++ (`Import.readDXF`), sem interface; cada aresta vira LINE, ARC ou CIRCLE e é comparada (tipo, quantidade, pontas, centro, raio, ângulos) com o leitor próprio e com a geometria conhecida de cada caso (tabela `KNOWN` no script) | 18/18: quantidades iguais e nenhuma diferença acima de 1e-4 mm (leitor) / 1e-3 mm (geometria conhecida) |
 
 Efeito colateral: o LibreCAD grava as preferências dele no registro do Windows e, na primeira execução, criou a chave `HKCU\Software\LibreCAD`. Não removi a chave.
 

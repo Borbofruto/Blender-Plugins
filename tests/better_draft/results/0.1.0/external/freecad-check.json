@@ -1,0 +1,251 @@
+{
+ "freecad": [
+  "1",
+  "1",
+  "4",
+  "20260928 (Git shallow)"
+ ],
+ "rows": [
+  {
+   "file": "facets_auto.dxf",
+   "freecad_counts": {
+    "LINE": 16
+   },
+   "raw_counts": {
+    "LINE": 16
+   },
+   "problems": [],
+   "known_geometry_problems": [],
+   "ok": true
+  },
+  {
+   "file": "facets_marked.dxf",
+   "freecad_counts": {
+    "ARC": 1,
+    "LINE": 13
+   },
+   "raw_counts": {
+    "ARC": 1,
+    "LINE": 13
+   },
+   "problems": [],
+   "known_geometry_problems": [],
+   "ok": true
+  },
+  {
+   "file": "hex_default.dxf",
+   "freecad_counts": {
+    "LINE": 10
+   },
+   "raw_counts": {
+    "LINE": 10
+   },
+   "problems": [],
+   "known_geometry_problems": [],
+   "ok": true
+  },
+  {
+   "file": "hex_min6.dxf",
+   "freecad_counts": {
+    "LINE": 4,
+    "CIRCLE": 1
+   },
+   "raw_counts": {
+    "LINE": 4,
+    "CIRCLE": 1
+   },
+   "problems": [],
+   "known_geometry_problems": [],
+   "ok": true
+  },
+  {
+   "file": "hole.dxf",
+   "freecad_counts": {
+    "LINE": 4,
+    "CIRCLE": 1
+   },
+   "raw_counts": {
+    "LINE": 4,
+    "CIRCLE": 1
+   },
+   "problems": [],
+   "known_geometry_problems": [],
+   "ok": true
+  },
+  {
+   "file": "lines_win.dxf",
+   "freecad_counts": {
+    "LINE": 12,
+    "ARC": 3
+   },
+   "raw_counts": {
+    "LINE": 12,
+    "ARC": 3
+   },
+   "problems": [],
+   "known_geometry_problems": [],
+   "ok": true
+  },
+  {
+   "file": "normal_down.dxf",
+   "freecad_counts": {
+    "LINE": 6
+   },
+   "raw_counts": {
+    "LINE": 6
+   },
+   "problems": [],
+   "known_geometry_problems": [],
+   "ok": true
+  },
+  {
+   "file": "normal_up.dxf",
+   "freecad_counts": {
+    "LINE": 6
+   },
+   "raw_counts": {
+    "LINE": 6
+   },
+   "problems": [],
+   "known_geometry_problems": [],
+   "ok": true
+  },
+  {
+   "file": "parts_all.dxf",
+   "freecad_counts": {
+    "LINE": 8
+   },
+   "raw_counts": {
+    "LINE": 8
+   },
+   "problems": [],
+   "known_geometry_problems": [],
+   "ok": true
+  },
+  {
+   "file": "parts_largest.dxf",
+   "freecad_counts": {
+    "LINE": 4
+   },
+   "raw_counts": {
+    "LINE": 4
+   },
+   "problems": [],
+   "known_geometry_problems": [],
+   "ok": true
+  },
+  {
+   "file": "per_object_bevmod.dxf",
+   "freecad_counts": {
+    "ARC": 4,
+    "LINE": 4
+   },
+   "raw_counts": {
+    "ARC": 4,
+    "LINE": 4
+   },
+   "problems": [],
+   "known_geometry_problems": [],
+   "ok": true
+  },
+  {
+   "file": "per_object_hole.dxf",
+   "freecad_counts": {
+    "LINE": 4,
+    "CIRCLE": 1
+   },
+   "raw_counts": {
+    "LINE": 4,
+    "CIRCLE": 1
+   },
+   "problems": [],
+   "known_geometry_problems": [],
+   "ok": true
+  },
+  {
+   "file": "rounded_rect.dxf",
+   "freecad_counts": {
+    "ARC": 4,
+    "LINE": 4
+   },
+   "raw_counts": {
+    "ARC": 4,
+    "LINE": 4
+   },
+   "problems": [],
+   "known_geometry_problems": [],
+   "ok": true
+  },
+  {
+   "file": "scaled_rotated.dxf",
+   "freecad_counts": {
+    "ARC": 4,
+    "LINE": 4
+   },
+   "raw_counts": {
+    "ARC": 4,
+    "LINE": 4
+   },
+   "problems": [],
+   "known_geometry_problems": [],
+   "ok": true
+  },
+  {
+   "file": "scene_mm.dxf",
+   "freecad_counts": {
+    "ARC": 4,
+    "LINE": 4
+   },
+   "raw_counts": {
+    "ARC": 4,
+    "LINE": 4
+   },
+   "problems": [],
+   "known_geometry_problems": [],
+   "ok": true
+  },
+  {
+   "file": "single.dxf",
+   "freecad_counts": {
+    "ARC": 4,
+    "LINE": 8,
+    "CIRCLE": 1
+   },
+   "raw_counts": {
+    "ARC": 4,
+    "LINE": 8,
+    "CIRCLE": 1
+   },
+   "problems": [],
+   "known_geometry_problems": [],
+   "ok": true
+  },
+  {
+   "file": "thick.dxf",
+   "freecad_counts": {
+    "ARC": 4,
+    "LINE": 4
+   },
+   "raw_counts": {
+    "ARC": 4,
+    "LINE": 4
+   },
+   "problems": [],
+   "known_geometry_problems": [],
+   "ok": true
+  },
+  {
+   "file": "twins_largest.dxf",
+   "freecad_counts": {
+    "LINE": 3
+   },
+   "raw_counts": {
+    "LINE": 3
+   },
+   "problems": [],
+   "known_geometry_problems": [],
+   "ok": true
+  }
+ ],
+ "passed": true
+}
