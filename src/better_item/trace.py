@@ -40,7 +40,7 @@ def _world_rotation(self):
 
 def _read_reference(context,obj,kind):
     from . import frames
-    if obj.name not in context.scene.objects:
+    if not engine.contains_object(context.scene,obj):
         raise BetterItemError('The object is not in the active scene.')
     return frames.object_origin(context,obj) if kind=='origin' else frames.relative_values(context,obj,'POSITION')
 

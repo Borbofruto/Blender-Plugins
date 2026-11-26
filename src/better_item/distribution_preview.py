@@ -50,7 +50,7 @@ def captured_objects(context):
     if not active(context.scene):raise ReferencePending('[BI-L001] Enable Live for this scene first.')
     try:
         for obj in _session['objects']:
-            if obj.name not in context.scene.objects:raise ReferencePending('[BI-L001] A captured target was removed. Disable Live, then capture the new targets.')
+            if not engine.contains_object(context.scene,obj):raise ReferencePending('[BI-L001] A captured target was removed. Disable Live, then capture the new targets.')
         return list(_session['objects'])
     except ReferenceError as exc:raise ReferencePending('[BI-L001] A captured target no longer exists. Disable Live, then capture the new targets.') from exc
 
@@ -62,7 +62,7 @@ def reference_context(context):
     objects=captured_objects(context)
     try:
         obj=_session['active']
-        if obj is not None and obj.name not in context.scene.objects:raise ReferenceError('Captured active object was removed')
+        if obj is not None and not engine.contains_object(context.scene,obj):raise ReferenceError('Captured active object was removed')
     except ReferenceError as exc:raise ReferencePending('[BI-L001] The captured active object was removed. Disable Live and select new targets.') from exc
     with context.temp_override(active_object=obj,object=obj,selected_objects=objects,selected_editable_objects=objects):
         _context_depth+=1
@@ -146,7 +146,7 @@ def _restore(values,context):
     valid=[]
     for obj in values:
         try:
-            if obj.name in context.scene.objects:valid.append(obj)
+            if engine.contains_object(context.scene,obj):valid.append(obj)
         except ReferenceError:continue
     for obj in sorted(valid,key=engine._depth):
         try:
@@ -169,14 +169,13 @@ def update(context):
             s=ctx.scene.better_item;key=(s.distribution_method,s.distribution_mode,s.endpoint_path,tuple(s.axes))
             kwargs={}
             if s.distribution_method=='ENDPOINT' and key in _session['orders']:
-                kwargs['order_override']=[obj.name for obj in _session['orders'][key] if obj not in anchors]
+                kwargs['order_override']=[obj for obj in _session['orders'][key] if obj not in anchors]
             try:_,info=distribution.apply(ctx,objects,**kwargs)
             except Exception:
                 _restore(previous,ctx)
                 raise
             if s.distribution_method=='ENDPOINT':
-                by_name={obj.name:obj for obj in objects}
-                _session['orders'][key]=[by_name[name] for name in info['order']]
+                _session['orders'][key]=list(info['order'])
             _session['latest']={obj:tuple(obj.location) for obj in objects}
             _session['linear']={obj:tuple(v for row in obj.matrix_world.to_3x3() for v in row) for obj in objects}
             _session.pop('unexpected_failure',None)

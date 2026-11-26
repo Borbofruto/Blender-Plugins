@@ -39,11 +39,12 @@ def plan(context,objects,origins,axes,reference='AUTO',*,spacing=0.,minimum_mm=.
     if not objects:raise ReferencePending('[BI-A003] Select objects to distribute.')
     basis,origin,source=arrange.reference_frame(context,reference)
     directions=basis/np.linalg.norm(basis,axis=0)
+    origins=engine.keyed_by_object(objects,origins)
     coordinates={name:directions.T @ (np.asarray(value)-origin) for name,value in origins.items()}
     key=context.active_object if reference=='KEY' else source
-    if reference=='KEY' and (key is None or key.name not in origins):raise ReferencePending('[BI-A004] Select the active key object with the targets.')
-    fixed=key.name if key is not None and key.name in origins else None
-    moving=[obj for obj in objects if obj.name!=fixed]
+    if reference=='KEY' and (key is None or key not in origins):raise ReferencePending('[BI-A004] Select the active key object with the targets.')
+    fixed=key if key is not None and key in origins else None
+    moving=[obj for obj in objects if obj!=fixed]
     if not moving:raise ReferencePending('[BI-A003] Select at least one object other than the reference.')
     if reference=='SELECTION' and len(moving)<2:raise ReferencePending('[BI-A003] Select at least two objects for selection-bound distribution.')
     mm_per_unit=arrange._mm_per_unit(context.scene)
@@ -51,8 +52,8 @@ def plan(context,objects,origins,axes,reference='AUTO',*,spacing=0.,minimum_mm=.
     if conflicts:
         raise BetterItemError('[BI-D002] The starting positions do not define a unique order. Separate these origins by at least %s mm on the selected axes, then retry:\n%s'%
             (arrange._mm(minimum_mm),'\n'.join(conflicts)))
-    local={obj.name:_bounds(obj,basis) for obj in moving}
-    linear={obj.name:np.asarray(obj.matrix_world.to_3x3(),dtype=np.float64).copy() for obj in moving}
+    local={obj:_bounds(obj,basis) for obj in moving}
+    linear={obj:np.asarray(obj.matrix_world.to_3x3(),dtype=np.float64).copy() for obj in moving}
     key_position=np.asarray(key.matrix_world.translation,dtype=np.float64).copy() if key else None
     key_linear=np.asarray(key.matrix_world.to_3x3(),dtype=np.float64).copy() if key else None
     key_bounds=_bounds(key,basis) if key and transform_view.has_surface_geometry(key) else (np.zeros(3),np.zeros(3))
@@ -62,14 +63,14 @@ def plan(context,objects,origins,axes,reference='AUTO',*,spacing=0.,minimum_mm=.
     for axis,enabled in enumerate(axes):
         if not enabled:continue
         if reference=='SELECTION':
-            order=sorted((obj.name for obj in moving),key=lambda name:(direction*coordinates[name][axis],name))
+            order=sorted((obj for obj in moving),key=lambda name:(direction*coordinates[name][axis],engine.object_sort_key(name)))
             boundary=(min(coordinates[name][axis]+local[name][0][axis] for name in order) if direction>0 else
                       max(coordinates[name][axis]+local[name][1][axis] for name in order))
         else:
             def priority(name):
                 delta=coordinates[name][axis]-key_coordinate[axis]
-                return (0 if delta*direction<0 else 1,abs(delta),name)
-            order=sorted((obj.name for obj in moving),key=priority)
+                return (0 if delta*direction<0 else 1,abs(delta),engine.object_sort_key(name))
+            order=sorted((obj for obj in moving),key=priority)
             boundary=key_coordinate[axis]+key_bounds[1 if direction>0 else 0][axis]+direction*gap
         for name in order:
             low,high=local[name]
@@ -79,13 +80,12 @@ def plan(context,objects,origins,axes,reference='AUTO',*,spacing=0.,minimum_mm=.
     on_line=not preserve_transverse and reference!='SELECTION' and context.scene.better_item.arrange_on_axis and sum(axes)==1
     targets={}
     for obj in objects:
-        if obj.name==fixed:targets[obj.name]=tuple(origins[obj.name]);continue
+        if obj==fixed:targets[obj]=tuple(origins[obj]);continue
         if on_line:
             axis=next(i for i,flag in enumerate(axes) if flag)
-            world=origin+directions[:,axis]*planned[obj.name][axis]
-        else:world=origin+np.linalg.solve(directions.T,planned[obj.name])
-        targets[obj.name]=tuple(world)
-    by_name={obj.name:obj for obj in objects}
+            world=origin+directions[:,axis]*planned[obj][axis]
+        else:world=origin+np.linalg.solve(directions.T,planned[obj])
+        targets[obj]=tuple(world)
     expected={name:(planned[name]+low,planned[name]+high) for name,(low,high) in local.items()}
     def verify(actual_objects):
         if key is not None and (not np.array_equal(np.asarray(key.matrix_world.translation),key_position) if fixed is None else not engine._position_matches(key,key_position)):
@@ -94,25 +94,25 @@ def plan(context,objects,origins,axes,reference='AUTO',*,spacing=0.,minimum_mm=.
             raise BetterItemError('[BI-G005] Rotation or Scale of the reference changes with the targets. Disable its dependent transform driver or use an independent reference. The operation was rolled back.')
         measured={}
         for obj in actual_objects:
-            if obj.name==fixed:continue
-            if not np.allclose(np.asarray(obj.matrix_world.to_3x3()),linear[obj.name],rtol=8*np.finfo(np.float32).eps,atol=0):
+            if obj==fixed:continue
+            if not np.allclose(np.asarray(obj.matrix_world.to_3x3()),linear[obj],rtol=8*np.finfo(np.float32).eps,atol=0):
                 raise BetterItemError('[BI-G005] Rotation or Scale of "%s" changes when Location changes. Disable the dependent transform driver before geometric distribution. The operation was rolled back.'%obj.name)
             low,high=_bounds(obj,basis)
-            old_low,old_high=local[obj.name]
+            old_low,old_high=local[obj]
             widths=old_high-old_low
             shape_tolerance=32*np.finfo(np.float32).eps*widths+64*np.finfo(np.float64).eps*np.maximum(np.abs(old_low),np.abs(old_high))
             if np.any(np.abs(low-old_low)>shape_tolerance) or np.any(np.abs(high-old_high)>shape_tolerance):
                 raise BetterItemError('[BI-G003] Geometry of "%s" changes when it moves. Apply or disable position-dependent modifiers before geometric distribution. The operation was rolled back.'%obj.name)
             center=directions.T @ (np.asarray(obj.matrix_world.translation)-origin)
-            measured[obj.name]=(center+low,center+high)
+            measured[obj]=(center+low,center+high)
         for axis,order in chains.items():
             for index,name in enumerate(order):
                 low,high=measured[name];want_low,want_high=expected[name]
                 width=local[name][1][axis]-local[name][0][axis]
                 tolerance=32*np.finfo(np.float32).eps*max(width,gap)+64*np.finfo(np.float64).eps*max(abs(want_low[axis]),abs(want_high[axis]))
-                native_budget=position_roundoff(by_name[name],targets[name],directions[:,axis])
+                native_budget=position_roundoff(name,targets[name],directions[:,axis])
                 if max(abs(low[axis]-want_low[axis]),abs(high[axis]-want_high[axis]))>tolerance+native_budget:
-                    raise BetterItemError('[BI-G002] The requested gap on %s cannot be retained for "%s" at the current coordinate precision. Check the requested gap against the coordinate resolution; increase the gap or work closer to the origin if necessary. The operation was rolled back.'%('XYZ'[axis],name))
+                    raise BetterItemError('[BI-G002] The requested gap on %s cannot be retained for "%s" at the current coordinate precision. Check the requested gap against the coordinate resolution; increase the gap or work closer to the origin if necessary. The operation was rolled back.'%('XYZ'[axis],engine.object_label(name)))
                 if index or reference!='SELECTION':
                     if index:previous=measured[order[index-1]]
                     else:
@@ -122,8 +122,8 @@ def plan(context,objects,origins,axes,reference='AUTO',*,spacing=0.,minimum_mm=.
                             raise BetterItemError('[BI-G003] Reference geometry changes when a target moves. Apply or disable its position-dependent modifiers before geometric distribution. The operation was rolled back.')
                         previous=tuple(actual_key_coordinate+value for value in actual_key_bounds)
                     actual_gap=low[axis]-previous[1][axis] if direction>0 else previous[0][axis]-high[axis]
-                    previous_budget=position_roundoff(by_name[order[index-1]],targets[order[index-1]],directions[:,axis]) if index else 0.
+                    previous_budget=position_roundoff(order[index-1],targets[order[index-1]],directions[:,axis]) if index else 0.
                     advance=direction*((low[axis]+high[axis])-(previous[0][axis]+previous[1][axis]))*.5
                     if (width+previous[1][axis]-previous[0][axis]+2*gap>0 and advance<=0) or (gap>0 and actual_gap<=0) or abs(actual_gap-gap)>tolerance*2+native_budget+previous_budget:
-                        raise BetterItemError('[BI-G002] The gap before "%s" on %s cannot be distinguished at this coordinate precision. Increase the gap or use a nearby working origin; the requested positive gap must remain distinguishable. The operation was rolled back.'%(name,'XYZ'[axis]))
+                        raise BetterItemError('[BI-G002] The gap before "%s" on %s cannot be distinguished at this coordinate precision. Increase the gap or use a nearby working origin; the requested positive gap must remain distinguishable. The operation was rolled back.'%(engine.object_label(name),'XYZ'[axis]))
     return targets,verify

@@ -179,7 +179,7 @@ def set_position(context, obj, values):
         if any(abs(a-b)>error+8*np.finfo(np.float64).eps*abs(b) for a,b,error in zip(actual,values,uncertainty)):
             raise BetterItemError('[BI-T009] The Location reference moved with the target, so the requested value would read back differently. Apply Location to an independent Frame first. The operation was rolled back.')
         sample.append((actual,uncertainty,signature))
-    result=engine.apply_world_positions([obj],{obj.name:tuple(target)},
+    result=engine.apply_world_positions([obj],{obj:tuple(target)},
         verify=verify)
     actual,uncertainty,signature=sample[0]
     obj.better_item['view_location_zero_signature']=signature
@@ -346,15 +346,25 @@ class BETTERITEM_OT_new_frame(bpy.types.Operator):
         ('ALIGN_AXES','Arrangement Orientation',''),('ALIGN_ORIGIN','Arrangement Origin','')],
         default='NONE',options={'HIDDEN','SKIP_SAVE'})
     target_name:bpy.props.StringProperty(options={'HIDDEN','SKIP_SAVE'})
+    target_uid:bpy.props.StringProperty(options={'HIDDEN','SKIP_SAVE'})
     frame_name:bpy.props.StringProperty(name='Name',default='Frame')
     def invoke(self,context,event):
-        self.target_name=context.active_object.name if context.active_object else ''
+        obj=context.active_object
+        self.target_name=obj.name if obj else ''
+        self.target_uid=str(obj.session_uid) if obj else ''
         if not self.properties.is_property_set('frame_name'):self.frame_name='Frame'
         return context.window_manager.invoke_props_dialog(self,width=300)
     def draw(self,context):self.layout.prop(self,'frame_name')
     def execute(self,context):
         settings=context.scene.better_item
-        obj=context.scene.objects.get(self.target_name) if self.target_name else context.active_object
+        # Operator-local identity survives rename/redo; it is not saved in the
+        # scene. Never fall back to a name when the captured object disappeared.
+        if self.target_uid:
+            obj=next((item for item in context.scene.objects if str(item.session_uid)==self.target_uid),None)
+        elif self.target_name:
+            matches=[item for item in context.scene.objects if item.name==self.target_name]
+            obj=matches[0] if len(matches)==1 else None
+        else:obj=context.active_object
         if self.target in {'AXES','ORIGIN','BOTH'} and (obj is None or not obj.is_editable):
             from . import diagnostics
             diagnostics.report(self,BetterItemError('[BI-T001] Select an editable target object.'))

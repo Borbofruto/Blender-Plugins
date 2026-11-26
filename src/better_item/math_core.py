@@ -124,8 +124,9 @@ def align_positions(origins,axes,reference,mode='MIN',key=None):
     return result
 
 
-def distribute_positions(origins,axes,reference,spacing=0,key=None):
+def distribute_positions(origins,axes,reference,spacing=0,key=None,*,sort_key=None):
     result=_inputs(origins,axes,reference,key)
+    sort_key=sort_key or (lambda item:item)
     if len(result)<(3 if reference=='SELECTION' else 2):
         raise BetterItemError('[BI-A003] Select at least %s objects.' % (3 if reference=='SELECTION' else 2))
     if not math.isfinite(spacing):
@@ -136,7 +137,7 @@ def distribute_positions(origins,axes,reference,spacing=0,key=None):
         if not enabled:
             continue
         if reference=='SELECTION':
-            order=sorted(origins,key=lambda name:(origins[name][axis],name))
+            order=sorted(origins,key=lambda name:(origins[name][axis],sort_key(name)))
             low,high=origins[order[0]][axis],origins[order[-1]][axis]
             step=(high-low)/(len(order)-1)
             for rank,name in enumerate(order):
@@ -146,7 +147,7 @@ def distribute_positions(origins,axes,reference,spacing=0,key=None):
             def priority(name):
                 delta=origins[name][axis]-anchor
                 # Opposite half-space first, then distance within each half.
-                return (0 if delta*spacing<0 else 1,abs(delta),name)
+                return (0 if delta*spacing<0 else 1,abs(delta),sort_key(name))
             order=sorted((name for name in origins if name!=key),key=priority)
             for rank,name in enumerate(order,1):
                 result[name][axis]=anchor+rank*spacing

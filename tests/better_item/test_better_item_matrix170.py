@@ -53,7 +53,7 @@ for basis,path,anchor_mode,unit,sign,parented in itertools.product([b for b in b
     except Exception:
         print('FAILED CASE',basis,path,anchor_mode,unit,sign,parented,flush=True);raise
     a=np.asarray(info['start']);b=np.asarray(info['end']);u=b-a;u/=np.linalg.norm(u)
-    ordered=[bpy.data.objects[name] for name in info['order']]
+    ordered=list(info['order'])
     if basis=='GEOMETRY':
         intervals=[]
         for obj in ordered:

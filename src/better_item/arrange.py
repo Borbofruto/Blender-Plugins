@@ -4,6 +4,7 @@ import math
 import numpy as np
 from mathutils import Vector
 from .math_core import BetterItemError,ReferencePending,align_positions,distribute_positions
+from . import engine
 
 _last_error=(None,'')
 
@@ -87,7 +88,7 @@ def _coordinate_conflicts(coordinates,axes,minimum):
     conflicts=[]
     for axis,enabled in enumerate(axes):
         if not enabled:continue
-        ordered=sorted(coordinates,key=lambda name:(coordinates[name][axis],name))
+        ordered=sorted(coordinates,key=lambda name:(coordinates[name][axis],engine.object_sort_key(name)))
         cluster=[]
         for left,right in zip(ordered,ordered[1:]):
             gap=coordinates[right][axis]-coordinates[left][axis]
@@ -95,9 +96,9 @@ def _coordinate_conflicts(coordinates,axes,minimum):
                 if not cluster:cluster=[left]
                 cluster.append(right)
             elif cluster:
-                conflicts.append('%s: %s' % ('XYZ'[axis],', '.join('"%s"'%name for name in cluster)))
+                conflicts.append('%s: %s' % ('XYZ'[axis],', '.join('"%s"'%engine.object_label(name) for name in cluster)))
                 cluster=[]
-        if cluster:conflicts.append('%s: %s' % ('XYZ'[axis],', '.join('"%s"'%name for name in cluster)))
+        if cluster:conflicts.append('%s: %s' % ('XYZ'[axis],', '.join('"%s"'%engine.object_label(name) for name in cluster)))
     return conflicts
 
 
@@ -107,7 +108,7 @@ def distribution_verifier(context,axes,reference,minimum_mm):
     basis,origin,_=reference_frame(context,reference)
     minimum=minimum_mm/_mm_per_unit(context.scene)
     def verify(objects):
-        coordinates={obj.name:np.linalg.solve(basis,np.asarray(obj.matrix_world.translation)-origin) for obj in objects}
+        coordinates={obj:np.linalg.solve(basis,np.asarray(obj.matrix_world.translation)-origin) for obj in objects}
         conflicts=_coordinate_conflicts(coordinates,axes,minimum)
         if conflicts:
             raise BetterItemError('[BI-D003] Blender coordinate precision would place these objects closer than '
@@ -126,9 +127,10 @@ def plan(context,objects,origins,axes,reference,*,mode='CENTER',spacing=None,min
     if reference not in {'SELECTION','KEY','REFERENCE'}:
         raise BetterItemError('[BI-A004] Choose a valid Location reference.')
     basis,origin,source=reference_frame(context,reference)
+    origins=engine.keyed_by_object(objects,origins)
     try:coordinates={name:tuple(np.linalg.solve(basis,np.asarray(value,dtype=np.float64)-origin)) for name,value in origins.items()}
     except np.linalg.LinAlgError as exc:raise BetterItemError('[BI-A002] Reference axes are singular.') from exc
-    active=context.active_object.name if context.active_object else None
+    active=context.active_object
     if reference=='KEY' and active not in origins:
         raise ReferencePending('[BI-A004] The key object must be active and selected.')
     mm_per_unit=_mm_per_unit(context.scene)
@@ -138,15 +140,15 @@ def plan(context,objects,origins,axes,reference,*,mode='CENTER',spacing=None,min
     if distributing:
         if not math.isfinite(spacing):raise BetterItemError('[BI-D001] Enter a finite Spacing.')
         _check_distribution(coordinates,axes,reference,spacing,minimum,mm_per_unit)
-    fixed=source.name if reference=='REFERENCE' and source is not None and source.name in origins else None
+    fixed=source if reference=='REFERENCE' and source is not None and source in origins else None
     working={name:value for name,value in coordinates.items() if name!=fixed}
-    synthetic='\0Better Item Reference'
+    synthetic=object()
     if reference=='REFERENCE':
         if not working:raise BetterItemError('[BI-A003] Select at least one object other than the reference source.')
         working[synthetic]=(0.,0.,0.)
         planner_reference,key='KEY',synthetic
     else:planner_reference,key=reference,active
-    if distributing:result=distribute_positions(working,axes,planner_reference,spacing,key)
+    if distributing:result=distribute_positions(working,axes,planner_reference,spacing,key,sort_key=engine.object_sort_key)
     else:result=align_positions(working,axes,planner_reference,mode,key)
     result.pop(synthetic,None)
     if reference=='REFERENCE' and distributing and context.scene.better_item.arrange_on_axis and sum(axes)==1:
@@ -179,7 +181,7 @@ def align_orientations(context,objects,*,mode='MATCH',axes=(True,True,True),angl
     if key is not None and len(objects)==1 and objects[0]==key:
         raise ReferencePending('[BI-A003] Select at least one object other than the orientation reference.')
     previous={obj:transform_view._snapshot(obj) for obj in objects}
-    positions={obj.name:tuple(obj.matrix_world.translation) for obj in objects}
+    positions={obj:tuple(obj.matrix_world.translation) for obj in objects}
     requested={}
     for obj in objects:
         if obj!=key:engine.editable(obj)
@@ -197,14 +199,14 @@ def align_orientations(context,objects,*,mode='MATCH',axes=(True,True,True),angl
             actual=orientation.rotation(obj)
             if max(abs(actual[i][j]-target_world[i][j]) for i in range(3) for j in range(3))>5e-7:
                 transform_view.set_rotation(context,obj,requested[obj],reference_axes=reference,rotation_order=order)
-            engine.apply_world_positions([obj],{obj.name:positions[obj.name]})
+            engine.apply_world_positions([obj],{obj:positions[obj]})
         context.view_layer.update()
         if key_before is not None and not np.array_equal(np.asarray(key.matrix_world),np.asarray(key_before)):
             raise BetterItemError('[BI-A005] The orientation reference follows a selected object. Use an independent Frame or include the reference in the selection. The operation was rolled back.')
         for obj in objects:
             expected=reference @ Euler(requested[obj],order).to_matrix()
             actual=orientation.rotation(obj)
-            if max(abs(actual[i][j]-expected[i][j]) for i in range(3) for j in range(3))>2e-4 or not engine._position_matches(obj,positions[obj.name]):
+            if max(abs(actual[i][j]-expected[i][j]) for i in range(3) for j in range(3))>2e-4 or not engine._position_matches(obj,positions[obj]):
                 raise BetterItemError('[BI-A006] "%s" did not retain its requested orientation and position. Check parenting and dependent transforms. The operation was rolled back.'%obj.name)
             if tuple(obj.scale)!=previous[obj]['scale']:
                 raise BetterItemError('[BI-T011] Orientation alignment changed Scale. The operation was rolled back.')

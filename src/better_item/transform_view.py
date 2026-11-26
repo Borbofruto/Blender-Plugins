@@ -180,7 +180,7 @@ def _validate_default_group(obj,group):
 
 
 def values(context, obj, group):
-    if obj.name not in context.scene.objects:
+    if not engine.contains_object(context.scene,obj):
         raise BetterItemError('[BI-T001] The target object is not in the active scene.')
     if obj.better_item.transform_space=='DEFAULT':
         _validate_default_group(obj,group)
@@ -245,7 +245,7 @@ def set_rotation(context, obj, values,*,reference_axes=None,rotation_order=None)
             raise BetterItemError('Inherited parent scaling would deform "%s" during this rotation. Adjust the parent Scale or use a rigid parent transform, then retry.'%obj.name)
         target=np.asarray(center,dtype=np.float64)+np.asarray(world_delta,dtype=np.float64) @ (
             np.asarray(world.translation,dtype=np.float64)-np.asarray(center,dtype=np.float64))
-        engine.apply_world_positions([obj],{obj.name:tuple(target)})
+        engine.apply_world_positions([obj],{obj:tuple(target)})
         actual = orientation.rotation(obj).to_quaternion()
         error = actual.rotation_difference(desired.to_quaternion()).angle
         if min(abs(error),abs(math.tau-error)) > 2e-4:

@@ -57,10 +57,40 @@ def edit_scale_component(obj,axis,value):
         raise BetterItemError('[BI-V002] '+str(exc),severity='ERROR') from exc
 
 
+def object_label(obj):
+    """A diagnostic label; never use it as object identity."""
+    return obj.name+' ['+obj.library.filepath+']' if obj.library else obj.name
+
+
+def object_sort_key(obj):
+    # Preserve name ordering, including deterministic ties across libraries.
+    return (obj.name,obj.library.filepath if obj.library else '',obj.as_pointer())
+
+
+def contains_object(scene,obj):
+    """A homonym in the scene is not proof that this object is still linked."""
+    if obj is None:return False
+    try:return scene.objects.get(obj.name)==obj or any(item==obj for item in scene.objects)
+    except ReferenceError:return False
+
+
+def keyed_by_object(objects,values):
+    """Normalize legacy unique-name inputs at the Blender adapter boundary.
+
+    Runtime planners always produce object keys. A name map with homonyms has
+    already lost identity and must be refused before any transform is written.
+    """
+    if all(obj in values for obj in objects):return values
+    names=[obj.name for obj in objects]
+    if len(set(names))!=len(names):
+        raise BetterItemError('[BI-A004] Ambiguous object names in position data. Supply object-keyed data; no objects were repositioned.')
+    return {obj:values[obj] if obj in values else values[obj.name] for obj in objects}
+
+
 def selection_origins(context):
     bpy.context.view_layer.update()
     objects=list(context.selected_objects)
-    return objects,{obj.name:tuple(obj.matrix_world.translation) for obj in objects}
+    return objects,{obj:tuple(obj.matrix_world.translation) for obj in objects}
 
 
 def _depth(obj):
@@ -135,13 +165,14 @@ def _local_roundoff(obj,target):
 
 def apply_world_positions(objects,targets,*,verify=None):
     """Preserve native rotation/scale; either all planned origins move or none."""
+    targets=keyed_by_object(objects,targets)
     previous={obj:obj.location.copy() for obj in objects}
     changed=[]
     accepted_roundoff={}
     try:
         for obj in sorted(objects,key=lambda item:(_depth(item),item.name)):
             bpy.context.view_layer.update()
-            if tuple(targets[obj.name])==tuple(obj.matrix_world.translation):
+            if tuple(targets[obj])==tuple(obj.matrix_world.translation):
                 continue
             editable(obj)
             constraints=[constraint.name for constraint in obj.constraints if not constraint.mute and constraint.influence!=0]
@@ -149,8 +180,8 @@ def apply_world_positions(objects,targets,*,verify=None):
                 raise BetterItemError('[BI-T004] Object "%s" has active constraints: %s. '
                     'Disable them before aligning or distributing.' % (obj.name,', '.join(constraints)))
             _driver_guard(obj,{'location','delta_location'})
-            desired=_target_location(obj,targets[obj.name])
-            roundoff=_local_roundoff(obj,targets[obj.name])
+            desired=_target_location(obj,targets[obj])
+            roundoff=_local_roundoff(obj,targets[obj])
             locked_roundoff=np.zeros(3,dtype=np.float64)
             for axis,locked in enumerate(obj.lock_location):
                 if locked:
@@ -166,8 +197,8 @@ def apply_world_positions(objects,targets,*,verify=None):
             obj.location=desired
         bpy.context.view_layer.update()
         for obj in objects:
-            if not _position_matches(obj,targets[obj.name],accepted_roundoff.get(obj)):
-                error=max(abs(a-t) for a,t in zip(obj.matrix_world.translation,targets[obj.name]))
+            if not _position_matches(obj,targets[obj],accepted_roundoff.get(obj)):
+                error=max(abs(a-t) for a,t in zip(obj.matrix_world.translation,targets[obj]))
                 raise BetterItemError('[BI-T006] Position verification failed for "%s" (residual %.9g Blender units). '
                     'The evaluated position exceeds the float32 rounding budget for its parent/inverse transform. Check evaluated overrides and coordinate precision. No objects were repositioned.' % (obj.name,error))
         if verify is not None:verify(objects)

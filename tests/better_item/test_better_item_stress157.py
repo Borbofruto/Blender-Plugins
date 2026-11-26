@@ -233,7 +233,7 @@ def group9():
         select([parent,child,free],free);ctx.view_layer.update();selected,origins=engine.selection_origins(ctx)
         targets=arrange.plan(ctx,selected,origins,(True,False,False),'KEY',spacing=1 if action=='DISTRIBUTE' else None)
         engine.apply_world_positions(selected,targets)
-        for item in selected:near(item.matrix_world.translation,targets[item.name])
+        for item in selected:near(item.matrix_world.translation,targets[item])
     return {'coordinate_unit_cases':cases,'expected_precision_rejections':rejections,'ambiguity_and_collapse':True,'selected_parent_child_operations':2}
 def group10():
     reset();o=cube();checks=0
