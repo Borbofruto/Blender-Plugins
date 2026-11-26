@@ -1,0 +1,30 @@
+Info: 2 object(s) aligned.
+Info: 2 object(s) aligned.
+Info: 2 object(s) aligned.
+Info: 2 object(s) aligned.
+Warning: Object "Cube" is not locally editable.
+Warning: Object "Cube" is not locally editable.
+Info: 2 object(s) aligned.
+Info: 2 object(s) aligned.
+Info: 3 object(s) distributed.
+Info: 3 object(s) distributed.
+Info: 3 object(s) distributed.
+Info: 3 object(s) distributed.
+Info: 3 object(s) distributed.
+Info: 3 object(s) distributed.
+Info: 2 object(s) oriented.
+Info: 2 object(s) oriented.
+align_selection_min          control=ok   homonym=same  control:FINISHED None | homonym:FINISHED None
+align_selection_min_linked_last control=ok   homonym=same  control:FINISHED None | homonym:FINISHED None
+align_selection_max_refused  control=ok   homonym=same  control:CANCELLED BI-T001 | homonym:CANCELLED BI-T001
+align_to_linked_object       control=ok   homonym=same  control:FINISHED None | homonym:FINISHED None
+offset_origins               control=ok   homonym=same  control:FINISHED None | homonym:FINISHED None
+offset_geometry              control=ok   homonym=same  control:FINISHED None | homonym:FINISHED None
+endpoint_origins             control=ok   homonym=same  control:FINISHED None | homonym:FINISHED None
+orientation_match            control=ok   homonym=same  control:FINISHED None | homonym:FINISHED None
+live_endpoint                control=ok   homonym=same  control:UPDATED None | homonym:UPDATED None
+live_target_unlinked         control=ok   homonym=same  control:ERROR BI-L001 | homonym:ERROR BI-L001
+BETTER_ITEM_IDENTITY1711_OK
+Blender 4.4.3 (hash 802179c51ccc built 2025-04-29 15:39:58)
+
+Blender quit

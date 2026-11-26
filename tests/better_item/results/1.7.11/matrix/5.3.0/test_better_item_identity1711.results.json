@@ -1,0 +1,1288 @@
+{
+  "passed": true,
+  "blender": "5.3.0",
+  "module": "C:\\work\\better-item-matrix-1.7.11\\results\\5.3.0\\better_item\\__init__.py",
+  "failed": [],
+  "cases": [
+    {
+      "case": "align_selection_min",
+      "control_ok": true,
+      "control_problems": [],
+      "homonym_matches_control": true,
+      "control": {
+        "result": {
+          "status": "FINISHED",
+          "code": null,
+          "message": ""
+        },
+        "after": {
+          "linked": {
+            "position": [
+              0.0,
+              20.0,
+              30.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          },
+          "local": {
+            "position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          },
+          "other": {
+            "position": [
+              0.0,
+              1.0,
+              1.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          },
+          "third": {
+            "position": [
+              12.0,
+              -1.0,
+              2.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          }
+        }
+      },
+      "homonym": {
+        "result": {
+          "status": "FINISHED",
+          "code": null,
+          "message": ""
+        },
+        "after": {
+          "linked": {
+            "position": [
+              0.0,
+              20.0,
+              30.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          },
+          "local": {
+            "position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          },
+          "other": {
+            "position": [
+              0.0,
+              1.0,
+              1.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          },
+          "third": {
+            "position": [
+              12.0,
+              -1.0,
+              2.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          }
+        }
+      }
+    },
+    {
+      "case": "align_selection_min_linked_last",
+      "control_ok": true,
+      "control_problems": [],
+      "homonym_matches_control": true,
+      "control": {
+        "result": {
+          "status": "FINISHED",
+          "code": null,
+          "message": ""
+        },
+        "after": {
+          "local": {
+            "position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          },
+          "other": {
+            "position": [
+              0.0,
+              1.0,
+              1.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          },
+          "third": {
+            "position": [
+              12.0,
+              -1.0,
+              2.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          },
+          "linked": {
+            "position": [
+              0.0,
+              20.0,
+              30.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          }
+        }
+      },
+      "homonym": {
+        "result": {
+          "status": "FINISHED",
+          "code": null,
+          "message": ""
+        },
+        "after": {
+          "local": {
+            "position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          },
+          "other": {
+            "position": [
+              0.0,
+              1.0,
+              1.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          },
+          "third": {
+            "position": [
+              12.0,
+              -1.0,
+              2.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          },
+          "linked": {
+            "position": [
+              0.0,
+              20.0,
+              30.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          }
+        }
+      }
+    },
+    {
+      "case": "align_selection_max_refused",
+      "control_ok": true,
+      "control_problems": [],
+      "homonym_matches_control": true,
+      "control": {
+        "result": {
+          "status": "CANCELLED",
+          "code": "BI-T001",
+          "message": "[BI-T001] Object \"Cube\" is not locally editable."
+        },
+        "after": {
+          "linked": {
+            "position": [
+              0.0,
+              20.0,
+              30.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          },
+          "local": {
+            "position": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          },
+          "other": {
+            "position": [
+              8.0,
+              1.0,
+              1.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          },
+          "third": {
+            "position": [
+              12.0,
+              -1.0,
+              2.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          }
+        }
+      },
+      "homonym": {
+        "result": {
+          "status": "CANCELLED",
+          "code": "BI-T001",
+          "message": "[BI-T001] Object \"Cube\" is not locally editable."
+        },
+        "after": {
+          "linked": {
+            "position": [
+              0.0,
+              20.0,
+              30.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          },
+          "local": {
+            "position": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          },
+          "other": {
+            "position": [
+              8.0,
+              1.0,
+              1.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          },
+          "third": {
+            "position": [
+              12.0,
+              -1.0,
+              2.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          }
+        }
+      }
+    },
+    {
+      "case": "align_to_linked_object",
+      "control_ok": true,
+      "control_problems": [],
+      "homonym_matches_control": true,
+      "control": {
+        "result": {
+          "status": "FINISHED",
+          "code": null,
+          "message": ""
+        },
+        "after": {
+          "linked": {
+            "position": [
+              0.0,
+              20.0,
+              30.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          },
+          "local": {
+            "position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          },
+          "other": {
+            "position": [
+              0.0,
+              1.0,
+              1.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          },
+          "third": {
+            "position": [
+              12.0,
+              -1.0,
+              2.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          }
+        }
+      },
+      "homonym": {
+        "result": {
+          "status": "FINISHED",
+          "code": null,
+          "message": ""
+        },
+        "after": {
+          "linked": {
+            "position": [
+              0.0,
+              20.0,
+              30.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          },
+          "local": {
+            "position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          },
+          "other": {
+            "position": [
+              0.0,
+              1.0,
+              1.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          },
+          "third": {
+            "position": [
+              12.0,
+              -1.0,
+              2.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          }
+        }
+      }
+    },
+    {
+      "case": "offset_origins",
+      "control_ok": true,
+      "control_problems": [],
+      "homonym_matches_control": true,
+      "control": {
+        "result": {
+          "status": "FINISHED",
+          "code": null,
+          "message": ""
+        },
+        "after": {
+          "linked": {
+            "position": [
+              0.0,
+              20.0,
+              30.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          },
+          "local": {
+            "position": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          },
+          "other": {
+            "position": [
+              6.0,
+              1.0,
+              1.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          },
+          "third": {
+            "position": [
+              9.0,
+              -1.0,
+              2.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          }
+        }
+      },
+      "homonym": {
+        "result": {
+          "status": "FINISHED",
+          "code": null,
+          "message": ""
+        },
+        "after": {
+          "linked": {
+            "position": [
+              0.0,
+              20.0,
+              30.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          },
+          "local": {
+            "position": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          },
+          "other": {
+            "position": [
+              6.0,
+              1.0,
+              1.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          },
+          "third": {
+            "position": [
+              9.0,
+              -1.0,
+              2.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          }
+        }
+      }
+    },
+    {
+      "case": "offset_geometry",
+      "control_ok": true,
+      "control_problems": [],
+      "homonym_matches_control": true,
+      "control": {
+        "result": {
+          "status": "FINISHED",
+          "code": null,
+          "message": ""
+        },
+        "after": {
+          "linked": {
+            "position": [
+              0.0,
+              20.0,
+              30.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          },
+          "local": {
+            "position": [
+              2.5,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          },
+          "other": {
+            "position": [
+              4.5,
+              1.0,
+              1.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          },
+          "third": {
+            "position": [
+              6.5,
+              -1.0,
+              2.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          }
+        }
+      },
+      "homonym": {
+        "result": {
+          "status": "FINISHED",
+          "code": null,
+          "message": ""
+        },
+        "after": {
+          "linked": {
+            "position": [
+              0.0,
+              20.0,
+              30.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          },
+          "local": {
+            "position": [
+              2.5,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          },
+          "other": {
+            "position": [
+              4.5,
+              1.0,
+              1.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          },
+          "third": {
+            "position": [
+              6.5,
+              -1.0,
+              2.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          }
+        }
+      }
+    },
+    {
+      "case": "endpoint_origins",
+      "control_ok": true,
+      "control_problems": [],
+      "homonym_matches_control": true,
+      "control": {
+        "result": {
+          "status": "FINISHED",
+          "code": null,
+          "message": ""
+        },
+        "after": {
+          "linked": {
+            "position": [
+              0.0,
+              20.0,
+              30.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          },
+          "local": {
+            "position": [
+              15.0,
+              20.0,
+              30.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          },
+          "other": {
+            "position": [
+              0.0,
+              20.0,
+              30.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          },
+          "third": {
+            "position": [
+              30.0,
+              20.0,
+              30.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          }
+        }
+      },
+      "homonym": {
+        "result": {
+          "status": "FINISHED",
+          "code": null,
+          "message": ""
+        },
+        "after": {
+          "linked": {
+            "position": [
+              0.0,
+              20.0,
+              30.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          },
+          "local": {
+            "position": [
+              15.0,
+              20.0,
+              30.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          },
+          "other": {
+            "position": [
+              0.0,
+              20.0,
+              30.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          },
+          "third": {
+            "position": [
+              30.0,
+              20.0,
+              30.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          }
+        }
+      }
+    },
+    {
+      "case": "orientation_match",
+      "control_ok": true,
+      "control_problems": [],
+      "homonym_matches_control": true,
+      "control": {
+        "result": {
+          "status": "FINISHED",
+          "code": null,
+          "message": ""
+        },
+        "after": {
+          "linked": {
+            "position": [
+              0.0,
+              20.0,
+              30.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          },
+          "local": {
+            "position": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          },
+          "other": {
+            "position": [
+              8.0,
+              1.0,
+              1.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          },
+          "third": {
+            "position": [
+              12.0,
+              -1.0,
+              2.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          }
+        }
+      },
+      "homonym": {
+        "result": {
+          "status": "FINISHED",
+          "code": null,
+          "message": ""
+        },
+        "after": {
+          "linked": {
+            "position": [
+              0.0,
+              20.0,
+              30.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          },
+          "local": {
+            "position": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          },
+          "other": {
+            "position": [
+              8.0,
+              1.0,
+              1.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          },
+          "third": {
+            "position": [
+              12.0,
+              -1.0,
+              2.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          }
+        }
+      }
+    },
+    {
+      "case": "live_endpoint",
+      "control_ok": true,
+      "control_problems": [],
+      "homonym_matches_control": true,
+      "control": {
+        "result": {
+          "status": "UPDATED",
+          "code": null,
+          "message": ""
+        },
+        "after": {
+          "linked": {
+            "position": [
+              0.0,
+              20.0,
+              30.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          },
+          "local": {
+            "position": [
+              18.0,
+              20.0,
+              30.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          },
+          "other": {
+            "position": [
+              0.0,
+              20.0,
+              30.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          },
+          "third": {
+            "position": [
+              36.0,
+              20.0,
+              30.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          }
+        }
+      },
+      "homonym": {
+        "result": {
+          "status": "UPDATED",
+          "code": null,
+          "message": ""
+        },
+        "after": {
+          "linked": {
+            "position": [
+              0.0,
+              20.0,
+              30.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          },
+          "local": {
+            "position": [
+              18.0,
+              20.0,
+              30.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          },
+          "other": {
+            "position": [
+              0.0,
+              20.0,
+              30.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          },
+          "third": {
+            "position": [
+              36.0,
+              20.0,
+              30.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          }
+        }
+      }
+    },
+    {
+      "case": "live_target_unlinked",
+      "control_ok": true,
+      "control_problems": [],
+      "homonym_matches_control": true,
+      "control": {
+        "result": {
+          "status": "ERROR",
+          "code": "BI-L001",
+          "message": "[BI-L001] A captured target was removed. Disable Live, then capture the new targets."
+        },
+        "after": {
+          "linked": {
+            "position": [
+              0.0,
+              20.0,
+              30.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          },
+          "local": {
+            "position": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": false
+          },
+          "other": {
+            "position": [
+              8.0,
+              1.0,
+              1.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          },
+          "third": {
+            "position": [
+              12.0,
+              -1.0,
+              2.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          }
+        }
+      },
+      "homonym": {
+        "result": {
+          "status": "ERROR",
+          "code": "BI-L001",
+          "message": "[BI-L001] A captured target was removed. Disable Live, then capture the new targets."
+        },
+        "after": {
+          "linked": {
+            "position": [
+              0.0,
+              20.0,
+              30.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          },
+          "local": {
+            "position": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": false
+          },
+          "other": {
+            "position": [
+              8.0,
+              1.0,
+              1.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          },
+          "third": {
+            "position": [
+              12.0,
+              -1.0,
+              2.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "in_scene": true
+          }
+        }
+      }
+    }
+  ]
+}

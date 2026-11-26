@@ -1,0 +1,11 @@
+Warning: Select an editable target object.
+Warning: Select an editable target object.
+Warning: Distribution order is ambiguous: object coordinates overlap or are closer than 0.00001 mm on the selected reference axes.
+X: "Cube [C:\work\better-item-matrix-1.7.11\results\5.1.2\profile\temp\better_item_identity_frame_p_c3mzag\library.blend]", "Renamed"
+Separate the listed objects on those axes by at least 0.00001 mm, then retry. Use a larger offset if Blender rounds it back to the same coordinate.
+Warning: The starting positions do not define a unique order. Separate these origins by at least 0.00001 mm on the selected axes, then retry:
+X: "Cube [C:\work\better-item-matrix-1.7.11\results\5.1.2\profile\temp\better_item_identity_frame_p_c3mzag\library.blend]", "Renamed"
+IDENTITY FRAME 1711 {"passed": true, "blender": "5.1.2", "checks": ["legacy captured name cannot redirect New Frame to a homonym", "ambiguous legacy position map refused before writes", "membership distinguishes objects across scenes", "renamed captured object wins over active object and stale name", "deleted identity never retargets a same-name replacement", "homonym ties remain BI-D002, never an RNA comparison TypeError"], "limits": "EXEC_DEFAULT captures and identity guards; no physical dialog/keyboard interaction certified."}
+Blender 5.1.2 (hash ec6e62d40fa9 built 2026-05-19 01:37:34)
+
+Blender quit

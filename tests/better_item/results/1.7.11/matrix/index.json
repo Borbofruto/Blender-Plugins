@@ -1,0 +1,55 @@
+{
+  "addon_version": "1.7.11",
+  "addon_zip_sha256": "9089c65ca34bfa3f8784e1520485a8f42941d85f4b44ee7d4edd9e60c487330b",
+  "source_commit": "693c88872e1d55528ae74458684fb5b1fd04a71b",
+  "packaging_commit": "ebcd28b",
+  "executed_by": "Claude Code review session (independent of the candidate run)",
+  "runtime": "portable builds, isolated profiles, --factory-startup",
+  "builds": {
+    "4.2.0": {
+      "passed": 30,
+      "not_passed": [],
+      "runner_exit": 0
+    },
+    "4.2.23": {
+      "passed": 30,
+      "not_passed": [],
+      "runner_exit": 0
+    },
+    "4.3.2": {
+      "passed": 30,
+      "not_passed": [],
+      "runner_exit": 0
+    },
+    "4.4.3": {
+      "passed": 30,
+      "not_passed": [],
+      "runner_exit": 0
+    },
+    "4.5.16": {
+      "passed": 30,
+      "not_passed": [],
+      "runner_exit": 0
+    },
+    "5.0.1": {
+      "passed": 30,
+      "not_passed": [],
+      "runner_exit": 0
+    },
+    "5.1.2": {
+      "passed": 30,
+      "not_passed": [],
+      "runner_exit": 0
+    },
+    "5.2.4": {
+      "passed": 30,
+      "not_passed": [],
+      "runner_exit": 0
+    },
+    "5.3.0": {
+      "passed": 30,
+      "not_passed": [],
+      "runner_exit": 0
+    }
+  }
+}

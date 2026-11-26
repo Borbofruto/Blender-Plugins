@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "blender": "4.3.2",
+  "checks": [
+    "legacy captured name cannot redirect New Frame to a homonym",
+    "ambiguous legacy position map refused before writes",
+    "membership distinguishes objects across scenes",
+    "renamed captured object wins over active object and stale name",
+    "deleted identity never retargets a same-name replacement",
+    "homonym ties remain BI-D002, never an RNA comparison TypeError"
+  ],
+  "limits": "EXEC_DEFAULT captures and identity guards; no physical dialog/keyboard interaction certified."
+}
