@@ -1,5 +1,12 @@
 # Better Item — changelog
 
+## 1.7.11
+
+Keep spatial operations bound to the correct object when local and linked objects share a name.
+- Preserve untouched axes, fixed anchors and atomic refusals across Align and Distribute.
+- Keep Live targets, order and New Frame assignment attached to their captured objects.
+- Preserve saved references, migration and legacy Python distribution behavior.
+
 ## 1.7.10
 
 ### Fixed

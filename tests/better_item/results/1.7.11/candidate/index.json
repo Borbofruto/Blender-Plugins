@@ -1,0 +1,38 @@
+{
+  "status": "candidate-awaiting-independent-review",
+  "base_commit": "f7337d0f2bbd7ab19cc346fb8661a1f8ff52aad3",
+  "runtime_commit": "693c88872e1d55528ae74458684fb5b1fd04a71b",
+  "regression_commit": "a2b1bc0b9eb3b3dd025fc74f28c2bf7d5d3b8241",
+  "archive_sha256": "9089c65ca34bfa3f8784e1520485a8f42941d85f4b44ee7d4edd9e60c487330b",
+  "python_source_sha256": "44f7d8f4a06c2c2f972383df0b267719f15e3296ce19829a7cfdffd9df49a120",
+  "executions": [
+    {
+      "version": "4.2.0",
+      "passed": true,
+      "entries": 30,
+      "zip_sha256": "9089c65ca34bfa3f8784e1520485a8f42941d85f4b44ee7d4edd9e60c487330b"
+    },
+    {
+      "version": "5.3.0",
+      "passed": true,
+      "entries": 30,
+      "zip_sha256": "9089c65ca34bfa3f8784e1520485a8f42941d85f4b44ee7d4edd9e60c487330b"
+    }
+  ],
+  "infrastructure_checks": 14,
+  "auxiliary_processes": 7,
+  "additional_gui_processes": 2,
+  "evidence": {
+    "path": "executions.json.gz",
+    "sha256": "f8a383a0028a8e3e0b7abf6ad326e6a52ce5787d9bcf6b356666feebad7863c1",
+    "bytes": 171884
+  },
+  "limits": [
+    "Two builds are new full executions, not nine-build qualification.",
+    "GUI uses native simulated events, not physical keyboard or mouse.",
+    "Baseline and earlier failed-candidate results retain their original artifact hashes.",
+    "One earlier full candidate failed two legacy-input tests; it is not qualified or substituted by final results.",
+    "Original independent test is unchanged; two existing tests only consume object keys instead of names.",
+    "Manual publication checklist remains unexecuted."
+  ]
+}

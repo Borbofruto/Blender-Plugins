@@ -1,0 +1,94 @@
+{
+  "version": "1.7.11",
+  "date": "2026-11-26",
+  "branch": "release/1.7.11",
+  "status": "candidate-two-build-validated-awaiting-independent-review",
+  "baseline_commit": "f7337d0f2bbd7ab19cc346fb8661a1f8ff52aad3",
+  "regression_commit": "a2b1bc0b9eb3b3dd025fc74f28c2bf7d5d3b8241",
+  "archive": {
+    "path": "addons/better_item.zip",
+    "sha256": "9089c65ca34bfa3f8784e1520485a8f42941d85f4b44ee7d4edd9e60c487330b",
+    "bytes": 103008
+  },
+  "minimum_blender": "4.2.0",
+  "python_source_sha256": "44f7d8f4a06c2c2f972383df0b267719f15e3296ce19829a7cfdffd9df49a120",
+  "files": [
+    {
+      "path": "src/better_item/__init__.py",
+      "sha256": "a6dcdb35650768fea2d46aee5f221c6a3aabcef4bcd589a315bf97cf3a341089"
+    },
+    {
+      "path": "src/better_item/arrange.py",
+      "sha256": "bcf2f330ce26bcea7cd698aeecd7b20d610a16f336a96779807462e5779700a5"
+    },
+    {
+      "path": "src/better_item/diagnostics.py",
+      "sha256": "5bf2d04070a8d1dfae2b8aa8e2b1927b3e146152c8b3134b882a77497e0e21d9"
+    },
+    {
+      "path": "src/better_item/distribution.py",
+      "sha256": "3b6f1faab021f14a23c818bc9c19ea02e187155c1a550295588e990cf9032b3e"
+    },
+    {
+      "path": "src/better_item/distribution_preview.py",
+      "sha256": "5c506b175b0d432617181b4704b92eea956e921c546acd66884fc9e31c21909f"
+    },
+    {
+      "path": "src/better_item/engine.py",
+      "sha256": "cb305cd920d666232383a5412f8f274d3f6b8e57a6175f468d6dec0ca1c8c925"
+    },
+    {
+      "path": "src/better_item/frames.py",
+      "sha256": "5cf038fa69a0cd6df4966820a87fc50cd51d4d226760596458541896ae4dcf46"
+    },
+    {
+      "path": "src/better_item/geometry_arrange.py",
+      "sha256": "0cce7409845572f0c418bf2eeb2a29d78e3952d8fce78aa98b931356602a09e3"
+    },
+    {
+      "path": "src/better_item/math_core.py",
+      "sha256": "508d7c25a472c5d3d11e8c8faf681a5becdb8a029ccd234b54de27a1ff8dcc2e"
+    },
+    {
+      "path": "src/better_item/native_refs.py",
+      "sha256": "039c7d49167ee27858bd805743c51570ffba9f362746820456f60490d40a1493"
+    },
+    {
+      "path": "src/better_item/orientation.py",
+      "sha256": "d31756a0b2a9a638ac5d9cde2a9d35af5ed989f1ff7a12b49eea8a00cbb155d5"
+    },
+    {
+      "path": "src/better_item/placement.py",
+      "sha256": "fa846922f0791bf6052b5fb2789ab3a2ecbf0c190f43f3a046e3a2be19ea3b07"
+    },
+    {
+      "path": "src/better_item/references.py",
+      "sha256": "6f934a1945d211eff5bdc2771eee5864be54ebe4cbbe44c71667421ead14a1f5"
+    },
+    {
+      "path": "src/better_item/trace.py",
+      "sha256": "b47454955570f63aa23a6fde3b411e7349320eb5ac06483cb18cd7c43c8f06ba"
+    },
+    {
+      "path": "src/better_item/transform_view.py",
+      "sha256": "c8bf11ad9314ebe6dba930477ccc7abf2e28a633d3ec76c70c0aedeff5fb6860"
+    }
+  ],
+  "pending": [
+    "independent diff review",
+    "full final-ZIP matrix across nine declared Windows builds",
+    "manual interaction checklist remains unexecuted"
+  ],
+  "source_commit": "693c88872e1d55528ae74458684fb5b1fd04a71b",
+  "validation": {
+    "full_matrix_builds": [
+      "4.2.0",
+      "5.3.0"
+    ],
+    "entries_per_build": 30,
+    "infrastructure_checks": 14,
+    "auxiliary_processes": 7,
+    "additional_gui_processes": 2,
+    "evidence": "tests/better_item/results/1.7.11/candidate/index.json"
+  }
+}

@@ -1,0 +1,282 @@
+{
+  "requested_version": "5.3.0",
+  "executable": "C:/Users/gabri/Documents/Codex/better-item-compatibility/portable/blender-5.3.0-windows-x64/blender.exe",
+  "started_utc": "2026-11-26T16:43:29Z",
+  "passed": true,
+  "addon_version": "1.7.11",
+  "addon_zip_sha256": "9089c65ca34bfa3f8784e1520485a8f42941d85f4b44ee7d4edd9e60c487330b",
+  "finished_utc": "2026-11-26T16:45:29Z",
+  "evidence_archive": "../executions.json.gz",
+  "tests": [
+    {
+      "script": "api_probe.py",
+      "mode": "background",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 0.782,
+      "result_reference": "final-2/results/5.3.0/api_probe.results.json"
+    },
+    {
+      "script": "test_native_sync179.py",
+      "mode": "gui_async",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 10.812,
+      "result_reference": "final-2/results/5.3.0/test_native_sync179.results.json"
+    },
+    {
+      "script": "test_cache_invalidation.py",
+      "mode": "gui_sync",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 2.969,
+      "result_reference": "final-2/results/5.3.0/test_cache_invalidation.results.json"
+    },
+    {
+      "script": "test_better_item_173.py",
+      "mode": "background",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 0.969,
+      "result_reference": "final-2/results/5.3.0/test_better_item_173.results.json"
+    },
+    {
+      "script": "test_better_item_live173.py",
+      "mode": "background",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 1.266,
+      "result_reference": "final-2/results/5.3.0/test_better_item_live173.results.json"
+    },
+    {
+      "script": "test_better_item_matrix170.py",
+      "mode": "background",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 1.984,
+      "result_reference": "final-2/results/5.3.0/test_better_item_matrix170.results.json"
+    },
+    {
+      "script": "test_better_item_matrix160.py",
+      "mode": "background",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 1.469,
+      "result_reference": "final-2/results/5.3.0/test_better_item_matrix160.results.json"
+    },
+    {
+      "script": "test_better_item_features160.py",
+      "mode": "background",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 0.89,
+      "result_reference": "final-2/results/5.3.0/test_better_item_features160.results.json"
+    },
+    {
+      "script": "test_better_item_170.py",
+      "mode": "background",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 0.922,
+      "result_reference": "final-2/results/5.3.0/test_better_item_170.results.json"
+    },
+    {
+      "script": "test_better_item_edge170.py",
+      "mode": "background",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 1.672,
+      "result_reference": "final-2/results/5.3.0/test_better_item_edge170.results.json"
+    },
+    {
+      "script": "test_better_item_precision172.py",
+      "mode": "background",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 2.188,
+      "result_reference": "final-2/results/5.3.0/test_better_item_precision172.results.json"
+    },
+    {
+      "script": "test_better_item_collapse172.py",
+      "mode": "background",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 0.765,
+      "result_reference": "final-2/results/5.3.0/test_better_item_collapse172.results.json"
+    },
+    {
+      "script": "test_better_item_171.py",
+      "mode": "background",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 0.922,
+      "result_reference": "final-2/results/5.3.0/test_better_item_171.results.json"
+    },
+    {
+      "script": "test_better_item_regressions.py",
+      "mode": "background",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 0.891,
+      "result_reference": null
+    },
+    {
+      "script": "test_better_item_gui173.py",
+      "mode": "gui_async",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 8.313,
+      "result_reference": "final-2/results/5.3.0/test_better_item_gui173.results.json"
+    },
+    {
+      "script": "test_retired_custom175.py",
+      "mode": "gui_async",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 4.766,
+      "result_reference": "final-2/results/5.3.0/test_retired_custom175.results.json"
+    },
+    {
+      "script": "test_retired_custom175_persistence.py",
+      "mode": "background",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 0.89,
+      "result_reference": "final-2/results/5.3.0/test_retired_custom175_persistence.results.json"
+    },
+    {
+      "script": "test_better_item_preview170.py",
+      "mode": "gui_sync",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 2.875,
+      "result_reference": "final-2/results/5.3.0/test_better_item_preview170.results.json"
+    },
+    {
+      "script": "test_better_item_inspection172.py",
+      "mode": "gui_sync",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 5.203,
+      "result_reference": "final-2/results/5.3.0/test_better_item_inspection172.results.json"
+    },
+    {
+      "script": "test_better_item_cache154.py",
+      "mode": "gui_sync",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 2.906,
+      "result_reference": null
+    },
+    {
+      "script": "test_archive_install.py",
+      "mode": "background",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 1.344,
+      "result_reference": "final-2/results/5.3.0/test_archive_install.results.json"
+    },
+    {
+      "script": "test_better_item_stress157.py",
+      "mode": "gui_sync",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 17.985,
+      "result_reference": "final-2/results/5.3.0/test_better_item_stress157.results.json"
+    },
+    {
+      "script": "test_better_item_operator177.py",
+      "mode": "gui_sync",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 3.344,
+      "result_reference": "final-2/results/5.3.0/test_better_item_operator177.results.json"
+    },
+    {
+      "script": "test_better_item_gestures179.py",
+      "mode": "background",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 1.703,
+      "result_reference": null
+    },
+    {
+      "script": "test_better_item_units179.py",
+      "mode": "background",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 27.75,
+      "result_reference": "final-2/results/5.3.0/test_better_item_units179.results.json"
+    },
+    {
+      "script": "test_spacing_diagnostics1710.py",
+      "mode": "gui_sync",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 3.265,
+      "result_reference": "final-2/results/5.3.0/test_spacing_diagnostics1710.results.json"
+    },
+    {
+      "script": "test_native_faults1710.py",
+      "mode": "gui_sync",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 2.922,
+      "result_reference": "final-2/results/5.3.0/test_native_faults1710.results.json"
+    },
+    {
+      "script": "test_native_windows1710.py",
+      "mode": "gui_async",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 4.343,
+      "result_reference": "final-2/results/5.3.0/test_native_windows1710.results.json"
+    },
+    {
+      "script": "test_better_item_identity1711.py",
+      "mode": "background",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 0.984,
+      "result_reference": "final-2/results/5.3.0/test_better_item_identity1711.results.json"
+    },
+    {
+      "script": "test_identity_frame1711.py",
+      "mode": "background",
+      "passed": true,
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 0.797,
+      "result_reference": "final-2/results/5.3.0/test_identity_frame1711.results.json"
+    }
+  ]
+}

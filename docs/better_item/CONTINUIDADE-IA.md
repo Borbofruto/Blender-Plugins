@@ -611,7 +611,7 @@ O módulo também verifica que geometria, rotação e escala não mudaram indevi
 
 **Sinal e zero:** um Spacing positivo distribui no sentido positivo; negativo, no negativo. Ao chegar a zero, preserve o último sinal não zero informado. Esse estado fica na cena. Se não existe histórico, o padrão inicial é positivo. Não adicione uma segunda UI de Direction.
 
-**Eixos desmarcados:** Offset moderno não deve alinhar os outros eixos. A opção antiga On Reference Axis causava isso; ela saiu da UI moderna e seu valor salvo não interfere no novo caminho. Há caminhos Python legados que ainda preservam a semântica antiga, razão para testar o operador moderno também.
+**Eixos desmarcados:** Offset moderno não deve alinhar os outros eixos. A opção antiga On Reference Axis causava isso; ela saiu da UI moderna e seu valor salvo não interfere no caminho moderno (`modern=True`, copiado pelo botão). Uma chamada Python direta de Offset/Origins ou Geometry mantém `modern=False` por padrão e pode obedecer a `arrange_on_axis` no planejador legado. Essa compatibilidade não foi unificada na 1.7.11; scripts precisam escolher explicitamente o caminho pretendido.
 
 ### 12.7. Precisão geométrica em cenas grandes
 

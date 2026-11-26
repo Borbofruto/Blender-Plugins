@@ -1,6 +1,6 @@
 # Better Item — contexto atual
 
-Atualizado em **17/11/2026**. Versão oficial: **1.7.10**, na **main**. Mínimo **Blender 4.2.0**.
+Atualizado em **26/11/2026**. Versão oficial: **1.7.10**, na **main**. A **1.7.11 é candidata** na branch `release/1.7.11`, aguardando revisão e qualificação independentes; não foi mesclada nem publicada como oficial. Mínimo **Blender 4.2.0**.
 
 ## 1. Estado atual e leitura
 
@@ -147,13 +147,16 @@ Chamada mínima de script:
 - Não atribuir mensagens de shutdown como “not freed memory blocks” automaticamente ao addon. Reproduzir com controle sem addon antes de concluir.
 
 
-## 7. Próximo ciclo: 1.8
+## 7. Correção crítica 1.7.11 e continuidade da 1.8
 
-Escopo para discussão, sem implementação automática de funcionalidades:
+A main continua em **f7337d0 / 1.7.10**. A candidata **release/1.7.11** nasce dessa base mais o teste independente de identidade (`a2b1bc0`). O erro reproduzido alinha X, altera Y/Z e informa sucesso quando um objeto local e outro vinculado têm o mesmo nome. É patch crítico separado, anterior à 1.8. [Relatório e pendências](release-1.7.11.md), [snapshot do candidato](handoff-1.7.11.json).
 
-1. **Diagnósticos e estados:** distinguir configuração incompleta, recusa matemática, operação não aplicada e sincronização pausada; instruções curtas e específicas.
-2. **Layout e legibilidade:** hierarquia dos painéis, agrupamento, largura, rótulos e nomes do mínimo. Preservar a distinção entre configurações da Scene e override do operador.
-3. **Gestos de edição:** coerência de arrasto/digitação, links, Esc, Undo/Redo e F9; corrigir comportamentos reproduzidos com interação real.
-4. **Responsividade medida:** medir cenários frios/quentes e Normal em seleção densa antes de novas otimizações; preservar frescor e determinismo.
+Planejamento, aplicação, verificação e Live usam chaves de objeto; nomes servem para apresentação. Entradas antigas por nome nos helpers são aceitas só quando não ambíguas e normalizadas antes do cálculo. New Frame captura session_uid no operador para não atribuir um Frame ao homônimo depois de rename/troca de ativo. Essas identidades são transitórias; PointerProperty, IDs de Frame, enums e schema salvos não mudam. Não criar migração sem necessidade demonstrada.
 
-Recomendação inicial: começar a 1.8.0 por diagnósticos/estados e organização visual, fechando o recorte antes de mexer em gestos ou otimizações. Os ajustes visuais não mudam tolerâncias físicas nem ampliam o solver. Animação continua fora do escopo. Edit Mode permanece estudo de futura 2.0, sem novos alvos nesta etapa.
+O teste independente `test_better_item_identity1711.py` não deve ser alterado para acomodar a correção. `test_identity_frame1711.py` cobre New Frame, mapa legado ambíguo, presença na cena, alvo renomeado/removido e preservação da recusa BI-D002. Distribute moderno/legado não foi unificado, leitura zero e limpeza de cache não entram neste patch.
+
+A branch **release/1.8**, em `3d951c4`, contém somente preparação. A fase 2 continua aguardando aprovação. Tema aprovado: **Quando o Better Item recusa ou não consegue medir, diz o motivo e deixa o usuário resolver.** Núcleo P2 → F4 → U2; quatro correções B1 propostas aguardam decisão. A unificação U1 foi refutada e o aviso P3 por distância/ULP não foi recomendado. Não retomar o antigo escopo de quatro frentes simultâneas.
+
+O [roteiro v2](https://github.com/Borbofruto/Blender-Plugins/blob/release/1.8/docs/better_item/planejamento/roteiro-de-releases.md), o [escopo aprovado](https://github.com/Borbofruto/Blender-Plugins/blob/release/1.8/docs/better_item/planejamento/escopo-1.8.md) e o backlog permanecem na branch da 1.8. Após qualificar/publicar a 1.7.11, incorporar o patch à 1.8 e preservar o SHA original das evidências históricas. A 1.9 mantém legibilidade; mudar seu tema para comandos fora do painel continua proposta aberta. Animação segue fora; Edit Mode é 2.0.
+
+Neste computador: portáteis em **D:/BetterItem/portables/**; novos ambientes em **D:/BetterItem/workspaces/**; candidata em **D:/BetterItem/release-1.7.11/**. Não usar Blender instalado. Não recriar pastas de teste espalhadas na raiz do D. Não remover o worktree da 1.8 enquanto a preparação aguarda decisão.

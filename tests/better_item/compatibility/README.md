@@ -1,5 +1,8 @@
 # Better Item compatibility matrix
 
+Current branch: **1.7.11 candidate**, final installer hash in suite.json. The default runtime suite has **30 entries including api_probe**. New complete runs on 4.2.0 and 5.3.0, additional identity GUI/persistence checks, baseline failures and remaining independent qualification are recorded in [the candidate report](../../../docs/better_item/release-1.7.11.md). Earlier paragraphs below describe historical releases and must not be reassigned to this candidate. `test_identity_frame_gui1711.py` is an auxiliary real-dialog check, requiring `--enable-event-simulate` and isolated profiles; it is outside the default matrix count.
+
+
 This matrix is pinned to the official 1.7.10 installer SHA256 in suite.json. It uses actual official Blender portable builds, separate factory profiles, fresh processes for each entry point, and both background and GUI tests. It does not establish compatibility with every possible scene or future Blender version. New executions are stored under results/1.7.10 in the repository; earlier release results are historical evidence. The new gui_async test_native_sync179.py checks real-timer failure isolation/recovery, bounded retry, native deletion, scene switching and transient-health cleanup. Existing operator/cache regressions remain in the suite. Three new scripts cover spacing diagnostics, publish/remove faults and removed windows. The full runtime run has 28 entries including api_probe; the cold UI comparison is a separate optional study. The legacy migration script is copied as an auxiliary fixture. The official release is 1.7.10; manual interaction remains unexecuted. See the release report for the distinct runtime-qualification and final-package hashes.
 
 ## Reproduce on Windows
