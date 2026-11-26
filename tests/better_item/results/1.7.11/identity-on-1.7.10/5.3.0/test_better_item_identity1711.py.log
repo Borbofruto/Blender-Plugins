@@ -1,0 +1,53 @@
+Traceback (most recent call last):
+  File "C:\work\better-item-identity1711-on-1.7.10\results\5.3.0\test_better_item_identity1711.py", line 378, in <module>
+    raise AssertionError('duplicate-name identity failures: ' + ', '.join(failed))
+AssertionError: duplicate-name identity failures: align_selection_min, align_selection_min_linked_last, align_to_linked_object, offset_origins, offset_geometry, endpoint_origins, orientation_match, live_endpoint, live_target_unlinked
+Info: 2 object(s) aligned.
+Warning: Object "Cube" is not locally editable.
+Info: 2 object(s) aligned.
+Info: 2 object(s) aligned.
+Warning: Object "Cube" is not locally editable.
+Warning: Object "Cube" is not locally editable.
+Info: 2 object(s) aligned.
+Info: 1 object(s) aligned.
+Info: 3 object(s) distributed.
+Info: 2 object(s) distributed.
+Info: 3 object(s) distributed.
+Info: 2 object(s) distributed.
+Info: 3 object(s) distributed.
+Info: 2 object(s) distributed.
+Info: 2 object(s) oriented.
+Warning: Object "Cube" is not locally editable.
+align_selection_min          control=ok   homonym=DIFF  control:FINISHED None | homonym:CANCELLED BI-T001
+    local   control {'position': [0.0, 0.0, 0.0], 'rotation': [0.0, 0.0, 0.0], 'in_scene': True} | homonym {'position': [5.0, 0.0, 0.0], 'rotation': [0.0, 0.0, 0.0], 'in_scene': True}
+    other   control {'position': [0.0, 1.0, 1.0], 'rotation': [0.0, 0.0, 0.0], 'in_scene': True} | homonym {'position': [8.0, 1.0, 1.0], 'rotation': [0.0, 0.0, 0.0], 'in_scene': True}
+align_selection_min_linked_last control=ok   homonym=DIFF  control:FINISHED None | homonym:FINISHED None
+    local   control {'position': [0.0, 0.0, 0.0], 'rotation': [0.0, 0.0, 0.0], 'in_scene': True} | homonym {'position': [0.0, 20.0, 30.0], 'rotation': [0.0, 0.0, 0.0], 'in_scene': True}
+align_selection_max_refused  control=ok   homonym=same  control:CANCELLED BI-T001 | homonym:CANCELLED BI-T001
+align_to_linked_object       control=ok   homonym=DIFF  control:FINISHED None | homonym:FINISHED None
+    local   control {'position': [0.0, 0.0, 0.0], 'rotation': [0.0, 0.0, 0.0], 'in_scene': True} | homonym {'position': [5.0, 0.0, 0.0], 'rotation': [0.0, 0.0, 0.0], 'in_scene': True}
+offset_origins               control=ok   homonym=DIFF  control:FINISHED None | homonym:FINISHED None
+    local   control {'position': [3.0, 0.0, 0.0], 'rotation': [0.0, 0.0, 0.0], 'in_scene': True} | homonym {'position': [5.0, 0.0, 0.0], 'rotation': [0.0, 0.0, 0.0], 'in_scene': True}
+    other   control {'position': [6.0, 1.0, 1.0], 'rotation': [0.0, 0.0, 0.0], 'in_scene': True} | homonym {'position': [3.0, 1.0, 1.0], 'rotation': [0.0, 0.0, 0.0], 'in_scene': True}
+    third   control {'position': [9.0, -1.0, 2.0], 'rotation': [0.0, 0.0, 0.0], 'in_scene': True} | homonym {'position': [6.0, -1.0, 2.0], 'rotation': [0.0, 0.0, 0.0], 'in_scene': True}
+offset_geometry              control=ok   homonym=DIFF  control:FINISHED None | homonym:FINISHED None
+    local   control {'position': [2.5, 0.0, 0.0], 'rotation': [0.0, 0.0, 0.0], 'in_scene': True} | homonym {'position': [5.0, 0.0, 0.0], 'rotation': [0.0, 0.0, 0.0], 'in_scene': True}
+    other   control {'position': [4.5, 1.0, 1.0], 'rotation': [0.0, 0.0, 0.0], 'in_scene': True} | homonym {'position': [2.5, 1.0, 1.0], 'rotation': [0.0, 0.0, 0.0], 'in_scene': True}
+    third   control {'position': [6.5, -1.0, 2.0], 'rotation': [0.0, 0.0, 0.0], 'in_scene': True} | homonym {'position': [4.5, -1.0, 2.0], 'rotation': [0.0, 0.0, 0.0], 'in_scene': True}
+endpoint_origins             control=ok   homonym=DIFF  control:FINISHED None | homonym:FINISHED None
+    local   control {'position': [15.0, 20.0, 30.0], 'rotation': [0.0, 0.0, 0.0], 'in_scene': True} | homonym {'position': [5.0, 0.0, 0.0], 'rotation': [0.0, 0.0, 0.0], 'in_scene': True}
+    other   control {'position': [0.0, 20.0, 30.0], 'rotation': [0.0, 0.0, 0.0], 'in_scene': True} | homonym {'position': [17.5, 20.0, 30.0], 'rotation': [0.0, 0.0, 0.0], 'in_scene': True}
+orientation_match            control=ok   homonym=DIFF  control:FINISHED None | homonym:CANCELLED BI-T001
+    local   control {'position': [5.0, 0.0, 0.0], 'rotation': [0.0, 0.0, 0.0], 'in_scene': True} | homonym {'position': [5.0, 0.0, 0.0], 'rotation': [0.0, 0.0, 0.5], 'in_scene': True}
+    other   control {'position': [8.0, 1.0, 1.0], 'rotation': [0.0, 0.0, 0.0], 'in_scene': True} | homonym {'position': [8.0, 1.0, 1.0], 'rotation': [0.30000001192092896, 0.0, 0.0], 'in_scene': True}
+live_endpoint                control=ok   homonym=DIFF  control:UPDATED None | homonym:UPDATED None
+    local   control {'position': [18.0, 20.0, 30.0], 'rotation': [0.0, 0.0, 0.0], 'in_scene': True} | homonym {'position': [5.0, 0.0, 0.0], 'rotation': [0.0, 0.0, 0.0], 'in_scene': True}
+    other   control {'position': [0.0, 20.0, 30.0], 'rotation': [0.0, 0.0, 0.0], 'in_scene': True} | homonym {'position': [20.5, 20.0, 30.0], 'rotation': [0.0, 0.0, 0.0], 'in_scene': True}
+live_target_unlinked         control=ok   homonym=DIFF  control:ERROR BI-L001 | homonym:UPDATED None
+    other   control {'position': [8.0, 1.0, 1.0], 'rotation': [0.0, 0.0, 0.0], 'in_scene': True} | homonym {'position': [20.5, 20.0, 30.0], 'rotation': [0.0, 0.0, 0.0], 'in_scene': True}
+    third   control {'position': [12.0, -1.0, 2.0], 'rotation': [0.0, 0.0, 0.0], 'in_scene': True} | homonym {'position': [36.0, 20.0, 30.0], 'rotation': [0.0, 0.0, 0.0], 'in_scene': True}
+
+Error: script failed, file: 'C:\work\better-item-identity1711-on-1.7.10\results\5.3.0\test_better_item_identity1711.py', exiting.
+Blender 5.3.0 (hash 02f0899d78e3 built 2026-11-10 01:33:43)
+
+Blender quit

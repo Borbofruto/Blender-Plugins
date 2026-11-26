@@ -110,6 +110,10 @@
     {
       "script": "test_native_windows1710.py",
       "mode": "gui_async"
+    },
+    {
+      "script": "test_better_item_identity1711.py",
+      "mode": "background"
     }
   ],
   "baseline_source_commit": "97a676d6e320742fa83185f62296c9d1730116d5",
